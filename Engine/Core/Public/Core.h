@@ -19,7 +19,4 @@ static const char szLogPostfix[] = "_AtlanticBeast.log";
 #   define AB_LOG(...) 
 #endif // !_DEBUG
 
-
-int TestFun();
-
 #endif // !AB_CORE_H
