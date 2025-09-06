@@ -1,5 +1,7 @@
 #include "Core.h"
 
+#ifdef _WIN32
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <vulkan/vulkan.h>
@@ -93,3 +95,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     }
     return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
+
+#elif __linux__
+
+int TestFun() 
+{
+    return 999;
+}
+
+#endif // !_WIN32
