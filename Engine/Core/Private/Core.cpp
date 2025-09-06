@@ -64,6 +64,14 @@ int TestFun()
         return -1;
     }
 
+	VkWin32SurfaceCreateInfoKHR info{};
+	info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	info.hinstance = hInstance;
+	info.hwnd = hwnd;  
+
+	VkSurfaceKHR surface;
+    vkCreateWin32SurfaceKHR(instance, &info, NULL, &surface); 
+
     MSG msg{};
     while (GetMessage(&msg, nullptr, 0, 0) > 0) {
         TranslateMessage(&msg);
