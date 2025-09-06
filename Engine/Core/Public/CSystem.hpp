@@ -5,6 +5,7 @@
 #include <fstream>
 #include <filesystem>
 #include <mutex>
+#include <sstream>
 #include <queue>
 #include <thread>
 
