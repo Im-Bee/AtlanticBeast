@@ -1,0 +1,15 @@
+.cache/
+.git/
+.vs/
+compile_commands.json
+Bin/
+Build/
+out/
+Lib/
+
+*.log
+*.o
+*.so
+*.dll
+*.lib
+*.exe
