@@ -77,13 +77,13 @@ const wchar_t* Logger::GetTag(const ESeverity sev) const
 {
     switch (sev)
     {
-        case ESeverity::EInfo:
+        case ESeverity::Info:
             return L"Info";
 
-        case ESeverity::EWarning:
+        case ESeverity::Warning:
             return L"Warning";
 
-        case ESeverity::EError:
+        case ESeverity::Error:
             return L"Error";
 
         default:

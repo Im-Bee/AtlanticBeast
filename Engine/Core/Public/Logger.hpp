@@ -8,9 +8,9 @@ namespace Core::Debug
 
 enum ESeverity 
 {
-    EInfo = 1,
-    EWarning = EInfo << 1,
-    EError = EWarning << 1,
+    Info = 1,
+    Warning = Info << 1,
+    Error = Warning << 1,
 };
 
 class Logger

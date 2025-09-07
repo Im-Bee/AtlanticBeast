@@ -26,6 +26,12 @@ public:
         : Exception(pszMessage, uMesLen, uLine, pszFileName, uFileNameLen)
     { }
 
+    ~Exception() noexcept;
+
+    Exception(const Exception&) noexcept;
+
+    Exception(Exception&&) noexcept = default;
+
 public: 
 
    virtual const char* what() const noexcept final override;
@@ -37,7 +43,7 @@ private:
 private:
 
    const char* m_pszMessage;
-   const size_t m_uMesLen;
+   size_t m_uMesLen;
    const int32_t m_Line;
    const char* m_pszFileName;
    const size_t m_uFileNameLen;
