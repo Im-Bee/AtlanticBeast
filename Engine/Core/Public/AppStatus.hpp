@@ -8,20 +8,21 @@ namespace Core
 
 enum EAppStatus
 {
-	EDead,
-	ERunning
+	Dead,
+	Running
 };
 
 class AppStatus
 {
 public:
-	static AppStatus& Get();
+    static AppStatus& Get();
 
-	EAppStatus GetAppCurrentStatus() const;
+    ~AppStatus();
+
+	static EAppStatus GetAppCurrentStatus();
 
 private:
 	AppStatus();
-	~AppStatus();
 
 	static AppStatus* m_pInstance;
 	static EAppStatus m_AppCurrentStatus;

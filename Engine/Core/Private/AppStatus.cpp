@@ -4,7 +4,7 @@ namespace Core
 {
 
 AppStatus* AppStatus::m_pInstance = new AppStatus();
-EAppStatus AppStatus::m_AppCurrentStatus = EDead;
+EAppStatus AppStatus::m_AppCurrentStatus = Dead;
 
 AppStatus::AppStatus()
 {
@@ -20,7 +20,7 @@ AppStatus& AppStatus::Get()
 	return *m_pInstance;
 }
 
-EAppStatus AppStatus::GetAppCurrentStatus() const
+EAppStatus AppStatus::GetAppCurrentStatus()
 {
 	return m_AppCurrentStatus;
 }
