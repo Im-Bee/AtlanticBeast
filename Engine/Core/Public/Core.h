@@ -1,11 +1,15 @@
 #ifndef AB_CORE_H
 #define AB_CORE_H
 
+#ifdef _WIN32
+#   define _CRT_SECURE_NO_WARNINGS
+#endif // !_WIN32
+
 #include "CSystem.hpp"
-#include "Limits.h"
+#include "AbLimits.h"
 #include "Exception.hpp"
 
-namespace Core
+namespace Core::Debug
 {
 
 static const char szLogPostfix[] = "_AtlanticBeast.log";
