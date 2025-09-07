@@ -1,7 +1,5 @@
 #include "Core.h"
 
-#include "Exception.hpp"
-
 namespace Core
 {
 
