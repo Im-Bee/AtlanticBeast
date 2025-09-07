@@ -1,10 +1,10 @@
-#ifdef __linux__
-
 #include "Core.h"
 #include "EmptyCanvas.hpp"
 
 namespace Core
 {
+
+#ifdef __linux__
 
 // EmptyCanvas // ------------------------------------------------------------------------------------------------------
 void EmptyCanvas::CreateImpl()
@@ -101,5 +101,37 @@ void EmptyCanvas::UpdateImpl()
     }
 }
 
-} // !Core
+#elif _WIN32
+
+// EmptyCanvas // ------------------------------------------------------------------------------------------------------
+void EmptyCanvas::CreateImpl()
+{
+    AB_LOG(Debug::ESeverity::Info, L"Creating canvas");
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+void EmptyCanvas::ShowImpl()
+{
+    AB_LOG(Debug::ESeverity::Info, L"Show canvas");
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+void EmptyCanvas::HideImpl()
+{
+    AB_LOG(Debug::ESeverity::Info, L"Hide canvas");
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+void EmptyCanvas::DestroyImpl()
+{
+    AB_LOG(Debug::ESeverity::Info, L"Destroy canvas");
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+void UpdateImpl()
+{
+}
+
 #endif // !__linux__
+       
+} // !Core

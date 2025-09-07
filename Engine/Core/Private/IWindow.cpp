@@ -10,14 +10,17 @@ using namespace std;
 
 #ifdef __linux__
 
+// ---------------------------------------------------------------------------------------------------------------------
 struct DisplayCount
 {
     ::Display* DisplayPtr;
     size_t Count;
 };
 
+// Statics // ----------------------------------------------------------------------------------------------------------
 static unordered_map<string, DisplayCount> Displays = { };
-    
+
+// ---------------------------------------------------------------------------------------------------------------------
 ::Display* ImplAskForDisplayLinux(const char* pszDisplayName)
 {
     if (pszDisplayName == NULL) {
@@ -38,6 +41,7 @@ static unordered_map<string, DisplayCount> Displays = { };
     return mapped.DisplayPtr;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 void ImplAskToCloseDisplayLinux(const char* pszDisplayName)
 {
     if (pszDisplayName == NULL) {
@@ -56,6 +60,8 @@ void ImplAskToCloseDisplayLinux(const char* pszDisplayName)
         XCloseDisplay(mapped.DisplayPtr);
     }
 }
+
+#elif _WIN32
 
 #endif // !__linux__
 
