@@ -9,6 +9,7 @@
 #include <mutex>
 #include <sstream>
 #include <queue>
+#include <memory>
 #include <thread>
 
 #endif // !AB_SYSTEM_H

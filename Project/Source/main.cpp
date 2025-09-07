@@ -5,17 +5,15 @@ int main()
     Core::Debug::Logger::Get();
     Core::AppStatus::Get();
 
-    AB_LOG(Core::Debug::ESeverity::Info, L"AppStatus = %d", Core::AppStatus::Get().GetAppCurrentStatus() );
+    Core::EmptyCanvas iec = { };
 
-    for(int i = 0 ; i < 3 ; ++i)
-        Core::AppStatus::Get().SendOpenedWindowSignal();
+    iec.Create();
 
-    AB_LOG(Core::Debug::ESeverity::Info, L"AppStatus = %d", Core::AppStatus::Get().GetAppCurrentStatus());
+    while (1) {
+        iec.Update();
+    }
 
-    for (int i = 0; i < 20; ++i)
-        Core::AppStatus::Get().SendClosedWindowSignal();
-
-    AB_LOG(Core::Debug::ESeverity::Info, L"AppStatus = %d", Core::AppStatus::Get().GetAppCurrentStatus());
+    iec.Destroy();
 
     delete &Core::AppStatus::Get();
     delete Core::Debug::Logger::Get();

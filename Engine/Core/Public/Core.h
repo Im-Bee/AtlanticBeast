@@ -5,6 +5,7 @@
 #   define _CRT_SECURE_NO_WARNINGS
 #endif // !_WIN32
 
+#include "SystemIncludes.h"
 #include "CSystem.hpp"
 #include "AbLimits.h"
 #include "Exception.hpp"
