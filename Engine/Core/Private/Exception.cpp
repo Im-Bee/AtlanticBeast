@@ -30,6 +30,7 @@ Exception::Exception(const char* szMessage,
  
     if (uIndex >= MaxLongString) {
         LogAndReturnMessage(m_pszMessage, uOldIndex);
+        m_uMesLen = uOldIndex;
         return;
     }
     strcpy(szErrorMessage, m_pszMessage);
@@ -39,6 +40,7 @@ Exception::Exception(const char* szMessage,
     uIndex += sprintf(szLine, "\nAt line: %d", static_cast<int>(m_Line));
     if (uIndex >= MaxLongString || m_Line == InvalidLine) {
         LogAndReturnMessage(szErrorMessage, uOldIndex);
+        m_uMesLen = uOldIndex;
         return;
     }
     strcat(szErrorMessage, szLine);
@@ -47,12 +49,42 @@ Exception::Exception(const char* szMessage,
     uIndex += sizeof(szInFile) + m_uFileNameLen;
     if (uIndex >= MaxLongString || !m_pszFileName) {
         LogAndReturnMessage(szErrorMessage, uOldIndex);
+        m_uMesLen = uOldIndex;
         return;
     }
     strcat(szErrorMessage, szInFile);
     strcat(szErrorMessage, m_pszFileName);
 
     LogAndReturnMessage(szErrorMessage, uIndex);
+    m_uMesLen = uIndex;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+Exception::~Exception() noexcept
+{
+    if (m_uMesLen < MaxLongString) {
+        delete[] m_pszMessage;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+Exception::Exception(const Exception& other) noexcept
+    : m_pszMessage(nullptr) 
+    , m_uMesLen(other.m_uMesLen)
+    , m_Line(other.m_Line)
+    , m_pszFileName(other.m_pszFileName)
+    , m_uFileNameLen(other.m_uFileNameLen)
+{
+    if (other.m_uMesLen != InvalidLine && other.m_uMesLen >= MaxLongString) {
+        m_pszMessage = other.m_pszMessage;
+        m_uMesLen = other.m_uMesLen;
+        return;
+    }
+    
+    char* pszMessage = new char[MaxLongString];
+    strcpy(pszMessage, other.m_pszMessage);
+
+    this->m_pszMessage = pszMessage;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -72,7 +104,7 @@ void Exception::LogAndReturnMessage(const char* pszMessage, size_t uMesLen) cons
     mbstowcs (wc, pszMessage, uMesLen);
     
     try {
-        ::Core::Debug::Logger::Get()->Log(Debug::ESeverity::EError, wc);
+        ::Core::Debug::Logger::Get()->Log(Debug::ESeverity::Error, wc);
         delete ::Core::Debug::Logger::Get();
     }
     catch (...) 
