@@ -91,6 +91,7 @@ const wchar_t* Logger::GetTag(const ESeverity sev) const
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 const ::std::wstring Logger::Stringify(LogStruct& ls) const
 {
     time_t  timeStamp   = chrono::system_clock::to_time_t(ls.TimeStamp);
@@ -138,7 +139,7 @@ void Logger::WriteLoop()
 
         delete[] stamp.Message;
     }
-    while (m_aIsWriteThreadWorking.load());
+    while (m_aIsWriteThreadWorking.load() || !m_MessageQueue.empty());
 }
 
 } // !Core
