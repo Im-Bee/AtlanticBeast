@@ -20,5 +20,10 @@ static const char szLogPostfix[] = "_AtlanticBeast.log";
 #else
 #   define AB_LOG(...) 
 #endif // !_DEBUG
+       
+
+#undef AB_EXCEPT
+#define AB_EXCEPT(message) ::Core::Exception(message, __LINE__, __FILE__)
+       
 
 #endif // !AB_CORE_H
