@@ -15,6 +15,9 @@ enum EAppStatus
 
 class AppStatus
 {
+    template<typename T>
+    friend class IWindow;
+
 public:
     static AppStatus& Get();
 
@@ -22,10 +25,10 @@ public:
 
 	static EAppStatus GetAppCurrentStatus();
 
+private:
+
 	void SendClosedWindowSignal();
 	void SendOpenedWindowSignal();
-
-private:
 
 	void UpdateStatus();
 

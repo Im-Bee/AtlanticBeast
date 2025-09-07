@@ -4,6 +4,7 @@
 #include "CSystem.hpp"
 #include "WindowDesc.h"
 #include "SystemIncludes.h"
+#include "Core.h"
 
 namespace Core
 {
@@ -24,8 +25,7 @@ class IWindow
 {
 public:
 
-    IWindow()
-    { }
+    IWindow() = default;
     
     ~IWindow() 
     { 
@@ -45,7 +45,10 @@ public:
 public:
 
     void Create()
-    { return static_cast<Derived*>(this)->CreateImpl(); }
+    { 
+        Core::AppStatus::Get().SendOpenedWindowSignal();
+        return static_cast<Derived*>(this)->CreateImpl(); 
+    }
 
     void Show()
     { return static_cast<Derived*>(this)->ShowImpl(); }
@@ -57,7 +60,10 @@ public:
     { return static_cast<Derived*>(this)->UpdateImpl(); }
 
     void Destroy()
-    { return static_cast<Derived*>(this)->DestroyImpl(); }
+    {
+        Core::AppStatus::Get().SendClosedWindowSignal();
+        return static_cast<Derived*>(this)->DestroyImpl(); 
+    }
 
     const WindowDesc& GetWindowDesc() const
     { return static_cast<Derived*>(this)->GetWindowDescImpl(); }

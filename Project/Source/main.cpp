@@ -1,4 +1,5 @@
 #include "Core.h"
+#include "EmptyCanvas.hpp"
 
 int main()
 {
@@ -9,7 +10,7 @@ int main()
 
     iec.Create();
 
-    while (1) {
+    while (Core::AppStatus::GetAppCurrentStatus()) {
         iec.Update();
     }
 

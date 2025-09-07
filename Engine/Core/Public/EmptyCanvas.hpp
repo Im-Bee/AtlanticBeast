@@ -13,16 +13,18 @@ class EmptyCanvas : public IWindow<EmptyCanvas>
 
 public:
 
-    EmptyCanvas();
+    EmptyCanvas() = default;
 
-    ~EmptyCanvas();
+    ~EmptyCanvas() = default;
 
-    EmptyCanvas(const EmptyCanvas& other);
+    EmptyCanvas(const EmptyCanvas& other)
+        : m_WindowDesc(other.m_WindowDesc)
+    { }
 
     EmptyCanvas(EmptyCanvas&& other) 
-        : m_pResources(other.m_pResources)
+        : m_WindowDesc(::std::move(other.m_WindowDesc))
     { 
-        other.m_pResources = nullptr;
+        other.m_WindowDesc = WindowDesc();
     }
 
 private:
@@ -41,10 +43,6 @@ private:
     { return m_WindowDesc; }
 
 private:
-
-    struct pResources;
-
-    pResources* m_pResources;
 
     WindowDesc m_WindowDesc;
 

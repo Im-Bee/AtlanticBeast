@@ -9,7 +9,6 @@
 #include "CSystem.hpp"
 #include "AbLimits.h"
 #include "Exception.hpp"
-#include "EmptyCanvas.hpp"
 #include "AppStatus.hpp"
 
 namespace Core::Debug

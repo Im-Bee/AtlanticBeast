@@ -6,35 +6,7 @@
 namespace Core
 {
 
-// EmptyCanvas::pResources // ------------------------------------------------------------------------------------------
-struct EmptyCanvas::pResources
-{
-    pResources() = default;
-    ~pResources() = default;
-
-    pResources(const pResources&) = default;
-    pResources(pResources&&) = default;
-};
-
 // EmptyCanvas // ------------------------------------------------------------------------------------------------------
-EmptyCanvas::EmptyCanvas()
-    : m_pResources(new pResources())
-    , m_WindowDesc()
-{ }
-
-// ---------------------------------------------------------------------------------------------------------------------
-EmptyCanvas::~EmptyCanvas()
-{
-    delete m_pResources;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-EmptyCanvas::EmptyCanvas(const EmptyCanvas& other)
-    : m_pResources(new pResources(*other.m_pResources))
-    , m_WindowDesc(other.m_WindowDesc)
-{ }
-
-// ---------------------------------------------------------------------------------------------------------------------
 void EmptyCanvas::CreateImpl()
 {
     if (m_WindowDesc.Display) {
@@ -85,7 +57,12 @@ void EmptyCanvas::HideImpl()
 
 // ---------------------------------------------------------------------------------------------------------------------
 void EmptyCanvas::DestroyImpl()
-{
+{ 
+    if (!m_WindowDesc.Display) {
+        return;
+    }
+
+
     AB_LOG(Debug::ESeverity::Info, L"Destroy canvas");
 
     XUnmapWindow(m_WindowDesc.Display, m_WindowDesc.Window);

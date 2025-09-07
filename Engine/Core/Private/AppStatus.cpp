@@ -8,8 +8,7 @@ EAppStatus AppStatus::m_AppCurrentStatus = EAppStatus::Dead;
 
 AppStatus::AppStatus():
     m_NumberOfWindows(0)
-{
-}
+{ }
 
 AppStatus::~AppStatus()
 {
@@ -20,7 +19,6 @@ AppStatus::~AppStatus()
 
 AppStatus& AppStatus::Get()
 {
-
     if (!m_pInstance) {
         m_pInstance = new AppStatus();
     }
