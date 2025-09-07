@@ -8,7 +8,9 @@ int main()
 
     AB_LOG(Core::Debug::ESeverity::EInfo, L"Test");
 
-    throw AB_EXCEPT("An excetpino here");
+    AB_LOG( Core::Debug::ESeverity::EInfo, 
+            L"Application Status = %d (0 = DEAD, 1 = RUNNING)", 
+            Core::AppStatus::Get().GetAppCurrentStatus());
 
     delete Core::Debug::Logger::Get();
 }
