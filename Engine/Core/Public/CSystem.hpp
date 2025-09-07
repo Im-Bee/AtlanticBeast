@@ -2,6 +2,8 @@
 #define AB_SYSTEM_H
 
 #include <atomic>
+#include <exception>
+#include <cstring>
 #include <fstream>
 #include <filesystem>
 #include <mutex>

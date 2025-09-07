@@ -8,5 +8,7 @@ int main()
 
     AB_LOG(Core::Debug::ESeverity::EInfo, L"Test");
 
+    throw Core::Exception("An excetpino here", __LINE__, __FILE__);
+
     delete Core::Debug::Logger::Get();
 }

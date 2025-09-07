@@ -2,6 +2,8 @@
 #define AB_CORE_H
 
 #include "CSystem.hpp"
+#include "Limits.h"
+#include "Exception.hpp"
 
 namespace Core
 {
