@@ -12,6 +12,7 @@ enum EAppStatus
 	Running
 };
 
+
 class AppStatus
 {
 public:
@@ -21,7 +22,18 @@ public:
 
 	static EAppStatus GetAppCurrentStatus();
 
+	void SendClosedWindowSignal();
+	void SendOpenedWindowSignal();
+
 private:
+
+	void UpdateStatus();
+
+	size_t m_NumberOfWindows;
+
+	template<typename T>
+	friend class IWindow;
+
 	AppStatus();
 
 	static AppStatus* m_pInstance;

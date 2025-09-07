@@ -7,7 +7,7 @@
 namespace Core
 {
 
-class EmpytCanvas : public IWindow<EmpytCanvas>
+class EmptyCanvas : public IWindow<EmptyCanvas>
 {
 
 public:
