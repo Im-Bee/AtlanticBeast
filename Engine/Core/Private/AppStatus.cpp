@@ -12,11 +12,17 @@ AppStatus::AppStatus()
 
 AppStatus::~AppStatus()
 {
-	delete m_pInstance;
+	if (m_pInstance) {
+        m_pInstance = nullptr;
+    }
 }
 
 AppStatus& AppStatus::Get()
 {
+    if (!m_pInstance) {
+        m_pInstance = new AppStatus();
+    }
+
 	return *m_pInstance;
 }
 
