@@ -37,6 +37,9 @@ void EmptyCanvas::CreateImpl()
 
     m_WindowDesc.Screen = DefaultScreen(display);
     m_WindowDesc.Window = window;
+
+    Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
+    XSetWMProtocols(display, window, &wmDeleteMessage, 1);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -61,7 +64,6 @@ void EmptyCanvas::DestroyImpl()
     if (!m_WindowDesc.Display) {
         return;
     }
-
 
     AB_LOG(Debug::ESeverity::Info, L"Destroy canvas");
 
@@ -94,10 +96,14 @@ void EmptyCanvas::UpdateImpl()
                 "Hello, explicit display!", 
                 24);
     }
-    else if (event.type == KeyPress) 
+    else if (event.type == ClientMessage)
     {
-        this->Destroy();
-        return;
+        Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
+        if ((Atom)event.xclient.data.l[0] == wmDeleteMessage)
+        {
+            this->Destroy();
+            return;
+        }
     }
 }
 
