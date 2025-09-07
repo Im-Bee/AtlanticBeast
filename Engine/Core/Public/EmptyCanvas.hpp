@@ -22,7 +22,7 @@ public:
     EmptyCanvas(EmptyCanvas&& other) 
         : m_WindowDesc(::std::move(other.m_WindowDesc))
     { 
-        other.m_WindowDesc = WindowDesc();
+        memset(&other.m_WindowDesc, 0, sizeof(WindowDesc));
     }
 
 private:
