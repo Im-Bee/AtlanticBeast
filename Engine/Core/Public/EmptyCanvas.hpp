@@ -17,9 +17,7 @@ public:
 
     ~EmptyCanvas() = default;
 
-    EmptyCanvas(const EmptyCanvas& other)
-        : m_WindowDesc(other.m_WindowDesc)
-    { }
+    EmptyCanvas(const EmptyCanvas& other) = default;
 
     EmptyCanvas(EmptyCanvas&& other) 
         : m_WindowDesc(::std::move(other.m_WindowDesc))
