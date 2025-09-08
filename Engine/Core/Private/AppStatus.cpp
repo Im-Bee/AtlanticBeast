@@ -50,6 +50,8 @@ void AppStatus::SendOpenedWindowSignal()
 
 void AppStatus::UpdateStatus()
 {
+	AB_LOG(Debug::ESeverity::Info, L"AppStatus: Number of windows: %d", m_NumberOfWindows);
+
     if (m_NumberOfWindows == 0)
     {
         m_AppCurrentStatus = EAppStatus::Dead;

@@ -7,7 +7,7 @@ namespace Core
 {
 
 constexpr int_fast16_t MaxLongString = 1024;
-constexpr int_fast16_t MaxSmallString = 1024;
+constexpr int_fast16_t MaxSmallString = 64;
 
 } // !Core
 
