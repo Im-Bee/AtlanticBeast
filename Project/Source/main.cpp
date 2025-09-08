@@ -3,8 +3,8 @@
 
 int main()
 {
-	Core::EmptyCanvas iec(L"First");
-	Core::EmptyCanvas iecSecond(L"Second");
+	Core::IBaseWindow iec(Core::WindowDesc(L"First"));
+	Core::IBaseWindow iecSecond(Core::WindowDesc(L"Second"));
 
     iec.Create();
 	iecSecond.Create();

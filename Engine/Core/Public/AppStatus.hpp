@@ -8,8 +8,8 @@ namespace Core
 
 enum EAppStatus
 {
-	Dead,
-	Running
+    Dead,
+    Running
 };
 
 
@@ -23,23 +23,23 @@ public:
 
     ~AppStatus();
 
-	static EAppStatus GetAppCurrentStatus();
+    static EAppStatus GetAppCurrentStatus();
 
 private:
 
-	void SendClosedWindowSignal();
-	void SendOpenedWindowSignal();
+    void SendClosedWindowSignal();
+    void SendOpenedWindowSignal();
 
-	void UpdateStatus();
+    void UpdateStatus();
 
-	size_t m_NumberOfWindows;
+    size_t m_NumberOfWindows;
 
-	template<typename T>
-	friend class IWindow;
+    template<typename T>
+    friend class IWindow;
 
-	AppStatus();
+    AppStatus();
 
-	static EAppStatus m_AppCurrentStatus;
+    static EAppStatus m_AppCurrentStatus;
 };
 
 

@@ -7,7 +7,7 @@ namespace Core
 #ifdef __linux__
 
 // EmptyCanvas // ------------------------------------------------------------------------------------------------------
-void EmptyCanvas::CreateImpl()
+void IBaseWindow::CreateImpl()
 {
     if (m_WindowDesc.Display) {
         AB_LOG(Debug::ESeverity::Warning, L"Trying to create an already created window for EmptyCanvas");
@@ -26,10 +26,26 @@ void EmptyCanvas::CreateImpl()
     Window window = XCreateSimpleWindow(m_WindowDesc.Display,
                                         RootWindow(display, screen),
                                         100, 100, 
-                                        400, 300, 
+                                        m_WindowDesc.Width, m_WindowDesc.Height, 
                                         1,
                                         BlackPixel(display, screen),
                                         WhitePixel(display, screen));
+
+    XTextProperty windowName;
+
+    char* szWindowName = new char[MaxSmallString];
+
+    if (m_WindowDesc.Name.length() >= MaxSmallString) {
+        m_WindowDesc.Name = m_WindowDesc.Name.substr(0, 63);
+    }
+
+    size_t uWriten = wcstombs(szWindowName, m_WindowDesc.Name.c_str(), m_WindowDesc.Name.length());
+    szWindowName[uWriten] = '\0';
+
+    XStringListToTextProperty(&szWindowName, 1, &windowName);
+    XSetWMName(display, window, &windowName);
+    delete[] szWindowName;
+    XFree(windowName.value);
 
     XSelectInput(display, window, ExposureMask | KeyPressMask);
     XMapWindow(display, window);
@@ -42,7 +58,7 @@ void EmptyCanvas::CreateImpl()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void EmptyCanvas::ShowImpl()
+void IBaseWindow::ShowImpl()
 {
     AB_LOG(Debug::ESeverity::Info, L"Show canvas");
 
@@ -50,7 +66,7 @@ void EmptyCanvas::ShowImpl()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void EmptyCanvas::HideImpl()
+void IBaseWindow::HideImpl()
 {
     AB_LOG(Debug::ESeverity::Info, L"Hide canvas");
 
@@ -58,7 +74,7 @@ void EmptyCanvas::HideImpl()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void EmptyCanvas::DestroyImpl()
+void IBaseWindow::DestroyImpl()
 { 
     if (!m_WindowDesc.Display) {
         AB_LOG(Debug::ESeverity::Warning, L"Trying to destroy an already destroyed window for EmptyCanvas");
@@ -74,7 +90,7 @@ void EmptyCanvas::DestroyImpl()
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
-void EmptyCanvas::UpdateImpl()
+void IBaseWindow::UpdateImpl()
 {
     XEvent event;
     ::Display* display = m_WindowDesc.Display;
@@ -82,7 +98,6 @@ void EmptyCanvas::UpdateImpl()
     int screen = m_WindowDesc.Screen;
 
     if (!display) {
-        AB_LOG(Debug::ESeverity::Warning, L"Trying to update an already destroyed window for EmptyCanvas");
         return;
     }
 
@@ -172,16 +187,16 @@ void EmptyCanvas::CreateImpl()
         wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
         wcex.lpszClassName = wszClassName;
 
-		AskToRegisterWindowClass(wcex);
-	}
+        AskToRegisterWindowClass(wcex);
+    }
 
-	auto hwnd = CreateWindow(wszClassName,
-                             L"EmptyCanvas",
+    auto hwnd = CreateWindow(wszClassName,
+                             m_WindowDesc.Name,
                              WS_OVERLAPPEDWINDOW,
                              CW_USEDEFAULT,
                              CW_USEDEFAULT,
-                             static_cast<int>(1200),
-                             static_cast<int>(700),
+                             m_WindowDesc.Width,
+                             m_WindowDesc.Height,
                              nullptr,
                              nullptr,
                              GetModuleHandle(NULL),
@@ -189,11 +204,11 @@ void EmptyCanvas::CreateImpl()
 
     if (!hwnd) {
         throw AB_EXCEPT("Couldn't create a window for EmptyCanvas");
-	}
+    }
 
-	ShowWindow(hwnd, SW_SHOW);
+    ShowWindow(hwnd, SW_SHOW);
 
-	m_WindowDesc.Hwnd = hwnd;
+    m_WindowDesc.Hwnd = hwnd;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -218,18 +233,18 @@ void EmptyCanvas::DestroyImpl()
     AB_LOG(Debug::ESeverity::Info, L"Destroy canvas");
 
     if (m_WindowDesc.Hwnd == NULL) {
-		AB_LOG(Debug::ESeverity::Warning, L"Trying to destroy an already destroyed window for EmptyCanvas");
+        AB_LOG(Debug::ESeverity::Warning, L"Trying to destroy an already destroyed window for EmptyCanvas");
         return;
-	}
+    }
 
     if (DestroyWindow(m_WindowDesc.Hwnd)) {
         m_WindowDesc.Hwnd = NULL;
     }
     else {
-		AB_LOG(Debug::ESeverity::Error, L"Couldn't destroy a window for EmptyCanvas");
+        AB_LOG(Debug::ESeverity::Error, L"Couldn't destroy a window for EmptyCanvas");
     }
 
-	AskToCloseWindowClass(wszClassName);
+    AskToCloseWindowClass(wszClassName);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -239,7 +254,7 @@ void EmptyCanvas::UpdateImpl()
         return;
     }
 
-	MSG msg = { };
+    MSG msg = { };
     if (GetMessage(&msg, nullptr, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);

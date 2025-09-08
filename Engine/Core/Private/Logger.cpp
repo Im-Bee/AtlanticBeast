@@ -12,12 +12,13 @@ using namespace chrono_literals;
 
 // Logger // -----------------------------------------------------------------------------------------------------------
 Logger::Logger()
-	: m_InstanceLock()
+    : m_InstanceLock()
     , m_MessageQueue()
     , m_strTargetPath(filesystem::current_path().string() + "/Logs/")
     , m_strLogName(CreateDatePreFix() + szLogPostfix)
     , m_aIsWriteThreadWorking(true)
-{ 
+{
+    setlocale(LC_ALL, "");
     m_tWriteThreadHandle = thread(&Logger::WriteLoop, this);
 }
 
@@ -110,13 +111,13 @@ void Logger::WriteLoop()
         m_InstanceLock.lock();
 
         if (!m_aIsWriteThreadWorking.load() && m_MessageQueue.empty()) {
-			m_InstanceLock.unlock();
+            m_InstanceLock.unlock();
             return;
         }
         
         if (m_MessageQueue.empty()) {
             m_InstanceLock.unlock();
-			this_thread::sleep_for(10ms);
+            this_thread::sleep_for(10ms);
             continue;
         }
 
@@ -127,7 +128,7 @@ void Logger::WriteLoop()
 
         wstring wstrStringified = Stringify(stamp);
 
-		wcout << wstrStringified << endl;
+        wcout << wstrStringified << endl;
 
         woFile.open(outputPath);
         woFile << wstrStringified << endl;

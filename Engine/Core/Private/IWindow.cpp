@@ -86,7 +86,7 @@ bool ImplAskForWindowClass(const wchar_t* pszClassName)
 void ImplAskToRegisterWindowClass(WNDCLASSEX& wcex)
 {
     if (RegisteredClasses.find(wcex.lpszClassName) != RegisteredClasses.end() && RegisteredClasses[wcex.lpszClassName] != 0) {
-		throw AB_EXCEPT("Traying to register a class that already exists!!!");
+        throw AB_EXCEPT("Traying to register a class that already exists!!!");
     }
    
     ++RegisteredClasses[wcex.lpszClassName];
@@ -105,7 +105,7 @@ void ImplAskToCloseWindowClass(const wchar_t* pszClassName)
     
     if (RegisteredClasses[pszClassName] != 0) {
         return;
-	}
+    }
 
     UnregisterClass(pszClassName, GetModuleHandle(NULL));
 }
