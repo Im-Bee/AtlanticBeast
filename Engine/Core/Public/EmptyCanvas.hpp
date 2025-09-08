@@ -22,7 +22,7 @@ public:
 
     template<class U>
     explicit IBaseWindow(U&& windowDesc = WindowDesc())
-        : m_WindowDesc(::std::move(windowDesc))
+        : m_WindowDesc(::std::forward<U>(windowDesc))
     { }
 
     ~IBaseWindow() = default;
