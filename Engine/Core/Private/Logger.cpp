@@ -24,13 +24,8 @@ Logger::Logger()
 // ---------------------------------------------------------------------------------------------------------------------
 Logger::~Logger()
 {
-	m_InstanceLock.lock();
     m_aIsWriteThreadWorking.store(false);
-	m_InstanceLock.unlock();
-
     m_tWriteThreadHandle.join();
-
-    lock_guard<mutex> lock(m_InstanceLock);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
