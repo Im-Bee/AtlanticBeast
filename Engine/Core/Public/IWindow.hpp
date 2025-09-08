@@ -18,6 +18,17 @@ namespace Details
     void ImplAskToCloseDisplayLinux(const char* pszDisplayName);
 
 #endif // !__linux__
+
+#ifdef _WIN32
+
+    bool ImplAskForWindowClass(const wchar_t* pszClassName);
+
+	void ImplAskToRegisterWindowClass(WNDCLASSEX& wcex);
+
+	void ImplAskToCloseWindowClass(const wchar_t* pszClassName);
+
+#endif // !_WIN32
+
 }
 
 template<class Derived>
@@ -79,6 +90,19 @@ protected:
     { return Details::ImplAskToCloseDisplayLinux(pszDisplayName); }
 
 #endif // !__linux__
+
+#ifdef _WIN32
+
+    bool AskForWindowClass(const wchar_t* pszClassName)
+	{ return Details::ImplAskForWindowClass(pszClassName); }
+
+	void AskToRegisterWindowClass(WNDCLASSEX& wcex)
+	{ return Details::ImplAskToRegisterWindowClass(wcex); }
+
+	void AskToCloseWindowClass(const wchar_t* pszClassName)
+    { return Details::ImplAskToCloseWindowClass(pszClassName); }
+
+#endif // !_WIN32
 };
 
 } // !Core

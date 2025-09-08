@@ -64,7 +64,7 @@ private:
     ::std::string m_strTargetPath;
     ::std::string m_strLogName;
 
-    ::std::atomic_bool m_aIsWriteThreadWorking;
+    volatile ::std::atomic_bool m_aIsWriteThreadWorking;
     ::std::thread m_tWriteThreadHandle;
 
 };

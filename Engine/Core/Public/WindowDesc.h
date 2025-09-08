@@ -10,6 +10,7 @@ namespace Core
 struct WindowDesc
 {
 #ifdef _WIN32
+	::HWND          Hwnd;
 #elif __linux__
     ::Display*      Display;
     ::Window        Window;

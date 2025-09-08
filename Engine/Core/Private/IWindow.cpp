@@ -63,6 +63,53 @@ void ImplAskToCloseDisplayLinux(const char* pszDisplayName)
 
 #elif _WIN32
 
+// Statics // ----------------------------------------------------------------------------------------------------------
+static unordered_map<wstring, size_t> RegisteredClasses = { };
+
+// ---------------------------------------------------------------------------------------------------------------------
+bool ImplAskForWindowClass(const wchar_t* pszClassName)
+{
+    if (pszClassName == NULL) {
+        pszClassName = L"";
+    }
+
+    if (RegisteredClasses.find(pszClassName) == RegisteredClasses.end()) {
+        return false;
+    }
+    else {
+        ++RegisteredClasses[pszClassName];
+        return true;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+void ImplAskToRegisterWindowClass(WNDCLASSEX& wcex)
+{
+    if (RegisteredClasses.find(wcex.lpszClassName) != RegisteredClasses.end() && RegisteredClasses[wcex.lpszClassName] != 0) {
+		throw AB_EXCEPT("Traying to register a class that already exists!!!");
+    }
+   
+    ++RegisteredClasses[wcex.lpszClassName];
+
+    RegisterClassEx(&wcex);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+void ImplAskToCloseWindowClass(const wchar_t* pszClassName)
+{
+    if (RegisteredClasses.find(pszClassName) == RegisteredClasses.end() || RegisteredClasses[pszClassName] == 0) {
+        throw AB_EXCEPT("Traying to unregister a class that doesn't exists!!!");
+    }
+
+    --RegisteredClasses[pszClassName];
+    
+    if (RegisteredClasses[pszClassName] != 0) {
+        return;
+	}
+
+    UnregisterClass(pszClassName, GetModuleHandle(NULL));
+}
+
 #endif // !__linux__
 
 } // !Core

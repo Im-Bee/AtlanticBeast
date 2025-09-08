@@ -16,8 +16,9 @@ Logger::Logger()
     , m_strTargetPath(filesystem::current_path().string() + "/Logs/")
     , m_strLogName(CreateDatePreFix() + szLogPostfix)
     , m_aIsWriteThreadWorking(true)
-    , m_tWriteThreadHandle(&Logger::WriteLoop, this)
-{ }
+{ 
+    m_tWriteThreadHandle = thread(&Logger::WriteLoop, this);
+}
 
 // Statics // ----------------------------------------------------------------------------------------------------------
 Logger* Logger::m_pInstance     = new Logger();
@@ -26,7 +27,10 @@ mutex   Logger::m_InstanceLock  = { };
 // ---------------------------------------------------------------------------------------------------------------------
 Logger::~Logger()
 {
+	m_InstanceLock.lock();
     m_aIsWriteThreadWorking.store(false);
+	m_InstanceLock.unlock();
+
     m_tWriteThreadHandle.join();
 
     lock_guard<mutex> lock(m_InstanceLock);
@@ -116,17 +120,22 @@ void Logger::WriteLoop()
 
     m_InstanceLock.unlock();
 
-    do
+    while (true)
     {
         m_InstanceLock.lock();
+
+        if (!m_aIsWriteThreadWorking.load() && m_MessageQueue.empty()) {
+			m_InstanceLock.unlock();
+            return;
+        }
         
         if (m_MessageQueue.empty()) {
             m_InstanceLock.unlock();
-            this_thread::sleep_for(1ms);
+			this_thread::sleep_for(10ms);
             continue;
         }
 
-        auto& stamp = m_MessageQueue.front();
+        auto stamp = move(m_MessageQueue.front());
         m_MessageQueue.pop();
 
         m_InstanceLock.unlock();
@@ -139,7 +148,6 @@ void Logger::WriteLoop()
 
         delete[] stamp.Message;
     }
-    while (m_aIsWriteThreadWorking.load() || !m_MessageQueue.empty());
 }
 
 } // !Core

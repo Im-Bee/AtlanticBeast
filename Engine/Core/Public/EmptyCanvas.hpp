@@ -11,18 +11,32 @@ class EmptyCanvas : public IWindow<EmptyCanvas>
 {
     friend IWindow;
 
+	template<class T>
+	friend LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
+
 public:
 
-    EmptyCanvas() = default;
+    EmptyCanvas(::std::wstring Name = L"None")
+        : m_WindowDesc({ 0 })
+		, m_Name(::std::move(Name))
+    { }
 
     ~EmptyCanvas() = default;
 
     EmptyCanvas(const EmptyCanvas& other) = default;
 
-    EmptyCanvas(EmptyCanvas&& other) 
+    EmptyCanvas(EmptyCanvas&& other)
         : m_WindowDesc(::std::move(other.m_WindowDesc))
     { 
         memset(&other.m_WindowDesc, 0, sizeof(WindowDesc));
+    }
+
+protected:
+
+    void HandleMessage(int)
+    { 
+		// Special painting or other stuff can be here
+		// AB_LOG(Debug::ESeverity::Info, L"EmptyCanvas received a message %p, with name %ls", this, this->m_WindowName.c_str());
     }
 
 private:
@@ -43,6 +57,7 @@ private:
 private:
 
     WindowDesc m_WindowDesc;
+	::std::wstring m_Name;
 
 };
 
