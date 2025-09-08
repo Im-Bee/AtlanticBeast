@@ -39,7 +39,6 @@ private:
 
 	AppStatus();
 
-	static AppStatus* m_pInstance;
 	static EAppStatus m_AppCurrentStatus;
 };
 

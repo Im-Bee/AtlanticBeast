@@ -3,7 +3,6 @@
 namespace Core
 {
 
-AppStatus* AppStatus::m_pInstance = new AppStatus();
 EAppStatus AppStatus::m_AppCurrentStatus = EAppStatus::Dead;
 
 AppStatus::AppStatus():
@@ -11,19 +10,12 @@ AppStatus::AppStatus():
 { }
 
 AppStatus::~AppStatus()
-{
-	if (m_pInstance) {
-        m_pInstance = nullptr;
-    }
-}
+{ }
 
 AppStatus& AppStatus::Get()
 {
-    if (!m_pInstance) {
-        m_pInstance = new AppStatus();
-    }
-
-	return *m_pInstance;
+	static AppStatus instance;
+	return instance;
 }
 
 EAppStatus AppStatus::GetAppCurrentStatus()

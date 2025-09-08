@@ -23,8 +23,6 @@ class Logger
     Logger& operator=(const Logger&) = delete;
     Logger& operator=(Logger&&) = delete;
 
-    static Logger* m_pInstance;
-
 public:
 
     static Logger* Get();
@@ -58,7 +56,7 @@ private:
 
 private:
 
-    static ::std::mutex m_InstanceLock;
+    ::std::mutex m_InstanceLock;
 
     ::std::queue<LogStruct> m_MessageQueue;
     ::std::string m_strTargetPath;

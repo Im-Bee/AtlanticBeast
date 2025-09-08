@@ -12,17 +12,14 @@ using namespace chrono_literals;
 
 // Logger // -----------------------------------------------------------------------------------------------------------
 Logger::Logger()
-    : m_MessageQueue()
+	: m_InstanceLock()
+    , m_MessageQueue()
     , m_strTargetPath(filesystem::current_path().string() + "/Logs/")
     , m_strLogName(CreateDatePreFix() + szLogPostfix)
     , m_aIsWriteThreadWorking(true)
 { 
     m_tWriteThreadHandle = thread(&Logger::WriteLoop, this);
 }
-
-// Statics // ----------------------------------------------------------------------------------------------------------
-Logger* Logger::m_pInstance     = new Logger();
-mutex   Logger::m_InstanceLock  = { };
 
 // ---------------------------------------------------------------------------------------------------------------------
 Logger::~Logger()
@@ -34,20 +31,13 @@ Logger::~Logger()
     m_tWriteThreadHandle.join();
 
     lock_guard<mutex> lock(m_InstanceLock);
-
-    m_pInstance = nullptr;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 Logger* Logger::Get()
 {
-    lock_guard<mutex> lock(m_InstanceLock);
-
-    if (!m_pInstance) {
-        m_pInstance = new Logger();
-    }
-
-    return m_pInstance;
+    static Logger instance;
+    return &instance;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -140,10 +130,12 @@ void Logger::WriteLoop()
 
         m_InstanceLock.unlock();
 
-        wcout << Stringify(stamp) << endl;
+        wstring wstrStringified = Stringify(stamp);
+
+		wcout << wstrStringified << endl;
 
         woFile.open(outputPath);
-        woFile << Stringify(stamp) << endl;
+        woFile << wstrStringified << endl;
         woFile.close();
 
         delete[] stamp.Message;
