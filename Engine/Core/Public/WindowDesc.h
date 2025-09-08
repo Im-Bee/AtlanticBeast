@@ -24,8 +24,6 @@ struct WindowDesc
     WindowDesc(WindowDesc&&) = default;
     WindowDesc(const WindowDesc&) = default;
 
-private:
-
     ::std::wstring  Name;
     int_fast16_t    Width;
     int_fast16_t    Height;

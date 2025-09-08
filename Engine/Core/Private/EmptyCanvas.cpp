@@ -168,7 +168,7 @@ static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 static const wchar_t wszClassName[] = L"EmptyCanvasClass";
 
 // EmptyCanvas // ------------------------------------------------------------------------------------------------------
-void EmptyCanvas::CreateImpl()
+void IBaseWindow::CreateImpl()
 {
     AB_LOG(Debug::ESeverity::Info, L"Creating canvas");
 
@@ -182,7 +182,7 @@ void EmptyCanvas::CreateImpl()
 
         wcex.cbSize = sizeof(WNDCLASSEX);
         wcex.style = CS_HREDRAW | CS_VREDRAW;
-        wcex.lpfnWndProc = WindowProc<EmptyCanvas>;
+        wcex.lpfnWndProc = WindowProc<IBaseWindow>;
         wcex.hInstance = GetModuleHandle(NULL);
         wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
         wcex.lpszClassName = wszClassName;
@@ -191,7 +191,7 @@ void EmptyCanvas::CreateImpl()
     }
 
     auto hwnd = CreateWindow(wszClassName,
-                             m_WindowDesc.Name,
+                             m_WindowDesc.Name.c_str(),
                              WS_OVERLAPPEDWINDOW,
                              CW_USEDEFAULT,
                              CW_USEDEFAULT,
@@ -212,7 +212,7 @@ void EmptyCanvas::CreateImpl()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void EmptyCanvas::ShowImpl()
+void IBaseWindow::ShowImpl()
 {
     AB_LOG(Debug::ESeverity::Info, L"Show canvas");
 
@@ -220,7 +220,7 @@ void EmptyCanvas::ShowImpl()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void EmptyCanvas::HideImpl()
+void IBaseWindow::HideImpl()
 {
     AB_LOG(Debug::ESeverity::Info, L"Hide canvas");
 
@@ -228,7 +228,7 @@ void EmptyCanvas::HideImpl()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void EmptyCanvas::DestroyImpl()
+void IBaseWindow::DestroyImpl()
 {
     AB_LOG(Debug::ESeverity::Info, L"Destroy canvas");
 
@@ -248,7 +248,7 @@ void EmptyCanvas::DestroyImpl()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void EmptyCanvas::UpdateImpl()
+void IBaseWindow::UpdateImpl()
 {
     if (m_WindowDesc.Hwnd == NULL) {
         return;
