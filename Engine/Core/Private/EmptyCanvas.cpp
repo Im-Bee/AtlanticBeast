@@ -61,6 +61,7 @@ void EmptyCanvas::HideImpl()
 void EmptyCanvas::DestroyImpl()
 { 
     if (!m_WindowDesc.Display) {
+        AB_LOG(Debug::ESeverity::Warning, L"Trying to destroy an already destroyed window for EmptyCanvas");
         return;
     }
 
@@ -81,7 +82,7 @@ void EmptyCanvas::UpdateImpl()
     int screen = m_WindowDesc.Screen;
 
     if (!display) {
-        AB_LOG(Debug::ESeverity::Warning, L"Trying to destroy an already destroyed window for EmptyCanvas");
+        AB_LOG(Debug::ESeverity::Warning, L"Trying to update an already destroyed window for EmptyCanvas");
         return;
     }
 
@@ -235,7 +236,6 @@ void EmptyCanvas::DestroyImpl()
 void EmptyCanvas::UpdateImpl()
 {
     if (m_WindowDesc.Hwnd == NULL) {
-		AB_LOG(Debug::ESeverity::Warning, L"Trying to update an already destroyed window for EmptyCanvas");
         return;
     }
 

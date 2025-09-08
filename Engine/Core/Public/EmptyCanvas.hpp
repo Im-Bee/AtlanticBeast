@@ -11,8 +11,12 @@ class EmptyCanvas : public IWindow<EmptyCanvas>
 {
     friend IWindow;
 
+#ifdef _WIN32
+
 	template<class T>
 	friend LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
+
+#endif // _WIN32
 
 public:
 
@@ -25,7 +29,7 @@ public:
 
     EmptyCanvas(const EmptyCanvas& other) = default;
 
-    EmptyCanvas(EmptyCanvas&& other)
+    EmptyCanvas(EmptyCanvas&& other) noexcept
         : m_WindowDesc(::std::move(other.m_WindowDesc))
     { 
         memset(&other.m_WindowDesc, 0, sizeof(WindowDesc));

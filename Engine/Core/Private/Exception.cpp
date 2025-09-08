@@ -105,7 +105,7 @@ void Exception::LogAndReturnMessage(const char* pszMessage, size_t uMesLen) cons
     
     try {
         ::Core::Debug::Logger::Get()->Log(Debug::ESeverity::Error, wc);
-        delete ::Core::Debug::Logger::Get();
+        ::Core::Debug::Logger::Get()->~Logger();
     }
     catch (...) 
     { }
