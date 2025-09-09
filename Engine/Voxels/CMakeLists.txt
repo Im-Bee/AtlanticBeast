@@ -1,9 +1,13 @@
-FILE(GLOB_RECURSE VOXELS_SOURCE 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Private/*.*"
+SET(VOXELS_SOURCE 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Hardware.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Instance.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
-FILE(GLOB_RECURSE VOXELS_HEADRES 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/*.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/*.hpp"
+SET(VOXELS_HEADRES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Hardware.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Instance.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Renderer.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.h"
 )
 
 ADD_LIBRARY(VoxelsLib 
