@@ -3,5 +3,6 @@
 
 #include "Instance.hpp"
 #include "Hardware.hpp"
+#include "DeviceAdapter.hpp"
 
 #endif // !AB_RENDERER_H

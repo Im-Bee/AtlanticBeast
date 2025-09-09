@@ -25,7 +25,7 @@ private:
     
 private:
 
-    VkInstance m_Instance;
+    VkInstance m_Instance = VK_NULL_HANDLE;
 
 };
 

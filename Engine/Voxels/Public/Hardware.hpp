@@ -14,13 +14,18 @@ public:
 
     ~Hardware();
 
+public:
+    
+    VkPhysicalDevice GetPhysicalDevice()
+    { return m_DeviceHandle; }
+
 private:
     
     VkPhysicalDevice ChooseGPU(Instance& instance);
 
 private:
 
-    VkPhysicalDevice m_DeviceHandle;
+    VkPhysicalDevice m_DeviceHandle = VK_NULL_HANDLE;
 
 };
 

@@ -1,6 +1,4 @@
 #include "Hardware.hpp"
-#include <cstdint>
-#include <vulkan/vulkan_core.h>
 
 namespace Voxels
 {
@@ -19,7 +17,7 @@ Hardware::~Hardware()
 // ---------------------------------------------------------------------------------------------------------------------
 VkPhysicalDevice Hardware::ChooseGPU(Instance& instance)
 { 
-    VkPhysicalDevice            chosenPhysicalDevice;
+    VkPhysicalDevice            chosenPhysicalDevice    = VK_NULL_HANDLE;
     uint32_t                    uDeviceCount;
     VkResult                    result;
     vector<VkPhysicalDevice>    vPhysicalDevices;
@@ -41,29 +39,35 @@ VkPhysicalDevice Hardware::ChooseGPU(Instance& instance)
 
 
 
+    VkPhysicalDeviceProperties                          deviceProperties;
+    VkPhysicalDeviceRayTracingPipelineFeaturesKHR       rayTracingPipelineFeatures;
+    VkPhysicalDeviceAccelerationStructureFeaturesKHR    accelStructFeatures;
+    VkPhysicalDeviceBufferDeviceAddressFeatures         bufferAddressFeatures;
+    VkPhysicalDeviceFeatures2                           deviceFeatures2;
+
     for (const auto& pDevice : vPhysicalDevices) 
     {
-        VkPhysicalDeviceProperties deviceProperties;
         vkGetPhysicalDeviceProperties(pDevice, &deviceProperties);
 
         if (deviceProperties.deviceType != VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
             continue;
         }
 
-        VkPhysicalDeviceFeatures2 deviceFeatures2 = { };
-        deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-
-        VkPhysicalDeviceRayTracingPipelineFeaturesKHR rayTracingPipelineFeatures = { };
+        memset(static_cast<void*>(&rayTracingPipelineFeatures), 0, sizeof(rayTracingPipelineFeatures));
         rayTracingPipelineFeatures.sType    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
-        deviceFeatures2.pNext               = &rayTracingPipelineFeatures;
+        rayTracingPipelineFeatures.pNext    = NULL;
 
-        VkPhysicalDeviceAccelerationStructureFeaturesKHR accelStructFeatures = { };
+        memset(static_cast<void*>(&accelStructFeatures), 0, sizeof(accelStructFeatures));
         accelStructFeatures.sType           = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
-        rayTracingPipelineFeatures.pNext    = &accelStructFeatures;
+        accelStructFeatures.pNext           = &rayTracingPipelineFeatures;
 
-        VkPhysicalDeviceBufferDeviceAddressFeatures bufferAddressFeatures = { };
+        memset(static_cast<void*>(&bufferAddressFeatures), 0, sizeof(bufferAddressFeatures));
         bufferAddressFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
-        accelStructFeatures.pNext   = &bufferAddressFeatures;
+        bufferAddressFeatures.pNext = &accelStructFeatures;
+
+        memset(static_cast<void*>(&deviceFeatures2), 0, sizeof(deviceFeatures2));
+        deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+        deviceFeatures2.pNext = &bufferAddressFeatures;
 
         vkGetPhysicalDeviceFeatures2(pDevice, &deviceFeatures2);
 

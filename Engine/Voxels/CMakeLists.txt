@@ -1,11 +1,13 @@
 SET(VOXELS_SOURCE 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Hardware.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Instance.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Hardware.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/DeviceAdapter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
 SET(VOXELS_HEADRES 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Hardware.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Instance.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Hardware.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/DeviceAdapter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Renderer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.h"
 )

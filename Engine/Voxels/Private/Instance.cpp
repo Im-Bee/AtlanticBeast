@@ -14,7 +14,10 @@ Instance::Instance()
 // ---------------------------------------------------------------------------------------------------------------------
 Instance::~Instance()
 { 
-    vkDestroyInstance(m_Instance, NULL);
+    if (m_Instance != VK_NULL_HANDLE) {
+        vkDestroyInstance(m_Instance, NULL);
+        m_Instance = VK_NULL_HANDLE;
+    }
 }
 
 // Private // ----------------------------------------------------------------------------------------------------------
@@ -25,13 +28,13 @@ VkInstance Instance::CreateInstance()
     VkInstanceCreateInfo    createInfo;
     VkResult                result;
 
-    vector<const char*> vpszValidationLayers = {
+    const vector<const char*> vpszValidationLayers = {
 #ifdef _DEBUG
-        "VK_LAYER_KHRONOS_validation"
+        "VK_LAYER_KHRONOS_validation",
 #endif // !_DEBUG
     };
 
-    vector<const char*> vpszExtensions = {
+    const vector<const char*> vpszExtensions = {
         "VK_KHR_surface",
 #ifdef _WIN32
         "VK_KHR_win32_surface"

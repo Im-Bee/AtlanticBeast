@@ -8,7 +8,9 @@ int main()
 
     iec.Create();
 
-    Voxels::Instance inst;
+    Voxels::Instance        inst;
+    Voxels::Hardware        hw(inst);
+    Voxels::DeviceAdapter   da(hw);
 
     while (Core::AppStatus::GetAppCurrentStatus()) {
         iec.Update();
