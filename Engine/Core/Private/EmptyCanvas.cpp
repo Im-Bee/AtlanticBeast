@@ -55,6 +55,8 @@ void IBaseWindow::CreateImpl()
 
     Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
     XSetWMProtocols(display, window, &wmDeleteMessage, 1);
+
+    m_WindowDesc.IsAlive = true;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -76,17 +78,22 @@ void IBaseWindow::HideImpl()
 // ---------------------------------------------------------------------------------------------------------------------
 void IBaseWindow::DestroyImpl()
 { 
-    if (!m_WindowDesc.Display) {
-        AB_LOG(Debug::ESeverity::Warning, L"Trying to destroy an already destroyed window for EmptyCanvas");
+    if (!m_WindowDesc.IsAlive) {
         return;
     }
 
     AB_LOG(Debug::ESeverity::Info, L"Destroy canvas");
 
+    if (!m_WindowDesc.Display) {
+        AB_LOG(Debug::ESeverity::Warning, L"Trying to destroy an already destroyed window for EmptyCanvas");
+        return;
+    }
+
     XUnmapWindow(m_WindowDesc.Display, m_WindowDesc.Window);
 
     AskToCloseDisplayLinux(NULL);
     m_WindowDesc.Display = NULL;
+    m_WindowDesc.IsAlive = false;
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
@@ -208,7 +215,8 @@ void IBaseWindow::CreateImpl()
 
     ShowWindow(hwnd, SW_SHOW);
 
-    m_WindowDesc.Hwnd = hwnd;
+    m_WindowDesc.Hwnd       = hwnd;
+    m_WindowDesc.IsAlive    = true;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -230,6 +238,10 @@ void IBaseWindow::HideImpl()
 // ---------------------------------------------------------------------------------------------------------------------
 void IBaseWindow::DestroyImpl()
 {
+    if (!m_WindowDesc.IsAlive) {
+        return;
+    }
+
     AB_LOG(Debug::ESeverity::Info, L"Destroy canvas");
 
     if (m_WindowDesc.Hwnd == NULL) {
@@ -245,6 +257,7 @@ void IBaseWindow::DestroyImpl()
     }
 
     AskToCloseWindowClass(wszClassName);
+    m_WindowDesc.IsAlive = false;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
