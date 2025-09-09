@@ -14,6 +14,11 @@ public:
 
     ~Instance();
 
+public:
+
+    VkInstance& GetInstance()
+    { return m_Instance; }
+
 private:
 
     VkInstance CreateInstance();

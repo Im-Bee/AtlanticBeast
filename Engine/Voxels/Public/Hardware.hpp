@@ -1,26 +1,26 @@
 #ifndef AB_HARDWARE_H
 #define AB_HARDWARE_H
 
-#include "Voxels.h"
+#include "Instance.hpp"
 
-namespace Core::Voxels
+namespace Voxels
 {
 
 class Hardware 
 {
 public:
 
-    Hardware(VkInstance& instance);
+    Hardware(Instance& instance);
 
     ~Hardware();
 
 private:
     
-    VkPhysicalDevice* ChooseGPU(VkInstance& instance);
+    VkPhysicalDevice ChooseGPU(Instance& instance);
 
 private:
 
-    VkPhysicalDevice* m_DeviceHandle;
+    VkPhysicalDevice m_DeviceHandle;
 
 };
 
