@@ -1,44 +1,37 @@
-#ifndef AB_WINDOWDESC_H
-#define AB_WINDOWDESC_H
+#ifndef AB_WINDOW_DESC_H
+#define AB_WINDOW_DESC_H
 
-#include "CSystem.hpp"
-#include "SystemIncludes.h"
+#include "Core.h"
+    
+#ifdef __cplusplus
+extern "C" {
+#endif // !__cplusplus
 
-namespace Core
+typedef struct WindowDesc
 {
-
-struct WindowDesc
-{
-    friend class IBaseWindow;
-
-    explicit WindowDesc(const wchar_t*  pwszName    = L"Unknown window name",
-                        int_fast16_t    width       = 1200, 
-                        int_fast16_t    height      = 700)
-        : Name(pwszName)
-        , Width(width)
-        , Height(height)
-    { }
-
-    ~WindowDesc() = default;
-
-    WindowDesc(WindowDesc&&) = default;
-    WindowDesc(const WindowDesc&) = default;
-
-    ::std::wstring  Name;
-    int_fast16_t    Width;
-    int_fast16_t    Height;
-    bool            IsAlive;
+    wchar_t*        Name;
+    size_t          uNameLen;
+    int32_t         Width;
+    int32_t         Height;
+    int32_t         IsAlive;
+    uint32_t        uLastMessage;
 
 #ifdef _WIN32
-    ::HWND          Hwnd        = NULL;
+    HWND            Hwnd;
+	const wchar_t*  pwszClassName;
+    WNDCLASSEX      Wcex;
 #elif __linux__
-    ::Display*      Display     = NULL;
-    ::Window        Window      = 0;
-    int             Screen      = 0;
+    Display*        DisplayHandle;
+    Window          WindowHandle;
+    int             Screen;
 #endif // !_WIN32
-};
+} WindowDesc;
 
-} // !Core
+BEAST_API WindowDesc CreateWindowDesc(const wchar_t* pwszName, size_t uNameLen, int32_t width, int32_t height);
 
-#endif // !AB_WINDOWDESC_H
+#ifdef __cplusplus
+}
+#endif // !__cplusplus
+
+#endif // !AB_WINDOW_DESC_H
 

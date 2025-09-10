@@ -13,10 +13,10 @@ enum EAppStatus
 };
 
 
-class AppStatus
+class BEAST_API AppStatus
 {
     template<typename T>
-    friend class IWindow;
+    friend class IBaseWindow;
 
 public:
     static AppStatus& Get();
@@ -33,9 +33,6 @@ private:
     void UpdateStatus();
 
     size_t m_NumberOfWindows;
-
-    template<typename T>
-    friend class IWindow;
 
     AppStatus();
 

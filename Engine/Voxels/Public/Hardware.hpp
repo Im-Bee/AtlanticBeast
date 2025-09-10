@@ -6,7 +6,7 @@
 namespace Voxels
 {
 
-class Hardware 
+class BEAST_VOXEL_API Hardware
 {
 public:
 

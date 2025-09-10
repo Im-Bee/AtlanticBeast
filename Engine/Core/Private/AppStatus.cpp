@@ -1,5 +1,7 @@
 #include "Core.h"
 
+#include "AppStatus.hpp"
+
 namespace Core
 {
 
@@ -25,6 +27,8 @@ EAppStatus AppStatus::GetAppCurrentStatus()
 
 void AppStatus::SendClosedWindowSignal()
 {
+    AB_LOG(Debug::Info, L"Got close window signal");
+
     if (m_NumberOfWindows > 0)
     {
         --m_NumberOfWindows;
@@ -35,6 +39,8 @@ void AppStatus::SendClosedWindowSignal()
 
 void AppStatus::SendOpenedWindowSignal()
 {
+    AB_LOG(Debug::Info, L"Got new window signal");
+
     ++m_NumberOfWindows;
 
     UpdateStatus();

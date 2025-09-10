@@ -1,15 +1,10 @@
 #ifndef AB_LIMITS_H
 #define AB_LIMITS_H
 
-#include "CSystem.hpp"
+#include "Core.h"
 
-namespace Core
-{
-
-constexpr int_fast16_t MaxLongString = 1024;
-constexpr int_fast16_t MaxMediumString = 512;
-constexpr int_fast16_t MaxSmallString = 64;
-
-} // !Core
+#define AB_LONG_STRING 1024
+#define AB_MEDIUM_STRING 512
+#define AB_SMALLS_STRING 64
 
 #endif // !AB_LIMITS_H

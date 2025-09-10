@@ -1,13 +1,12 @@
 #ifndef AB_CORE_H
 #define AB_CORE_H
 
-#ifdef _WIN32
-#   define _CRT_SECURE_NO_WARNINGS
-#endif // !_WIN32
-
 #include "SystemIncludes.h"
-#include "CSystem.hpp"
+#include "ExportImport.h"
 #include "AbLimits.h"
+
+#ifdef __cplusplus
+
 #include "Exception.hpp"
 #include "AppStatus.hpp"
 
@@ -30,6 +29,8 @@ static const char szLogPostfix[] = "_AtlanticBeast.log";
 
 #undef AB_EXCEPT
 #define AB_EXCEPT(message) ::Core::Exception(message, __LINE__, __FILE__)
-       
 
+#include "EmptyCanvas.hpp"
+       
+#endif // !__cplusplus
 #endif // !AB_CORE_H

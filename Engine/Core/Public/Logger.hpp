@@ -13,7 +13,7 @@ enum ESeverity
     Error = Warning << 1,
 };
 
-class Logger
+class BEAST_API Logger
 {
     Logger();
 

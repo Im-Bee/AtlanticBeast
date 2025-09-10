@@ -39,11 +39,11 @@ Logger* Logger::Get()
 // ---------------------------------------------------------------------------------------------------------------------
 void Logger::Log(const ESeverity sev, const wchar_t pwszFmt[], ...)
 {
-    wchar_t* pwszMessage = new wchar_t[MaxLongString];
+    wchar_t* pwszMessage = new wchar_t[AB_LONG_STRING];
 
     va_list args;
     va_start(args, pwszFmt);
-    vswprintf(pwszMessage, MaxLongString, pwszFmt, args);
+    vswprintf(pwszMessage, AB_LONG_STRING, pwszFmt, args);
     va_end(args);
 
     lock_guard<mutex> lock(m_InstanceLock);

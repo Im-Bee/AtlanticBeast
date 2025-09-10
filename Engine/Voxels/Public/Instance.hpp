@@ -1,12 +1,12 @@
 #ifndef AB_INSTANCE_H
 #define AB_INSTANCE_H
 
-#include "Voxels.h"
+#include "Voxels.hpp"
 
 namespace Voxels
 {
 
-class Instance 
+class BEAST_VOXEL_API Instance
 {
 public:
 

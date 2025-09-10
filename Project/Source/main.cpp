@@ -4,18 +4,21 @@
 
 int main()
 {
-	Core::IBaseWindow iec(Core::WindowDesc(L"First"));
+	Core::EmptyCanvas iec;
 
     iec.Create();
 
     ::std::shared_ptr<Voxels::Instance>        inst = ::std::make_shared<Voxels::Instance>();
     ::std::shared_ptr<Voxels::Hardware>        hw   = ::std::make_shared<Voxels::Hardware>(inst);
     ::std::shared_ptr<Voxels::DeviceAdapter>   da   = ::std::make_shared<Voxels::DeviceAdapter>(hw);
-    ::std::shared_ptr<Voxels::Swapchain>       sw   = ::std::make_shared<Voxels::Swapchain>(inst, iec.GetWindowDesc());
+    ::std::shared_ptr<Voxels::Swapchain>       sw   = ::std::make_shared<Voxels::Swapchain>(inst, hw, iec.GetWindowDesc());
 
     while (Core::AppStatus::GetAppCurrentStatus()) {
+		// AB_LOG(Core::Debug::Info, L"App is running...");
         iec.Update();
     }
+
+	AB_LOG(Core::Debug::Info, L"App is closing...");
 
     iec.Destroy();
 }

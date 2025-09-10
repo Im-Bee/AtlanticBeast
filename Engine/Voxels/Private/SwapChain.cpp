@@ -6,10 +6,15 @@ namespace Voxels
 
 using namespace std;
 
-// Swapchain // ---------------------------------------------------------------------------------------------------------
-Swapchain::Swapchain(::std::shared_ptr<Instance> pInst, const Core::WindowDesc& wd)
+// Swapchain // --------------------------------------------------------------------------------------------------------
+Swapchain::Swapchain(::std::shared_ptr<Instance> pInst, 
+                     ::std::shared_ptr<Hardware> hw,
+                     ::std::shared_ptr<const WindowDesc> wd)
     : m_pInstance(pInst)
-    , m_Surface(CreateSurface(wd))
+    , m_pHardware(hw)
+    , m_pWindiowdesc(wd)
+    , m_Surface(CreateSurface())
+    , m_SwapChain(CreateSwapChain())
 { }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -23,7 +28,7 @@ Swapchain::~Swapchain()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkSurfaceKHR Swapchain::CreateSurface(const Core::WindowDesc& wd)
+VkSurfaceKHR Swapchain::CreateSurface()
 {
     VkSurfaceKHR surface = VK_NULL_HANDLE;
     VkResult     result;
@@ -34,7 +39,7 @@ VkSurfaceKHR Swapchain::CreateSurface(const Core::WindowDesc& wd)
     createInfo.pNext     = NULL;
     createInfo.flags     = 0;
     createInfo.hinstance = GetModuleHandle(NULL);
-    createInfo.hwnd      = wd.Hwnd;
+    createInfo.hwnd      = m_pWindiowdesc->Hwnd;
 
     result = vkCreateWin32SurfaceKHR(m_pInstance->GetInstance(),
                                      &createInfo,
@@ -45,8 +50,8 @@ VkSurfaceKHR Swapchain::CreateSurface(const Core::WindowDesc& wd)
     createInfo.sType    = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
     createInfo.pNext    = NULL;
     createInfo.flags    = 0;
-    createInfo.dpy      = wd.Display;
-    createInfo.window   = wd.Window;
+    createInfo.dpy      = m_pWindiowdesc->DisplayHandle;
+    createInfo.window   = m_pWindiowdesc->WindowHandle;
 
     result = vkCreateXlibSurfaceKHR(m_pInstance->GetInstance(),
                                     &createInfo,
@@ -60,6 +65,17 @@ VkSurfaceKHR Swapchain::CreateSurface(const Core::WindowDesc& wd)
     }
 
     return surface;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+VkSwapchainKHR Swapchain::CreateSwapChain()
+{
+    VkSwapchainKHR              swapChain       = VK_NULL_HANDLE;
+    VkSurfaceCapabilitiesKHR    capabilities;
+
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_pHardware->GetPhysicalDevice(), m_Surface, &capabilities);
+
+    return swapChain;
 }
 
 } // !Voxels

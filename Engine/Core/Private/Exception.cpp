@@ -21,14 +21,14 @@ Exception::Exception(const char* szMessage,
         return;
     }
 
-    char* szErrorMessage = new char[MaxLongString];
-    char szLine[MaxSmallString] = { 0 };
+    char* szErrorMessage = new char[AB_LONG_STRING];
+    char szLine[AB_SMALLS_STRING] = { 0 };
     char szAtLine[] = "\nAt line: ";
     char szInFile[] = "\nIn file: ";
     size_t uIndex = m_uMesLen;
     size_t uOldIndex = uIndex;
  
-    if (uIndex >= MaxLongString) {
+    if (uIndex >= AB_LONG_STRING) {
         delete[] m_pszMessage;
         LogAndReturnMessage(m_pszMessage, uOldIndex);
         m_uMesLen = uOldIndex;
@@ -39,7 +39,7 @@ Exception::Exception(const char* szMessage,
     
     uOldIndex = uIndex;
     uIndex += sprintf(szLine, "\nAt line: %d", static_cast<int>(m_Line));
-    if (uIndex >= MaxLongString || m_Line == InvalidLine) {
+    if (uIndex >= AB_LONG_STRING || m_Line == InvalidLine) {
         LogAndReturnMessage(szErrorMessage, uOldIndex);
         m_uMesLen = uOldIndex;
         return;
@@ -48,7 +48,7 @@ Exception::Exception(const char* szMessage,
 
     uOldIndex = uIndex;
     uIndex += sizeof(szInFile) + m_uFileNameLen;
-    if (uIndex >= MaxLongString || !m_pszFileName) {
+    if (uIndex >= AB_LONG_STRING || !m_pszFileName) {
         LogAndReturnMessage(szErrorMessage, uOldIndex);
         m_uMesLen = uOldIndex;
         return;
@@ -63,7 +63,7 @@ Exception::Exception(const char* szMessage,
 // ---------------------------------------------------------------------------------------------------------------------
 Exception::~Exception() noexcept
 {
-    if (m_uMesLen < MaxLongString) {
+    if (m_uMesLen < AB_LONG_STRING) {
         delete[] m_pszMessage;
     }
 }
@@ -76,13 +76,13 @@ Exception::Exception(const Exception& other) noexcept
     , m_pszFileName(other.m_pszFileName)
     , m_uFileNameLen(other.m_uFileNameLen)
 {
-    if (other.m_uMesLen != InvalidLine && other.m_uMesLen >= MaxLongString) {
+    if (other.m_uMesLen != InvalidLine && other.m_uMesLen >= AB_LONG_STRING) {
         m_pszMessage = other.m_pszMessage;
         m_uMesLen = other.m_uMesLen;
         return;
     }
     
-    char* pszMessage = new char[MaxLongString];
+    char* pszMessage = new char[AB_LONG_STRING];
     strcpy(pszMessage, other.m_pszMessage);
 
     this->m_pszMessage = pszMessage;
