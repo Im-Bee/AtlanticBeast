@@ -29,7 +29,7 @@ private:
 
 };
 
-} // !Core::Voxels
+} // !Voxels
 
 
 #endif // !AB_INSTANCE_H

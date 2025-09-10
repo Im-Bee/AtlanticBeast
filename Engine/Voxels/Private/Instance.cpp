@@ -73,5 +73,5 @@ VkInstance Instance::CreateInstance()
     return instance;
 }
 
-} // !Core::Voxels
+} // !Voxels
 

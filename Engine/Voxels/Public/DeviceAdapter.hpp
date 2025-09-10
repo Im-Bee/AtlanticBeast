@@ -26,7 +26,7 @@ private:
     
 };
 
-} // !Core::Voxels
+} // !Voxels
 
 #endif // !AB_DEVICE_ADAPTER_H
 

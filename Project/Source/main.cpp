@@ -11,6 +11,7 @@ int main()
     Voxels::Instance        inst;
     Voxels::Hardware        hw(inst);
     Voxels::DeviceAdapter   da(hw);
+    Voxels::Swapchain       sw(&inst, iec.GetWindowDesc());
 
     while (Core::AppStatus::GetAppCurrentStatus()) {
         iec.Update();

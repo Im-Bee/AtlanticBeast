@@ -128,5 +128,5 @@ uint32_t DeviceAdapter::FindQueueFamilyIndex(Hardware& gpu)
 }
 
 
-} // !Core::Voxels
+} // !Voxels
 

@@ -88,4 +88,4 @@ VkPhysicalDevice Hardware::ChooseGPU(Instance& instance)
     return chosenPhysicalDevice;
 }
 
-} // !Core::Voxels
+} // !Voxels

@@ -77,7 +77,7 @@ public:
     }
 
     const WindowDesc& GetWindowDesc() const
-    { return static_cast<Derived*>(this)->GetWindowDescImpl(); }
+    { return static_cast<const Derived*>(this)->GetWindowDescImpl(); }
 
 protected:
 

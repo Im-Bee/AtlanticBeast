@@ -29,6 +29,6 @@ private:
 
 };
 
-} // !Core::Voxels
+} // !Voxels
 
 #endif // !AB_HARDWARE_H
