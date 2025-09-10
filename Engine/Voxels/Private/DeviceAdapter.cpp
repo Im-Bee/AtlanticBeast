@@ -6,7 +6,7 @@ namespace Voxels
 using namespace std;
 
 // DeviceAdapter // ----------------------------------------------------------------------------------------------------
-DeviceAdapter::DeviceAdapter(Hardware& gpu)
+DeviceAdapter::DeviceAdapter(::std::shared_ptr<Hardware>& gpu)
     : m_Device(CreateDeviceAdapter(gpu))
 { }
 
@@ -20,7 +20,7 @@ DeviceAdapter::~DeviceAdapter()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDevice DeviceAdapter::CreateDeviceAdapter(Hardware& gpu)
+VkDevice DeviceAdapter::CreateDeviceAdapter(::std::shared_ptr<Hardware>& gpu)
 { 
     VkDevice                                            device                                  = VK_NULL_HANDLE;
     VkResult                                            result;
@@ -82,7 +82,7 @@ VkDevice DeviceAdapter::CreateDeviceAdapter(Hardware& gpu)
     createInfo.enabledExtensionCount    = vpszDeviceExtensions.size();
     createInfo.pEnabledFeatures         = NULL;
 
-    result = vkCreateDevice(gpu.GetPhysicalDevice(),
+    result = vkCreateDevice(gpu->GetPhysicalDevice(),
                             &createInfo,
                             NULL,
                             &device);
@@ -97,20 +97,20 @@ VkDevice DeviceAdapter::CreateDeviceAdapter(Hardware& gpu)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t DeviceAdapter::FindQueueFamilyIndex(Hardware& gpu)
+uint32_t DeviceAdapter::FindQueueFamilyIndex(::std::shared_ptr<Hardware>& gpu)
 {
     uint32_t                            uFamilyIndex    = 0;
     uint32_t                            uFamilyCount;
     vector<VkQueueFamilyProperties>     vProperties     = { };
 
-    vkGetPhysicalDeviceQueueFamilyProperties(gpu.GetPhysicalDevice(), &uFamilyCount, NULL);
+    vkGetPhysicalDeviceQueueFamilyProperties(gpu->GetPhysicalDevice(), &uFamilyCount, NULL);
     if (!uFamilyCount) {
         AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!!");
         throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");
     }
     vProperties.resize(uFamilyCount);
 
-    vkGetPhysicalDeviceQueueFamilyProperties(gpu.GetPhysicalDevice(), &uFamilyCount, &vProperties[0]);
+    vkGetPhysicalDeviceQueueFamilyProperties(gpu->GetPhysicalDevice(), &uFamilyCount, &vProperties[0]);
     if (!uFamilyCount) {
         AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!!");
         throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");

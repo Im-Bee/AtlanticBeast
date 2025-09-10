@@ -12,7 +12,7 @@ class Swapchain
 {
 public:
 
-    Swapchain(Instance* inst, const Core::WindowDesc& wd);
+    Swapchain(::std::shared_ptr<Instance> inst, const Core::WindowDesc& wd);
 
     ~Swapchain();
 
@@ -22,7 +22,7 @@ private:
 
 private:
 
-    Instance*       m_pInstance     = nullptr;
+    ::std::shared_ptr<Instance> m_pInstance = nullptr;
 
     VkSurfaceKHR    m_Surface       = VK_NULL_HANDLE;
     VkSwapchainKHR  m_SwapChain     = VK_NULL_HANDLE;

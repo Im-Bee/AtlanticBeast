@@ -10,7 +10,7 @@ class Hardware
 {
 public:
 
-    Hardware(Instance& instance);
+    Hardware(::std::shared_ptr<Instance>& instance);
 
     ~Hardware();
 
@@ -21,7 +21,7 @@ public:
 
 private:
     
-    VkPhysicalDevice ChooseGPU(Instance& instance);
+    VkPhysicalDevice ChooseGPU(::std::shared_ptr<Instance>& instance);
 
 private:
 

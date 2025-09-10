@@ -6,7 +6,7 @@ namespace Voxels
 using namespace std;
 
 // Hardware // ---------------------------------------------------------------------------------------------------------
-Hardware::Hardware(Instance& instance)
+Hardware::Hardware(::std::shared_ptr<Instance>& instance)
     : m_DeviceHandle(ChooseGPU(instance))
 { }
 
@@ -15,7 +15,7 @@ Hardware::~Hardware()
 { }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPhysicalDevice Hardware::ChooseGPU(Instance& instance)
+VkPhysicalDevice Hardware::ChooseGPU(::std::shared_ptr<Instance>& instance)
 { 
     VkPhysicalDevice            chosenPhysicalDevice    = VK_NULL_HANDLE;
     uint32_t                    uDeviceCount;
@@ -24,14 +24,14 @@ VkPhysicalDevice Hardware::ChooseGPU(Instance& instance)
     VkPhysicalDeviceFeatures2   pFeatures;
 
 
-    result = vkEnumeratePhysicalDevices(instance.GetInstance(), &uDeviceCount, NULL);
+    result = vkEnumeratePhysicalDevices(instance->GetInstance(), &uDeviceCount, NULL);
     if (result != VK_SUCCESS) {
         AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!! Error code is: %d", result);
         throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");
     }
     vPhysicalDevices.resize(uDeviceCount);
 
-    result = vkEnumeratePhysicalDevices(instance.GetInstance(), &uDeviceCount, &vPhysicalDevices[0]);
+    result = vkEnumeratePhysicalDevices(instance->GetInstance(), &uDeviceCount, &vPhysicalDevices[0]);
     if (result != VK_SUCCESS) {
         AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!! Error code is: %d", result);
         throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");

@@ -10,15 +10,15 @@ class DeviceAdapter
 {
 public:
 
-    DeviceAdapter(Hardware& gpu);
+    DeviceAdapter(::std::shared_ptr<Hardware>& gpu);
 
     ~DeviceAdapter();
 
 private:
 
-    VkDevice CreateDeviceAdapter(Hardware& gpu);
+    VkDevice CreateDeviceAdapter(::std::shared_ptr<Hardware>& gpu);
 
-    uint32_t FindQueueFamilyIndex(Hardware& gpu);
+    uint32_t FindQueueFamilyIndex(::std::shared_ptr<Hardware>& gpu);
 
 private:
 

@@ -7,7 +7,7 @@ namespace Voxels
 using namespace std;
 
 // Swapchain // ---------------------------------------------------------------------------------------------------------
-Swapchain::Swapchain(Instance* pInst, const Core::WindowDesc& wd)
+Swapchain::Swapchain(::std::shared_ptr<Instance> pInst, const Core::WindowDesc& wd)
     : m_pInstance(pInst != nullptr ? pInst : throw AB_EXCEPT("pInst is nullptr"))
     , m_Surface(CreateSurface(wd))
 { }
