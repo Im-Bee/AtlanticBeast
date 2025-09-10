@@ -1,7 +1,7 @@
 #ifndef AB_BASE_WINDOW_DETAILS_H
 #define AB_BASE_WINDOW_DETAILS_H
 
-#include "ExportImport.h"
+#include "Core.h"
 #include "WindowDesc.h"
 
 #ifdef __cplusplus

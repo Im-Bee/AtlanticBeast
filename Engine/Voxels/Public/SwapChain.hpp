@@ -1,9 +1,10 @@
 #ifndef AB_SWAPCHAIN_H
 #define AB_SWAPCHAIN_H
 
-#include "Voxels.h"
+#include "Voxels.hpp"
 #include "Instance.hpp"
 #include "Hardware.hpp"
+#include "WindowDesc.h"
 
 namespace Voxels
 {

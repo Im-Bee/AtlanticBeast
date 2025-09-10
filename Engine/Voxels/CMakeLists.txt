@@ -11,10 +11,10 @@ SET(VOXELS_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/DeviceAdapter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/SwapChain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Renderer.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp"
 )
 
-ADD_LIBRARY(VoxelsLib SHARED
+ADD_LIBRARY(VoxelsLib SHARED 
     "${VOXELS_SOURCE}"
     "${VOXELS_HEADRES}"
 )
@@ -30,6 +30,8 @@ TARGET_LINK_LIBRARIES(VoxelsLib PUBLIC
     "${Vulkan_LIBRARIES}"
     CoreLib
 )
+
+TARGET_PRECOMPILE_HEADERS(VoxelsLib PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp")
 
 TARGET_COMPILE_DEFINITIONS(VoxelsLib PRIVATE _BEAST_EXPORTS)
 

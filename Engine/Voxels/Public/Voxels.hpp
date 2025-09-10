@@ -8,8 +8,13 @@
 #endif
 
 #include <vulkan/vulkan.h>
-#include <vulkan/vulkan.hpp>
 #include <vulkan/vulkan_core.h>
+
+#ifdef __cplusplus
+
+#include <vulkan/vulkan.hpp>
+
+#endif // !__cplusplus
 
 #include "Core.h"
 

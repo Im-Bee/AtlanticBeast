@@ -1,8 +1,7 @@
 #ifndef AB_WINDOW_DESC_H
 #define AB_WINDOW_DESC_H
 
-#include "SystemIncludes.h"
-#include "ExportImport.h"
+#include "Core.h"
     
 #ifdef __cplusplus
 extern "C" {

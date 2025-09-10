@@ -8,7 +8,6 @@
 #include "SystemIncludes.h"
 #include "ExportImport.h"
 #include "AbLimits.h"
-#include "WindowDesc.h"
 
 #ifdef __cplusplus
 
