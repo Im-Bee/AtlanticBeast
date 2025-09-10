@@ -8,7 +8,7 @@ using namespace std;
 
 // Swapchain // ---------------------------------------------------------------------------------------------------------
 Swapchain::Swapchain(::std::shared_ptr<Instance> pInst, const Core::WindowDesc& wd)
-    : m_pInstance(pInst != nullptr ? pInst : throw AB_EXCEPT("pInst is nullptr"))
+    : m_pInstance(pInst)
     , m_Surface(CreateSurface(wd))
 { }
 
