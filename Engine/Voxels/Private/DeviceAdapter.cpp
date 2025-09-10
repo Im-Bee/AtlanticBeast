@@ -42,7 +42,7 @@ VkDevice DeviceAdapter::CreateDeviceAdapter(::std::shared_ptr<Hardware>& gpu)
         VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME,
     };
     
-    rayTracingPipelineFeatures.sType                                                    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
+    rayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
     rayTracingPipelineFeatures.pNext                                                    = NULL;
     rayTracingPipelineFeatures.rayTracingPipeline                                       = VK_TRUE;
     rayTracingPipelineFeatures.rayTracingPipelineShaderGroupHandleCaptureReplay         = VK_FALSE;
@@ -50,7 +50,7 @@ VkDevice DeviceAdapter::CreateDeviceAdapter(::std::shared_ptr<Hardware>& gpu)
     rayTracingPipelineFeatures.rayTracingPipelineTraceRaysIndirect                      = VK_FALSE;
     rayTracingPipelineFeatures.rayTraversalPrimitiveCulling                             = VK_TRUE;
 
-    accelerationStructureFeatures.sType                                                 = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
+    accelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
     accelerationStructureFeatures.pNext                                                 = &rayTracingPipelineFeatures;
     accelerationStructureFeatures.accelerationStructure                                 = VK_TRUE;
     accelerationStructureFeatures.accelerationStructureCaptureReplay                    = VK_FALSE;
@@ -58,7 +58,7 @@ VkDevice DeviceAdapter::CreateDeviceAdapter(::std::shared_ptr<Hardware>& gpu)
     accelerationStructureFeatures.accelerationStructureHostCommands                     = VK_FALSE;
     accelerationStructureFeatures.descriptorBindingAccelerationStructureUpdateAfterBind = VK_FALSE;
 
-    bufferDeviceAddressFeatures.sType                               = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
+    bufferDeviceAddressFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
     bufferDeviceAddressFeatures.pNext                               = &accelerationStructureFeatures;
     bufferDeviceAddressFeatures.bufferDeviceAddress                 = VK_TRUE;
     bufferDeviceAddressFeatures.bufferDeviceAddressCaptureReplay    = VK_FALSE;
