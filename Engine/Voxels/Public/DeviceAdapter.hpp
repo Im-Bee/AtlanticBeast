@@ -6,7 +6,7 @@
 namespace Voxels
 {
 
-class DeviceAdapter 
+class BEAST_API DeviceAdapter 
 {
 public:
 

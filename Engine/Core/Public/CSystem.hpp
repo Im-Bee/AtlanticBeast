@@ -1,5 +1,5 @@
-#ifndef AB_SYSTEM_H
-#define AB_SYSTEM_H
+#ifndef AB_CSYSTEM_H
+#define AB_CSYSTEM_H
 
 #include <atomic>
 #include <exception>
@@ -13,4 +13,4 @@
 #include <memory>
 #include <thread>
 
-#endif // !AB_SYSTEM_H
+#endif // !AB_CSYSTEM_H

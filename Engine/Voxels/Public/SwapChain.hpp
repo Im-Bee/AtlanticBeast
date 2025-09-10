@@ -2,27 +2,33 @@
 #define AB_SWAPCHAIN_H
 
 #include "Voxels.h"
-#include "WindowDesc.h"
 #include "Instance.hpp"
+#include "Hardware.hpp"
 
 namespace Voxels
 {
 
-class Swapchain
+class BEAST_API Swapchain
 {
 public:
 
-    Swapchain(::std::shared_ptr<Instance> inst, const Core::WindowDesc& wd);
+    Swapchain(::std::shared_ptr<Instance> inst,
+              ::std::shared_ptr<Hardware> hw,
+              ::std::shared_ptr<const WindowDesc> wd);
 
     ~Swapchain();
 
 private:
 
-    VkSurfaceKHR CreateSurface(const Core::WindowDesc& wd);
+    VkSurfaceKHR CreateSurface();
+
+    VkSwapchainKHR CreateSwapChain();
 
 private:
 
     ::std::shared_ptr<Instance> m_pInstance = nullptr;
+    ::std::shared_ptr<Hardware> m_pHardware = nullptr;
+    ::std::shared_ptr<const WindowDesc> m_pWindiowdesc = nullptr;
 
     VkSurfaceKHR    m_Surface       = VK_NULL_HANDLE;
     VkSwapchainKHR  m_SwapChain     = VK_NULL_HANDLE;

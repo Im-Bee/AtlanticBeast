@@ -6,8 +6,12 @@
 #endif // !_WIN32
 
 #include "SystemIncludes.h"
-#include "CSystem.hpp"
+#include "ExportImport.h"
 #include "AbLimits.h"
+#include "WindowDesc.h"
+
+#ifdef __cplusplus
+
 #include "Exception.hpp"
 #include "AppStatus.hpp"
 
@@ -31,5 +35,5 @@ static const char szLogPostfix[] = "_AtlanticBeast.log";
 #undef AB_EXCEPT
 #define AB_EXCEPT(message) ::Core::Exception(message, __LINE__, __FILE__)
        
-
+#endif // !__cplusplus
 #endif // !AB_CORE_H

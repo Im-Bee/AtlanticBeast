@@ -1,6 +1,12 @@
 #ifndef AB_SYSTEMINCLU_H
 #define AB_SYSTEMINCLU_H
 
+#include "CSystem.h"
+
+#ifdef __cplusplus
+#   include "CSystem.hpp"
+#endif // !__cplusplus
+
 #ifdef _WIN32
 #   define UNICODE
 #   define _UNICODE

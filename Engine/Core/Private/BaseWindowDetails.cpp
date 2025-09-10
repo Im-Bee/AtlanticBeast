@@ -1,10 +1,8 @@
 #include "Core.h"
-#include "IWindow.hpp"
+#include "IBaseWindow.hpp"
 
+#include <cstring>
 #include <unordered_map>
-
-namespace Core::Details
-{
 
 using namespace std;
 
@@ -62,7 +60,6 @@ void ImplAskToCloseDisplayLinux(const char* pszDisplayName)
 }
 
 #elif _WIN32
-
 // Statics // ----------------------------------------------------------------------------------------------------------
 static unordered_map<wstring, size_t> RegisteredClasses = { };
 
@@ -85,7 +82,9 @@ bool ImplAskForWindowClass(const wchar_t* pszClassName)
 // ---------------------------------------------------------------------------------------------------------------------
 void ImplAskToRegisterWindowClass(WNDCLASSEX& wcex)
 {
-    if (RegisteredClasses.find(wcex.lpszClassName) != RegisteredClasses.end() && RegisteredClasses[wcex.lpszClassName] != 0) {
+    if (RegisteredClasses.find(wcex.lpszClassName) != RegisteredClasses.end() && 
+        RegisteredClasses[wcex.lpszClassName] != 0) 
+    {
         throw AB_EXCEPT("Traying to register a class that already exists!!!");
     }
    
@@ -111,5 +110,3 @@ void ImplAskToCloseWindowClass(const wchar_t* pszClassName)
 }
 
 #endif // !__linux__
-
-} // !Core

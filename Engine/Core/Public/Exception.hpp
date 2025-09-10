@@ -6,7 +6,7 @@
 namespace Core
 {
 
-class Exception : public ::std::exception
+class BEAST_API Exception : public ::std::exception
 {
     
     static constexpr int32_t InvalidLine = -1;

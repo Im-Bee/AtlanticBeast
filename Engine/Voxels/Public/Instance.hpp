@@ -6,7 +6,7 @@
 namespace Voxels
 {
 
-class Instance 
+class BEAST_API Instance 
 {
 public:
 
