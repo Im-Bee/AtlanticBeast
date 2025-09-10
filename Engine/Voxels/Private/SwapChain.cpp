@@ -31,7 +31,7 @@ VkSurfaceKHR Swapchain::CreateSurface(const Core::WindowDesc& wd)
 #ifdef _WIN32
     VkWin32SurfaceCreateInfoKHR createInfo = {};
     createInfo.sType     = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-    createInfo.pNext     = nullptr;
+    createInfo.pNext     = NULL;
     createInfo.flags     = 0;
     createInfo.hinstance = GetModuleHandle(NULL);
     createInfo.hwnd      = wd.Hwnd;
