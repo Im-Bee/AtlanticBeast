@@ -48,9 +48,23 @@ public:
 #ifdef __linux__
         m_pWindowDesc->DisplayHandle = ImplAskForDisplayLinux(NULL);
 #elif _WIN32
+		m_pWindowDesc->pwszClassName = L"BaseClass";
+
+
+        if (!ImplAskForWindowClass(m_pWindowDesc->pwszClassName)) {
+            m_pWindowDesc->Wcex = { 0 };
+
+			m_pWindowDesc->Wcex.cbSize = sizeof(WNDCLASSEX);
+            m_pWindowDesc->Wcex.style = CS_HREDRAW | CS_VREDRAW;
+            m_pWindowDesc->Wcex.hInstance = GetModuleHandle(NULL);
+            m_pWindowDesc->Wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+            m_pWindowDesc->Wcex.lpszClassName = m_pWindowDesc->pwszClassName;
+
+            ImplAskToRegisterWindowClass(m_pWindowDesc->Wcex);
+		}
 #endif // !__linux__
 
-        if (CreateImpl(m_pWindowDesc.get()) != 0) {
+        if (AbCreateImpl(m_pWindowDesc.get()) != 0) {
             throw AB_EXCEPT("Couldn't create the window");
         }
 
@@ -58,32 +72,40 @@ public:
     }
 
     inline void Show()
-    { return ShowImpl(m_pWindowDesc.get()); }
+    { return AbShowImpl(m_pWindowDesc.get()); }
 
     inline void Hide()
-    { return HideImpl(m_pWindowDesc.get()); }
+    { return AbHideImpl(m_pWindowDesc.get()); }
 
     inline void Destroy()
     { 
+        if (!m_pWindowDesc || !m_pWindowDesc->IsAlive) {
+            return;
+		}
+
         Core::AppStatus::Get().SendClosedWindowSignal();
 
-        DestroyImpl(m_pWindowDesc.get()); 
+        AbDestroyImpl(m_pWindowDesc.get()); 
 
 #ifdef __linux__
         ImplAskToCloseDisplayLinux(NULL);
+        m_pWindowDesc->WindowHandle = 0;
+        m_pWindowDesc->DisplayHandle = NULL;
 #elif _WIN32
-
+        ImplAskToCloseWindowClass(m_pWindowDesc->pwszClassName);
+		m_pWindowDesc->Hwnd = NULL;
 #endif // !__linux__
 
-        m_pWindowDesc->WindowHandle   = 0;
-        m_pWindowDesc->DisplayHandle  = NULL;
-        m_pWindowDesc->IsAlive        = false;
+        m_pWindowDesc->IsAlive = false;
     }
 
     inline void Update()
     { 
-        UpdateImpl(m_pWindowDesc.get());
+        AbUpdateImpl(m_pWindowDesc.get());
+		// AB_LOG(Core::Debug::Info, L"Window last message: %d", m_pWindowDesc->uLastMessage);
+
         if (m_pWindowDesc->uLastMessage == -1) {
+			AB_LOG(Core::Debug::Info, L"Window is being closed by user");
             this->Destroy();
         }
 

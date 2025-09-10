@@ -1,5 +1,7 @@
 #include "Core.h"
 
+#include "AppStatus.hpp"
+
 namespace Core
 {
 

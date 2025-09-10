@@ -8,8 +8,6 @@
 #endif // !__cplusplus
 
 #ifdef _WIN32
-#   define UNICODE
-#   define _UNICODE
 #   define WIN_LEAN_AND_MEAN
 #   include <Windows.h>
 #elif __linux__

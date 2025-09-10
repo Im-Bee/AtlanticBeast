@@ -14,8 +14,11 @@ int main()
     ::std::shared_ptr<Voxels::Swapchain>       sw   = ::std::make_shared<Voxels::Swapchain>(inst, hw, iec.GetWindowDesc());
 
     while (Core::AppStatus::GetAppCurrentStatus()) {
+		// AB_LOG(Core::Debug::Info, L"App is running...");
         iec.Update();
     }
+
+	AB_LOG(Core::Debug::Info, L"App is closing...");
 
     iec.Destroy();
 }

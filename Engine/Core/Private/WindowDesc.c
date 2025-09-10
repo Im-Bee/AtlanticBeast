@@ -1,10 +1,11 @@
+#include "Core.h"
 #include "WindowDesc.h"
 
 #include "AbLimits.h"
 
 WindowDesc CreateWindowDesc(const wchar_t* pwszName, size_t uNameLen, int32_t width, int32_t height)
 { 
-    WindowDesc wd;
+    WindowDesc wd = { 0 };
 
     wd.uNameLen = uNameLen;
     wd.Width = width;

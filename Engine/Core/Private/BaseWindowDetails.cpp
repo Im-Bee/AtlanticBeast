@@ -64,49 +64,90 @@ void ImplAskToCloseDisplayLinux(const char* pszDisplayName)
 static unordered_map<wstring, size_t> RegisteredClasses = { };
 
 // ---------------------------------------------------------------------------------------------------------------------
-bool ImplAskForWindowClass(const wchar_t* pszClassName)
+bool ImplAskForWindowClass(const wchar_t* pwszClassName)
 {
-    if (pszClassName == NULL) {
-        pszClassName = L"";
+    if (pwszClassName == NULL) {
+        pwszClassName = L"";
     }
 
-    if (RegisteredClasses.find(pszClassName) == RegisteredClasses.end()) {
+    if (RegisteredClasses.find(pwszClassName) == RegisteredClasses.end()) {
         return false;
     }
     else {
-        ++RegisteredClasses[pszClassName];
+        ++RegisteredClasses[pwszClassName];
         return true;
     }
+}
+
+// Statics // ----------------------------------------------------------------------------------------------------------
+static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    WindowDesc* pWd = NULL;
+
+    if (uMsg == WM_NCCREATE)
+    {
+        CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
+        pWd = (WindowDesc*)pCreate->lpCreateParams;
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pWd);
+
+        pWd->Hwnd = hwnd;
+    }
+    else
+    {
+        pWd = (WindowDesc*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+    }
+
+    if (pWd)
+    {
+        switch (uMsg)
+        {
+        case WM_CLOSE:
+        {
+            pWd->uLastMessage = -1;
+            break;
+        }
+        default:
+            break;
+        }
+
+        // AB_LOG(Core::Debug::Info, L"pwd->uLastMessage = %u", pWd->uLastMessage);
+    }
+      
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 void ImplAskToRegisterWindowClass(WNDCLASSEX& wcex)
 {
-    if (RegisteredClasses.find(wcex.lpszClassName) != RegisteredClasses.end() && 
-        RegisteredClasses[wcex.lpszClassName] != 0) 
+    wstring className = wcex.lpszClassName;
+
+    wcex.lpfnWndProc = WindowProc;
+
+    if (RegisteredClasses.find(className) != RegisteredClasses.end() && 
+        RegisteredClasses[className] != 0)
     {
         throw AB_EXCEPT("Traying to register a class that already exists!!!");
     }
    
-    ++RegisteredClasses[wcex.lpszClassName];
+    ++RegisteredClasses[className];
 
     RegisterClassEx(&wcex);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void ImplAskToCloseWindowClass(const wchar_t* pszClassName)
+void ImplAskToCloseWindowClass(const wchar_t* pwszClassName)
 {
-    if (RegisteredClasses.find(pszClassName) == RegisteredClasses.end() || RegisteredClasses[pszClassName] == 0) {
+    if (RegisteredClasses.find(wstring(pwszClassName)) == RegisteredClasses.end() || RegisteredClasses[pwszClassName] == 0) {
         throw AB_EXCEPT("Traying to unregister a class that doesn't exists!!!");
     }
 
-    --RegisteredClasses[pszClassName];
+    --RegisteredClasses[pwszClassName];
     
-    if (RegisteredClasses[pszClassName] != 0) {
+    if (RegisteredClasses[pwszClassName] != 0) {
         return;
     }
 
-    UnregisterClass(pszClassName, GetModuleHandle(NULL));
+    UnregisterClass(pwszClassName, GetModuleHandle(NULL));
 }
 
 #endif // !__linux__

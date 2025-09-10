@@ -18,6 +18,8 @@ typedef struct WindowDesc
 
 #ifdef _WIN32
     HWND            Hwnd;
+	const wchar_t*  pwszClassName;
+    WNDCLASSEX      Wcex;
 #elif __linux__
     Display*        DisplayHandle;
     Window          WindowHandle;

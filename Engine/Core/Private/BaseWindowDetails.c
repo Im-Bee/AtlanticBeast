@@ -1,10 +1,10 @@
+#include "Core.h"
 #include "BaseWindowDetails.h"
-#include "AbLimits.h"
 
 #ifdef __linux__
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t CreateImpl(WindowDesc* pWd)
+uint32_t AbCreateImpl(WindowDesc* pWd)
 {
     if (pWd->DisplayHandle == NULL) {
         return -1;
@@ -45,19 +45,19 @@ uint32_t CreateImpl(WindowDesc* pWd)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void ShowImpl(WindowDesc* wd)
+void AbShowImpl(WindowDesc* wd)
 {
     XMapWindow(wd->DisplayHandle, wd->WindowHandle);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void HideImpl(WindowDesc* pWd)
+void AbHideImpl(WindowDesc* pWd)
 {
     XUnmapWindow(pWd->DisplayHandle, pWd->WindowHandle);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void DestroyImpl(WindowDesc* pWd)
+void AbDestroyImpl(WindowDesc* pWd)
 { 
     if (!pWd->IsAlive || !pWd->DisplayHandle || !pWd->WindowHandle) {
         return;
@@ -67,7 +67,7 @@ void DestroyImpl(WindowDesc* pWd)
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
-void UpdateImpl(WindowDesc* pWd)
+void AbUpdateImpl(WindowDesc* pWd)
 {
     XEvent event;
     Display*  display     = pWd->DisplayHandle;
@@ -103,140 +103,69 @@ void UpdateImpl(WindowDesc* pWd)
 
 #elif _WIN32
 
-// Statics // ----------------------------------------------------------------------------------------------------------
-static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    WindowDesc* pWd = NULL;
-
-    if (uMsg == WM_NCCREATE)
-    {
-        CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
-        pWd = (WindowDesc*)pCreate->lpCreateParams;
-        SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pWd);
-
-        pWd->Hwnd = hwnd;
-    }
-    else
-    {
-        pWd = (WindowDesc*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-    }
-
-    if (pThis)
-    {
-        switch (uMsg)
-        {
-        case WM_CLOSE:
-        {
-            pWd->uLastMessage = -1;
-            DestroyImpl(*pWd);
-            break;
-        }
-        default:
-            break;
-        }
-    }
-
-    return DefWindowProc(hwnd, uMsg, wParam, lParam);
-}
-
 // ---------------------------------------------------------------------------------------------------------------------
-static const wchar_t wszClassName[] = L"WindowClass";
-
-// ---------------------------------------------------------------------------------------------------------------------
-void CreateImpl(WindowDesc& wd)
+uint32_t AbCreateImpl(WindowDesc* wd)
 {
-    AB_LOG(Debug::ESeverity::Info, L"Creating canvas");
-
-    if (wd.Hwnd) {
-        AB_LOG(Debug::ESeverity::Warning, L"Trying to create an already created window");
-        return;
+    if (wd->Hwnd) {
+        return -2;
     }
 
-    if (!AskForWindowClass(wszClassName)) {
-        WNDCLASSEX wcex = { 0 };
-
-        wcex.cbSize = sizeof(WNDCLASSEX);
-        wcex.style = CS_HREDRAW | CS_VREDRAW;
-        wcex.lpfnWndProc = WindowProc;
-        wcex.hInstance = GetModuleHandle(NULL);
-        wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-        wcex.lpszClassName = wszClassName;
-
-        AskToRegisterWindowClass(wcex);
-    }
-
-    auto hwnd = CreateWindow(wszClassName,
-                             wd.Name.c_str(),
+    HWND hwnd = CreateWindow(wd->pwszClassName,
+                             wd->Name,
                              WS_OVERLAPPEDWINDOW,
                              CW_USEDEFAULT,
                              CW_USEDEFAULT,
-                             wd.Width,
-                             wd.Height,
-                             nullptr,
-                             nullptr,
+                             wd->Width,
+                             wd->Height,
+                             NULL,
+                             NULL,
                              GetModuleHandle(NULL),
-                             &wd);
+                             wd);
 
     if (!hwnd) {
-        throw AB_EXCEPT("Couldn't create a window");
+        return -1;
     }
 
     ShowWindow(hwnd, SW_SHOW);
 
-    wd.Hwnd       = hwnd;
-    wd.IsAlive    = true;
+    wd->Hwnd = hwnd;
+
+    return 0;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void ShowImpl(WindowDesc& wd)
+void AbShowImpl(WindowDesc* wd)
 {
-    AB_LOG(Debug::ESeverity::Info, L"Show canvas");
-
-    ShowWindow(wd.Hwnd, SW_SHOW);
+    ShowWindow(wd->Hwnd, SW_SHOW);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void HideImpl(WindowDesc& wd)
+void AbHideImpl(WindowDesc* wd)
 {
-    AB_LOG(Debug::ESeverity::Info, L"Hide canvas");
-
-    ShowWindow(wd.Hwnd, SW_HIDE);
+    ShowWindow(wd->Hwnd, SW_HIDE);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void DestroyImpl(WindowDesc& wd)
+void AbDestroyImpl(WindowDesc* wd)
 {
-    if (!wd.IsAlive) {
+    if (!wd->IsAlive || wd->Hwnd == NULL) {
         return;
     }
 
-    AB_LOG(Debug::ESeverity::Info, L"Destroy canvas");
-
-    if (wd.Hwnd == NULL) {
-        AB_LOG(Debug::ESeverity::Warning, L"Trying to destroy an already destroyed window");
-        return;
+    if (DestroyWindow(wd->Hwnd)) {
+        wd->Hwnd = NULL;
     }
-
-    if (DestroyWindow(wd.Hwnd)) {
-        wd.Hwnd = NULL;
-    }
-    else {
-        AB_LOG(Debug::ESeverity::Error, L"Couldn't destroy a window");
-    }
-
-    AskToCloseWindowClass(wszClassName);
-    wd.IsAlive = false;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void UpdateImpl(WindowDesc& wd)
+void AbUpdateImpl(WindowDesc* wd)
 {
-    if (wd.Hwnd == NULL) {
+    if (wd->Hwnd == NULL) {
         return;  
     }
 
-    MSG msg = { };
-    if (GetMessage(&msg, nullptr, 0, 0)) {
+    MSG msg = { 0 };
+    if (GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }

@@ -9,7 +9,7 @@
 namespace Voxels
 {
 
-class BEAST_API Swapchain
+class BEAST_VOXEL_API Swapchain
 {
 public:
 

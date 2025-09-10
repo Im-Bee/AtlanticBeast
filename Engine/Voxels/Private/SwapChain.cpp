@@ -39,7 +39,7 @@ VkSurfaceKHR Swapchain::CreateSurface()
     createInfo.pNext     = NULL;
     createInfo.flags     = 0;
     createInfo.hinstance = GetModuleHandle(NULL);
-    createInfo.hwnd      = wd.Hwnd;
+    createInfo.hwnd      = m_pWindiowdesc->Hwnd;
 
     result = vkCreateWin32SurfaceKHR(m_pInstance->GetInstance(),
                                      &createInfo,

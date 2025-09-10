@@ -18,4 +18,18 @@
 
 #include "Core.h"
 
+#ifdef __linux__
+#   ifdef _BEAST_VOXELS_EXPORTS
+#         define BEAST_VOXEL_API __attribute__((visibility("default")))
+#      else
+#         define BEAST_VOXEL_API
+#   endif // !_BEAST_EXPORTS
+#elif _WIN32
+#   ifdef _BEAST_VOXELS_EXPORTS
+#           define BEAST_VOXEL_API __declspec(dllexport)
+#       else
+#           define BEAST_VOXEL_API __declspec(dllimport)
+#   endif // !_BEAST_EXPORTS
+#endif // !__linux__
+
 #endif // !AB_VOXELS_H
