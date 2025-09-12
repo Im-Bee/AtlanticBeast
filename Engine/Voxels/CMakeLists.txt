@@ -6,6 +6,7 @@ SET(VOXELS_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
 SET(VOXELS_HEADRES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/ErrorHandling.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Instance.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Hardware.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/DeviceAdapter.hpp"

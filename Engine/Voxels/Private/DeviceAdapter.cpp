@@ -1,13 +1,16 @@
 #include "DeviceAdapter.hpp"
 
+#include "ErrorHandling.hpp"
+
 namespace Voxels
 {
 
 using namespace std;
 
 // DeviceAdapter // ----------------------------------------------------------------------------------------------------
-DeviceAdapter::DeviceAdapter(::std::shared_ptr<Hardware>& gpu)
-    : m_Device(CreateDeviceAdapter(gpu))
+DeviceAdapter::DeviceAdapter(shared_ptr<const Hardware> gpu)
+    : m_pHardware(gpu)
+    , m_Device(CreateDeviceAdapter(m_pHardware))
 { }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -20,10 +23,9 @@ DeviceAdapter::~DeviceAdapter()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDevice DeviceAdapter::CreateDeviceAdapter(::std::shared_ptr<Hardware>& gpu)
+VkDevice DeviceAdapter::CreateDeviceAdapter(shared_ptr<const Hardware>& gpu)
 { 
     VkDevice                                            device                                  = VK_NULL_HANDLE;
-    VkResult                                            result;
     VkDeviceCreateInfo                                  createInfo;
     VkDeviceQueueCreateInfo                             queueCreateInfo;
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR       rayTracingPipelineFeatures;
@@ -82,35 +84,30 @@ VkDevice DeviceAdapter::CreateDeviceAdapter(::std::shared_ptr<Hardware>& gpu)
     createInfo.enabledExtensionCount    = vpszDeviceExtensions.size();
     createInfo.pEnabledFeatures         = NULL;
 
-    result = vkCreateDevice(gpu->GetPhysicalDevice(),
-                            &createInfo,
-                            NULL,
-                            &device);
-
-    
-    if (result != VK_SUCCESS) {
-        AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!! Error code is: %d", result);
-        throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");
-    }
+    ThrowIfFailed(vkCreateDevice(gpu->GetPhysicalDevice(),
+                                 &createInfo,
+                                 NULL,
+                                 &device));
 
     return device;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t DeviceAdapter::FindQueueFamilyIndex(::std::shared_ptr<Hardware>& gpu)
+uint32_t DeviceAdapter::FindQueueFamilyIndex(shared_ptr<const Hardware>& gpu)
 {
     uint32_t                            uFamilyIndex    = 0;
     uint32_t                            uFamilyCount;
     vector<VkQueueFamilyProperties>     vProperties     = { };
+    VkPhysicalDevice                    physicalDevice  = gpu->GetPhysicalDevice();
 
-    vkGetPhysicalDeviceQueueFamilyProperties(gpu->GetPhysicalDevice(), &uFamilyCount, NULL);
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &uFamilyCount, NULL);
     if (!uFamilyCount) {
         AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!!");
         throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");
     }
     vProperties.resize(uFamilyCount);
 
-    vkGetPhysicalDeviceQueueFamilyProperties(gpu->GetPhysicalDevice(), &uFamilyCount, &vProperties[0]);
+    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &uFamilyCount, &vProperties[0]);
     if (!uFamilyCount) {
         AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!!");
         throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");

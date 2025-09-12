@@ -14,6 +14,7 @@ SET(CORE_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/CSystem.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Core.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/IBaseWindow.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/DebugAssert.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/EmptyCanvas.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Exception.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Logger.hpp"

@@ -10,20 +10,22 @@ class BEAST_VOXEL_API Hardware
 {
 public:
 
-    Hardware(::std::shared_ptr<Instance>& instance);
+    Hardware(::std::shared_ptr<const Instance> instance);
 
     ~Hardware();
 
 public:
     
-    VkPhysicalDevice GetPhysicalDevice()
+    VkPhysicalDevice GetPhysicalDevice() const
     { return m_DeviceHandle; }
 
 private:
     
-    VkPhysicalDevice ChooseGPU(::std::shared_ptr<Instance>& instance);
+    VkPhysicalDevice ChooseGPU(::std::shared_ptr<const Instance>& instance);
 
 private:
+
+    ::std::shared_ptr<const Instance> m_pInstance = nullptr;
 
     VkPhysicalDevice m_DeviceHandle = VK_NULL_HANDLE;
 

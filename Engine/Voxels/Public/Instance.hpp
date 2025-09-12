@@ -16,7 +16,7 @@ public:
 
 public:
 
-    VkInstance& GetInstance()
+    VkInstance GetInstance() const
     { return m_Instance; }
 
 private:

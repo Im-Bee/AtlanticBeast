@@ -10,13 +10,13 @@
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
 
+#include "Core.h"
+
 #ifdef __cplusplus
 
 #include <vulkan/vulkan.hpp>
 
 #endif // !__cplusplus
-
-#include "Core.h"
 
 #ifdef __linux__
 #   ifdef _BEAST_VOXELS_EXPORTS

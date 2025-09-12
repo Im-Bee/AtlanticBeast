@@ -8,7 +8,6 @@
 #ifdef __cplusplus
 
 #include "Exception.hpp"
-#include "AppStatus.hpp"
 
 namespace Core::Debug
 {
@@ -18,6 +17,10 @@ static const char szLogPostfix[] = "_AtlanticBeast.log";
 } // !Core
 
 
+#undef AB_EXCEPT
+#define AB_EXCEPT(message) ::Core::Exception(message, __LINE__, __FILE__)
+
+#include "DebugAssert.h"
 #include "Logger.hpp"
 
 #ifdef _DEBUG
@@ -26,11 +29,9 @@ static const char szLogPostfix[] = "_AtlanticBeast.log";
 #   define AB_LOG(...) 
 #endif // !_DEBUG
        
-
-#undef AB_EXCEPT
-#define AB_EXCEPT(message) ::Core::Exception(message, __LINE__, __FILE__)
-
+#include "AppStatus.hpp"
 #include "EmptyCanvas.hpp"
        
+
 #endif // !__cplusplus
 #endif // !AB_CORE_H
