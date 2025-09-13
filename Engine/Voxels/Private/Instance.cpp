@@ -19,13 +19,42 @@ Instance::~Instance()
     }
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+                                                    VkDebugUtilsMessageTypeFlagsEXT messageType,
+                                                    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+                                                    void* pUserData)
+{
+    AB_LOG(Core::Debug::Info, L"[Vulkan]: %S", pCallbackData->pMessage);
+    return VK_FALSE;
+}
+
 // Private // ----------------------------------------------------------------------------------------------------------
 VkInstance Instance::CreateInstance()
 { 
-    VkInstance              instance;
-    VkApplicationInfo       appInfo;
-    VkInstanceCreateInfo    createInfo;
-    VkResult                result;
+    VkInstance                          instance;
+    VkApplicationInfo                   appInfo;
+    VkInstanceCreateInfo                createInfo;
+    VkResult                            result;
+
+#ifdef _DEBUG
+    VkDebugUtilsMessengerCreateInfoEXT  debugCreateInfo;
+
+    debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    debugCreateInfo.pNext = NULL;
+    debugCreateInfo.flags = 0;
+    debugCreateInfo.messageSeverity =
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    debugCreateInfo.messageType =
+        VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    debugCreateInfo.pfnUserCallback     = debugCallback;
+    debugCreateInfo.pUserData           = NULL;
+#endif // !_DEBUG
+
 
     const vector<const char*> vpszValidationLayers = {
 #ifdef _DEBUG
@@ -36,10 +65,14 @@ VkInstance Instance::CreateInstance()
     const vector<const char*> vpszExtensions = {
         "VK_KHR_surface",
 #ifdef _WIN32
-        "VK_KHR_win32_surface"
+        "VK_KHR_win32_surface",
 #elif __linux__
         "VK_KHR_xlib_surface"
 #endif // !_WIN32
+
+#ifdef _DEBUG
+        VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+#endif
     };
 
     appInfo.sType               = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -52,7 +85,12 @@ VkInstance Instance::CreateInstance()
 
 
     createInfo.sType                    = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    createInfo.pNext                    = NULL;
+    createInfo.pNext                    = 
+#ifdef _DEBUG
+        &debugCreateInfo;
+#else
+        NULL;
+#endif
     createInfo.flags                    = 0;
     createInfo.pApplicationInfo         = &appInfo;
     createInfo.ppEnabledLayerNames      = !vpszValidationLayers.empty() ? &vpszValidationLayers[0] : nullptr;
