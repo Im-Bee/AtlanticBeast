@@ -1,0 +1,24 @@
+# AtlanticBeast
+
+Heavy work in progress.
+
+# Build
+
+## Needs Vulkan SDK to compile.
+
+### Linux
+
+In current version you have to CD in to directory with executable, because VoxelsLib looks for shaders in current directory.
+
+``` sh
+mkdir Build
+cd Build
+cmake ..
+make 
+```
+
+### Windows
+
+### Visual Studio 
+
+Open root directory of the project with Visual Studio. Wait for cmake to build. Select AtlBee as a build target. 
