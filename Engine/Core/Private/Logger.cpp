@@ -121,7 +121,7 @@ void Logger::WriteLoop()
             continue;
         }
 
-        auto stamp = move(m_MessageQueue.front());
+        auto stamp = ::std::move(m_MessageQueue.front());
         m_MessageQueue.pop();
 
         m_InstanceLock.unlock();
