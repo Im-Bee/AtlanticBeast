@@ -8,6 +8,7 @@ int main()
 
     iec.Create();
 
+    ::std::shared_ptr<Voxels::VoxelGrid>       vg   = ::std::make_shared<Voxels::VoxelGrid>();
     ::std::shared_ptr<Voxels::Instance>        inst = ::std::make_shared<Voxels::Instance>();
     ::std::shared_ptr<Voxels::Hardware>        hw   = ::std::make_shared<Voxels::Hardware>(inst);
     ::std::shared_ptr<Voxels::DeviceAdapter>   da   = ::std::make_shared<Voxels::DeviceAdapter>(hw);
@@ -16,7 +17,10 @@ int main()
                                                                                             da,
                                                                                             iec.GetWindowDesc());
 
-    ::std::shared_ptr<Voxels::Pipeline>        pl   = ::std::make_shared<Voxels::Pipeline>(da);
+    ::std::shared_ptr<Voxels::Pipeline>        pl   = ::std::make_shared<Voxels::Pipeline>(hw, da);
+
+    pl->ReserveGridBuffer(vg);
+    pl->LoadGrid(vg);
 
     while (Core::AppStatus::GetAppCurrentStatus()) {
 		// AB_LOG(Core::Debug::Info, L"App is running...");

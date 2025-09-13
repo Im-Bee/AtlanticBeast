@@ -6,9 +6,12 @@
 namespace Voxels
 {
 
-struct VoxelPushConstants
+struct alignas(16) VoxelPushConstants
 {
-
+    float viewProjInverse[16];
+    float cameraPos[3];
+    int gridSize[3];
+    int padding;
 };
 
 } // !Voxels

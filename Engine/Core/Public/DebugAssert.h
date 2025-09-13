@@ -12,6 +12,7 @@
             throw AB_EXCEPT("Assertion failed! ('" #expr  "'). " msg);              \
         } } while (0)                                                               
 #else
+#   define AB_ASSERT(expr)
 #   define AB_ASSERT(expr, msg)
 #endif
 

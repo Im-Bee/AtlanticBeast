@@ -2,9 +2,15 @@
 
 layout(local_size_x = 16, local_size_y = 16) in;
 
+struct Voxel {
+    uint type;
+    uvec4 color;
+    uint padding;
+};
+
 layout(binding = 0, rgba8) uniform image2D outputImage;
-layout(binding = 1) readonly buffer Voxels {
-    uint voxelData[]; 
+layout(std430, binding = 1) readonly buffer Voxels {
+    Voxel voxelData[]; 
 };
 
 layout(push_constant) uniform PushConstants 
@@ -31,11 +37,16 @@ void main()
     for (int i = 0; i < 256; ++i) 
     {
         ivec3 voxelCoord = ivec3(floor(rayPos));
+        if (any(lessThan(voxelCoord, ivec3(0))) || any(greaterThanEqual(voxelCoord, pc.gridSize))) {
+            break;
+        }
+
         int index = voxelCoord.x + voxelCoord.y * pc.gridSize.x + voxelCoord.z * pc.gridSize.x * pc.gridSize.y;
 
-        uint voxel = voxelData[index];
+        uint voxel = voxelData[index].type;
         if (voxel != 0) {
-            finalColor = vec4(1.0, 0.0, 0.0, 1.0);
+            vec4 voxelColor = vec4(voxelData[index].color) / 255.0;
+            finalColor = voxelColor;
             break;
         }
 

@@ -4,22 +4,34 @@
 #include "Voxels.hpp"
 #include "DeviceAdapter.hpp"
 #include "PushConstants.hpp"
+#include "VoxelGrid.hpp"
 
 namespace Voxels
 {
 
 class BEAST_VOXEL_API Pipeline
 {
+public:
+
+    Pipeline(::std::shared_ptr<const Hardware> hw, ::std::shared_ptr<const DeviceAdapter> da);
+
+    ~Pipeline() = default;
 
 public:
 
-    Pipeline(::std::shared_ptr<const DeviceAdapter> da);
+    void ReserveGridBuffer(::std::shared_ptr<const VoxelGrid> vg);
 
-    ~Pipeline() = default;
+    void LoadGrid(const ::std::shared_ptr<const VoxelGrid>& vg);
 
 private:
 
     VkDescriptorSetLayout CreateDescriptorLayout(::std::shared_ptr<const DeviceAdapter>& da);
+
+    VkDescriptorPool CreateDescriptorPool(::std::shared_ptr<const DeviceAdapter>& da);
+
+    VkDescriptorSet CreateDescriptorSet(::std::shared_ptr<const DeviceAdapter>& da,
+                                        VkDescriptorPool dp,
+                                        VkDescriptorSetLayout dLayout);
 
     VkPipelineLayout CreatePipelineLayout(::std::shared_ptr<const DeviceAdapter>& da,
                                           VkDescriptorSetLayout descriptorSetLayout);
@@ -28,14 +40,23 @@ private:
 
     VkPipeline CreateComputePipeline(::std::shared_ptr<const DeviceAdapter>& da, VkPipelineLayout pipelineLayout);
 
-private:
+    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
-    ::std::shared_ptr<const DeviceAdapter> m_pDeviceAdapter = nullptr;
+private:
+    
+    ::std::shared_ptr<const Hardware>       m_pHardware         = nullptr;
+    ::std::shared_ptr<const DeviceAdapter>  m_pDeviceAdapter    = nullptr;
+
+    ::std::shared_ptr<const VoxelGrid> m_VoxelGrid = nullptr;
 
     VkDescriptorSetLayout   m_DescriptorLayout  = VK_NULL_HANDLE;
+    VkDescriptorPool        m_DescriptorPool    = VK_NULL_HANDLE;
+    VkDescriptorSet         m_DescriptorSet     = VK_NULL_HANDLE;
     VkPipelineLayout        m_PipelineLayout    = VK_NULL_HANDLE;
     VkPipeline              m_ComputePipeline   = VK_NULL_HANDLE;
 
+    VkBuffer        m_VoxelGPUBuffer        = VK_NULL_HANDLE;
+    VkDeviceMemory  m_VoxelBufferMemory     = VK_NULL_HANDLE;
 };
 
 } // !Voxels

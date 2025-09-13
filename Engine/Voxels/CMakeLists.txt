@@ -4,6 +4,7 @@ SET(VOXELS_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/DeviceAdapter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/SwapChain.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Pipeline.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/VoxelGrid.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
 SET(VOXELS_HEADRES 
@@ -14,6 +15,8 @@ SET(VOXELS_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/SwapChain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Pipeline.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/PushConstants.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/SingleVoxel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/VoxelGrid.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Renderer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp"
 )

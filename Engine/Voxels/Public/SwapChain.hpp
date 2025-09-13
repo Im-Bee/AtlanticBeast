@@ -50,7 +50,7 @@ private:
     ::std::shared_ptr<const Instance>       m_pInstance         = nullptr;
     ::std::shared_ptr<const Hardware>       m_pHardware         = nullptr;
     ::std::shared_ptr<const DeviceAdapter>  m_pDeviceAdapter    = nullptr;
-    ::std::shared_ptr<const WindowDesc>     m_pWindowDesc      = nullptr;
+    ::std::shared_ptr<const WindowDesc>     m_pWindowDesc       = nullptr;
 
     VkSurfaceKHR                m_Surface       = VK_NULL_HANDLE;
     VkSurfaceCapabilitiesKHR    m_Capabilities;
