@@ -25,7 +25,14 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
                                                     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
                                                     void* pUserData)
 {
-    AB_LOG(Core::Debug::Info, L"[Vulkan]: %s", pCallbackData->pMessage);
+    constexpr wchar_t pwszFormat[] =
+#ifdef _WIN32
+        L"[Vulkan]: %S";
+#elif __linux__
+        L"[Vulkan]: %s";
+#endif // !_WIN32
+
+	AB_LOG(Core::Debug::Info, pwszFormat, pCallbackData->pMessage);
     return VK_FALSE;
 }
 
