@@ -6,5 +6,6 @@
 #include "Hardware.hpp"
 #include "DeviceAdapter.hpp"
 #include "SwapChain.hpp"
+#include "Pipeline.hpp"
 
 #endif // !AB_RENDERER_H

@@ -1,0 +1,47 @@
+#version 450
+
+layout(local_size_x = 16, local_size_y = 16) in;
+
+layout(binding = 0, rgba8) uniform image2D outputImage;
+layout(binding = 1) readonly buffer Voxels {
+    uint voxelData[]; 
+};
+
+layout(push_constant) uniform PushConstants 
+{
+    mat4    viewProjInverse;
+    vec3    cameraPos;
+    ivec3   gridSize;
+} pc;
+
+void main() 
+{
+    ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
+    vec2 uv = (vec2(pixelCoord) / vec2(imageSize(outputImage))) * 2.0 - 1.0;
+
+    vec4 rayStart   = pc.viewProjInverse * vec4(uv, 0.0, 1.0);
+    vec4 rayEnd     = pc.viewProjInverse * vec4(uv, 1.0, 1.0);
+    vec3 rayDir     = normalize((rayEnd.xyz / rayEnd.w) - (rayStart.xyz / rayStart.w));
+
+    vec3 rayOrigin  = pc.cameraPos;
+    vec3 rayPos     = rayOrigin;
+
+    vec4 finalColor = vec4(0.0);
+
+    for (int i = 0; i < 256; ++i) 
+    {
+        ivec3 voxelCoord = ivec3(floor(rayPos));
+        int index = voxelCoord.x + voxelCoord.y * pc.gridSize.x + voxelCoord.z * pc.gridSize.x * pc.gridSize.y;
+
+        uint voxel = voxelData[index];
+        if (voxel != 0) {
+            finalColor = vec4(1.0, 0.0, 0.0, 1.0);
+            break;
+        }
+
+        rayPos += rayDir * 0.5;
+    }
+
+    imageStore(outputImage, pixelCoord, finalColor);
+}
+

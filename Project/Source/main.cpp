@@ -16,6 +16,8 @@ int main()
                                                                                             da,
                                                                                             iec.GetWindowDesc());
 
+    ::std::shared_ptr<Voxels::Pipeline>        pl   = ::std::make_shared<Voxels::Pipeline>(da);
+
     while (Core::AppStatus::GetAppCurrentStatus()) {
 		// AB_LOG(Core::Debug::Info, L"App is running...");
         iec.Update();
