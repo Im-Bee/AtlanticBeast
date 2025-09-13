@@ -77,13 +77,13 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg)
     void*                   pData;
     size_t                  uBufferSizeInBytes  = vg->GetSize() * sizeof(Voxel);
 
-    if (vg->GetSize() != m_VoxelGrid->GetSize()) {
-        AB_LOG(Core::Debug::Error, L"Voxel grid has wrong size!");
-        throw AB_EXCEPT("Voxel grid has wrong size!");
-    }
+    AB_ASSERT((m_VoxelGPUBuffer != VK_NULL_HANDLE));
+    AB_ASSERT((m_VoxelBufferMemory != VK_NULL_HANDLE));
+    AB_ASSERT((m_VoxelGrid != nullptr));
+    AB_ASSERT((vg->GetSize() == m_VoxelGrid->GetSize()));
 
     vkMapMemory(da, m_VoxelBufferMemory, 0, uBufferSizeInBytes, 0, &pData);
-    memcpy(pData, &vg->GetGrid()[0], static_cast<size_t>(uBufferSizeInBytes));
+    memcpy(pData, &vg->GetGrid()[0], uBufferSizeInBytes);
     vkUnmapMemory(da, m_VoxelBufferMemory);
 
     voxelBufferInfo.buffer  = m_VoxelGPUBuffer;
@@ -218,7 +218,7 @@ VkShaderModule Pipeline::LoadShader(shared_ptr<const DeviceAdapter>& da, const s
     VkShaderModuleCreateInfo    shaderCreateInfo;
     VkShaderModule              shaderModule;
 
-    ifstream file(strPath, std::ios::ate | std::ios::binary);
+    ifstream file(strPath, ios::ate | ios::binary);
 
     if (!file.is_open()) {
         throw AB_EXCEPT("Failed to open shader file!");
