@@ -63,11 +63,11 @@ VkInstance Instance::CreateInstance()
     };
 
     const vector<const char*> vpszExtensions = {
-        "VK_KHR_surface",
+        VK_KHR_SURFACE_EXTENSION_NAME,
 #ifdef _WIN32
-        "VK_KHR_win32_surface",
+		VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
 #elif __linux__
-        "VK_KHR_xlib_surface"
+        VK_KHR_XLIB_SURFACE_EXTENSION_NAME
 #endif // !_WIN32
 
 #ifdef _DEBUG
