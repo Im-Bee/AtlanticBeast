@@ -85,7 +85,7 @@ void main()
         }
     }
 
-    debugPrintfEXT("pixelCoord: %v2i uv: %v2f rayStart value: %v3f rayEnd value: %v3f rayDir: %v3f Index value: %d\n", pixelCoord.xy, uv, rayDir, rayDir, rayDir, index);
+    // debugPrintfEXT("pixelCoord: %v2i uv: %v2f rayStart value: %v3f rayEnd value: %v3f rayDir: %v3f Index value: %d\n", pixelCoord.xy, uv, rayDir, rayDir, rayDir, index);
     imageStore(outputImage, pixelCoord, finalColor);
 }
 

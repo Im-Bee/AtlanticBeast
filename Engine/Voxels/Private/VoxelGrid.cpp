@@ -24,6 +24,10 @@ vector<Voxel> VoxelGrid::GenerateGrid()
     size_t uCubeStart   = 33;
     size_t uCubeEnd     = 44;
 	voxelGrid[500].Type = 1;
+    voxelGrid[1000].Type = 1;
+    voxelGrid[800].Type = 1;
+    voxelGrid[550].Type = 1;
+    voxelGrid[508].Type = 1;
     for (size_t z = uCubeStart; z < uCubeEnd; ++z) {
         for (size_t y = uCubeStart; y < uCubeEnd; ++y) {
             for (size_t x = uCubeStart; x < uCubeEnd; ++x) {
