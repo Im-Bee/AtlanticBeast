@@ -39,7 +39,7 @@ void main()
     float aspectRatio = float(imageSize(outputImage).x) / float(imageSize(outputImage).y);
     float scale = tan(fov * 0.5);
 
-    vec2 uv = ((vec2(pixelCoord) / vec2(imageSize(outputImage))) * 2.0) - 1.0;
+    vec2 uv = ((vec2(pixelCoord) / vec2(imageSize(outputImage))));
     uv.x *= aspectRatio;
 
     vec3 rayDir = normalize(
