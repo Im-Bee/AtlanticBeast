@@ -109,6 +109,7 @@ void Renderer::Render()
 
     uint32_t groupCountX = (m_pWindowDesc->Width + 15) / 16;
     uint32_t groupCountY = (m_pWindowDesc->Height + 15) / 16;
+	AB_LOG(Core::Debug::Info, L"Dispatching compute shader with %d x %d work groups", groupCountX, groupCountY);
     vkCmdDispatch(m_CommandBuffer, groupCountX, groupCountY, 1);
 
     VkImageMemoryBarrier presentBarrier{};

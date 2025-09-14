@@ -27,15 +27,28 @@ layout(push_constant, std430) uniform PushConstants
 void main() 
 {
     ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
-    vec2 uv = ((vec2(pixelCoord) + 0.5) / vec2(imageSize(outputImage))) * 2.0 - 1.0;
 
-    vec4 rayStart   = viewProjInverse * vec4(uv, 0.0, 1.0);
-    vec4 rayEnd     = viewProjInverse * vec4(uv, 1.0, 1.0);
-    vec3 rayDir     = normalize(rayEnd.xyz / rayEnd.w - rayStart.xyz / rayStart.w);
-    rayDir.z *= -1.0;
+    vec3 internalCameraPos = vec3(20.0, 5.0, -55.0);
+    vec3 internalUp = vec3(0.0, 1.0, 0.0);
+    vec3 internalCameraLookDir = vec3(0.0, 0.0, 1.0);
 
+    vec3 internalCameraRight = normalize(cross(internalUp, internalCameraLookDir));
+    vec3 internalCameraUp = cross(internalCameraLookDir, internalCameraRight);
+
+    float fov = radians(45.0);  // horizontal FOV
+    float aspectRatio = float(imageSize(outputImage).x) / float(imageSize(outputImage).y);
+    float scale = tan(fov * 0.5);
+
+    vec2 uv = ((vec2(pixelCoord) / vec2(imageSize(outputImage))) * 2.0) - 1.0;
+    uv.x *= aspectRatio;
+
+    vec3 rayDir = normalize(
+        internalCameraLookDir +
+        uv.x * scale * internalCameraRight +
+        uv.y * scale * internalCameraUp
+    );
      
-    vec3 rayOrigin  = cameraPos;
+    vec3 rayOrigin  = internalCameraPos;
     vec3 rayPos     = rayOrigin;
 
     vec4 finalColor = vec4(0., 0., 0., 1.0);
@@ -57,21 +70,22 @@ void main()
         ivec3 voxelCoord = ivec3(floor(rayPos));
     
         
-        index = voxelCoord.x + 
+        index =     voxelCoord.x + 
                     (voxelCoord.y * gridSize.x) + 
                     (voxelCoord.z * gridSize.x * gridSize.y);
-        if ((index < 0) || (index > (gridSize.x * gridSize.y * gridSize.z))) {
+
+        if ((index < 0) || (index >= (gridSize.x * gridSize.y * gridSize.z))) {
             continue;
         }
 
         Voxel voxel = voxelData[index];
         if (voxel.type == 1) {
-            finalColor = vec4(1., 1., 0., 1.);
+            finalColor = vec4(normalize(gl_GlobalInvocationID.xy), 0., 1.);
             break;
         }
     }
 
-    debugPrintfEXT("ray value: %v3f\ndir value: %v3f\nIndex value: %d\n", rayPos, rayDir, index);
+    debugPrintfEXT("pixelCoord: %v2i uv: %v2f rayStart value: %v3f rayEnd value: %v3f rayDir: %v3f Index value: %d\n", pixelCoord.xy, uv, rayDir, rayDir, rayDir, index);
     imageStore(outputImage, pixelCoord, finalColor);
 }
 
