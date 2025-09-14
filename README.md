@@ -2,7 +2,7 @@
 
 Heavy work in progress.
 
-![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/ReadMeScreenshot.png?raw=true)
+![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/ReadMeScreenshot.jpg?raw=true)
 
 # Build
 
