@@ -55,15 +55,14 @@ void main()
          ++i, rayPos += rayDir * 0.01) 
     {
         ivec3 voxelCoord = ivec3(floor(rayPos));
-        if ((voxelCoord.x < 0 && voxelCoord.y < 0 && voxelCoord.z < 0) ||  
-            (voxelCoord.x > gridSize.x && voxelCoord.y > gridSize.y && voxelCoord.z > gridSize.z)) {
-            continue;
-        }
     
         
         index = voxelCoord.x + 
                     (voxelCoord.y * gridSize.x) + 
                     (voxelCoord.z * gridSize.x * gridSize.y);
+        if ((index < 0) || (index > (gridSize.x * gridSize.y * gridSize.z))) {
+            continue;
+        }
 
         Voxel voxel = voxelData[index];
         if (voxel.type == 1) {
