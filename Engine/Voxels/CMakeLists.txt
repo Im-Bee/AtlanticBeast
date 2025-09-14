@@ -5,6 +5,7 @@ SET(VOXELS_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/SwapChain.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Pipeline.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/VoxelGrid.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Renderer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
 SET(VOXELS_HEADRES 

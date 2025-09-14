@@ -16,6 +16,8 @@
 
 #include <vulkan/vulkan.hpp>
 
+#undef LoadImage
+
 #endif // !__cplusplus
 
 #ifdef __linux__

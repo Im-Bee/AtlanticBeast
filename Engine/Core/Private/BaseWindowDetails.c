@@ -74,29 +74,28 @@ void AbUpdateImpl(WindowDesc* pWd)
     Window    window      = pWd->WindowHandle;
     int       screen      = pWd->Screen;
 
-    if (!display) {
-        return;
-    }
+    while (display && XPending(display)) {
 
-    XNextEvent(display, &event);
-    if (event.type == Expose)
-    {
-        XDrawString(display, 
-                    window,
-                    DefaultGC(display, screen),
-                    10,
-                    20,
-                    "Hello, explicit display!", 
-                    24);
-    }
-    else if (event.type == ClientMessage)
-    {
-        Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
-        if ((Atom)event.xclient.data.l[0] == wmDeleteMessage)
+        XNextEvent(display, &event);
+        if (event.type == Expose)
         {
-            pWd->uLastMessage = -1;
+            pWd->Width = event.xexpose.width;
+            pWd->Height = event.xexpose.height;
+        }
+        else if (event.type == ConfigureNotify)
+        {
+            pWd->Height = event.xconfigure.height;
+            pWd->Width = event.xconfigure.width;
+        }
+        else if (event.type == ClientMessage)
+        {
+            Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
+            if ((Atom)event.xclient.data.l[0] == wmDeleteMessage)
+            {
+                pWd->uLastMessage = -1;
 
-            return;
+                return;
+            }
         }
     }
 }
@@ -165,7 +164,7 @@ void AbUpdateImpl(WindowDesc* wd)
     }
 
     MSG msg = { 0 };
-    if (GetMessage(&msg, NULL, 0, 0)) {
+    while (PeekMessage(&msg, NULL, 0, 0, 1) != 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }

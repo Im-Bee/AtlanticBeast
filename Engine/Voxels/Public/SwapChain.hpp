@@ -12,6 +12,13 @@ namespace Voxels
 
 class BEAST_VOXEL_API Swapchain
 {
+
+	friend class Renderer;
+
+public:
+    
+    static constexpr VkFormat TargetedFormat = VK_FORMAT_R8G8B8A8_UNORM;
+
 public:
 
     Swapchain(::std::shared_ptr<const Instance> inst,
@@ -20,6 +27,14 @@ public:
               ::std::shared_ptr<const WindowDesc> wd);
 
     ~Swapchain();
+
+public:
+
+    VkSwapchainKHR GetSwapChainHandle() const
+    { return m_SwapChain; }
+
+    VkImage GetImage(uint32_t i) const
+    { return m_SwapChainImages[i]; }
 
 private:
     
@@ -45,6 +60,12 @@ private:
                                    VkSurfaceFormatKHR& surfaceFormat,
                                    VkPresentModeKHR presentMode);
 
+    uint32_t CreateAmountOfSwapChainImages(::std::shared_ptr<const DeviceAdapter>& pAdapter, VkSwapchainKHR swapchain);
+
+    ::std::vector<VkImage> CreateSwapChainImages(::std::shared_ptr<const DeviceAdapter>& pAdapter,
+                                                 VkSwapchainKHR swapchain,
+                                                 uint32_t uAmount);
+
 private:
 
     ::std::shared_ptr<const Instance>       m_pInstance         = nullptr;
@@ -60,7 +81,10 @@ private:
     VkPresentModeKHR            m_PresentMode;
     VkSwapchainKHR              m_SwapChain     = VK_NULL_HANDLE;
 
-};
+    uint32_t                m_uCurrentImageIndex = 0;
+    ::std::vector<VkImage>  m_SwapChainImages;
+
+ };
 
 } // !Voxels
 #endif // !AB_SWAPCHAIN_H

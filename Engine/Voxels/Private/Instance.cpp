@@ -32,7 +32,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
         L"[Vulkan]: %s";
 #endif // !_WIN32
 
-	AB_LOG(Core::Debug::Info, pwszFormat, pCallbackData->pMessage);
+    AB_LOG(Core::Debug::Info, pwszFormat, pCallbackData->pMessage);
     return VK_FALSE;
 }
 
@@ -50,12 +50,12 @@ VkInstance Instance::CreateInstance()
     debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
     debugCreateInfo.pNext = NULL;
     debugCreateInfo.flags = 0;
-    debugCreateInfo.messageSeverity =
-        VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+    debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-    debugCreateInfo.messageType =
-        VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+
+    debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
     debugCreateInfo.pfnUserCallback     = debugCallback;
@@ -78,6 +78,7 @@ VkInstance Instance::CreateInstance()
 #endif // !_WIN32
 
 #ifdef _DEBUG
+        VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME,
         VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 #endif
     };
@@ -85,10 +86,10 @@ VkInstance Instance::CreateInstance()
     appInfo.sType               = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pNext               = NULL;
     appInfo.pApplicationName    = "Voxels";
-    appInfo.applicationVersion  = 0x00000001;
+    appInfo.applicationVersion  = VK_MAKE_VERSION(0, 1, 1);
     appInfo.pEngineName         = "AtlanticBeast";
-    appInfo.engineVersion       = 0x00000010;
-    appInfo.apiVersion          = VK_API_VERSION_1_4;
+    appInfo.engineVersion       = VK_MAKE_VERSION(0, 1, 1);
+    appInfo.apiVersion          = VK_API_VERSION_1_3;
 
 
     createInfo.sType                    = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -101,9 +102,9 @@ VkInstance Instance::CreateInstance()
     createInfo.flags                    = 0;
     createInfo.pApplicationInfo         = &appInfo;
     createInfo.ppEnabledLayerNames      = !vpszValidationLayers.empty() ? &vpszValidationLayers[0] : nullptr;
-    createInfo.enabledLayerCount        = vpszValidationLayers.size();
+    createInfo.enabledLayerCount        = static_cast<uint32_t>(vpszValidationLayers.size());
     createInfo.ppEnabledExtensionNames  = !vpszExtensions.empty() ? &vpszExtensions[0] : nullptr;
-    createInfo.enabledExtensionCount    = vpszExtensions.size();
+    createInfo.enabledExtensionCount    = static_cast<uint32_t>(vpszExtensions.size());
 
     result = vkCreateInstance(&createInfo,
                               NULL,

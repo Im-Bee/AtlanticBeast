@@ -16,20 +16,31 @@ public:
     
 public:
 
+    uint32_t GetQueueFamilyIndex() const
+    { return m_uQueueFamily; }
+
     VkDevice GetAdapterHandle() const
     { return m_Device; }
 
+    VkQueue GetQueueHandle() const
+    { return m_Queue; }
+
 private:
 
-    VkDevice CreateDeviceAdapter(::std::shared_ptr<const Hardware>& gpu);
-
     uint32_t FindQueueFamilyIndex(::std::shared_ptr<const Hardware>& gpu);
+
+    VkDevice CreateDeviceAdapter(::std::shared_ptr<const Hardware>& gpu, uint32_t uQueueIndex);
+
+    VkQueue CreateQueue(VkDevice dv, uint32_t uQueueIndex);
 
 private:
 
     ::std::shared_ptr<const Hardware> m_pHardware = nullptr;
 
-    VkDevice m_Device = VK_NULL_HANDLE;
+    uint32_t m_uQueueFamily = 0;
+
+    VkDevice    m_Device    = VK_NULL_HANDLE;
+    VkQueue     m_Queue     = VK_NULL_HANDLE;
     
 };
 

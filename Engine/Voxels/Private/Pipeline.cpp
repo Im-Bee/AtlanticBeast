@@ -1,5 +1,7 @@
 #include "Pipeline.hpp"
 
+#include "SwapChain.hpp"
+
 #include "ErrorHandling.hpp"
 
 namespace Voxels
@@ -8,7 +10,8 @@ namespace Voxels
 using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
-Pipeline::Pipeline(::std::shared_ptr<const Hardware> hw, ::std::shared_ptr<const DeviceAdapter> da)
+Pipeline::Pipeline(::std::shared_ptr<const Hardware> hw, 
+                   ::std::shared_ptr<const DeviceAdapter> da)
     : m_pHardware(hw)
     , m_pDeviceAdapter(da)
     , m_VoxelGrid(nullptr)
@@ -16,10 +19,48 @@ Pipeline::Pipeline(::std::shared_ptr<const Hardware> hw, ::std::shared_ptr<const
     , m_DescriptorPool(CreateDescriptorPool(m_pDeviceAdapter))
     , m_DescriptorSet(CreateDescriptorSet(m_pDeviceAdapter, m_DescriptorPool, m_DescriptorLayout))
     , m_PipelineLayout(CreatePipelineLayout(m_pDeviceAdapter, m_DescriptorLayout))
-    , m_ComputePipeline(CreateComputePipeline(m_pDeviceAdapter, m_PipelineLayout))
+    , m_ShaderModule(LoadShader(m_pDeviceAdapter, "./Assets/Raycast.comp.spv"))
+    , m_ComputePipeline(CreateComputePipeline(m_pDeviceAdapter, m_PipelineLayout, m_ShaderModule))
     , m_VoxelGPUBuffer(VK_NULL_HANDLE)
     , m_VoxelBufferMemory(VK_NULL_HANDLE)
 { }
+
+// ---------------------------------------------------------------------------------------------------------------------
+Pipeline::~Pipeline()
+{
+    if (m_ImageView != VK_NULL_HANDLE) {
+            vkDestroyImageView(m_pDeviceAdapter->GetAdapterHandle(), m_ImageView, nullptr);
+            m_ImageView = VK_NULL_HANDLE;
+    }
+    if (m_VoxelGPUBuffer != VK_NULL_HANDLE) {
+        vkDestroyBuffer(m_pDeviceAdapter->GetAdapterHandle(), m_VoxelGPUBuffer, NULL);
+    }
+    if (m_VoxelBufferMemory != VK_NULL_HANDLE) {
+        vkFreeMemory(m_pDeviceAdapter->GetAdapterHandle(), m_VoxelBufferMemory, NULL);
+    }
+    
+    if (m_ComputePipeline != VK_NULL_HANDLE) {
+        vkDestroyPipeline(m_pDeviceAdapter->GetAdapterHandle(), m_ComputePipeline, NULL);
+        m_ComputePipeline = VK_NULL_HANDLE;
+    }
+    if (m_ShaderModule != VK_NULL_HANDLE) {
+        vkDestroyShaderModule(m_pDeviceAdapter->GetAdapterHandle(), m_ShaderModule, NULL);
+        m_ShaderModule = VK_NULL_HANDLE;
+    }
+    if (m_PipelineLayout != VK_NULL_HANDLE) {
+        vkDestroyPipelineLayout(m_pDeviceAdapter->GetAdapterHandle(), m_PipelineLayout, NULL);
+        m_PipelineLayout = VK_NULL_HANDLE;
+    }
+    if (m_DescriptorPool != VK_NULL_HANDLE) {
+        vkDestroyDescriptorPool(m_pDeviceAdapter->GetAdapterHandle(), m_DescriptorPool, NULL);
+        m_DescriptorPool = VK_NULL_HANDLE;
+    }
+    if (m_DescriptorLayout != VK_NULL_HANDLE) {
+        vkDestroyDescriptorSetLayout(m_pDeviceAdapter->GetAdapterHandle(), m_DescriptorLayout, NULL);
+        m_DescriptorLayout = VK_NULL_HANDLE;
+    }
+
+}
 
 // Public // -----------------------------------------------------------------------------------------------------------
 void Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
@@ -73,7 +114,7 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg)
 {
     VkDevice                da                  = m_pDeviceAdapter->GetAdapterHandle();
     VkDescriptorBufferInfo  voxelBufferInfo;
-    VkWriteDescriptorSet    voxelWrite;
+    static VkWriteDescriptorSet    voxelWrite;
     void*                   pData;
     size_t                  uBufferSizeInBytes  = vg->GetSize() * sizeof(Voxel);
 
@@ -107,6 +148,45 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg)
                            NULL);
 
 }
+
+// ---------------------------------------------------------------------------------------------------------------------
+void Pipeline::LoadImage(VkImage image)
+{
+    if (m_ImageView != VK_NULL_HANDLE) {
+        vkDestroyImageView(m_pDeviceAdapter->GetAdapterHandle(), m_ImageView, nullptr);
+        m_ImageView = VK_NULL_HANDLE;
+    }
+
+    VkImageViewCreateInfo viewInfo{};
+    viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    viewInfo.image = image;
+    viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D; 
+    viewInfo.format = Swapchain::TargetedFormat;
+
+    viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; 
+    viewInfo.subresourceRange.baseMipLevel = 0;
+    viewInfo.subresourceRange.levelCount = 1;
+    viewInfo.subresourceRange.baseArrayLayer = 0;
+    viewInfo.subresourceRange.layerCount = 1;
+
+    ThrowIfFailed(vkCreateImageView(m_pDeviceAdapter->GetAdapterHandle(), &viewInfo, nullptr, &m_ImageView));
+
+    VkDescriptorImageInfo imageInfo{};
+    imageInfo.imageView = m_ImageView;
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL; 
+
+    VkWriteDescriptorSet imageWrite{};
+    imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    imageWrite.dstSet = m_DescriptorSet;
+    imageWrite.dstBinding = 0; 
+    imageWrite.dstArrayElement = 0;
+    imageWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+    imageWrite.descriptorCount = 1;
+    imageWrite.pImageInfo = &imageInfo;
+    
+    vkUpdateDescriptorSets(m_pDeviceAdapter->GetAdapterHandle(), 1, &imageWrite, 0, nullptr);
+}
+
 
 // Private // ----------------------------------------------------------------------------------------------------------
 VkDescriptorSetLayout Pipeline::CreateDescriptorLayout(shared_ptr<const DeviceAdapter>& da)
@@ -244,7 +324,9 @@ VkShaderModule Pipeline::LoadShader(shared_ptr<const DeviceAdapter>& da, const s
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPipeline Pipeline::CreateComputePipeline(shared_ptr<const DeviceAdapter>& da, VkPipelineLayout pipelineLayout)
+VkPipeline Pipeline::CreateComputePipeline(shared_ptr<const DeviceAdapter>& da, 
+                                           VkPipelineLayout pipelineLayout, 
+                                           VkShaderModule shaderModule)
 { 
     VkPipeline                      pipeline        = VK_NULL_HANDLE;
     VkDevice                        device          = da->GetAdapterHandle();
@@ -257,7 +339,7 @@ VkPipeline Pipeline::CreateComputePipeline(shared_ptr<const DeviceAdapter>& da, 
     shaderStage.flags                   = 0;
     shaderStage.pSpecializationInfo     = NULL;
     shaderStage.stage                   = VK_SHADER_STAGE_COMPUTE_BIT;
-    shaderStage.module                  = LoadShader(da, "./Assets/Raycast.comp.spv");
+    shaderStage.module                  = shaderModule;
     shaderStage.pName                   = "main";
 
 

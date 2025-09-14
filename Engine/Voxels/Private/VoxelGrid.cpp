@@ -17,7 +17,7 @@ vector<Voxel> VoxelGrid::GenerateGrid()
     size_t          uDim = VoxelGridDim;
 
     for (auto& voxel : voxelGrid) {
-        voxel.Type = 0;
+        voxel.Type = 0; 
     }
 
     size_t uIndex;
@@ -29,10 +29,7 @@ vector<Voxel> VoxelGrid::GenerateGrid()
                 uIndex = x + y * uDim + z * uDim * uDim;
 
                 voxelGrid[uIndex].Type  = 1;
-                voxelGrid[uIndex].R     = 222;
-                voxelGrid[uIndex].G     = 22;
-                voxelGrid[uIndex].B     = 212;
-                voxelGrid[uIndex].A     = 255;
+                voxelGrid[uIndex].RGBA  = 0xFF0000FF;
             }
         }
     }

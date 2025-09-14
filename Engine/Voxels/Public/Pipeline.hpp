@@ -1,6 +1,7 @@
 #ifndef AB_PIPELINE_H
 #define AB_PIPELINE_H
 
+#include "SwapChain.hpp"
 #include "Voxels.hpp"
 #include "DeviceAdapter.hpp"
 #include "PushConstants.hpp"
@@ -11,17 +12,40 @@ namespace Voxels
 
 class BEAST_VOXEL_API Pipeline
 {
+
+    friend class Renderer;
+
 public:
 
-    Pipeline(::std::shared_ptr<const Hardware> hw, ::std::shared_ptr<const DeviceAdapter> da);
+    Pipeline(::std::shared_ptr<const Hardware> hw, 
+             ::std::shared_ptr<const DeviceAdapter> da);
 
-    ~Pipeline() = default;
+    ~Pipeline();
 
 public:
 
     void ReserveGridBuffer(::std::shared_ptr<const VoxelGrid> vg);
 
     void LoadGrid(const ::std::shared_ptr<const VoxelGrid>& vg);
+
+    void LoadImage(VkImage image);
+
+    void LoadPushConstants(VoxelPushConstants vpc)
+    { m_vpc = vpc; }
+
+public:
+
+    VkPipelineLayout GetLayoutHandle() const
+    { return m_PipelineLayout; }
+
+    VkPipeline GetPipelineHandle() const
+    { return m_ComputePipeline; }
+
+    VkDescriptorSet& GetDescrpitorSet()
+    { return m_DescriptorSet; }
+
+    VoxelPushConstants& GetPushConstants()
+    { return m_vpc; }
 
 private:
 
@@ -38,7 +62,9 @@ private:
 
     VkShaderModule LoadShader(::std::shared_ptr<const DeviceAdapter>& da, const ::std::string& strPath);
 
-    VkPipeline CreateComputePipeline(::std::shared_ptr<const DeviceAdapter>& da, VkPipelineLayout pipelineLayout);
+    VkPipeline CreateComputePipeline(::std::shared_ptr<const DeviceAdapter>& da, 
+                                     VkPipelineLayout pipelineLayout, 
+                                     VkShaderModule shaderModule);
 
     uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
@@ -46,14 +72,20 @@ private:
     
     ::std::shared_ptr<const Hardware>       m_pHardware         = nullptr;
     ::std::shared_ptr<const DeviceAdapter>  m_pDeviceAdapter    = nullptr;
+    ::std::shared_ptr<const Swapchain>      m_pSwapChain        = nullptr;
 
     ::std::shared_ptr<const VoxelGrid> m_VoxelGrid = nullptr;
+
+    VoxelPushConstants m_vpc;
 
     VkDescriptorSetLayout   m_DescriptorLayout  = VK_NULL_HANDLE;
     VkDescriptorPool        m_DescriptorPool    = VK_NULL_HANDLE;
     VkDescriptorSet         m_DescriptorSet     = VK_NULL_HANDLE;
     VkPipelineLayout        m_PipelineLayout    = VK_NULL_HANDLE;
+    VkShaderModule		    m_ShaderModule      = VK_NULL_HANDLE;
     VkPipeline              m_ComputePipeline   = VK_NULL_HANDLE;
+
+    VkImageView m_ImageView = VK_NULL_HANDLE;
 
     VkBuffer        m_VoxelGPUBuffer        = VK_NULL_HANDLE;
     VkDeviceMemory  m_VoxelBufferMemory     = VK_NULL_HANDLE;

@@ -30,6 +30,8 @@ Swapchain::Swapchain(shared_ptr<const Instance> pInst,
                                   m_uImageCount,
                                   m_SurfaceFormat,
                                   m_PresentMode))
+    , m_uCurrentImageIndex(0)
+    , m_SwapChainImages(CreateSwapChainImages(m_pDeviceAdapter, m_SwapChain, m_uImageCount))
 { }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -190,13 +192,13 @@ VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const Hardware>& pHardware, 
     {
         const auto& format = vFormats[i];
 
-        if (format.format == VK_FORMAT_B8G8R8A8_UNORM && 
+        if (format.format == Swapchain::TargetedFormat && 
             format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) 
         {
             return vFormats[i];
         }
 
-        if (format.format == VK_FORMAT_B8G8R8A8_UNORM && !bPicked) {
+        if (format.format == Swapchain::TargetedFormat && !bPicked) {
             choosenFormatIndex = i;
             bPicked = true;
         }
@@ -236,6 +238,32 @@ VkPresentModeKHR Swapchain::PickMode(shared_ptr<const Hardware>& pHardware, VkSu
     }
 
     return VK_PRESENT_MODE_FIFO_KHR;
+}
+ 
+// ---------------------------------------------------------------------------------------------------------------------
+uint32_t Swapchain::CreateAmountOfSwapChainImages(::std::shared_ptr<const DeviceAdapter>& pAdapter, 
+                                                  VkSwapchainKHR swapchain)
+{
+    uint32_t uImageCount = 0;
+
+    ThrowIfFailed(vkGetSwapchainImagesKHR(pAdapter->GetAdapterHandle(), swapchain, &uImageCount, nullptr));
+
+    return uImageCount;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+::std::vector<VkImage> Swapchain::CreateSwapChainImages(::std::shared_ptr<const DeviceAdapter>& pAdapter,
+                                                        VkSwapchainKHR swapchain,
+                                                        uint32_t uAmount)
+{
+    vector<VkImage> swapChainImages(uAmount);
+
+    ThrowIfFailed(vkGetSwapchainImagesKHR(pAdapter->GetAdapterHandle(),
+                                          swapchain,
+                                          &uAmount,
+                                          &swapChainImages[0]));
+    
+    return swapChainImages;
 }
 
 } // !Voxels

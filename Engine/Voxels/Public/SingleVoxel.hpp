@@ -9,8 +9,7 @@ namespace Voxels
 struct alignas(16) Voxel
 {
     uint32_t Type;
-    uint8_t R, G, B, A;
-    uint32_t _Padding;
+    uint32_t RGBA;
 };
 
 } // !Voxels

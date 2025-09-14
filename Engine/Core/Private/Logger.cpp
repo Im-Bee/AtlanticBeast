@@ -130,7 +130,7 @@ void Logger::WriteLoop()
 
         wcout << wstrStringified << endl;
 
-        woFile.open(outputPath);
+        woFile.open(outputPath, ios::app);
         woFile << wstrStringified << endl;
         woFile.close();
 
