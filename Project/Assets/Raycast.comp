@@ -55,7 +55,8 @@ void main()
          ++i, rayPos += rayDir * 0.01) 
     {
         ivec3 voxelCoord = ivec3(floor(rayPos));
-        if (any(lessThan(voxelCoord, ivec3(0))) && any(greaterThanEqual(voxelCoord, gridSize))) {
+        if ((voxelCoord.x < 0 && voxelCoord.y < 0 && voxelCoord.z < 0) ||  
+            (voxelCoord.x > gridSize.x && voxelCoord.y > gridSize.y && voxelCoord.z > gridSize.z)) {
             continue;
         }
     
