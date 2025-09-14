@@ -88,6 +88,8 @@ void Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
     bufferInfo.size         = bufferSizeInBytes;
     bufferInfo.usage        = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
     bufferInfo.sharingMode  = VK_SHARING_MODE_EXCLUSIVE;
+	bufferInfo.queueFamilyIndexCount = 0;
+	bufferInfo.pQueueFamilyIndices = NULL;
 
     ThrowIfFailed(vkCreateBuffer(m_pDeviceAdapter->GetAdapterHandle(), 
                                  &bufferInfo,
@@ -116,7 +118,7 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg)
 {
     VkDevice                da                  = m_pDeviceAdapter->GetAdapterHandle();
     VkDescriptorBufferInfo  voxelBufferInfo;
-    static VkWriteDescriptorSet    voxelWrite;
+    VkWriteDescriptorSet    voxelWrite;
     void*                   pData;
     size_t                  uBufferSizeInBytes  = vg->GetSize() * sizeof(Voxel);
 
@@ -142,6 +144,7 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg)
     voxelWrite.descriptorType   = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     voxelWrite.descriptorCount  = 1;
     voxelWrite.pBufferInfo      = &voxelBufferInfo;
+	voxelWrite.pTexelBufferView = NULL;
 
     vkUpdateDescriptorSets(da,
                            1,

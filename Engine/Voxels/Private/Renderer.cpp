@@ -22,24 +22,25 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd)
     m_pPipeline->ReserveGridBuffer(m_pVoxelGrid);
     m_pPipeline->LoadGrid(m_pVoxelGrid);
 
-    VoxelPushConstants vpc = {
-        { 2.0f, 10.0f, -5.0f },
-        { 64, 64, 64 },
-{
-    -0.414200f, 0.000000f, -9.990000f, 10.000000f,
-    0.000000f, 0.414200f, -49.950000f, 50.000000f,
-    0.000000f, 0.000000f, 24.975000f, -24.000000f,
-    0.000000f, 0.000000f, -4.995000f, 5.000000f
-}
-
-    };
-    m_pPipeline->LoadPushConstants(vpc);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Render()
 {
     VkDevice device = m_pDeviceAdapter->GetAdapterHandle();
+    static VoxelPushConstants vpc = {
+        { 20.0f, 5.0f, -10.0f },
+        0,
+        { 64, 64, 64 },
+        0,
+{
+    -0.48191875,  5.6898e-17, -0.87621591,  2.675e-18,
+    -0.38039632,  0.90084765,  0.20921798,  2.1116e-18,
+    0.78933704,  0.43413537, -0.43413537, -4.3817e-18,
+    20.00000000, 11.00000000, -10.00000000,  1.00000000
+}
+
+    };
 
     uint32_t imageIndex;
     vkAcquireNextImageKHR(device, m_pSwapChain->GetSwapChainHandle(), UINT64_MAX, VK_NULL_HANDLE, VK_NULL_HANDLE, &imageIndex);
@@ -49,6 +50,8 @@ void Renderer::Render()
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     vkBeginCommandBuffer(m_CommandBuffer, &beginInfo);
+
+    vkCmdBindPipeline(m_CommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_pPipeline->GetPipelineHandle());
 
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -68,6 +71,23 @@ void Renderer::Render()
         1, &barrier
     );
 
+    vkCmdBindDescriptorSets(
+        m_CommandBuffer,
+        VK_PIPELINE_BIND_POINT_COMPUTE,
+        m_pPipeline->GetLayoutHandle(),
+        0, 1,
+        &m_pPipeline->GetDescrpitorSet(),
+        0, nullptr
+    );
+    vkCmdPushConstants(
+        m_CommandBuffer,
+        m_pPipeline->GetLayoutHandle(),
+        VK_SHADER_STAGE_COMPUTE_BIT,
+        0,
+        sizeof(VoxelPushConstants),
+        &vpc
+    );
+
     VkBufferMemoryBarrier voxelBufferBarrier{};
     voxelBufferBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
     voxelBufferBarrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
@@ -85,24 +105,6 @@ void Renderer::Render()
         0, nullptr,
         1, &voxelBufferBarrier,
         0, nullptr
-    );
-
-    vkCmdBindPipeline(m_CommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_pPipeline->GetPipelineHandle());
-    vkCmdBindDescriptorSets(
-        m_CommandBuffer,
-        VK_PIPELINE_BIND_POINT_COMPUTE,
-        m_pPipeline->GetLayoutHandle(),
-        0, 1,
-        &m_pPipeline->GetDescrpitorSet(),
-        0, nullptr
-    );
-    vkCmdPushConstants(
-        m_CommandBuffer,
-        m_pPipeline->GetLayoutHandle(),
-        VK_SHADER_STAGE_COMPUTE_BIT,
-        0,
-        sizeof(VoxelPushConstants),
-        &m_pPipeline->GetPushConstants()
     );
 
     uint32_t groupCountX = (m_pWindowDesc->Width + 15) / 16;

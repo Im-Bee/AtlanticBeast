@@ -117,7 +117,6 @@ VkInstance Instance::CreateInstance()
 #endif // !_WIN32
 
 #ifdef _DEBUG
-        VK_EXT_LAYER_SETTINGS_EXTENSION_NAME,
         VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 #endif
     };

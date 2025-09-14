@@ -21,8 +21,8 @@ vector<Voxel> VoxelGrid::GenerateGrid()
     }
 
     size_t uIndex;
-    size_t uCubeStart   = 33;
-    size_t uCubeEnd     = 42;
+    size_t uCubeStart   = 22;
+    size_t uCubeEnd     = 44;
     for (size_t z = uCubeStart; z < uCubeEnd; ++z) {
         for (size_t y = uCubeStart; y < uCubeEnd; ++y) {
             for (size_t x = uCubeStart; x < uCubeEnd; ++x) {
