@@ -13,7 +13,9 @@ DeviceAdapter::DeviceAdapter(shared_ptr<const Hardware> gpu)
     , m_uQueueFamily(FindQueueFamilyIndex(m_pHardware))
     , m_Device(CreateDeviceAdapter(m_pHardware, m_uQueueFamily))
     , m_Queue(CreateQueue(m_Device, m_uQueueFamily))
-{ }
+{
+    AB_LOG(Core::Debug::Info, L"Creating a device adapter!");
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 DeviceAdapter::~DeviceAdapter()

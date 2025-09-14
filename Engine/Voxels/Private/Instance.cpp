@@ -8,7 +8,9 @@ using namespace std;
 // Instance // ---------------------------------------------------------------------------------------------------------
 Instance::Instance()
     : m_Instance(CreateInstance())
-{ }
+{
+    AB_LOG(Core::Debug::Info, L"Creating an instance!");
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 Instance::~Instance()
@@ -45,10 +47,31 @@ VkInstance Instance::CreateInstance()
     VkResult                            result;
 
 #ifdef _DEBUG
+    vector<VkValidationFeatureEnableEXT> enabledVaditationFeatures = {
+        VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_EXT,
+        VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_RESERVE_BINDING_SLOT_EXT,
+        VK_VALIDATION_FEATURE_ENABLE_BEST_PRACTICES_EXT,
+        VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT,
+        VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT,
+    };
+    vector<VkValidationFeatureDisableEXT> disabledVaditationFeatures = {
+        VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT,
+    };
+    VkValidationFeaturesEXT validationFeatures;
+
+    validationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
+    validationFeatures.pNext = NULL;
+    validationFeatures.enabledValidationFeatureCount    = enabledVaditationFeatures.size();
+    validationFeatures.pEnabledValidationFeatures       = &enabledVaditationFeatures[0];
+    validationFeatures.disabledValidationFeatureCount   = disabledVaditationFeatures.size();
+    validationFeatures.pDisabledValidationFeatures      = &disabledVaditationFeatures[0];
+
+
+
     VkDebugUtilsMessengerCreateInfoEXT  debugCreateInfo;
 
     debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-    debugCreateInfo.pNext = NULL;
+    debugCreateInfo.pNext = &validationFeatures;
     debugCreateInfo.flags = 0;
     debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
@@ -60,6 +83,22 @@ VkInstance Instance::CreateInstance()
         VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
     debugCreateInfo.pfnUserCallback     = debugCallback;
     debugCreateInfo.pUserData           = NULL;
+
+    vector<const char*> layerEnables = {
+        "VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT",
+    };
+    VkLayerSettingEXT layerSetting;
+	layerSetting.pLayerName   = "VK_LAYER_KHRONOS_validation";
+	layerSetting.pSettingName = "enables";
+	layerSetting.type         = VK_LAYER_SETTING_TYPE_STRING_EXT;
+	layerSetting.valueCount   = layerEnables.size();
+	layerSetting.pValues      = &layerEnables;
+
+    VkLayerSettingsCreateInfoEXT settingsCreateInfo;
+    settingsCreateInfo.sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT;
+    settingsCreateInfo.pNext = &debugCreateInfo;
+    settingsCreateInfo.pSettings = &layerSetting;
+    settingsCreateInfo.settingCount = 1;
 #endif // !_DEBUG
 
 
@@ -78,7 +117,7 @@ VkInstance Instance::CreateInstance()
 #endif // !_WIN32
 
 #ifdef _DEBUG
-        VK_EXT_VALIDATION_FEATURES_EXTENSION_NAME,
+        VK_EXT_LAYER_SETTINGS_EXTENSION_NAME,
         VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
 #endif
     };

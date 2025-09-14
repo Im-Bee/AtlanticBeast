@@ -1,4 +1,5 @@
 #version 450
+#extension GL_EXT_debug_printf : enable
 
 layout(local_size_x = 16, local_size_y = 16) in;
 
@@ -22,30 +23,46 @@ layout(push_constant) uniform PushConstants
 void main() 
 {
     ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
-    vec2 uv = (vec2(pixelCoord) / vec2(imageSize(outputImage))) * 2.0 - 1.0;
+    vec2 uv = ((vec2(pixelCoord) + 0.5) / vec2(imageSize(outputImage))) * 2.0 - 1.0;
 
     vec4 rayStart   = pc.viewProjInverse * vec4(uv, 0.0, 1.0);
     vec4 rayEnd     = pc.viewProjInverse * vec4(uv, 1.0, 1.0);
-    vec3 rayDir     = normalize(rayEnd.xyz / rayEnd.w - rayStart.xyz / rayStart.w);
+    vec3 rayDir     = vec3(0., 0., 1);// normalize(rayEnd.xyz / rayEnd.w - rayStart.xyz / rayStart.w);
 
     vec3 rayOrigin  = pc.cameraPos;
     vec3 rayPos     = rayOrigin;
 
-    vec4 finalColor = vec4(pc.gridSize.x, pc.gridSize.y, pc.gridSize.z, 1.0);
+    vec4 finalColor = vec4(0., 0., 0., 1.0);
+    // for (int i = 0; i < 64 * 64 * 64; ++i) {
+    //     Voxel voxel = voxelData[i];
+    //     if (voxel.type == 1) {
+    //         finalColor = vec4(1., 0., 1., 1.0);
+    //         break;
+    //     }
+    // }
+    // imageStore(outputImage, pixelCoord, finalColor);
+    // return;
 
-    for (int i = 0; i < 64 * 64 * 64; ++i) 
+    debugPrintfEXT("Debug value: \n");
+    for (int i = 0; 
+         i < 1; 
+         ++i, rayPos += rayDir * 0.5) 
     {
         ivec3 voxelCoord = ivec3(floor(rayPos));
+        // if (any(lessThan(voxelCoord, ivec3(0))) || any(greaterThanEqual(voxelCoord, pc.gridSize))) {
+        //     continue;
+        // }
     
-        int index = voxelCoord.x + voxelCoord.y * pc.gridSize.x + voxelCoord.z * pc.gridSize.x * pc.gridSize.y;
+        int index = voxelCoord.x + 
+                    voxelCoord.y * pc.gridSize.x + 
+                    voxelCoord.z * pc.gridSize.x * pc.gridSize.y;
+        debugPrintfEXT("Debug value: %d\n", index);
 
         Voxel voxel = voxelData[index];
         if (voxel.type == 1) {
-            imageStore(outputImage, pixelCoord, vec4(voxel.color.xyz, 1.0));
-            return;
+            finalColor = vec4(1., 1., 1., 1.0);
+            break;
         }
-    
-        rayPos += rayDir * 0.1;
     }
 
     imageStore(outputImage, pixelCoord, finalColor);

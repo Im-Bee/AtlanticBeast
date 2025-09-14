@@ -32,7 +32,9 @@ Swapchain::Swapchain(shared_ptr<const Instance> pInst,
                                   m_PresentMode))
     , m_uCurrentImageIndex(0)
     , m_SwapChainImages(CreateSwapChainImages(m_pDeviceAdapter, m_SwapChain, m_uImageCount))
-{ }
+{
+    AB_LOG(Core::Debug::Info, L"Creating a swapchain!");
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 Swapchain::~Swapchain()

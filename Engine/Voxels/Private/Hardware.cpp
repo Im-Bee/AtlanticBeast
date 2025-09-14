@@ -10,7 +10,9 @@ using namespace std;
 Hardware::Hardware(shared_ptr<const Instance> instance)
     : m_pInstance(instance)
     , m_DeviceHandle(ChooseGPU(m_pInstance))
-{ }
+{ 
+    AB_LOG(Core::Debug::Info, L"Creating a hardware!");
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 Hardware::~Hardware()

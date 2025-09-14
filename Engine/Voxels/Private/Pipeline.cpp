@@ -23,7 +23,9 @@ Pipeline::Pipeline(::std::shared_ptr<const Hardware> hw,
     , m_ComputePipeline(CreateComputePipeline(m_pDeviceAdapter, m_PipelineLayout, m_ShaderModule))
     , m_VoxelGPUBuffer(VK_NULL_HANDLE)
     , m_VoxelBufferMemory(VK_NULL_HANDLE)
-{ }
+{
+    AB_LOG(Core::Debug::Info, L"Creating a pipeline!");
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 Pipeline::~Pipeline()
