@@ -21,4 +21,4 @@ make
 
 ### Visual Studio 
 
-Open root directory of the project with Visual Studio. Wait for cmake to build. Select AtlBee as a build target. 
+Open root directory of the project with Visual Studio. Wait for cmake to build. Select root CMakeLists.txt as a build target. 
