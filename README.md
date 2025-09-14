@@ -2,6 +2,8 @@
 
 Heavy work in progress.
 
+![alt text](https://github.com/[username]/[reponame]/blob/[branch]/Docs/ReadMeScreenshot.png?raw=true)
+
 # Build
 
 ## Needs Vulkan SDK to compile.
@@ -22,3 +24,4 @@ make
 ### Visual Studio 
 
 Open root directory of the project with Visual Studio. Wait for cmake to build. Select root CMakeLists.txt as a build target. 
+
