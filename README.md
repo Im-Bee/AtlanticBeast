@@ -1,6 +1,6 @@
 # AtlanticBeast
 
-Heavy work in progress.
+Work in progress.
 
 ![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/ReadMeScreenshot.jpg?raw=true)
 
