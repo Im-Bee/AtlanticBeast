@@ -10,8 +10,7 @@ Heavy work in progress.
 
 ### Linux
 
-### !!!
-In current version after building the project, you have to CD in to directory with executable, because VoxelsLib looks for shaders in current directory.
+### !!! In current version after building the project, you have to CD in to directory with executable, because VoxelsLib looks for shaders in current directory.
 
 ``` sh
 mkdir Build &&
