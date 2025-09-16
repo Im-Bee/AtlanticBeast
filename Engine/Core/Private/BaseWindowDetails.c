@@ -4,7 +4,7 @@
 #ifdef __linux__
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t AbCreateImpl(WindowDesc* pWd)
+uint32_t AbDetailsCreateImpl(WindowDesc* pWd)
 {
     if (pWd->DisplayHandle == NULL) {
         return -1;
@@ -45,19 +45,19 @@ uint32_t AbCreateImpl(WindowDesc* pWd)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void AbShowImpl(WindowDesc* wd)
+void AbDetailsShowImpl(WindowDesc* wd)
 {
     XMapWindow(wd->DisplayHandle, wd->WindowHandle);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void AbHideImpl(WindowDesc* pWd)
+void AbDetailsHideImpl(WindowDesc* pWd)
 {
     XUnmapWindow(pWd->DisplayHandle, pWd->WindowHandle);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void AbDestroyImpl(WindowDesc* pWd)
+void AbDetailsDestroyImpl(WindowDesc* pWd)
 { 
     if (!pWd->IsAlive || !pWd->DisplayHandle || !pWd->WindowHandle) {
         return;
@@ -67,7 +67,7 @@ void AbDestroyImpl(WindowDesc* pWd)
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
-void AbUpdateImpl(WindowDesc* pWd)
+void AbDetailsUpdateImpl(WindowDesc* pWd)
 {
     XEvent event;
     Display*  display     = pWd->DisplayHandle;
@@ -103,7 +103,7 @@ void AbUpdateImpl(WindowDesc* pWd)
 #elif _WIN32
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t AbCreateImpl(WindowDesc* wd)
+uint32_t AbDetailsCreateImpl(WindowDesc* wd)
 {
     if (wd->Hwnd) {
         return -2;
@@ -133,19 +133,19 @@ uint32_t AbCreateImpl(WindowDesc* wd)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void AbShowImpl(WindowDesc* wd)
+void AbDetailsShowImpl(WindowDesc* wd)
 {
     ShowWindow(wd->Hwnd, SW_SHOW);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void AbHideImpl(WindowDesc* wd)
+void AbDetailsHideImpl(WindowDesc* wd)
 {
     ShowWindow(wd->Hwnd, SW_HIDE);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void AbDestroyImpl(WindowDesc* wd)
+void AbDetailsDestroyImpl(WindowDesc* wd)
 {
     if (!wd->IsAlive || wd->Hwnd == NULL) {
         return;
@@ -157,7 +157,7 @@ void AbDestroyImpl(WindowDesc* wd)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void AbUpdateImpl(WindowDesc* wd)
+void AbDetailsUpdateImpl(WindowDesc* wd)
 {
     if (wd->Hwnd == NULL) {
         return;  

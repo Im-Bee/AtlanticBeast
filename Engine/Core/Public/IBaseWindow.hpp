@@ -46,7 +46,7 @@ public:
         Core::AppStatus::Get().SendOpenedWindowSignal();
 
 #ifdef __linux__
-        m_pWindowDesc->DisplayHandle = ImplAskForDisplayLinux(NULL);
+        m_pWindowDesc->DisplayHandle = AbDetailsAskForDisplayLinux(NULL);
 #elif _WIN32
 		m_pWindowDesc->pwszClassName = L"BaseClass";
 
@@ -64,7 +64,7 @@ public:
 		}
 #endif // !__linux__
 
-        if (AbCreateImpl(m_pWindowDesc.get()) != 0) {
+        if (AbDetailsCreateImpl(m_pWindowDesc.get()) != 0) {
             throw AB_EXCEPT("Couldn't create the window");
         }
 
@@ -72,10 +72,10 @@ public:
     }
 
     inline void Show()
-    { return AbShowImpl(m_pWindowDesc.get()); }
+    { return AbDetailsShowImpl(m_pWindowDesc.get()); }
 
     inline void Hide()
-    { return AbHideImpl(m_pWindowDesc.get()); }
+    { return AbDetailsHideImpl(m_pWindowDesc.get()); }
 
     inline void Destroy()
     { 
@@ -85,10 +85,10 @@ public:
 
         Core::AppStatus::Get().SendClosedWindowSignal();
 
-        AbDestroyImpl(m_pWindowDesc.get()); 
+        AbDetailsDestroyImpl(m_pWindowDesc.get()); 
 
 #ifdef __linux__
-        ImplAskToCloseDisplayLinux(NULL);
+        AbDetailsAskToCloseDisplayLinux(NULL);
         m_pWindowDesc->WindowHandle = 0;
         m_pWindowDesc->DisplayHandle = NULL;
 #elif _WIN32
@@ -101,7 +101,7 @@ public:
 
     inline void Update()
     { 
-        AbUpdateImpl(m_pWindowDesc.get());
+        AbDetailsUpdateImpl(m_pWindowDesc.get());
 		// AB_LOG(Core::Debug::Info, L"Window last message: %d", m_pWindowDesc->uLastMessage);
 
         if (m_pWindowDesc->uLastMessage == -1) {

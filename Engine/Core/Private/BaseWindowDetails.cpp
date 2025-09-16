@@ -19,7 +19,7 @@ struct DisplayCount
 static unordered_map<string, DisplayCount> Displays = { };
 
 // ---------------------------------------------------------------------------------------------------------------------
-::Display* ImplAskForDisplayLinux(const char* pszDisplayName)
+::Display* AbDetailsAskForDisplayLinux(const char* pszDisplayName)
 {
     if (pszDisplayName == NULL) {
         pszDisplayName = "";
@@ -40,7 +40,7 @@ static unordered_map<string, DisplayCount> Displays = { };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void ImplAskToCloseDisplayLinux(const char* pszDisplayName)
+void AbDetailsAskToCloseDisplayLinux(const char* pszDisplayName)
 {
     if (pszDisplayName == NULL) {
         pszDisplayName = "";
@@ -64,7 +64,7 @@ void ImplAskToCloseDisplayLinux(const char* pszDisplayName)
 static unordered_map<wstring, size_t> RegisteredClasses = { };
 
 // ---------------------------------------------------------------------------------------------------------------------
-bool ImplAskForWindowClass(const wchar_t* pwszClassName)
+bool AbDetailsAskForWindowClass(const wchar_t* pwszClassName)
 {
     if (pwszClassName == NULL) {
         pwszClassName = L"";
@@ -117,7 +117,7 @@ static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void ImplAskToRegisterWindowClass(WNDCLASSEX& wcex)
+void AbDetailsAskToRegisterWindowClass(WNDCLASSEX& wcex)
 {
     wstring className = wcex.lpszClassName;
 
@@ -135,7 +135,7 @@ void ImplAskToRegisterWindowClass(WNDCLASSEX& wcex)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void ImplAskToCloseWindowClass(const wchar_t* pwszClassName)
+void AbDetailsAskToCloseWindowClass(const wchar_t* pwszClassName)
 {
     if (RegisteredClasses.find(wstring(pwszClassName)) == RegisteredClasses.end() || RegisteredClasses[pwszClassName] == 0) {
         throw AB_EXCEPT("Traying to unregister a class that doesn't exists!!!");

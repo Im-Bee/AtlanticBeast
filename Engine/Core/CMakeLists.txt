@@ -5,7 +5,7 @@ SET(CORE_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Exception.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/BaseWindowDetails.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/BaseWindowDetails.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Logger.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Debug/Logger.cpp"
 )
 SET(CORE_HEADRES 
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/AbLimits.h"
@@ -14,10 +14,10 @@ SET(CORE_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/CSystem.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Core.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/IBaseWindow.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/DebugAssert.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Debug/Assert.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/EmptyCanvas.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Exception.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Logger.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Debug/Logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/ExportImport.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/SystemIncludes.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowDesc.h"
