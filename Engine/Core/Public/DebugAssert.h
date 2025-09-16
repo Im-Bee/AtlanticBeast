@@ -13,7 +13,7 @@
         } } while (0)                                                               
 #else
 #   define AB_ASSERT(expr)
-#   define AB_ASSERT(expr, msg)
+#   define AB_ASSERT_MSG(expr, msg)
 #endif
 
 #endif // !AB_DEBUG_ASSERT_H
