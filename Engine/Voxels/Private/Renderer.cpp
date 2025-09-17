@@ -163,7 +163,7 @@ void Renderer::Render()
     presentInfo.pImageIndices = &uImageIndex;
 
     result = vkQueuePresentKHR(m_pDeviceAdapter->GetQueueHandle(), &presentInfo);
-    if (result == VK_SUBOPTIMAL_KHR || result == VK_ERROR_OUT_OF_DATE_KHR) {
+    if (result == VK_SUBOPTIMAL_KHR) {
         if (m_pWindowDesc->IsAlive == false) {
             return;
 		}

@@ -30,7 +30,6 @@ static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
             case WM_KEYDOWN:
             {
                 uint32_t scanCode = (lParam >> 16) & 0xFF;
-                pWd->InputStruct.Handled = 0;
                 pWd->InputStruct.Event = EAbInputEvents::AbButtonPress;
                 pWd->InputStruct.KeyId = scanCode;
                 break;
@@ -39,14 +38,12 @@ static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
             case WM_KEYUP:
             {
                 uint32_t scanCode = (lParam >> 16) & 0xFF;
-				pWd->InputStruct.Handled = 0;
                 pWd->InputStruct.Event = EAbInputEvents::AbKeyRelease;
                 pWd->InputStruct.KeyId = scanCode;
                 break;
             }
 
 			case WM_MOUSEMOVE:
-                pWd->InputStruct.Handled = 0;
                 pWd->InputStruct.Event = EAbInputEvents::AbMotion;
                 pWd->InputStruct.MouseX = GET_X_LPARAM(lParam);
                 pWd->InputStruct.MouseY = GET_Y_LPARAM(lParam);

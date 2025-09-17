@@ -31,7 +31,7 @@ public:
 
     void StartCapturing()
     { 
-        if (!m_bIsCapturing && m_pWindowDesc && StartCapturingInternal())
+        if (!m_bIsCapturing && m_pWindowDesc)
             m_bIsCapturing = true;
     }
 
@@ -41,8 +41,6 @@ public:
             return;
 
         m_bIsCapturing = false;
-
-        StopCapturingInternal();
     }
 
     void AddHandler()
@@ -52,9 +50,7 @@ public:
 
 private:
 
-    bool StartCapturingInternal();
 
-    void StopCapturingInternal();
 
 private:
 
