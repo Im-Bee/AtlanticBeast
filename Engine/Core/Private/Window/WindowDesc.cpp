@@ -3,11 +3,15 @@
 
 #include "AbLimits.h"
 
-WindowDesc CreateWindowDesc(const wchar_t* pwszName, size_t uNameLen, int32_t width, int32_t height)
+WindowDesc CreateWindowDesc(const wchar_t* pwszName, 
+                            size_t uNameLen, 
+                            int32_t width, 
+                            int32_t height)
 { 
     WindowDesc wd = { 0 };
 
     wd.uNameLen = uNameLen;
+    wd.pwszClassName = NULL;
     wd.Width = width;
     wd.Height = height;
     wd.LastEvent = NothingNew;

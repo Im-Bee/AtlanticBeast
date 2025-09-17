@@ -164,6 +164,10 @@ void Renderer::Render()
 
     result = vkQueuePresentKHR(m_pDeviceAdapter->GetQueueHandle(), &presentInfo);
     if (result == VK_SUBOPTIMAL_KHR || result == VK_ERROR_OUT_OF_DATE_KHR) {
+        if (m_pWindowDesc->IsAlive == false) {
+            return;
+		}
+
         AB_LOG(Core::Debug::Warning, L"Recreating swapchain!!!");
         m_pSwapChain = nullptr;
         m_pSwapChain = make_shared<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, m_pWindowDesc);

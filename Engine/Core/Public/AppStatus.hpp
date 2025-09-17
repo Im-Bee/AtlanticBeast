@@ -15,7 +15,7 @@ enum EAppStatus
 
 class BEAST_API AppStatus
 {
-    template<typename T>
+    template<typename T, typename U>
     friend class IBaseWindow;
 
 public:

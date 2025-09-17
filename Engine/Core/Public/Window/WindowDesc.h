@@ -1,7 +1,7 @@
 #ifndef AB_WINDOW_DESC_H
 #define AB_WINDOW_DESC_H
 
-#include "Core.h"
+#include "ExportImport.h"
 #include "WindowEvents.h"
 #include "Input/InputEvents.h"
     
@@ -12,6 +12,7 @@ extern "C" {
 typedef struct WindowDesc
 {
     wchar_t*        Name;
+	const wchar_t*  pwszClassName;
     size_t          uNameLen;
     int32_t         Width;
     int32_t         Height;
@@ -23,7 +24,6 @@ typedef struct WindowDesc
 
 #ifdef _WIN32
     HWND            Hwnd;
-	const wchar_t*  pwszClassName;
     WNDCLASSEX      Wcex;
 #elif __linux__
     Display*        DisplayHandle;
@@ -33,7 +33,10 @@ typedef struct WindowDesc
 #endif // !_WIN32
 } WindowDesc;
 
-BEAST_API WindowDesc CreateWindowDesc(const wchar_t* pwszName, size_t uNameLen, int32_t width, int32_t height);
+BEAST_API WindowDesc CreateWindowDesc(const wchar_t* pwszName, 
+                                      size_t uNameLen, 
+                                      int32_t width, 
+                                      int32_t height);
 
 #ifdef __cplusplus
 }

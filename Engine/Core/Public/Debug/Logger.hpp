@@ -1,7 +1,8 @@
 #ifndef AB_LOGGER_H
 #define AB_LOGGER_H
 
-#include "Core.h"
+#include "ExportImport.h"
+#include "CSystem.hpp"
 
 namespace Core::Debug
 {

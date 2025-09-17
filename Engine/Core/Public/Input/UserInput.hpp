@@ -1,7 +1,9 @@
 #ifndef AB_USER_INPUT_H
 #define AB_USER_INPUT_H
 
-#include "Core.h"
+#include "ExportImport.h"
+#include "Window/WindowDesc.h"
+#include "CSystem.hpp"
 
 namespace Core
 {

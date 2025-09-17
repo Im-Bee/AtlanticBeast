@@ -1,0 +1,35 @@
+#ifndef AB_WINDOW_POLICY_H
+#define AB_WINDOW_POLICY_H
+
+#ifdef __linux__
+
+#include "Window/WindowPolicy/IWindowPolicy.hpp"
+
+namespace Core
+{
+
+class BEAST_API BasicLinuxWindowPolicy : public IWindowPolicy<BasicLinuxWindowPolicy>
+{
+public:
+
+	BasicLinuxWindowPolicy() = default;
+	~BasicLinuxWindowPolicy() = default;
+
+	BasicLinuxWindowPolicy(const BasicLinuxWindowPolicy&) = default;
+	BasicLinuxWindowPolicy(BasicLinuxWindowPolicy&&) noexcept = default;
+
+public:
+
+	void CreateImpl(WindowDesc* pWd);
+
+	void ShowImpl(WindowDesc* pWd);
+
+	void HideImpl(WindowDesc* pWd);
+
+	void DestroyImpl(WindowDesc* pWd);
+
+};
+
+} // !Core
+#endif // __linux__
+#endif // !AB_WINDOW_POLICY_H

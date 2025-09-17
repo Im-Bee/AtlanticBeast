@@ -6,6 +6,8 @@
 // ---------------------------------------------------------------------------------------------------------------------
 uint32_t AbDetailsCreateImpl(WindowDesc* pWd)
 {
+    pWd->DisplayHandle = AbAskForDisplayLinux(NULL);
+
     if (pWd->DisplayHandle == NULL) {
         return -1;
     }
@@ -74,6 +76,10 @@ void AbDetailsDestroyImpl(WindowDesc* pWd)
         return;
 
     XUnmapWindow(pWd->DisplayHandle, pWd->WindowHandle);
+
+    AbAskToCloseDisplayLinux(NULL);
+    m_pWindowDesc->WindowHandle = 0;
+    m_pWindowDesc->DisplayHandle = NULL;
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
@@ -175,11 +181,73 @@ void AbDetailsUpdateImpl(WindowDesc* pWd)
 
 #elif _WIN32
 
+
+// Statics // ----------------------------------------------------------------------------------------------------------
+static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    WindowDesc* pWd = NULL;
+
+    if (uMsg == WM_NCCREATE)
+    {
+        CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
+        pWd = (WindowDesc*)pCreate->lpCreateParams;
+        SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pWd);
+
+        pWd->Hwnd = hwnd;
+    }
+    else
+    {
+        pWd = (WindowDesc*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+    }
+
+    if (pWd)
+    {
+        switch (uMsg) {
+        case WM_SIZE:
+            pWd->Width = LOWORD(lParam);
+            pWd->Height = HIWORD(lParam);
+            pWd->LastEvent = EAbWindowEvents::Resize;
+            break;
+
+        case WM_CLOSE:
+            pWd->LastEvent = EAbWindowEvents::Destroy;
+            break;
+
+        default:
+            break;
+        }
+
+        // AB_LOG(Core::Debug::Info, L"pwd->uLastMessage = %u", pWd->uLastMessage);
+    }
+
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 uint32_t AbDetailsCreateImpl(WindowDesc* wd)
 {
     if (wd->Hwnd) {
         return -2;
+    }
+    
+	// Fallback to default class name if none is provided,
+	// if pwszClassName is provided, we assume that WCEX is already filled
+    if (wd->pwszClassName == NULL || wcscmp(wd->pwszClassName, L"") == 0) {
+        wd->pwszClassName = L"AtlanticClass";
+
+        memset(&wd->Wcex, 0, sizeof(WNDCLASSEX));
+
+        wd->Wcex.cbSize         = sizeof(WNDCLASSEX);
+        wd->Wcex.style          = CS_HREDRAW | CS_VREDRAW;
+        wd->Wcex.hInstance      = GetModuleHandle(NULL);
+        wd->Wcex.hCursor        = LoadCursor(NULL, IDC_ARROW);
+        wd->Wcex.lpszClassName  = wd->pwszClassName;
+        wd->Wcex.lpfnWndProc    = WindowProc;
+    }
+
+    if (!AbAskForWindowClass(wd->pwszClassName)) {
+        AbAskToRegisterWindowClass(wd->Wcex);
     }
 
     HWND hwnd = CreateWindow(wd->pwszClassName,
@@ -227,6 +295,8 @@ void AbDetailsDestroyImpl(WindowDesc* wd)
     if (DestroyWindow(wd->Hwnd)) {
         wd->Hwnd = NULL;
     }
+
+    AbAskToCloseWindowClass(wd->pwszClassName);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

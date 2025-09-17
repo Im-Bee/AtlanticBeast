@@ -70,8 +70,9 @@ void UserInput::StopCapturingInternal()
 #elif _WIN32
 
 // ---------------------------------------------------------------------------------------------------------------------
-void UserInput::StartCapturingInternal()
+bool UserInput::StartCapturingInternal()
 {
+	return true;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

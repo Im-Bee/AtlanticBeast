@@ -1,26 +1,19 @@
 #ifndef AB_IBASEWINDOW_H
 #define AB_IBASEWINDOW_H
 
-#include "Core.h"
 #include "Window/WindowDesc.h"
-#include "BaseWindowDetails.h"
 #include "Input/UserInput.hpp"
-
+#include "Window/WindowPolicy/BasicSystemPolicy.hpp"
 
 namespace Core
 {
 
-template<class Derived>
-class IBaseWindow
+template<typename Derived, typename WindowPolicy = DefaultSystemWindowPolicy>
+class IBaseWindow : private WindowPolicy
 {
-#ifdef _WIN32
-
-    template<class T>
-    friend LRESULT CALLBACK WindowProc(HWND, UINT, WPARAM, LPARAM);
-
-#endif // _WIN32
-
 public:
+
+    IBaseWindow() = default;
 
     template<class U>
     explicit IBaseWindow(U&& windowDesc = WindowDesc())
@@ -28,13 +21,13 @@ public:
         , m_Input(m_pWindowDesc)
     { }
 
-    ~IBaseWindow() 
-    {
-        this->Destroy();
+    ~IBaseWindow()
+    { 
+        this->Destroy(); 
     }
 
     IBaseWindow(const IBaseWindow& other) = delete;
-
+    
     IBaseWindow(IBaseWindow&& other) noexcept
         : m_pWindowDesc(::std::move(other.m_pWindowDesc))
         , m_Input(::std::move(other.m_Input))
@@ -42,67 +35,56 @@ public:
 
 public:
 
-    inline void Create()
+    void Create()
     { 
+        AB_ASSERT(m_pWindowDesc != nullptr);
+
+        if (m_pWindowDesc->IsAlive) {
+            return;
+        }
+        
         m_pWindowDesc->uUinqueIndex = Core::AppStatus::Get().SendOpenedWindowSignal();
 
-#ifdef __linux__
-        m_pWindowDesc->DisplayHandle = AbDetailsAskForDisplayLinux(NULL);
-#elif _WIN32
-		m_pWindowDesc->pwszClassName = L"BaseClass";
-
-
-        if (!ImplAskForWindowClass(m_pWindowDesc->pwszClassName)) {
-            m_pWindowDesc->Wcex = { 0 };
-
-			m_pWindowDesc->Wcex.cbSize = sizeof(WNDCLASSEX);
-            m_pWindowDesc->Wcex.style = CS_HREDRAW | CS_VREDRAW;
-            m_pWindowDesc->Wcex.hInstance = GetModuleHandle(NULL);
-            m_pWindowDesc->Wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-            m_pWindowDesc->Wcex.lpszClassName = m_pWindowDesc->pwszClassName;
-
-            ImplAskToRegisterWindowClass(m_pWindowDesc->Wcex);
-		}
-#endif // !__linux__
-
-        if (AbDetailsCreateImpl(m_pWindowDesc.get()) != 0) {
+        if (WindowPolicyCreate(m_pWindowDesc.get()) != 0) {
             throw AB_EXCEPT("Couldn't create the window");
         }
 
         m_pWindowDesc->IsAlive = true;
     }
 
-    inline void Show()
-    { return AbDetailsShowImpl(m_pWindowDesc.get()); }
-
-    inline void Hide()
-    { return AbDetailsHideImpl(m_pWindowDesc.get()); }
-
-    inline void Destroy()
+    void Show()
     { 
-        if (!m_pWindowDesc || !m_pWindowDesc->IsAlive) {
+        AB_ASSERT(m_pWindowDesc != nullptr);
+        WindowPolicyShow(m_pWindowDesc.get()); 
+    }
+
+    void Hide()
+    { 
+        AB_ASSERT(m_pWindowDesc != nullptr);
+        WindowPolicyShow(m_pWindowDesc.get()); 
+    }
+
+    void Destroy()
+    { 
+        AB_ASSERT(m_pWindowDesc != nullptr);
+
+        if (!m_pWindowDesc->IsAlive) {
             return;
-		}
-
+        }
+        
         Core::AppStatus::Get().SendClosedWindowSignal();
-
-        AbDetailsDestroyImpl(m_pWindowDesc.get()); 
-
-#ifdef __linux__
-        AbDetailsAskToCloseDisplayLinux(NULL);
-        m_pWindowDesc->WindowHandle = 0;
-        m_pWindowDesc->DisplayHandle = NULL;
-#elif _WIN32
-        ImplAskToCloseWindowClass(m_pWindowDesc->pwszClassName);
-		m_pWindowDesc->Hwnd = NULL;
-#endif // !__linux__
-
+        
+        WindowPolicyDestroy(m_pWindowDesc.get());
+        
         m_pWindowDesc->IsAlive = false;
     }
 
-    inline void Update()
+    void Update()
     { 
-        AbDetailsUpdateImpl(m_pWindowDesc.get());
+        AB_ASSERT(m_pWindowDesc != nullptr);
+        AB_ASSERT(m_pWindowDesc->IsAlive);
+
+        WindowPolicyUpdate(m_pWindowDesc.get());
 
         // if (m_pWindowDesc->LastEvent != EAbWindowEvents::NothingNew) {
         //     AB_LOG(Core::Debug::Info, L"Window last message: %d for %ls", m_pWindowDesc->LastEvent, m_pWindowDesc->Name);
@@ -111,31 +93,31 @@ public:
         // So, my decision is, that every client of this library, 
         // should be able to handle Input events by themselves
         // in HandleMessageImpl() or use the builtin UserInput class.
-        if (m_pWindowDesc->LastEvent == EAbWindowEvents::Input) {
+        if (m_pWindowDesc->LastEvent & EAbWindowEvents::Input) {
             m_pWindowDesc->InputStruct.Handled = false;
         }
-
-        if (m_pWindowDesc->LastEvent == EAbWindowEvents::Destroy) {
-			AB_LOG(Core::Debug::Info, L"Window is being closed by user");
+        
+        if (m_pWindowDesc->LastEvent & EAbWindowEvents::Destroy) {
+            AB_LOG(Core::Debug::Info, L"Window is being closed by user");
             this->Destroy();
         }
-
+        
         static_cast<Derived*>(this)->HandleMessageImpl(m_pWindowDesc->LastEvent);
-
+        
         m_pWindowDesc->LastEvent = EAbWindowEvents::NothingNew;
     }
 
-    inline const ::std::shared_ptr<WindowDesc>& GetWindowDesc() const
-    { return m_pWindowDesc; }
-
 public:
+
+    const ::std::shared_ptr<WindowDesc>& GetWindowDesc() const
+    { return m_pWindowDesc; }
 
     UserInput& GetInput()
     { return m_Input; }
 
 private:
 
-    void HandleMessage(uint32_t msg)
+    void HandleMessage(EAbWindowEvents msg)
     {
         static_cast<Derived*>(this)->HandleMessageImpl(msg);
     }
@@ -143,7 +125,7 @@ private:
 private:
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
-
+    
     UserInput m_Input;
 
 };
