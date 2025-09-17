@@ -1,6 +1,8 @@
 #ifndef AB_INPUT_EVENTS_H
 #define AB_INPUT_EVENTS_H
 
+#include "CSystem.h"
+
 typedef enum EAbInputEvents
 {
     AbKeyPress = 1,
@@ -13,8 +15,8 @@ typedef enum EAbInputEvents
 typedef struct AbInputStruct
 {
     EAbInputEvents Event;
-    char           Handled;
-    int            KeyId;
+    uint8_t        Handled;
+    int32_t        KeyId;
     double         MouseX;
     double         MouseY;
 } AbInputStruct;

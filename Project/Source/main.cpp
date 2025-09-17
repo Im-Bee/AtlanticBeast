@@ -26,7 +26,7 @@ int main()
         window.Update();
         window2.Update();
         input.Update();
-	    render.Render();
+	    // render.Render();
     }
 
 	AB_LOG(Core::Debug::Info, L"App is closing...");

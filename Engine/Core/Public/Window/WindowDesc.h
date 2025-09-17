@@ -17,7 +17,7 @@ typedef struct WindowDesc
     int32_t         Height;
     int32_t         IsAlive;
     EAbWindowEvents LastEvent;
-    char            bInputSupport;
+    uint8_t         bInputSupport;
     AbInputStruct   InputStruct;
     uint32_t        uUinqueIndex;
 
@@ -28,8 +28,8 @@ typedef struct WindowDesc
 #elif __linux__
     Display*        DisplayHandle;
     Window          WindowHandle;
-    int             Screen;
-    int             XiOpcode;
+    int32_t         Screen;
+    int32_t         XiOpcode;
 #endif // !_WIN32
 } WindowDesc;
 
