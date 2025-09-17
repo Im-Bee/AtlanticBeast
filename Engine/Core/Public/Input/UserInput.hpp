@@ -31,17 +31,14 @@ public:
     { 
         if (!m_bIsCapturing && m_pWindowDesc && StartCapturingInternal())
             m_bIsCapturing = true;
-        else
-            return;
-
     }
 
     void StopCapturing()
     {
-        if (m_bIsCapturing)
-            m_bIsCapturing = false;
-        else
+        if (!m_bIsCapturing)
             return;
+
+        m_bIsCapturing = false;
 
         StopCapturingInternal();
     }
