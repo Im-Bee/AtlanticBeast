@@ -1,7 +1,32 @@
-#include "UserInput.hpp"
+#include "Input/UserInput.hpp"
+#include "Input/InputEvents.h"
 
 namespace Core
 {
+
+// ---------------------------------------------------------------------------------------------------------------------
+void UserInput::Update()
+{ 
+    AbInputStruct& is = m_pWindowDesc->InputStruct;
+
+    if (is.Handled) {
+        return;
+    }
+
+    switch (is.Event) {
+        case EAbInputEvents::AbKeyPress:
+        case EAbInputEvents::AbKeyRelease:
+        case EAbInputEvents::AbButtonPress:
+        case EAbInputEvents::AbButtonRelease:
+            AB_LOG(Debug::Info, L"Key press: %d", is.KeyId);
+            break;
+
+        case EAbInputEvents::AbMotion:
+            AB_LOG(Debug::Info, L"Mouse movement: %lf %lf", is.MouseX, is.MouseY);
+    }
+
+    is.Handled = true;
+}
 
 #ifdef __linux__
 

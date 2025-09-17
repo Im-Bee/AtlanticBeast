@@ -1,5 +1,5 @@
 #include "Core.h"
-#include "BaseWindowDetails.h"
+#include "Window/BaseWindowDetails.h"
 
 #ifdef __linux__
 
@@ -70,9 +70,8 @@ void AbDetailsHideImpl(WindowDesc* pWd)
 // ---------------------------------------------------------------------------------------------------------------------
 void AbDetailsDestroyImpl(WindowDesc* pWd)
 { 
-    if (!pWd->IsAlive || !pWd->DisplayHandle || !pWd->WindowHandle) {
+    if (!pWd->IsAlive || !pWd->DisplayHandle || !pWd->WindowHandle)  
         return;
-    }
 
     XUnmapWindow(pWd->DisplayHandle, pWd->WindowHandle);
 }
@@ -110,22 +109,32 @@ void AbDetailsUpdateImpl(WindowDesc* pWd)
                 continue;
 
             pWd->LastEvent = Input;
-
+            
             switch (rawev->evtype) {
                 case XI_KeyPress:
                     pWd->InputStruct.Event = AbKeyPress;
+                    pWd->InputStruct.KeyId = rawev->detail;
                     break;
+
                 case XI_KeyRelease:
                     pWd->InputStruct.Event = AbKeyRelease;
+                    pWd->InputStruct.KeyId = rawev->detail;
                     break;
+
                 case XI_ButtonPress:
                     pWd->InputStruct.Event = AbButtonPress;
+                    pWd->InputStruct.KeyId = rawev->detail;
                     break;
+
                 case XI_ButtonRelease:
                     pWd->InputStruct.Event = AbButtonRelease;
+                    pWd->InputStruct.KeyId = rawev->detail;
                     break;
+
                 case XI_Motion:
                     pWd->InputStruct.Event = AbMotion;
+                    pWd->InputStruct.MouseX = rawev->event_x;
+                    pWd->InputStruct.MouseY = rawev->event_y;
                     break;
             }
 
@@ -133,7 +142,6 @@ void AbDetailsUpdateImpl(WindowDesc* pWd)
             return;
         }
 
-    
         switch (event.type) {
             case Expose:
                 pWd->Width = event.xexpose.width;
@@ -155,8 +163,10 @@ void AbDetailsUpdateImpl(WindowDesc* pWd)
                 if ((wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", 1)) == None)
                     break;
 
-                if ((Atom)event.xclient.data.l[0] == wmDeleteMessage)
+                if ((Atom)event.xclient.data.l[0] == wmDeleteMessage) {
                     pWd->LastEvent = Destroy;
+                    return;
+                }
 
                 break;
         }

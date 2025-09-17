@@ -5,7 +5,7 @@
 #include "Instance.hpp"
 #include "Hardware.hpp"
 #include "DeviceAdapter.hpp"
-#include "WindowDesc.h"
+#include "Window/WindowDesc.h"
 
 namespace Voxels
 {

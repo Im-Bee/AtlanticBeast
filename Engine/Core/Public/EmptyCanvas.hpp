@@ -2,7 +2,7 @@
 #define AB_EMPTYCANVAS_H
 
 #include "Core.h"
-#include "IBaseWindow.hpp"
+#include "Window/IBaseWindow.hpp"
 
 namespace Core
 {

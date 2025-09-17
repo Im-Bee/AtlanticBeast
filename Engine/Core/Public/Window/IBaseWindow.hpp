@@ -2,9 +2,9 @@
 #define AB_IBASEWINDOW_H
 
 #include "Core.h"
-#include "WindowDesc.h"
+#include "Window/WindowDesc.h"
 #include "BaseWindowDetails.h"
-#include "UserInput.hpp"
+#include "Input/UserInput.hpp"
 
 
 namespace Core
@@ -112,7 +112,7 @@ public:
         // should be able to handle Input events by themselves
         // in HandleMessageImpl() or use the builtin UserInput class.
         if (m_pWindowDesc->LastEvent == EAbWindowEvents::Input) {
-            m_pWindowDesc->InputStruct.Handled = 0;
+            m_pWindowDesc->InputStruct.Handled = false;
         }
 
         if (m_pWindowDesc->LastEvent == EAbWindowEvents::Destroy) {

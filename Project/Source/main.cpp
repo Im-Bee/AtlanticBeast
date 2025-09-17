@@ -25,6 +25,7 @@ int main()
 		// AB_LOG(Core::Debug::Info, L"App is running...");
         window.Update();
         window2.Update();
+        input.Update();
 	    render.Render();
     }
 

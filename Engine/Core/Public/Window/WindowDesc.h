@@ -3,7 +3,7 @@
 
 #include "Core.h"
 #include "WindowEvents.h"
-#include "InputEvents.h"
+#include "Input/InputEvents.h"
     
 #ifdef __cplusplus
 extern "C" {

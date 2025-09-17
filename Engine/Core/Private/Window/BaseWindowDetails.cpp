@@ -1,5 +1,5 @@
 #include "Core.h"
-#include "IBaseWindow.hpp"
+#include "Window/IBaseWindow.hpp"
 
 #include <cstring>
 #include <unordered_map>
