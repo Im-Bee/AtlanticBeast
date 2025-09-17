@@ -19,6 +19,7 @@ typedef struct WindowDesc
     EAbWindowEvents LastEvent;
     char            bInputSupport;
     AbInputStruct   InputStruct;
+    uint32_t        uUinqueIndex;
 
 #ifdef _WIN32
     HWND            Hwnd;

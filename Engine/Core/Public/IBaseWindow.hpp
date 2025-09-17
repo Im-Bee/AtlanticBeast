@@ -44,7 +44,7 @@ public:
 
     inline void Create()
     { 
-        Core::AppStatus::Get().SendOpenedWindowSignal();
+        m_pWindowDesc->uUinqueIndex = Core::AppStatus::Get().SendOpenedWindowSignal();
 
 #ifdef __linux__
         m_pWindowDesc->DisplayHandle = AbDetailsAskForDisplayLinux(NULL);
@@ -104,9 +104,9 @@ public:
     { 
         AbDetailsUpdateImpl(m_pWindowDesc.get());
 
-        if (m_pWindowDesc->LastEvent != EAbWindowEvents::NothingNew) {
-            AB_LOG(Core::Debug::Info, L"Window last message: %d", m_pWindowDesc->LastEvent);
-        }
+        // if (m_pWindowDesc->LastEvent != EAbWindowEvents::NothingNew) {
+        //     AB_LOG(Core::Debug::Info, L"Window last message: %d for %ls", m_pWindowDesc->LastEvent, m_pWindowDesc->Name);
+        // }
 
         // So, my decision is, that every client of this library, 
         // should be able to handle Input events by themselves

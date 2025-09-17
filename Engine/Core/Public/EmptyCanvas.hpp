@@ -15,6 +15,10 @@ public:
         : IBaseWindow<EmptyCanvas>(CreateWindowDesc(L"EmptyCanvas", sizeof(L"EmptyCanvas"), 1200, 700))
     { }
 
+    explicit EmptyCanvas(const wchar_t* pwszName)
+        : IBaseWindow<EmptyCanvas>(CreateWindowDesc(pwszName, sizeof(L"EmptyCanvas"), 1200, 700))
+    { }
+
     void HandleMessageImpl(uint32_t msg) 
     {
         // AB_LOG(Debug::Info, L"Proccessing a message! ... %u", msg);

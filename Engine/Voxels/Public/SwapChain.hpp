@@ -34,7 +34,13 @@ public:
     { return m_SwapChain; }
 
     VkImage GetImage(uint32_t i) const
-    { return m_SwapChainImages[i]; }
+    { 
+        if (i >= m_SwapChainImages.size()) {
+            throw AB_EXCEPT("Getting VkImage out of bounds!");
+        }
+
+        return m_SwapChainImages[i]; 
+    }
 
 private:
     

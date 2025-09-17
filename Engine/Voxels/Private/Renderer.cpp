@@ -26,6 +26,7 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd)
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Render()
 {
+    VkResult result;
     VkDevice device = m_pDeviceAdapter->GetAdapterHandle();
     static VoxelPushConstants vpc = {
         { 20.0f, 5.0f, -15.0f },
@@ -41,12 +42,20 @@ void Renderer::Render()
     };
 
     uint32_t uImageIndex;
-    vkAcquireNextImageKHR(device, 
-                          m_pSwapChain->GetSwapChainHandle(), 
-                          UINT64_MAX,
-                          VK_NULL_HANDLE,
-                          VK_NULL_HANDLE,
-                          &uImageIndex);
+    result = vkAcquireNextImageKHR(device, 
+                                   m_pSwapChain->GetSwapChainHandle(), 
+                                   UINT64_MAX,
+                                   VK_NULL_HANDLE,
+                                   VK_NULL_HANDLE,
+                                   &uImageIndex);
+
+    if (result == VK_SUBOPTIMAL_KHR || result == VK_ERROR_OUT_OF_DATE_KHR) {
+        AB_LOG(Core::Debug::Warning, L"Recreating swapchain!!!");
+        m_pSwapChain = nullptr;
+        m_pSwapChain = make_shared<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, m_pWindowDesc);
+        AB_LOG(Core::Debug::Warning, L"Recreated swapchain!!!");
+        return;
+    }
 
     m_pPipeline->LoadImage(m_pSwapChain->GetImage(uImageIndex));
 
@@ -56,7 +65,7 @@ void Renderer::Render()
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     beginInfo.pInheritanceInfo = NULL;
 
-    vkBeginCommandBuffer(m_CommandBuffer, &beginInfo);
+    ThrowIfFailed(vkBeginCommandBuffer(m_CommandBuffer, &beginInfo));
     vkCmdBindPipeline(m_CommandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE, m_pPipeline->GetPipelineHandle());
 
     VkImageMemoryBarrier barrier;
@@ -114,7 +123,7 @@ void Renderer::Render()
 
     uint32_t groupCountX = (m_pWindowDesc->Width + 15) / 16;
     uint32_t groupCountY = (m_pWindowDesc->Height + 15) / 16;
-	//AB_LOG(Core::Debug::Info, L"Dispatching compute shader with %d x %d work groups", groupCountX, groupCountY);
+	// AB_LOG(Core::Debug::Info, L"Dispatching compute shader with %d x %d work groups", groupCountX, groupCountY);
     vkCmdDispatch(m_CommandBuffer, groupCountX, groupCountY, 1);
 
     VkImageMemoryBarrier presentBarrier;
@@ -137,14 +146,14 @@ void Renderer::Render()
                          0, NULL,
                          1, &presentBarrier);
 
-    vkEndCommandBuffer(m_CommandBuffer);
+    ThrowIfFailed(vkEndCommandBuffer(m_CommandBuffer));
 
     VkSubmitInfo submitInfo { VK_STRUCTURE_TYPE_SUBMIT_INFO };
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &m_CommandBuffer;
 
-    vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(m_pDeviceAdapter->GetQueueHandle());
+    ThrowIfFailed(vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, VK_NULL_HANDLE));
+    ThrowIfFailed(vkQueueWaitIdle(m_pDeviceAdapter->GetQueueHandle()));
 
     VkSwapchainKHR swapChain = m_pSwapChain->GetSwapChainHandle();
 
@@ -153,7 +162,14 @@ void Renderer::Render()
     presentInfo.pSwapchains = &swapChain;
     presentInfo.pImageIndices = &uImageIndex;
 
-    vkQueuePresentKHR(m_pDeviceAdapter->GetQueueHandle(), &presentInfo);
+    result = vkQueuePresentKHR(m_pDeviceAdapter->GetQueueHandle(), &presentInfo);
+    if (result == VK_SUBOPTIMAL_KHR || result == VK_ERROR_OUT_OF_DATE_KHR) {
+        AB_LOG(Core::Debug::Warning, L"Recreating swapchain!!!");
+        m_pSwapChain = nullptr;
+        m_pSwapChain = make_shared<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, m_pWindowDesc);
+        AB_LOG(Core::Debug::Warning, L"Recreated swapchain!!!");
+        return;
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

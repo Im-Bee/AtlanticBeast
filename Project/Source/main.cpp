@@ -5,21 +5,27 @@
 int main()
 {
 	Core::EmptyCanvas window = { };
+	Core::EmptyCanvas window2(L"That other window");
     Core::UserInput& input = window.GetInput();
+    Core::UserInput& input2 = window2.GetInput();
     Voxels::Renderer render = { };
 
 
     window.Create();
+    window2.Create();
 
     input.AddHandler();
     input.StartCapturing();
 
-    // render.Initialize(window.GetWindowDesc());
+    input2.StartCapturing();
+
+    render.Initialize(window.GetWindowDesc());
 
     while (Core::AppStatus::GetAppCurrentStatus()) {
 		// AB_LOG(Core::Debug::Info, L"App is running...");
         window.Update();
-	    // render.Render();
+        window2.Update();
+	    render.Render();
     }
 
 	AB_LOG(Core::Debug::Info, L"App is closing...");

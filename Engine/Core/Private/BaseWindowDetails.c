@@ -49,7 +49,7 @@ uint32_t AbDetailsCreateImpl(WindowDesc* pWd)
         pWd->bInputSupport = 0;
     }
 
-    Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
+    Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", 0);
     XSetWMProtocols(display, window, &wmDeleteMessage, 1);
 
     return 0;
@@ -84,21 +84,30 @@ void AbDetailsUpdateImpl(WindowDesc* pWd)
     Display*    display     = pWd->DisplayHandle;
     Window      window      = pWd->WindowHandle;
     int         screen      = pWd->Screen;
+                
+
+    Atom wmDeleteMessage;
+
 
     while (display && XPending(display)) 
     {
+        XPeekEvent(display, &event);
+        if (event.xcookie.type != GenericEvent && event.xany.window != pWd->WindowHandle) {
+            return;
+        }
+
         XNextEvent(display, &event);
 
         if (event.xcookie.type == GenericEvent && 
             event.xcookie.extension == pWd->XiOpcode) 
         {
-            XGetEventData(display, &event.xcookie) ;
+            if (!XGetEventData(display, &event.xcookie)) 
+                continue;
 
             XIDeviceEvent *rawev = (XIDeviceEvent*)event.xcookie.data;
 
-            if (rawev->event != window) {
-                break;
-            }
+            if (rawev->event != window)
+                continue;
 
             pWd->LastEvent = Input;
 
@@ -139,12 +148,16 @@ void AbDetailsUpdateImpl(WindowDesc* pWd)
                 break;
 
             case ClientMessage:
-                Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
-                if ((Atom)event.xclient.data.l[0] == wmDeleteMessage)
-                {
-                    pWd->LastEvent = Destroy;
+                if (event.xclient.window != pWd->WindowHandle) {
                     return;
                 }
+
+                if ((wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", 1)) == None)
+                    break;
+
+                if ((Atom)event.xclient.data.l[0] == wmDeleteMessage)
+                    pWd->LastEvent = Destroy;
+
                 break;
         }
     }
