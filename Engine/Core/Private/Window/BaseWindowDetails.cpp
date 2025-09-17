@@ -1,5 +1,5 @@
 #include "Core.h"
-#include "IBaseWindow.hpp"
+#include "Window/IBaseWindow.hpp"
 
 #include <cstring>
 #include <unordered_map>
@@ -19,7 +19,7 @@ struct DisplayCount
 static unordered_map<string, DisplayCount> Displays = { };
 
 // ---------------------------------------------------------------------------------------------------------------------
-::Display* AbDetailsAskForDisplayLinux(const char* pszDisplayName)
+::Display* AbAskForDisplayLinux(const char* pszDisplayName)
 {
     if (pszDisplayName == NULL) {
         pszDisplayName = "";
@@ -40,7 +40,7 @@ static unordered_map<string, DisplayCount> Displays = { };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void AbDetailsAskToCloseDisplayLinux(const char* pszDisplayName)
+void AbAskToCloseDisplayLinux(const char* pszDisplayName)
 {
     if (pszDisplayName == NULL) {
         pszDisplayName = "";
@@ -64,7 +64,7 @@ void AbDetailsAskToCloseDisplayLinux(const char* pszDisplayName)
 static unordered_map<wstring, size_t> RegisteredClasses = { };
 
 // ---------------------------------------------------------------------------------------------------------------------
-bool AbDetailsAskForWindowClass(const wchar_t* pwszClassName)
+bool AbAskForWindowClass(const wchar_t* pwszClassName)
 {
     if (pwszClassName == NULL) {
         pwszClassName = L"";
@@ -79,49 +79,10 @@ bool AbDetailsAskForWindowClass(const wchar_t* pwszClassName)
     }
 }
 
-// Statics // ----------------------------------------------------------------------------------------------------------
-static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    WindowDesc* pWd = NULL;
-
-    if (uMsg == WM_NCCREATE)
-    {
-        CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
-        pWd = (WindowDesc*)pCreate->lpCreateParams;
-        SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pWd);
-
-        pWd->Hwnd = hwnd;
-    }
-    else
-    {
-        pWd = (WindowDesc*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-    }
-
-    if (pWd)
-    {
-        switch (uMsg)
-        {
-        case WM_CLOSE:
-        {
-            pWd->uLastMessage = -1;
-            break;
-        }
-        default:
-            break;
-        }
-
-        // AB_LOG(Core::Debug::Info, L"pwd->uLastMessage = %u", pWd->uLastMessage);
-    }
-      
-    return DefWindowProc(hwnd, uMsg, wParam, lParam);
-}
-
 // ---------------------------------------------------------------------------------------------------------------------
-void AbDetailsAskToRegisterWindowClass(WNDCLASSEX& wcex)
+void AbAskToRegisterWindowClass(WNDCLASSEX& wcex)
 {
     wstring className = wcex.lpszClassName;
-
-    wcex.lpfnWndProc = WindowProc;
 
     if (RegisteredClasses.find(className) != RegisteredClasses.end() && 
         RegisteredClasses[className] != 0)
@@ -135,7 +96,7 @@ void AbDetailsAskToRegisterWindowClass(WNDCLASSEX& wcex)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void AbDetailsAskToCloseWindowClass(const wchar_t* pwszClassName)
+void AbAskToCloseWindowClass(const wchar_t* pwszClassName)
 {
     if (RegisteredClasses.find(wstring(pwszClassName)) == RegisteredClasses.end() || RegisteredClasses[pwszClassName] == 0) {
         throw AB_EXCEPT("Traying to unregister a class that doesn't exists!!!");

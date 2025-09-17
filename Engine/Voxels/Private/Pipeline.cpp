@@ -68,7 +68,7 @@ Pipeline::~Pipeline()
 void Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
 {
     VkBufferCreateInfo      bufferInfo;
-    VkDeviceSize            bufferSizeInBytes   = vg->GetSize() * sizeof(Voxel);
+    VkDeviceSize            bufferSizeInBytes   = vg->GetAmountOfVoxels() * sizeof(Voxel);
     VkBuffer                voxelBuffer;
     VkDevice                da                  = m_pDeviceAdapter->GetAdapterHandle();
     VkDeviceMemory          voxelBufferMemory;
@@ -120,12 +120,12 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg)
     VkDescriptorBufferInfo  voxelBufferInfo;
     VkWriteDescriptorSet    voxelWrite;
     void*                   pData;
-    size_t                  uBufferSizeInBytes  = vg->GetSize() * sizeof(Voxel);
+    size_t                  uBufferSizeInBytes  = vg->GetAmountOfVoxels() * sizeof(Voxel);
 
     AB_ASSERT((m_VoxelGPUBuffer != VK_NULL_HANDLE));
     AB_ASSERT((m_VoxelBufferMemory != VK_NULL_HANDLE));
     AB_ASSERT((m_VoxelGrid != nullptr));
-    AB_ASSERT((vg->GetSize() == m_VoxelGrid->GetSize()));
+    AB_ASSERT((vg->GetAmountOfVoxels() == m_VoxelGrid->GetAmountOfVoxels()));
 
     vkMapMemory(da, m_VoxelBufferMemory, 0, uBufferSizeInBytes, 0, &pData);
     memcpy(pData, &vg->GetGrid()[0], uBufferSizeInBytes);

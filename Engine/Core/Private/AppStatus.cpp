@@ -25,7 +25,7 @@ EAppStatus AppStatus::GetAppCurrentStatus()
 	return m_AppCurrentStatus;
 }
 
-void AppStatus::SendClosedWindowSignal()
+uint32_t AppStatus::SendClosedWindowSignal()
 {
     AB_LOG(Debug::Info, L"Got close window signal");
 
@@ -35,15 +35,19 @@ void AppStatus::SendClosedWindowSignal()
     }
 
     UpdateStatus();
+
+    return m_NumberOfWindows;
 }
 
-void AppStatus::SendOpenedWindowSignal()
+uint32_t AppStatus::SendOpenedWindowSignal()
 {
     AB_LOG(Debug::Info, L"Got new window signal");
 
     ++m_NumberOfWindows;
 
     UpdateStatus();
+
+    return m_NumberOfWindows;
 }
 
 void AppStatus::UpdateStatus()

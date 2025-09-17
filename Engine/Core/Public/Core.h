@@ -30,7 +30,6 @@ static const char szLogPostfix[] = "_AtlanticBeast.log";
 #endif // !_DEBUG
        
 #include "AppStatus.hpp"
-#include "EmptyCanvas.hpp"
        
 
 #endif // !__cplusplus

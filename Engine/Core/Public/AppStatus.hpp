@@ -15,7 +15,7 @@ enum EAppStatus
 
 class BEAST_API AppStatus
 {
-    template<typename T>
+    template<typename T, typename U>
     friend class IBaseWindow;
 
 public:
@@ -27,8 +27,8 @@ public:
 
 private:
 
-    void SendClosedWindowSignal();
-    void SendOpenedWindowSignal();
+    uint32_t SendClosedWindowSignal();
+    uint32_t SendOpenedWindowSignal();
 
     void UpdateStatus();
 
