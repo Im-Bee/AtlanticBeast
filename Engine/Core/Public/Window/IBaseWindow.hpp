@@ -1,9 +1,11 @@
 #ifndef AB_IBASEWINDOW_H
 #define AB_IBASEWINDOW_H
 
+#include "Debug/Assert.h"
 #include "Window/WindowDesc.h"
 #include "Input/UserInput.hpp"
 #include "Window/WindowPolicy/BasicSystemPolicy.hpp"
+#include "AppStatus.hpp"
 
 namespace Core
 {
@@ -45,7 +47,7 @@ public:
         
         m_pWindowDesc->uUinqueIndex = Core::AppStatus::Get().SendOpenedWindowSignal();
 
-        if (WindowPolicyCreate(m_pWindowDesc.get()) != 0) {
+        if (this->WindowPolicyCreate(m_pWindowDesc.get()) != 0) {
             throw AB_EXCEPT("Couldn't create the window");
         }
 
@@ -55,13 +57,13 @@ public:
     void Show()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
-        WindowPolicyShow(m_pWindowDesc.get()); 
+        this->WindowPolicyShow(m_pWindowDesc.get()); 
     }
 
     void Hide()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
-        WindowPolicyHide(m_pWindowDesc.get()); 
+        this->WindowPolicyHide(m_pWindowDesc.get()); 
     }
 
     void Destroy()
@@ -74,7 +76,7 @@ public:
         
         Core::AppStatus::Get().SendClosedWindowSignal();
         
-        WindowPolicyDestroy(m_pWindowDesc.get());
+        this->WindowPolicyDestroy(m_pWindowDesc.get());
         
         m_pWindowDesc->IsAlive = false;
     }
@@ -84,7 +86,7 @@ public:
         AB_ASSERT(m_pWindowDesc != nullptr);
         AB_ASSERT(m_pWindowDesc->IsAlive);
 
-        WindowPolicyUpdate(m_pWindowDesc.get());
+        this->WindowPolicyUpdate(m_pWindowDesc.get());
 
         // So, my decision is, that every client of this library, 
         // should be able to handle Input events by themselves

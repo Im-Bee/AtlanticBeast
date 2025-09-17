@@ -1,5 +1,7 @@
 #ifdef __linux__
 
+#include "AbLimits.h"
+#include "Window/BaseWindowDetails.h"
 #include "Window/WindowPolicy/Linux/BasicLinuxPolicy.hpp"
 
 namespace Core
@@ -26,7 +28,7 @@ uint32_t BasicLinuxWindowPolicy::CreateImpl(WindowDesc* pWd)
 
 
     XTextProperty windowName;
-    char* szWindowName = (char*)malloc(sizeof(char) * AB_SMALL_STRNG);
+    char* szWindowName = (char*)malloc(sizeof(char) * AB_SMALL_STRING);
     size_t uWriten = wcstombs(szWindowName, pWd->Name, pWd->uNameLen);
     szWindowName[uWriten] = '\0';
 
@@ -80,17 +82,17 @@ void BasicLinuxWindowPolicy::DestroyImpl(WindowDesc* pWd)
     XUnmapWindow(pWd->DisplayHandle, pWd->WindowHandle);
 
     AbAskToCloseDisplayLinux(NULL);
-    m_pWindowDesc->WindowHandle = 0;
-    m_pWindowDesc->DisplayHandle = NULL;
+    pWd->WindowHandle = 0;
+    pWd->DisplayHandle = NULL;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
 {
     XEvent      event;
-    Display* display = pWd->DisplayHandle;
-    Window      window = pWd->WindowHandle;
-    int         screen = pWd->Screen;
+    Display*    display = pWd->DisplayHandle;
+    Window      window  = pWd->WindowHandle;
+    int         screen  = pWd->Screen;
 
 
     Atom wmDeleteMessage;

@@ -20,13 +20,15 @@ public:
 
 public:
 
-	void CreateImpl(WindowDesc* pWd);
+	uint32_t CreateImpl(WindowDesc* pWd);
 
 	void ShowImpl(WindowDesc* pWd);
 
 	void HideImpl(WindowDesc* pWd);
 
 	void DestroyImpl(WindowDesc* pWd);
+
+    void UpdateImpl(WindowDesc* pWd);
 
 };
 

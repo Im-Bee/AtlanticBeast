@@ -1,7 +1,8 @@
 #ifndef AB_APPSTATUS_H
 #define AB_APPSTATUS_H
 
-#include "Core.h"
+#include "ExportImport.h"
+#include "CSystem.hpp"
 
 namespace Core
 {
