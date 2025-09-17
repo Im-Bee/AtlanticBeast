@@ -10,10 +10,11 @@ WindowDesc CreateWindowDesc(const wchar_t* pwszName, size_t uNameLen, int32_t wi
     wd.uNameLen = uNameLen;
     wd.Width = width;
     wd.Height = height;
-    wd.uLastMessage = 0;
+    wd.LastEvent = NothingNew;
+    wd.InputStruct.Handled = 1;
 
-    if (wd.uNameLen >= AB_SMALLS_STRING) {
-        wd.uNameLen = AB_SMALLS_STRING;
+    if (wd.uNameLen >= AB_SMALL_STRNG) {
+        wd.uNameLen = AB_SMALL_STRNG;
     }
     
     wd.Name = (wchar_t*)malloc(wd.uNameLen * sizeof(wchar_t));

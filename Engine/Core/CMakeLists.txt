@@ -6,6 +6,7 @@ SET(CORE_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/BaseWindowDetails.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/BaseWindowDetails.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Debug/Logger.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/UserInput.cpp"
 )
 SET(CORE_HEADRES 
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/AbLimits.h"
@@ -14,13 +15,16 @@ SET(CORE_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/CSystem.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Core.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/IBaseWindow.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Debug/Assert.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/EmptyCanvas.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Exception.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Debug/Logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/ExportImport.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/SystemIncludes.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowDesc.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Debug/Assert.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Debug/Logger.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/UserInput.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/WindowEvents.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/InputEvents.h"
 )
 
 ADD_LIBRARY(CoreLib SHARED
@@ -29,10 +33,15 @@ ADD_LIBRARY(CoreLib SHARED
 )
 
 IF (UNIX)
+
     FIND_PACKAGE(X11 REQUIRED)
+    FIND_LIBRARY(XI_LIB Xi REQUIRED)
 
     TARGET_INCLUDE_DIRECTORIES(CoreLib PUBLIC ${X11_INCLUDE_DIR})
+    TARGET_INCLUDE_DIRECTORIES(CoreLib PUBLIC ${XI_INCLUDE_DIRS})
     TARGET_LINK_LIBRARIES(CoreLib PUBLIC ${X11_LIBRARIES})
+    TARGET_LINK_LIBRARIES(CoreLib PUBLIC ${XI_LIB})
+
 endif()
 
 TARGET_INCLUDE_DIRECTORIES(CoreLib PUBLIC 

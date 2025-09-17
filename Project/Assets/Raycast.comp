@@ -40,7 +40,6 @@ void main()
     float scale = tan(fov * 0.5);
 
     vec2 uv = ((vec2(pixelCoord) / vec2(imageSize(outputImage))));
-    uv.x *= aspectRatio;
 
     vec3 rayDir = normalize(
         internalCameraLookDir +

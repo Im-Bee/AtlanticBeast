@@ -2,6 +2,8 @@
 #define AB_WINDOW_DESC_H
 
 #include "Core.h"
+#include "WindowEvents.h"
+#include "InputEvents.h"
     
 #ifdef __cplusplus
 extern "C" {
@@ -14,7 +16,9 @@ typedef struct WindowDesc
     int32_t         Width;
     int32_t         Height;
     int32_t         IsAlive;
-    uint32_t        uLastMessage;
+    EAbWindowEvents LastEvent;
+    char            bInputSupport;
+    AbInputStruct   InputStruct;
 
 #ifdef _WIN32
     HWND            Hwnd;
@@ -24,6 +28,7 @@ typedef struct WindowDesc
     Display*        DisplayHandle;
     Window          WindowHandle;
     int             Screen;
+    int             XiOpcode;
 #endif // !_WIN32
 } WindowDesc;
 

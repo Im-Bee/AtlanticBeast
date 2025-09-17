@@ -24,7 +24,7 @@ public:
     const ::std::vector<Voxel>& GetGrid() const
     { return m_VoxelGrid; }
 
-    size_t GetSize() const
+    size_t GetAmountOfVoxels() const
     { return m_VoxelGrid.size(); }
 
 private:

@@ -22,7 +22,7 @@ Exception::Exception(const char* szMessage,
     }
 
     char* szErrorMessage = new char[AB_LONG_STRING];
-    char szLine[AB_SMALLS_STRING] = { 0 };
+    char szLine[AB_SMALL_STRNG] = { 0 };
     char szAtLine[] = "\nAt line: ";
     char szInFile[] = "\nIn file: ";
     size_t uIndex = m_uMesLen;

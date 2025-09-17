@@ -4,6 +4,7 @@
 #include "Core.h"
 #include "WindowDesc.h"
 #include "BaseWindowDetails.h"
+#include "UserInput.hpp"
 
 
 namespace Core
@@ -24,6 +25,7 @@ public:
     template<class U>
     explicit IBaseWindow(U&& windowDesc = WindowDesc())
         : m_pWindowDesc(::std::make_shared<WindowDesc>(::std::forward<U>(windowDesc)))
+        , m_Input(m_pWindowDesc)
     { }
 
     ~IBaseWindow() 
@@ -31,13 +33,12 @@ public:
         this->Destroy();
     }
 
-    IBaseWindow(const IBaseWindow& other) = default;
+    IBaseWindow(const IBaseWindow& other) = delete;
 
     IBaseWindow(IBaseWindow&& other) noexcept
         : m_pWindowDesc(::std::move(other.m_pWindowDesc))
-    { 
-        other.m_pWindowDesc = nullptr;
-    }
+        , m_Input(::std::move(other.m_Input))
+    { }
 
 public:
 
@@ -102,18 +103,35 @@ public:
     inline void Update()
     { 
         AbDetailsUpdateImpl(m_pWindowDesc.get());
-		// AB_LOG(Core::Debug::Info, L"Window last message: %d", m_pWindowDesc->uLastMessage);
 
-        if (m_pWindowDesc->uLastMessage == -1) {
+        if (m_pWindowDesc->LastEvent != EAbWindowEvents::NothingNew) {
+            AB_LOG(Core::Debug::Info, L"Window last message: %d", m_pWindowDesc->LastEvent);
+        }
+
+        // So, my decision is, that every client of this library, 
+        // should be able to handle Input events by themselves
+        // in HandleMessageImpl() or use the builtin UserInput class.
+        if (m_pWindowDesc->LastEvent == EAbWindowEvents::Input) {
+            m_pWindowDesc->InputStruct.Handled = 0;
+        }
+
+        if (m_pWindowDesc->LastEvent == EAbWindowEvents::Destroy) {
 			AB_LOG(Core::Debug::Info, L"Window is being closed by user");
             this->Destroy();
         }
 
-        static_cast<Derived*>(this)->HandleMessageImpl(m_pWindowDesc->uLastMessage);
+        static_cast<Derived*>(this)->HandleMessageImpl(m_pWindowDesc->LastEvent);
+
+        m_pWindowDesc->LastEvent = EAbWindowEvents::NothingNew;
     }
 
     inline const ::std::shared_ptr<WindowDesc>& GetWindowDesc() const
     { return m_pWindowDesc; }
+
+public:
+
+    UserInput& GetInput()
+    { return m_Input; }
 
 private:
 
@@ -125,6 +143,8 @@ private:
 private:
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
+
+    UserInput m_Input;
 
 };
 

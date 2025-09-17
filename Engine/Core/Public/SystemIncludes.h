@@ -13,6 +13,7 @@
 #elif __linux__
 #   include <X11/Xlib.h>
 #   include <X11/Xutil.h>
+#   include <X11/extensions/XInput2.h>
 #endif // !_WIN32
        
 #endif // !AB_SYSTEMINCLU_H

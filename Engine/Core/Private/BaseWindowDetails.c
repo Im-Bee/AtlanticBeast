@@ -20,10 +20,9 @@ uint32_t AbDetailsCreateImpl(WindowDesc* pWd)
                                         BlackPixel(display, screen),
                                         WhitePixel(display, screen));
 
+
     XTextProperty windowName;
-
-    char* szWindowName = (char*)malloc(sizeof(char) * AB_SMALLS_STRING);
-
+    char* szWindowName = (char*)malloc(sizeof(char) * AB_SMALL_STRNG);
     size_t uWriten = wcstombs(szWindowName, pWd->Name, pWd->uNameLen);
     szWindowName[uWriten] = '\0';
 
@@ -32,11 +31,23 @@ uint32_t AbDetailsCreateImpl(WindowDesc* pWd)
     free(szWindowName);
     XFree(windowName.value);
 
-    XSelectInput(display, window, ExposureMask | KeyPressMask);
+    XSelectInput(display, window, ExposureMask);
     XMapWindow(display, window);
 
     pWd->Screen = DefaultScreen(display);
     pWd->WindowHandle = window;
+
+    int firstEvent, firstError;
+    int major = 2, minor = 0;
+    if (XQueryExtension(display, "XInputExtension", &pWd->XiOpcode, &firstEvent, &firstError) &&
+        XIQueryVersion(display, &major, &minor) == Success) 
+    {
+        pWd->bInputSupport = 1;
+    }
+    else 
+    {
+        pWd->bInputSupport = 0;
+    }
 
     Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
     XSetWMProtocols(display, window, &wmDeleteMessage, 1);
@@ -69,33 +80,72 @@ void AbDetailsDestroyImpl(WindowDesc* pWd)
 // ---------------------------------------------------------------------------------------------------------------------
 void AbDetailsUpdateImpl(WindowDesc* pWd)
 {
-    XEvent event;
-    Display*  display     = pWd->DisplayHandle;
-    Window    window      = pWd->WindowHandle;
-    int       screen      = pWd->Screen;
+    XEvent      event;
+    Display*    display     = pWd->DisplayHandle;
+    Window      window      = pWd->WindowHandle;
+    int         screen      = pWd->Screen;
 
-    while (display && XPending(display)) {
-
+    while (display && XPending(display)) 
+    {
         XNextEvent(display, &event);
-        if (event.type == Expose)
-        {
-            pWd->Width = event.xexpose.width;
-            pWd->Height = event.xexpose.height;
-        }
-        else if (event.type == ConfigureNotify)
-        {
-            pWd->Height = event.xconfigure.height;
-            pWd->Width = event.xconfigure.width;
-        }
-        else if (event.type == ClientMessage)
-        {
-            Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
-            if ((Atom)event.xclient.data.l[0] == wmDeleteMessage)
-            {
-                pWd->uLastMessage = -1;
 
-                return;
+        if (event.xcookie.type == GenericEvent && 
+            event.xcookie.extension == pWd->XiOpcode) 
+        {
+            XGetEventData(display, &event.xcookie) ;
+
+            XIDeviceEvent *rawev = (XIDeviceEvent*)event.xcookie.data;
+
+            if (rawev->event != window) {
+                break;
             }
+
+            pWd->LastEvent = Input;
+
+            switch (rawev->evtype) {
+                case XI_KeyPress:
+                    pWd->InputStruct.Event = AbKeyPress;
+                    break;
+                case XI_KeyRelease:
+                    pWd->InputStruct.Event = AbKeyRelease;
+                    break;
+                case XI_ButtonPress:
+                    pWd->InputStruct.Event = AbButtonPress;
+                    break;
+                case XI_ButtonRelease:
+                    pWd->InputStruct.Event = AbButtonRelease;
+                    break;
+                case XI_Motion:
+                    pWd->InputStruct.Event = AbMotion;
+                    break;
+            }
+
+            XFreeEventData(display, &event.xcookie);
+            return;
+        }
+
+    
+        switch (event.type) {
+            case Expose:
+                pWd->Width = event.xexpose.width;
+                pWd->Height = event.xexpose.height;
+                pWd->LastEvent = Resize;
+                break;
+
+            case ConfigureNotify:
+                pWd->Height = event.xconfigure.height;
+                pWd->Width = event.xconfigure.width;
+                pWd->LastEvent = Resize;
+                break;
+
+            case ClientMessage:
+                Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", False);
+                if ((Atom)event.xclient.data.l[0] == wmDeleteMessage)
+                {
+                    pWd->LastEvent = Destroy;
+                    return;
+                }
+                break;
         }
     }
 }

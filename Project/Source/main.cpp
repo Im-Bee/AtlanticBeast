@@ -4,20 +4,25 @@
 
 int main()
 {
-	Core::EmptyCanvas iec = { };
-    Voxels::Renderer ren = { };
+	Core::EmptyCanvas window = { };
+    Core::UserInput& input = window.GetInput();
+    Voxels::Renderer render = { };
 
-    iec.Create();
-    iec.Update();
-    ren.Initialize(iec.GetWindowDesc());
+
+    window.Create();
+
+    input.AddHandler();
+    input.StartCapturing();
+
+    // render.Initialize(window.GetWindowDesc());
 
     while (Core::AppStatus::GetAppCurrentStatus()) {
 		// AB_LOG(Core::Debug::Info, L"App is running...");
-        iec.Update();
-	    ren.Render();
+        window.Update();
+	    // render.Render();
     }
 
 	AB_LOG(Core::Debug::Info, L"App is closing...");
 
-    iec.Destroy();
+    window.Destroy();
 }
