@@ -17,8 +17,8 @@ typedef struct AbInputStruct
     EAbInputEvents Event;
     uint8_t        Handled;
     int32_t        KeyId;
-    double         MouseX;
-    double         MouseY;
+    int32_t        MouseX;
+    int32_t        MouseY;
 } AbInputStruct;
 
 #endif // !AB_INPUT_EVENTS_H

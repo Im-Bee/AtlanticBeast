@@ -121,28 +121,28 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
             switch (rawev->evtype) {
             case XI_KeyPress:
                 pWd->InputStruct.Event = AbKeyPress;
-                pWd->InputStruct.KeyId = rawev->detail;
+                pWd->InputStruct.KeyId = rawev->detail - 8;
                 break;
 
             case XI_KeyRelease:
                 pWd->InputStruct.Event = AbKeyRelease;
-                pWd->InputStruct.KeyId = rawev->detail;
+                pWd->InputStruct.KeyId = rawev->detail - 8;
                 break;
 
             case XI_ButtonPress:
                 pWd->InputStruct.Event = AbButtonPress;
-                pWd->InputStruct.KeyId = rawev->detail;
+                pWd->InputStruct.KeyId = rawev->detail - 8;
                 break;
 
             case XI_ButtonRelease:
                 pWd->InputStruct.Event = AbButtonRelease;
-                pWd->InputStruct.KeyId = rawev->detail;
+                pWd->InputStruct.KeyId = rawev->detail - 8;
                 break;
 
             case XI_Motion:
                 pWd->InputStruct.Event = AbMotion;
-                pWd->InputStruct.MouseX = rawev->event_x;
-                pWd->InputStruct.MouseY = rawev->event_y;
+                pWd->InputStruct.MouseX = static_cast<int32_t>(rawev->event_x);
+                pWd->InputStruct.MouseY = static_cast<int32_t>(rawev->event_y);
                 break;
             }
 

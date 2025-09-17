@@ -10,21 +10,17 @@ int main()
     Core::UserInput& input2 = window2.GetInput();
     Voxels::Renderer render = { };
 
+    window2.Create();
+    input2.StartCapturing();
 
     window.Create();
 
     input.AddHandler();
     input.StartCapturing();
 
-
-    window2.Create();
-    input2.StartCapturing();
-
     render.Initialize(window.GetWindowDesc());
     
     while (Core::AppStatus::GetAppCurrentStatus()) {
-        // AB_LOG(Core::Debug::Info, L"App is running...");
-
         if (window2.GetWindowDesc()->IsAlive) {
             window2.Update();
         }
@@ -37,6 +33,4 @@ int main()
     }
 
     AB_LOG(Core::Debug::Info, L"App is closing...");
-
-    //window.Destroy();
 }

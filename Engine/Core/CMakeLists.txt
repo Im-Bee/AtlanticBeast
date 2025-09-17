@@ -4,7 +4,6 @@ SET(CORE_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Exception.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Debug/Logger.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowDesc.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/BaseWindowDetailsTemp.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/BaseWindowDetails.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/EmptyCanvas.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Linux/BasicLinuxPolicy.cpp"

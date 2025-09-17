@@ -9,7 +9,7 @@ void UserInput::Update()
 { 
     AbInputStruct& is = m_pWindowDesc->InputStruct;
 
-    if (is.Handled) {
+    if (is.Handled || !m_bIsCapturing) {
         return;
     }
 
@@ -22,7 +22,7 @@ void UserInput::Update()
             break;
 
         case EAbInputEvents::AbMotion:
-            AB_LOG(Debug::Info, L"Mouse movement: %lf %lf", is.MouseX, is.MouseY);
+            AB_LOG(Debug::Info, L"Mouse movement: %d %d", is.MouseX, is.MouseY);
     }
 
     is.Handled = true;
@@ -71,14 +71,11 @@ void UserInput::StopCapturingInternal()
 
 // ---------------------------------------------------------------------------------------------------------------------
 bool UserInput::StartCapturingInternal()
-{
-	return true;
-}
+{ return true; }
 
 // ---------------------------------------------------------------------------------------------------------------------
 void UserInput::StopCapturingInternal()
-{
-}
+{ }
 
 #endif
 

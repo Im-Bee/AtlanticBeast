@@ -33,6 +33,7 @@ public:
 
 	void WindowPolicyUpdate(WindowDesc* pWd)
 	{ static_cast<Policy*>(this)->UpdateImpl(pWd); }
+
 };
 
 } // !Core

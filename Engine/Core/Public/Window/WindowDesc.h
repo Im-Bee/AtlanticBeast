@@ -25,6 +25,8 @@ typedef struct WindowDesc
 #ifdef _WIN32
     HWND            Hwnd;
     WNDCLASSEX      Wcex;
+	HHOOK		    KeyboardHook;
+	HHOOK		    MouseHook;
 #elif __linux__
     Display*        DisplayHandle;
     Window          WindowHandle;

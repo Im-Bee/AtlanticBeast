@@ -61,7 +61,7 @@ public:
     void Hide()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
-        WindowPolicyShow(m_pWindowDesc.get()); 
+        WindowPolicyHide(m_pWindowDesc.get()); 
     }
 
     void Destroy()
@@ -85,10 +85,6 @@ public:
         AB_ASSERT(m_pWindowDesc->IsAlive);
 
         WindowPolicyUpdate(m_pWindowDesc.get());
-
-        // if (m_pWindowDesc->LastEvent != EAbWindowEvents::NothingNew) {
-        //     AB_LOG(Core::Debug::Info, L"Window last message: %d for %ls", m_pWindowDesc->LastEvent, m_pWindowDesc->Name);
-        // }
 
         // So, my decision is, that every client of this library, 
         // should be able to handle Input events by themselves
