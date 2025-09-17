@@ -111,7 +111,7 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
 
     Atom wmDeleteMessage;
 
-    while (XPending(display))
+    for (int32_t i = 0; XPending(display) && i < 3; ++i)
     {
         XPeekEvent(display, &event);
 
@@ -175,7 +175,7 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
                 if ((wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", 1)) == None)
                     break;
 
-                if ((Atom)event.xclient.data.l[0] == wmDeleteMessage) {
+                if (static_cast<Atom>(event.xclient.data.l[0]) == wmDeleteMessage) {
                     pWd->LastEvent = Destroy;
                     return;
                 }
