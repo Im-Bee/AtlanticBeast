@@ -3,6 +3,7 @@
 Work in progress.
 
 ![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/ReadMeScreenshot.jpg?raw=true)
+![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/ReadMeScreenshot2.jpg?raw=true)
 
 # Build
 
