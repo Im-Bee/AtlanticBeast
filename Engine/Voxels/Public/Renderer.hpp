@@ -36,6 +36,8 @@ public:
 
     void Initialize(::std::shared_ptr<const WindowDesc> wd);
 
+    void Update();
+
     void Render();
 
     void Destroy();

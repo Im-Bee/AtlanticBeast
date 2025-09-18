@@ -29,21 +29,24 @@ static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
         switch (uMsg) {
             case WM_KEYDOWN:
             {
+                pWd->LastEvent = EAbWindowEvents::Input;
                 uint32_t scanCode = (lParam >> 16) & 0xFF;
-                pWd->InputStruct.Event = EAbInputEvents::AbButtonPress;
+                pWd->InputStruct.Event = EAbInputEvents::AbKeyPress;
                 pWd->InputStruct.KeyId = scanCode;
                 break;
             }
 
             case WM_KEYUP:
             {
+                pWd->LastEvent = EAbWindowEvents::Input;
                 uint32_t scanCode = (lParam >> 16) & 0xFF;
                 pWd->InputStruct.Event = EAbInputEvents::AbKeyRelease;
                 pWd->InputStruct.KeyId = scanCode;
                 break;
             }
 
-			case WM_MOUSEMOVE:
+            case WM_MOUSEMOVE:
+                pWd->LastEvent = EAbWindowEvents::Input;
                 pWd->InputStruct.Event = EAbInputEvents::AbMotion;
                 pWd->InputStruct.MouseX = GET_X_LPARAM(lParam);
                 pWd->InputStruct.MouseY = GET_Y_LPARAM(lParam);
@@ -72,7 +75,7 @@ static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 // ---------------------------------------------------------------------------------------------------------------------
 uint32_t BasicWin32WindowPolicy::CreateImpl(WindowDesc* pWd)
 {
-	AB_ASSERT(pWd != NULL);
+    AB_ASSERT(pWd != NULL);
     AB_ASSERT(pWd->Hwnd == NULL);
     AB_ASSERT(!pWd->IsAlive);
 

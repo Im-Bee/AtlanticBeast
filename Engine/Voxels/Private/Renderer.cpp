@@ -24,6 +24,21 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+void Renderer::Update()
+{
+    static uint8_t r = 0;
+    static uint8_t g = 111;
+    static uint8_t b = 52;
+    static int32_t index = m_pVoxelGrid->GetAmountOfVoxels() / 3;
+    const_cast<vector<Voxel>&>(m_pVoxelGrid->GetGrid())[--index].Type = 1;
+    const_cast<vector<Voxel>&>(m_pVoxelGrid->GetGrid())[index].RGBA = 
+        (static_cast<uint32_t>(r++) << 24) | (static_cast<uint32_t>(g++) << 16) | (static_cast<uint32_t>(b++) << 8) | + 0x000000FF;
+
+    AB_LOG(Core::Debug::Info, L"Index = %d", index);
+    m_pPipeline->LoadGrid(m_pVoxelGrid);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Render()
 {
     VkResult result;

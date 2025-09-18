@@ -64,8 +64,8 @@ void main()
 
     int index = -1;
     for (int i = 0; 
-         i < 10240; 
-         ++i, rayPos += rayDir * 0.01) 
+         i < 2048; 
+         ++i, rayPos += rayDir * 0.25) 
     {
         ivec3 voxelCoord = ivec3(floor(rayPos));
     
@@ -80,7 +80,12 @@ void main()
 
         Voxel voxel = voxelData[index];
         if (voxel.type == 1) {
-            finalColor = vec4(normalize(gl_GlobalInvocationID.xy), 0., 1.);
+            float b = float((voxel.color << 16) >> 24) / 255.;
+            float g = float((voxel.color << 8)  >> 24) / 255.;
+            float r = float(voxel.color         >> 24) / 255.;
+            float a = float(voxel.color) / 255.;
+
+            finalColor = vec4(r, g, b, a);
             break;
         }
     }

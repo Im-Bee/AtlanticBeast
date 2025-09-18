@@ -29,6 +29,7 @@ int main()
         }
 
         if (windowDesc1->IsAlive) {
+            render.Update();
             render.Render();
             window.Update();
             input.Update();
