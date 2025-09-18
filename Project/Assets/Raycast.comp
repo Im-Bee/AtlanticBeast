@@ -91,8 +91,8 @@ void main()
 
     int index = -1;
     for (int i = 0; 
-         i < 2048; 
-         ++i, rayPos += rayDir * 0.25) 
+         i < 4096; 
+         ++i, rayPos += rayDir * 0.12) 
     {
         ivec3 voxelCoord = ivec3(floor(rayPos));
     
