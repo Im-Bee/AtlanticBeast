@@ -84,7 +84,9 @@ public:
     void Update()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
-        AB_ASSERT(m_pWindowDesc->IsAlive);
+        if (!m_pWindowDesc->IsAlive) {
+            return;
+        }
 
         this->WindowPolicyUpdate(m_pWindowDesc.get());
 

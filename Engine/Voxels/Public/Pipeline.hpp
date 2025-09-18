@@ -30,8 +30,11 @@ public:
 
     void LoadImage(VkImage image);
 
-    void LoadPushConstants(VoxelPushConstants vpc)
-    { m_vpc = vpc; }
+    void LoadPushConstants(Vec4 cameraPos, Mat4 projMat)
+    {
+        m_Vpc.CameraPos = cameraPos;
+        m_Vpc.ViewProjInverse = projMat;
+    }
 
 public:
 
@@ -44,8 +47,8 @@ public:
     VkDescriptorSet& GetDescrpitorSet()
     { return m_DescriptorSet; }
 
-    VoxelPushConstants& GetPushConstants()
-    { return m_vpc; }
+    const VoxelPushConstants& GetPushConstants() const
+    { return m_Vpc; }
 
 private:
 
@@ -76,7 +79,7 @@ private:
 
     ::std::shared_ptr<const VoxelGrid> m_VoxelGrid = nullptr;
 
-    VoxelPushConstants m_vpc;
+    VoxelPushConstants m_Vpc;
 
     VkDescriptorSetLayout   m_DescriptorLayout  = VK_NULL_HANDLE;
     VkDescriptorPool        m_DescriptorPool    = VK_NULL_HANDLE;

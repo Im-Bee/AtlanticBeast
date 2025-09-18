@@ -30,12 +30,17 @@ void Renderer::Update()
     static uint8_t g = 111;
     static uint8_t b = 52;
     static int32_t index = m_pVoxelGrid->GetAmountOfVoxels() / 3;
-    const_cast<vector<Voxel>&>(m_pVoxelGrid->GetGrid())[--index].Type = 1;
-    const_cast<vector<Voxel>&>(m_pVoxelGrid->GetGrid())[index].RGBA = 
-        (static_cast<uint32_t>(r++) << 24) | (static_cast<uint32_t>(g++) << 16) | (static_cast<uint32_t>(b++) << 8) | + 0x000000FF;
+    
+    Voxel v;
 
-    AB_LOG(Core::Debug::Info, L"Index = %d", index);
+    v.Type = 1;
+    v.RGBA = (static_cast<uint32_t>(r++) << 24) |
+             (static_cast<uint32_t>(g++) << 16) |
+             (static_cast<uint32_t>(b++) << 8) | + 0x000000FF;
+
+    m_pVoxelGrid->ModifyVoxel(--index, std::move(v));
     m_pPipeline->LoadGrid(m_pVoxelGrid);
+    m_pPipeline->LoadPushConstants(Vec4(20.0f, 5.0f, -55.0f, 0.f), Mat4());
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -43,20 +48,8 @@ void Renderer::Render()
 {
     VkResult result;
     VkDevice device = m_pDeviceAdapter->GetAdapterHandle();
-    static VoxelPushConstants vpc = {
-        { 20.0f, 5.0f, -15.0f },
-        0,
-        { 64, 64, 64 },
-        0,
-        {
-            -0.48191875,  5.6898e-17, -0.87621591,  2.675e-18,
-            -0.38039632,  0.90084765,  0.20921798,  2.1116e-18,
-            0.78933704,  0.43413537, -0.43413537, -4.3817e-18,
-            20.00000000, 5.00000000, -15.00000000,  1.00000000
-        }
-    };
-
     uint32_t uImageIndex;
+
     result = vkAcquireNextImageKHR(device, 
                                    m_pSwapChain->GetSwapChainHandle(), 
                                    UINT64_MAX,
@@ -115,7 +108,7 @@ void Renderer::Render()
                        VK_SHADER_STAGE_COMPUTE_BIT,
                        0,
                        sizeof(VoxelPushConstants),
-                       &vpc);
+                       &m_pPipeline->GetPushConstants());
 
     VkBufferMemoryBarrier voxelBufferBarrier;
     voxelBufferBarrier.sType                = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
@@ -138,7 +131,6 @@ void Renderer::Render()
 
     uint32_t groupCountX = (m_pWindowDesc->Width + 15) / 16;
     uint32_t groupCountY = (m_pWindowDesc->Height + 15) / 16;
-	// AB_LOG(Core::Debug::Info, L"Dispatching compute shader with %d x %d work groups", groupCountX, groupCountY);
     vkCmdDispatch(m_CommandBuffer, groupCountX, groupCountY, 1);
 
     VkImageMemoryBarrier presentBarrier;

@@ -1,6 +1,9 @@
 #ifndef AB_PUSH_CONSTANTS_H
 #define AB_PUSH_CONSTANTS_H
 
+#include "Math/Mat4.hpp"
+#include "Math/Vec3.hpp"
+#include "Math/Vec4.hpp"
 #include "Voxels.hpp"
 
 namespace Voxels
@@ -8,11 +11,9 @@ namespace Voxels
 
 struct alignas(16) VoxelPushConstants
 {
-    float   CameraPos[3];
-	float   Padding1;
-    int32_t GridSize[3];
-	int32_t Padding2;
-    float   ViewProjInverse[16];
+    Vec4    CameraPos;
+    iVec4   GridSize;
+    Mat4    ViewProjInverse;
 };
 
 } // !Voxels

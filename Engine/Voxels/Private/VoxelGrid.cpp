@@ -6,14 +6,15 @@ namespace Voxels
 using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
-VoxelGrid::VoxelGrid()
-    : m_VoxelGrid(GenerateGrid())
+VoxelGrid::VoxelGrid(size_t uGridWidth)
+    : m_uGridDim(uGridWidth)
+    , m_VoxelGrid(GenerateGrid(m_uGridDim))
 { }
 
 // ---------------------------------------------------------------------------------------------------------------------
-vector<Voxel> VoxelGrid::GenerateGrid()
+vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
 {
-    vector<Voxel>   voxelGrid(VoxelGridDim * VoxelGridDim * VoxelGridDim);
+    vector<Voxel>   voxelGrid(uGridWidth * uGridWidth * uGridWidth);
     size_t          uDim = VoxelGridDim;
 
     for (auto& voxel : voxelGrid) {

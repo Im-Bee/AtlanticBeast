@@ -17,7 +17,7 @@ class BEAST_VOXEL_API Swapchain
 
 public:
     
-    static constexpr VkFormat TargetedFormat = VK_FORMAT_R8G8B8A8_UNORM;
+    static constexpr VkFormat TargetedFormat = VK_FORMAT_B8G8R8A8_UNORM;
 
 public:
 

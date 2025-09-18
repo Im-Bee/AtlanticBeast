@@ -4,7 +4,7 @@
 namespace Core
 {
 
-typedef void(*InputHandler)(const AbInputStruct&, void* pThis);
+// typedef void(*InputHandler)(const AbInputStruct&, void* pThis);
 
 } // !Core
 

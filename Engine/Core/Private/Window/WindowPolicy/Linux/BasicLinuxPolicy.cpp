@@ -111,7 +111,7 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
 
     Atom wmDeleteMessage;
 
-    for (int32_t i = 0; XPending(display) && i < 3; ++i)
+    while(XPending(display))
     {
         XPeekEvent(display, &event);
 

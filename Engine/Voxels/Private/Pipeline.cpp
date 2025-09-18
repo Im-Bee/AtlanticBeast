@@ -31,8 +31,8 @@ Pipeline::Pipeline(::std::shared_ptr<const Hardware> hw,
 Pipeline::~Pipeline()
 {
     if (m_ImageView != VK_NULL_HANDLE) {
-            vkDestroyImageView(m_pDeviceAdapter->GetAdapterHandle(), m_ImageView, nullptr);
-            m_ImageView = VK_NULL_HANDLE;
+        vkDestroyImageView(m_pDeviceAdapter->GetAdapterHandle(), m_ImageView, nullptr);
+        m_ImageView = VK_NULL_HANDLE;
     }
     if (m_VoxelGPUBuffer != VK_NULL_HANDLE) {
         vkDestroyBuffer(m_pDeviceAdapter->GetAdapterHandle(), m_VoxelGPUBuffer, NULL);
@@ -61,7 +61,6 @@ Pipeline::~Pipeline()
         vkDestroyDescriptorSetLayout(m_pDeviceAdapter->GetAdapterHandle(), m_DescriptorLayout, NULL);
         m_DescriptorLayout = VK_NULL_HANDLE;
     }
-
 }
 
 // Public // -----------------------------------------------------------------------------------------------------------
@@ -111,21 +110,22 @@ void Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
     m_VoxelGPUBuffer    = voxelBuffer;
     m_VoxelBufferMemory = voxelBufferMemory;
     m_VoxelGrid         = vg;
+    m_Vpc.GridSize      = iVec4(m_VoxelGrid->GetGridWidth(), m_VoxelGrid->GetGridWidth(), m_VoxelGrid->GetGridWidth());
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg)
 {
+    AB_ASSERT((m_VoxelGPUBuffer != VK_NULL_HANDLE));
+    AB_ASSERT((m_VoxelBufferMemory != VK_NULL_HANDLE));
+    AB_ASSERT((m_VoxelGrid != nullptr));
+    AB_ASSERT((vg->GetAmountOfVoxels() == m_VoxelGrid->GetAmountOfVoxels()));
+
     VkDevice                da                  = m_pDeviceAdapter->GetAdapterHandle();
     VkDescriptorBufferInfo  voxelBufferInfo;
     VkWriteDescriptorSet    voxelWrite;
     void*                   pData;
     size_t                  uBufferSizeInBytes  = vg->GetAmountOfVoxels() * sizeof(Voxel);
-
-    AB_ASSERT((m_VoxelGPUBuffer != VK_NULL_HANDLE));
-    AB_ASSERT((m_VoxelBufferMemory != VK_NULL_HANDLE));
-    AB_ASSERT((m_VoxelGrid != nullptr));
-    AB_ASSERT((vg->GetAmountOfVoxels() == m_VoxelGrid->GetAmountOfVoxels()));
 
     vkMapMemory(da, m_VoxelBufferMemory, 0, uBufferSizeInBytes, 0, &pData);
     memcpy(pData, &vg->GetGrid()[0], uBufferSizeInBytes);

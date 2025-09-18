@@ -4,40 +4,38 @@
 layout(local_size_x = 16, local_size_y = 16) in;
 
 struct Voxel {
-    uint type;
-    uint color;
-    uint padding;
-    uint padding2;
+    uint Type;
+    uint Color;
+    uint Padding;
+    uint Padding2;
 };
 
 layout(binding = 0, rgba8) uniform image2D outputImage;
 layout(std430, binding = 1) readonly buffer Voxels {
-    Voxel voxelData[]; 
+    Voxel VoxelData[]; 
 };
 
 layout(push_constant, std430) uniform PushConstants 
 {
-    vec3    cameraPos;
-    float   padding;
-    ivec3   gridSize;
-    uint    padding2;
-    mat4    viewProjInverse;
+    vec4    CameraPos;
+    ivec4   GridSize;
+    mat4    ViewProjInverse;
 };
 
 vec3 computeNormal(ivec3 voxelCoord) {
     float dx = float(
-        (voxelCoord.x + 1 < gridSize.x && voxelData[voxelCoord.x + 1 + voxelCoord.y * gridSize.x + voxelCoord.z * gridSize.x * gridSize.y].type == 1 ? 1 : 0) -
-        (voxelCoord.x - 1 >= 0         && voxelData[voxelCoord.x - 1 + voxelCoord.y * gridSize.x + voxelCoord.z * gridSize.x * gridSize.y].type == 1 ? 1 : 0)
+        (voxelCoord.x + 1 < GridSize.x && VoxelData[voxelCoord.x + 1 + voxelCoord.y * GridSize.x + voxelCoord.z * GridSize.x * GridSize.y].Type == 1 ? 1 : 0) -
+        (voxelCoord.x - 1 >= 0         && VoxelData[voxelCoord.x - 1 + voxelCoord.y * GridSize.x + voxelCoord.z * GridSize.x * GridSize.y].Type == 1 ? 1 : 0)
     );
 
     float dy = float(
-        (voxelCoord.y + 1 < gridSize.y && voxelData[voxelCoord.x + (voxelCoord.y + 1) * gridSize.x + voxelCoord.z * gridSize.x * gridSize.y].type == 1 ? 1 : 0) -
-        (voxelCoord.y - 1 >= 0         && voxelData[voxelCoord.x + (voxelCoord.y - 1) * gridSize.x + voxelCoord.z * gridSize.x * gridSize.y].type == 1 ? 1 : 0)
+        (voxelCoord.y + 1 < GridSize.y && VoxelData[voxelCoord.x + (voxelCoord.y + 1) * GridSize.x + voxelCoord.z * GridSize.x * GridSize.y].Type == 1 ? 1 : 0) -
+        (voxelCoord.y - 1 >= 0         && VoxelData[voxelCoord.x + (voxelCoord.y - 1) * GridSize.x + voxelCoord.z * GridSize.x * GridSize.y].Type == 1 ? 1 : 0)
     );
 
     float dz = float(
-        (voxelCoord.z + 1 < gridSize.z && voxelData[voxelCoord.x + voxelCoord.y * gridSize.x + (voxelCoord.z + 1) * gridSize.x * gridSize.y].type == 1 ? 1 : 0) -
-        (voxelCoord.z - 1 >= 0         && voxelData[voxelCoord.x + voxelCoord.y * gridSize.x + (voxelCoord.z - 1) * gridSize.x * gridSize.y].type == 1 ? 1 : 0)
+        (voxelCoord.z + 1 < GridSize.z && VoxelData[voxelCoord.x + voxelCoord.y * GridSize.x + (voxelCoord.z + 1) * GridSize.x * GridSize.y].Type == 1 ? 1 : 0) -
+        (voxelCoord.z - 1 >= 0         && VoxelData[voxelCoord.x + voxelCoord.y * GridSize.x + (voxelCoord.z - 1) * GridSize.x * GridSize.y].Type == 1 ? 1 : 0)
     );
 
     return -normalize(vec3(dx, dy, dz));
@@ -68,7 +66,7 @@ void main()
         uv.y * scale * internalCameraUp
     );
      
-    vec3 rayOrigin  = internalCameraPos;
+    vec3 rayOrigin  = CameraPos.xyz;
     vec3 rayPos     = rayOrigin;
 
     const vec3 lightPos = vec3(10.0, 25.0, 10.0);
@@ -80,8 +78,8 @@ void main()
 
     vec4 finalColor = vec4(0., 0., 0., 1.0);
     // for (int i = 0; i < 64 * 64 * 64; ++i) {
-    //     Voxel voxel = voxelData[i];
-    //     if (voxel.type == 1) {
+    //     Voxel voxel = VoxelData[i];
+    //     if (voxel.Type == 1) {
     //         finalColor = vec4(1., 0., 1., 1.0);
     //         break;
     //     }
@@ -98,19 +96,19 @@ void main()
     
         
         index =     voxelCoord.x + 
-                    (voxelCoord.y * gridSize.x) + 
-                    (voxelCoord.z * gridSize.x * gridSize.y);
+                    (voxelCoord.y * GridSize.x) + 
+                    (voxelCoord.z * GridSize.x * GridSize.y);
 
-        if ((index < 0) || (index >= (gridSize.x * gridSize.y * gridSize.z))) {
+        if ((index < 0) || (index >= (GridSize.x * GridSize.y * GridSize.z))) {
             continue;
         }
 
-        Voxel voxel = voxelData[index];
-        if (voxel.type == 1) {
-            float b = float((voxel.color << 16) >> 24) / 255.;
-            float g = float((voxel.color << 8)  >> 24) / 255.;
-            float r = float(voxel.color         >> 24) / 255.;
-            float a = float(voxel.color) / 255.;
+        Voxel voxel = VoxelData[index];
+        if (voxel.Type == 1) {
+            float b = float((voxel.Color << 16) >> 24) / 255.;
+            float g = float((voxel.Color << 8)  >> 24) / 255.;
+            float r = float(voxel.Color         >> 24) / 255.;
+            float a = float(voxel.Color) / 255.;
             vec3 baseColor = vec3(r, g, b);
 
             vec3 normal = computeNormal(voxelCoord);

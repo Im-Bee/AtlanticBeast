@@ -8,14 +8,7 @@ int main()
     Core::UserInput& input = window.GetInput();
     auto windowDesc1 = window.GetWindowDesc();
 
-    Core::EmptyCanvas window2(L"That other window");
-    Core::UserInput& input2 = window2.GetInput();
-    auto windowDesc2= window2.GetWindowDesc();
-
     Voxels::Renderer render = { };
-
-    window2.Create();
-    input2.StartCapturing();
 
     window.Create();
     input.StartCapturing();
@@ -23,16 +16,11 @@ int main()
     render.Initialize(window.GetWindowDesc());
     
     while (Core::AppStatus::GetAppCurrentStatus()) {
-        if (windowDesc2->IsAlive) {
-            window2.Update();
-            input2.Update();
-        }
-
+        window.Update();
+        input.Update();
         if (windowDesc1->IsAlive) {
             render.Update();
             render.Render();
-            window.Update();
-            input.Update();
         }
     }
 
