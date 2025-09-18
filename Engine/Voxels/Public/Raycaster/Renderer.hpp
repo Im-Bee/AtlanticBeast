@@ -1,12 +1,12 @@
 #ifndef AB_RENDERER_H
 #define AB_RENDERER_H
 
-#include "ErrorHandling.hpp"
-#include "Instance.hpp"
-#include "Hardware.hpp"
-#include "DeviceAdapter.hpp"
-#include "SwapChain.hpp"
-#include "Pipeline.hpp"
+#include "Vulkan/ErrorHandling.hpp"
+#include "Vulkan/Instance.hpp"
+#include "Vulkan/Hardware.hpp"
+#include "Vulkan/DeviceAdapter.hpp"
+#include "Vulkan/SwapChain.hpp"
+#include "Raycaster/Pipeline.hpp"
 
 namespace Voxels
 {

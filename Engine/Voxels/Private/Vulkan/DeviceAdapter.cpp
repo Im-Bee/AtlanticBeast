@@ -1,6 +1,6 @@
-#include "DeviceAdapter.hpp"
+#include "Vulkan/DeviceAdapter.hpp"
 
-#include "ErrorHandling.hpp"
+#include "Vulkan/ErrorHandling.hpp"
 
 namespace Voxels
 {

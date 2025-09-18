@@ -1,11 +1,11 @@
 #ifndef AB_PIPELINE_H
 #define AB_PIPELINE_H
 
-#include "SwapChain.hpp"
+#include "Vulkan/SwapChain.hpp"
+#include "Vulkan/DeviceAdapter.hpp"
+#include "Raycaster/PushConstants.hpp"
+#include "Raycaster/VoxelGrid.hpp"
 #include "Voxels.hpp"
-#include "DeviceAdapter.hpp"
-#include "PushConstants.hpp"
-#include "VoxelGrid.hpp"
 
 namespace Voxels
 {
@@ -30,10 +30,9 @@ public:
 
     void LoadImage(VkImage image);
 
-    void LoadPushConstants(Vec4 cameraPos, Mat4 projMat)
+    void LoadPushConstants(Vec3 cameraPos, Mat4 projMat)
     {
         m_Vpc.CameraPos = cameraPos;
-        m_Vpc.ViewProjInverse = projMat;
     }
 
 public:

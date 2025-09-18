@@ -1,6 +1,6 @@
 #include "Core.h"
 #include "EmptyCanvas.hpp"
-#include "Renderer.hpp"
+#include "Raycaster/Renderer.hpp"
 
 int main()
 {
@@ -15,9 +15,11 @@ int main()
 
     render.Initialize(window.GetWindowDesc());
     
-    while (Core::AppStatus::GetAppCurrentStatus()) {
+    while (Core::AppStatus::GetAppCurrentStatus()) 
+    {
         window.Update();
         input.Update();
+
         if (windowDesc1->IsAlive) {
             render.Update();
             render.Render();

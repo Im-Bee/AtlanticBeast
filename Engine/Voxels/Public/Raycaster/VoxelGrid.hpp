@@ -4,7 +4,7 @@
 #include "Math/Vec3.hpp"
 #include "Voxels.hpp"
 
-#include "SingleVoxel.hpp"
+#include "Raycaster/SingleVoxel.hpp"
 
 namespace Voxels
 {

@@ -1,8 +1,8 @@
-#include "Pipeline.hpp"
+#include "Raycaster/Pipeline.hpp"
 
-#include "SwapChain.hpp"
+#include "Vulkan/ErrorHandling.hpp"
+#include "Vulkan/SwapChain.hpp"
 
-#include "ErrorHandling.hpp"
 
 namespace Voxels
 {

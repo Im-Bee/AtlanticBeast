@@ -1,5 +1,6 @@
-#include "Hardware.hpp"
-#include "ErrorHandling.hpp"
+#include "Vulkan/Hardware.hpp"
+
+#include "Vulkan/ErrorHandling.hpp"
 
 namespace Voxels
 {

@@ -12,5 +12,6 @@
 #include <queue>
 #include <memory>
 #include <thread>
+#include <cmath>
 
 #endif // !AB_CSYSTEM_H

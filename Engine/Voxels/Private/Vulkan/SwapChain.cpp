@@ -1,6 +1,6 @@
-#include "SwapChain.hpp"
+#include "Vulkan/SwapChain.hpp"
 
-#include "ErrorHandling.hpp"
+#include "Vulkan/ErrorHandling.hpp"
 
 
 namespace Voxels

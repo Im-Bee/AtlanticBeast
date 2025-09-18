@@ -1,4 +1,4 @@
-#include "VoxelGrid.hpp"
+#include "Raycaster/VoxelGrid.hpp"
 
 namespace Voxels
 {
@@ -37,7 +37,9 @@ vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
     for (size_t z = uCubeStart; z < uCubeEnd; ++z) {
         for (size_t y = uCubeStart; y < uCubeEnd; ++y) {
             for (size_t x = uCubeStart; x < uCubeEnd; ++x) {
-                uIndex = x + y * uDim + z * uDim * uDim;
+                uIndex = x + 
+                         y * uDim +
+                         z * uDim * uDim;
 
                 voxelGrid[uIndex].Type  = 1;
                 voxelGrid[uIndex].RGBA  = 0xFF0000FF;
@@ -48,8 +50,8 @@ vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
     uCubeStart = 33;
     uCubeEnd = 44;
     for (size_t z = 0; z < uDim; ++z) {
-        for (size_t y = 35; y < 64; ++y) {
-            for (size_t x = 0; x < uDim; ++x) {
+        for (size_t y = 0; y < 1; ++y) {
+            for (size_t x = uDim * .5; x < uDim; ++x) {
                 uIndex = x +
                     y * uDim +
                     z * uDim * uDim;

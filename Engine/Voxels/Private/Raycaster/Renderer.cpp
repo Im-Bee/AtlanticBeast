@@ -1,4 +1,4 @@
-#include "Renderer.hpp"
+#include "Raycaster/Renderer.hpp"
 
 namespace Voxels
 {
@@ -40,7 +40,7 @@ void Renderer::Update()
 
     m_pVoxelGrid->ModifyVoxel(--index, std::move(v));
     m_pPipeline->LoadGrid(m_pVoxelGrid);
-    m_pPipeline->LoadPushConstants(Vec4(20.0f, 5.0f, -55.0f, 0.f), Mat4());
+    m_pPipeline->LoadPushConstants(Vec3(.0f, .5f, .0f), Mat4());
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -11,9 +11,11 @@ namespace Voxels
 
 struct alignas(16) VoxelPushConstants
 {
-    Vec4    CameraPos;
+    Vec3    CameraPos;
     iVec4   GridSize;
-    Mat4    ViewProjInverse;
+    Vec3    CameraLookDir;
+    Vec3    CameraRight;
+    Vec3    CameraUp;
 };
 
 } // !Voxels

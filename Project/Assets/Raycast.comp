@@ -19,7 +19,9 @@ layout(push_constant, std430) uniform PushConstants
 {
     vec4    CameraPos;
     ivec4   GridSize;
-    mat4    ViewProjInverse;
+    vec4    CameraLookDir;
+    vec4    CameraRight;
+    vec4    CameraUp;
 };
 
 vec3 computeNormal(ivec3 voxelCoord) {
@@ -38,31 +40,28 @@ vec3 computeNormal(ivec3 voxelCoord) {
         (voxelCoord.z - 1 >= 0         && VoxelData[voxelCoord.x + voxelCoord.y * GridSize.x + (voxelCoord.z - 1) * GridSize.x * GridSize.y].Type == 1 ? 1 : 0)
     );
 
-    return -normalize(vec3(dx, dy, dz));
+    return normalize(vec3(dx, dy, dz));
 }
 
 
 void main() 
 {
     ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
-
-    vec3 internalCameraPos = vec3(20.0, 5.0, -55.0);
     vec3 internalUp = vec3(0.0, 1.0, 0.0);
-    vec3 internalCameraLookDir = vec3(0.0, 0.0, 1.0);
 
+    vec3 internalCameraLookDir = vec3(1., 0.0, 0.5);
     vec3 internalCameraRight = normalize(cross(internalUp, internalCameraLookDir));
     vec3 internalCameraUp = cross(internalCameraLookDir, internalCameraRight);
 
-    float fov = radians(45.0);  // horizontal FOV
+    float fov = radians(45.0);
     float aspectRatio = float(imageSize(outputImage).x) / float(imageSize(outputImage).y);
     float scale = tan(fov * 0.5);
 
     vec2 uv = ((vec2(pixelCoord) / vec2(imageSize(outputImage))));
-    uv.x *= aspectRatio;
 
     vec3 rayDir = normalize(
         internalCameraLookDir +
-        uv.x * scale * internalCameraRight +
+        uv.x * aspectRatio * scale * internalCameraRight +
         uv.y * scale * internalCameraUp
     );
      
@@ -76,7 +75,7 @@ void main()
     const float specularStrength = 0.5;
     const float shininess = 132.0;
 
-    vec4 finalColor = vec4(0., 0., 0., 1.0);
+    vec4 finalColor = vec4(.2, .3, .7, 1.0);
     // for (int i = 0; i < 64 * 64 * 64; ++i) {
     //     Voxel voxel = VoxelData[i];
     //     if (voxel.Type == 1) {
@@ -94,17 +93,19 @@ void main()
     {
         ivec3 voxelCoord = ivec3(floor(rayPos));
     
-        
-        index =     voxelCoord.x + 
-                    (voxelCoord.y * GridSize.x) + 
-                    (voxelCoord.z * GridSize.x * GridSize.y);
-
-        if ((index < 0) || (index >= (GridSize.x * GridSize.y * GridSize.z))) {
-            continue;
+        if (voxelCoord.x < 0 || voxelCoord.x > GridSize.x ||
+            voxelCoord.y < 0 || voxelCoord.y > GridSize.y ||
+            voxelCoord.z < 0 || voxelCoord.z > GridSize.z) {
+            break;
         }
+       
+        index = voxelCoord.x + 
+                (voxelCoord.y * GridSize.x) + 
+                (voxelCoord.z * GridSize.x * GridSize.y);
 
         Voxel voxel = VoxelData[index];
-        if (voxel.Type == 1) {
+        if (voxel.Type == 1) 
+        {
             float b = float((voxel.Color << 16) >> 24) / 255.;
             float g = float((voxel.Color << 8)  >> 24) / 255.;
             float r = float(voxel.Color         >> 24) / 255.;
@@ -114,7 +115,7 @@ void main()
             vec3 normal = computeNormal(voxelCoord);
 
             vec3 lightDir = normalize(lightPos - rayPos);
-            vec3 viewDir = normalize(internalCameraPos - rayPos);
+            vec3 viewDir = normalize(CameraPos.xyz - rayPos);
             vec3 reflectDir = reflect(-lightDir, normal);
 
             float diff = max(dot(normal, lightDir), 0.0);

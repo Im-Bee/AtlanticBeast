@@ -2,6 +2,7 @@
 #define AB_USER_INPUT_H
 
 #include "ExportImport.h"
+#include "Input/KeysMap.hpp"
 #include "Window/WindowDesc.h"
 #include "CSystem.hpp"
 
@@ -12,16 +13,14 @@ class BEAST_API UserInput
 {
 public:
 
-    UserInput() 
-        : m_bIsCapturing(false)
-        , m_pWindowDesc(nullptr)
-        , m_vHandlers()
-    { }
-
-    explicit UserInput(::std::shared_ptr<WindowDesc> pWd) 
+    explicit UserInput(::std::shared_ptr<WindowDesc> pWd = nullptr) 
         : m_bIsCapturing(false)
         , m_pWindowDesc(pWd)
-        , m_vHandlers()
+        , m_vHandlers() 
+        , m_KeyReleaseMap()
+        , m_KeyPressMap()
+        , m_ButtonReleaseMap()
+        , m_ButtonPressMap()
     { }
 
     ~UserInput() 
@@ -50,15 +49,16 @@ public:
 
 private:
 
-
-
-private:
-
     bool m_bIsCapturing;
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
 
     ::std::vector<int> m_vHandlers;
+
+    KeysMap m_KeyReleaseMap;
+    KeysMap m_KeyPressMap;
+    KeysMap m_ButtonReleaseMap;
+    KeysMap m_ButtonPressMap;
 
 };
 
