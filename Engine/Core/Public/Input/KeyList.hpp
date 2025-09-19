@@ -4,6 +4,7 @@
 namespace Core
 {
 
+constexpr const int8_t AB_INVALID_KEY	 = 1;
 constexpr const int8_t AB_KEY_ESC	     = 1;
 constexpr const int8_t AB_KEY_1			 = 2;
 constexpr const int8_t AB_KEY_2			 = 3;
@@ -76,6 +77,7 @@ constexpr const int8_t AB_KEY_NUMLOCK	 = 69;
 constexpr const int8_t AB_KEY_SCROLLLOCK = 70;
 constexpr const int8_t AB_KEY_F11        = 87;
 constexpr const int8_t AB_KEY_F12        = 88;
+constexpr const int8_t AB_KEY_COUNT      = AB_KEY_F12 + 1;
 
 } // !Core
 

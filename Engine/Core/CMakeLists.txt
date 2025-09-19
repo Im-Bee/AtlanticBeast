@@ -30,8 +30,10 @@ SET(CORE_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowDesc.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowEvents.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/UserInput.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/KeyBind.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/InputEvents.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/KeysMap.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/ControllerObject.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/EmptyCanvas.hpp"
 )
 

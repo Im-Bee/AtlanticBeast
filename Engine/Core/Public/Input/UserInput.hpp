@@ -2,27 +2,13 @@
 #define AB_USER_INPUT_H
 
 #include "ExportImport.h"
+#include "KeyBind.hpp"
 #include "Input/KeysMap.hpp"
 #include "Window/WindowDesc.h"
 #include "CSystem.hpp"
 
 namespace Core
 {
-
-using InputAction = void(*)(void* pThis);
-
-enum EKeyState
-{
-    Release = 1,
-    Press = Release << 1,
-    Continuous = Press << 1,
-};
-
-struct KeyBind 
-{
-    EKeyState KeyState;
-    int8_t KeyCode;
-};
 
 class BEAST_API UserInput
 {
@@ -57,7 +43,7 @@ public:
         m_bIsCapturing = false;
     }
 
-    void Bind(void* pThis, InputAction pIa, KeyBind bind);
+    void Bind(void* pThis, InputAction pIa, InputBind bind);
 
     void Unbind(void* pThis);
 
@@ -69,7 +55,7 @@ private:
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
 
-    ::std::vector<KeyBind> m_KeyboardBinds;
+    ::std::vector<InputBind> m_KeyboardBinds;
 
     KeysMap m_KeyReleaseMap;
     KeysMap m_KeyPressMap;

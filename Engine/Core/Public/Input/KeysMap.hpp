@@ -3,6 +3,7 @@
 
 #include "CSystem.hpp"
 
+#include "KeyBind.hpp"
 #include "KeyList.hpp"
 
 namespace Core
@@ -11,7 +12,7 @@ namespace Core
 class BEAST_API KeysMap 
 {
 
-    static constexpr size_t AmountOfBindableKeys = AB_KEY_F12 + 1;
+    static constexpr size_t AmountOfBindableKeys = AB_KEY_COUNT;
 
 public:
     
@@ -33,7 +34,7 @@ public:
 
 private:
 
-    ::std::vector<int*> m_Keys;   
+    ::std::vector<InputAction> m_Keys;   
 
 };
 
