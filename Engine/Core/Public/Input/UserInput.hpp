@@ -9,8 +9,24 @@
 namespace Core
 {
 
+using InputAction = void(*)(void* pThis);
+
+enum EKeyState
+{
+    Release = 1,
+    Press = Release << 1,
+    Continuous = Press << 1,
+};
+
+struct KeyBind 
+{
+    EKeyState KeyState;
+    int8_t KeyCode;
+};
+
 class BEAST_API UserInput
 {
+
 public:
 
     explicit UserInput(::std::shared_ptr<WindowDesc> pWd = nullptr) 
@@ -41,8 +57,9 @@ public:
         m_bIsCapturing = false;
     }
 
-    void AddHandler()
-    { }
+    void Bind(void* pThis, InputAction pIa, KeyBind bind);
+
+    void Unbind(void* pThis);
 
     void Update();
 
@@ -51,6 +68,8 @@ private:
     bool m_bIsCapturing;
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
+
+    ::std::vector<KeyBind> m_KeyboardBinds;
 
     KeysMap m_KeyReleaseMap;
     KeysMap m_KeyPressMap;
