@@ -1,6 +1,8 @@
 #ifndef AB_KEY_BIND_H
 #define AB_KEY_BIND_H
 
+#include "CSystem.hpp"
+
 namespace Core
 {
 
@@ -21,15 +23,18 @@ enum EBindType
     Keyboard = 1,
 };
 
+struct KeyboardBind {
+    EKeyState KeyState;
+    int8_t KeyCode;
+};
+
+
 struct InputBind 
 {
     EBindType Type;
 
-    union Data {
-        struct Keyboard {
-            EKeyState KeyState;
-            int8_t KeyCode;
-        };
+    union {
+        KeyboardBind keyboard;
     };
 };
 

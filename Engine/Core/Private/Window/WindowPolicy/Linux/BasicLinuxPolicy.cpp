@@ -129,32 +129,32 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
                 pWd->LastEvent = Input;
                 pWd->InputStruct.Event = AbKeyPress;
                 pWd->InputStruct.KeyId = event.xkey.keycode - 8;
-                break;
+                return;
 
             case KeyRelease:
                 pWd->LastEvent = Input;
                 pWd->InputStruct.Event = AbKeyRelease;
                 pWd->InputStruct.KeyId = event.xkey.keycode - 8;
-                break;
+                return;
 
             case ButtonPress:
                 pWd->LastEvent = Input;
                 pWd->InputStruct.Event = AbButtonPress;
                 // pWd->InputStruct.KeyId =  - 8;
-                break;
+                return;
 
             case ButtonRelease:
                 pWd->LastEvent = Input;
                 pWd->InputStruct.Event = AbButtonRelease;
                 // pWd->InputStruct.KeyId = deviceEvent->detail - 8;
-                break;
+                return;
 
             case MotionNotify:
                 pWd->LastEvent = Input;
                 pWd->InputStruct.Event = AbMotion;
                 pWd->InputStruct.MouseX = static_cast<int32_t>(event.xmotion.x_root);
                 pWd->InputStruct.MouseY = static_cast<int32_t>(event.xmotion.y_root);
-                break;
+                return;
 
             case Expose:
                 pWd->LastEvent = Resize;

@@ -52,10 +52,11 @@ private:
 
 } // !Core
 
-#define DECL_ACTION(baseClass, action, ...)                     \
+#define AB_DECL_ACTION(baseClass, action, ...)                  \
     static ::Core::Action UseAction##action(void* pThis)        \
     {                                                           \
-        static_cast<baseClass*>(pThis)->method(__VA_ARGS__);    \
+        static_cast<baseClass*>(pThis)->action(__VA_ARGS__);    \
+        return ::Core::Action();                                \
     }
 
 
