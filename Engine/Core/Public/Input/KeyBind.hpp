@@ -3,7 +3,11 @@
 
 namespace Core
 {
-using InputAction = void(*)(void* pThis);
+
+struct Action 
+{ };
+
+using InputAction = Action(*)(void* pThis);
 
 enum EKeyState
 {

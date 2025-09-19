@@ -53,7 +53,7 @@ private:
 } // !Core
 
 #define DECL_ACTION(baseClass, action, ...)                     \
-    static void UseAction##action(void* pThis)                  \
+    static ::Core::Action UseAction##action(void* pThis)        \
     {                                                           \
         static_cast<baseClass*>(pThis)->method(__VA_ARGS__);    \
     }
