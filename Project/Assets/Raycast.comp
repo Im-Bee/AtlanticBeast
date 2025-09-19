@@ -40,7 +40,7 @@ vec3 computeNormal(ivec3 voxelCoord) {
         (voxelCoord.z - 1 >= 0         && VoxelData[voxelCoord.x + voxelCoord.y * GridSize.x + (voxelCoord.z - 1) * GridSize.x * GridSize.y].Type == 1 ? 1 : 0)
     );
 
-    return normalize(vec3(dx, dy, dz));
+    return -normalize(vec3(dx, dy, dz));
 }
 
 
@@ -49,7 +49,7 @@ void main()
     ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
     vec3 internalUp = vec3(0.0, 1.0, 0.0);
 
-    vec3 internalCameraLookDir = vec3(1., 0.0, 0.5);
+    vec3 internalCameraLookDir = vec3(1., 0.2, 0.5);
     vec3 internalCameraRight = normalize(cross(internalUp, internalCameraLookDir));
     vec3 internalCameraUp = cross(internalCameraLookDir, internalCameraRight);
 

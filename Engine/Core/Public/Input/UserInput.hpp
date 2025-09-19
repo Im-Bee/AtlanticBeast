@@ -16,7 +16,6 @@ public:
     explicit UserInput(::std::shared_ptr<WindowDesc> pWd = nullptr) 
         : m_bIsCapturing(false)
         , m_pWindowDesc(pWd)
-        , m_vHandlers() 
         , m_KeyReleaseMap()
         , m_KeyPressMap()
         , m_ButtonReleaseMap()
@@ -52,8 +51,6 @@ private:
     bool m_bIsCapturing;
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
-
-    ::std::vector<int> m_vHandlers;
 
     KeysMap m_KeyReleaseMap;
     KeysMap m_KeyPressMap;

@@ -26,7 +26,8 @@ Logger::Logger()
 Logger::~Logger()
 {
     m_aIsWriteThreadWorking.store(false);
-    m_tWriteThreadHandle.join();
+    if (m_tWriteThreadHandle.joinable())
+        m_tWriteThreadHandle.join();
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

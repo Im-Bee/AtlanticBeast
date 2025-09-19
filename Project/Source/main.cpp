@@ -1,6 +1,7 @@
 #include "Core.h"
 #include "EmptyCanvas.hpp"
 #include "Raycaster/Renderer.hpp"
+#include "Math/Operations.hpp"
 
 int main()
 {
@@ -12,14 +13,14 @@ int main()
 
     window.Create();
     input.StartCapturing();
-
+    
     render.Initialize(window.GetWindowDesc());
     
     while (Core::AppStatus::GetAppCurrentStatus()) 
     {
         window.Update();
         input.Update();
-
+        
         if (windowDesc1->IsAlive) {
             render.Update();
             render.Render();
@@ -27,4 +28,8 @@ int main()
     }
 
     AB_LOG(Core::Debug::Info, L"App is closing...");
+
+    render.Destroy();
+
+    Core::Debug::Logger::Get()->~Logger();
 }
