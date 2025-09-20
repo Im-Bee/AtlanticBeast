@@ -39,6 +39,8 @@ public:
 
     void SetKeyToAction(const InputBind& ib, void* pThis, Action a);
 
+    void UnSetKey(const InputBind& ib);
+
 public:
 
     void PlayAction(int8_t keyCode);

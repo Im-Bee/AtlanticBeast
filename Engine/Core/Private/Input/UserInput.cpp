@@ -71,7 +71,15 @@ void UserInput::Unbind(void* pThis)
 
     if (inputBind.Type & EBindType::Keyboard) {
         if (inputBind.keyboard.KeyState & EKeyState::Press) {
-            // TODO
+            m_KeyPressMap.UnSetKey(inputBind);
+
+            return;
+        }
+
+        if (inputBind.keyboard.KeyState & EKeyState::Release) {
+            m_KeyReleaseMap.UnSetKey(inputBind);
+
+            return;
         }
     }
 }
