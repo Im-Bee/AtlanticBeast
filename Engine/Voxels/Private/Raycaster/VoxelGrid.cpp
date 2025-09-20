@@ -50,7 +50,7 @@ vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
     uCubeStart = 33;
     uCubeEnd = 44;
     for (size_t z = 0; z < uDim; ++z) {
-        for (size_t y = 32; y < 64; ++y) {
+        for (size_t y = 63; y < 64; ++y) {
             for (size_t x = 0; x < uDim; ++x) {
                 uIndex = x +
                     y * uDim +
