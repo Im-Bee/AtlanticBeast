@@ -16,6 +16,7 @@ int main()
     window.Create();
 
     ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
+
     Core::InputBind ib;
     ib.Type     = Core::EBindType::Keyboard;
     ib.keyboard = Core::KeyboardBind { Core::EKeyState::Press, Core::AB_KEY_A };
@@ -42,7 +43,6 @@ int main()
 
     ib.keyboard.KeyCode = Core::AB_KEY_4;
     input.Bind(pwc.get(), &PlayablePaper::UseActionDownPitch, ib);
-
 
     input.StartCapturing();
     

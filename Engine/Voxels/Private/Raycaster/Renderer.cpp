@@ -33,7 +33,7 @@ void Renderer::Update()
     static uint8_t r = 0;
     static uint8_t g = 111;
     static uint8_t b = 52;
-    static int32_t index = m_pVoxelGrid->GetAmountOfVoxels() / 3;
+    static int32_t index = m_pVoxelGrid->GetAmountOfVoxels();
     
     Voxel v;
 
@@ -45,7 +45,7 @@ void Renderer::Update()
     m_pVoxelGrid->ModifyVoxel(--index, std::move(v));
     m_pPipeline->LoadGrid(m_pVoxelGrid);
 
-    Vec3 cameraRight = Normalize(Cross(Vec3{ 0., 1., 0. }, m_pCamera->GetRotation()));
+    Vec3 cameraRight = Cross(Vec3{ 0., 1., 0. }, m_pCamera->GetRotation());
     Vec3 cameraUp = Cross(m_pCamera->GetRotation(), cameraRight);
 
     m_pPipeline->LoadPushConstants(m_pCamera->GetPosition(), 

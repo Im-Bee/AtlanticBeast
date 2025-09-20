@@ -11,7 +11,7 @@ namespace Voxels
 template<class Vector>
 Vector Normalize(const Vector& v)
 {
-    Vector result = Vector { };
+    Vector result = Vector();
     float mod = 0.f;
     float invMag;
 
@@ -19,10 +19,7 @@ Vector Normalize(const Vector& v)
         mod += v[i];
 
     if (mod == 0) {
-        for (size_t i = 0; i < Vector::Size; ++i) {
-            result[i] = 0.;
-            return result;
-        }
+        return result;
     }
 
     invMag = 1. / ::std::sqrt(::std::abs(mod));
