@@ -70,4 +70,5 @@ IF (SHADERS)
 
 ENDIF()
 
+ADD_DEPENDENCIES(AtlBee CompileShaders)
 
