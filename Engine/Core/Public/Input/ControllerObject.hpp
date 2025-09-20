@@ -53,10 +53,12 @@ private:
 } // !Core
 
 #define AB_DECL_ACTION(baseClass, action, ...)                  \
-    static ::Core::Action UseAction##action(void* pThis)        \
+    static ::Core::ActionType UseAction##action(void* pThis)    \
     {                                                           \
+        AB_ASSERT(pThis != nullptr);                            \
+                                                                \
         static_cast<baseClass*>(pThis)->action(__VA_ARGS__);    \
-        return ::Core::Action();                                \
+        return ::Core::ActionType();                            \
     }
 
 

@@ -4,9 +4,6 @@
 namespace Core
 {
 
-void* _pThis;
-InputAction ia;
-
 // ---------------------------------------------------------------------------------------------------------------------
 void UserInput::Update()
 { 
@@ -18,10 +15,13 @@ void UserInput::Update()
 
     switch (is.Event) {
         case EAbInputEvents::AbKeyPress:
-            if (is.KeyId == AB_KEY_A) {
-                ia(_pThis);
-            }
+            m_KeyPressMap.PlayAction(is.KeyId);
+            break;
+
         case EAbInputEvents::AbKeyRelease:
+            m_KeyReleaseMap.PlayAction(is.KeyId);
+            break;
+
         case EAbInputEvents::AbButtonPress:
         case EAbInputEvents::AbButtonRelease:
             // AB_LOG(Debug::Info, L"Key press: %d", is.KeyId);
@@ -36,16 +36,44 @@ void UserInput::Update()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void UserInput::Bind(void* pThis, InputAction pIa, InputBind bind)
+void UserInput::Bind(void* pThis, Action action, InputBind bind)
 { 
-    _pThis = pThis;
-    ia = pIa;
+    if (bind.Type & EBindType::Keyboard) {
+        if (bind.keyboard.KeyCode <= AB_INVALID_KEY || bind.keyboard.KeyCode >= AB_KEY_COUNT)
+        {
+            AB_LOG(Debug::Error, L"Key code is an invalid code (code outside of boundries for keys).");
+            AB_LOG(Debug::Error, L"Can't bind the action for the keyboard.");
+            AB_LOG(Debug::Error, L"Action wasn't bound.");
+            return;
+        }
+
+        if (bind.keyboard.KeyState & EKeyState::Press) {
+            m_KeyPressMap.SetKeyToAction(bind, pThis, action);
+            m_BindsHandles[pThis] = bind;
+        }
+
+        return;
+    }
+
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 void UserInput::Unbind(void* pThis)
-{ 
-    ia = nullptr;
+{
+    auto& bind = m_BindsHandles.find(pThis);
+
+    if (bind == m_BindsHandles.end()) {
+        AB_LOG(Debug::Warning, L"Cannot unbind this bind from this UserInput, because UserInput doesn't handles it.");
+        return;
+    }
+
+    const auto& inputBind = bind->second;
+
+    if (inputBind.Type & EBindType::Keyboard) {
+        if (inputBind.keyboard.KeyState & EKeyState::Press) {
+            // TODO
+        }
+    }
 }
 
 } // !Core

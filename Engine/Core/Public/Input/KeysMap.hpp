@@ -9,6 +9,13 @@
 namespace Core
 {
 
+struct PlayableAction
+{
+    void* pThis;
+    Action action;
+};
+
+
 class BEAST_API KeysMap 
 {
 
@@ -19,7 +26,7 @@ public:
     KeysMap()
         : m_Keys(AmountOfBindableKeys)
     {
-        ::std::fill(m_Keys.begin(), m_Keys.end(), nullptr);
+        memset(&m_Keys[0], 0, sizeof(PlayableAction) * m_Keys.size());
     }
     
     ~KeysMap() = default;
@@ -30,11 +37,15 @@ public:
 
 public:
 
+    void SetKeyToAction(const InputBind& ib, void* pThis, Action a);
 
+public:
+
+    void PlayAction(int8_t keyCode);
 
 private:
 
-    ::std::vector<InputAction> m_Keys;   
+    ::std::vector<PlayableAction> m_Keys;
 
 };
 

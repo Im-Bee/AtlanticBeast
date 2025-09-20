@@ -6,10 +6,11 @@
 namespace Core
 {
 
-struct Action 
+// Empty struct to force biding type safety. Like a rock for your shoe.
+struct ActionType 
 { };
 
-using InputAction = Action(*)(void* pThis);
+using Action = ActionType(*)(void* pThis);
 
 enum EKeyState
 {
@@ -23,11 +24,11 @@ enum EBindType
     Keyboard = 1,
 };
 
-struct KeyboardBind {
+struct KeyboardBind
+{
     EKeyState KeyState;
     int8_t KeyCode;
 };
-
 
 struct InputBind 
 {

@@ -6,7 +6,6 @@
 #include "Input/KeysMap.hpp"
 #include "Window/WindowDesc.h"
 #include "CSystem.hpp"
-
 namespace Core
 {
 
@@ -43,7 +42,7 @@ public:
         m_bIsCapturing = false;
     }
 
-    void Bind(void* pThis, InputAction pIa, InputBind bind);
+    void Bind(void* pThis, Action pIa, InputBind bind);
 
     void Unbind(void* pThis);
 
@@ -55,7 +54,7 @@ private:
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
 
-    ::std::vector<InputBind> m_KeyboardBinds;
+    ::std::unordered_map<void*, InputBind> m_BindsHandles;
 
     KeysMap m_KeyReleaseMap;
     KeysMap m_KeyPressMap;

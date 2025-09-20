@@ -9,6 +9,7 @@ SET(CORE_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Linux/BasicLinuxPolicy.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Win32/BasicWin32Policy.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Input/UserInput.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Input/KeysMap.cpp"
 )
 SET(CORE_HEADRES 
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/AbLimits.h"
@@ -32,6 +33,7 @@ SET(CORE_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/UserInput.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/KeyBind.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/InputEvents.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/KeyList.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/KeysMap.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/ControllerObject.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/EmptyCanvas.hpp"
