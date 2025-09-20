@@ -2,6 +2,7 @@
 #define AB_VEC3_H
 
 #include "CSystem.hpp"
+#include "Operations.hpp"
 
 namespace Voxels
 {
@@ -44,6 +45,11 @@ struct alignas(16) Vec3
             return y;
         }
         return z;
+    }
+
+    constexpr inline Vec3& operator+=(const Vec3& vB)
+    {
+        return AddAssign(*this, vB);
     }
 };
 

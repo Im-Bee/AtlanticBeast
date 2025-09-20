@@ -42,6 +42,19 @@ constexpr inline Vector Cross(const Vector& vA, const Vector& vB)
     static_assert(true, "This size of a vector doesn't have impementation of cross product yet");
 }
 
+template<class Vector>
+constexpr inline Vector& AddAssign(Vector& vA, const Vector& vB)
+{
+    if constexpr (Vector::Size == 3) {
+        vA.x += vB.x;
+        vA.y += vB.y;
+        vA.z += vB.z;
+        return vA;
+    }
+
+    static_assert(true, "This size of a vector doesn't have impementation of addition product yet");
+}
+
 } // !Voxels
   
 #endif // !AB_OPERATIONS_H

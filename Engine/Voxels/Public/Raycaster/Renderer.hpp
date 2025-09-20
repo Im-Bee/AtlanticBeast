@@ -8,6 +8,8 @@
 #include "Vulkan/SwapChain.hpp"
 #include "Raycaster/Pipeline.hpp"
 
+#include "Primitives/Camera.hpp"
+
 namespace Voxels
 {
 
