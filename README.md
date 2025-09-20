@@ -7,9 +7,13 @@ Work in progress.
 
 # Build
 
-## Needs Vulkan SDK to compile.
+Build dependencies:
+  - Needs Vulkan SDK
+  - CMake or Visual Studio with CMake support
+  - Compiler that supports at leas C++17
+  - Windows or Linux operating system
 
-### Linux
+## Linux
 
 !!! In current version after building the project, you have to CD in to directory with executable, because VoxelsLib looks for shaders in current directory.
 
@@ -20,7 +24,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release &&
 make 
 ```
 
-### Windows
+## Windows
 
 ### Visual Studio 
 
