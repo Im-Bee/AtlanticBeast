@@ -45,7 +45,8 @@ void Renderer::Update()
     m_pVoxelGrid->ModifyVoxel(--index, std::move(v));
     m_pPipeline->LoadGrid(m_pVoxelGrid);
 
-    Vec3 cameraRight = Cross(Vec3{ 0., 1., 0. }, m_pCamera->GetRotation());
+    Vec3 rot = m_pCamera->GetRotation();
+    Vec3 cameraRight = Normalize(Cross(Vec3{ 0., 1., 0. }, RotateY(RotateX(Vec3 { 0., 0., 1. }, rot.x), rot.y)));
     Vec3 cameraUp = Cross(m_pCamera->GetRotation(), cameraRight);
 
     m_pPipeline->LoadPushConstants(m_pCamera->GetPosition(), 
