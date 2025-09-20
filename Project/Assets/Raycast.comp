@@ -15,7 +15,7 @@ layout(std430, binding = 1) readonly buffer Voxels {
     Voxel VoxelData[]; 
 };
 
-layout(push_constant, std430) uniform PushConstants 
+layout(push_constant) uniform PushConstants 
 {
     vec4    CameraPos;
     ivec4   GridSize;
@@ -48,17 +48,15 @@ void main()
 {
     ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
 
-    float fov = radians(60.0);
+    float halfFov = radians(45.0);
     float aspectRatio = float(imageSize(outputImage).x) / float(imageSize(outputImage).y);
-    float scale = tan(fov * 0.5);
+    float scale = tan(halfFov);
 
-    vec2 uv = ((vec2(pixelCoord) / vec2(imageSize(outputImage))));
+    vec2 uv = ((vec2(pixelCoord) + vec2(0.5)) / vec2(imageSize(outputImage))) * 2. - 1.; 
 
-    vec3 rayDir = normalize(
-        CameraLookDir.xyz +
-        uv.x * aspectRatio * scale * CameraRight.xyz +
-        uv.y * scale * CameraUp.xyz
-    );
+    vec3 rayDir = normalize(CameraLookDir.xyz +
+                            uv.x * aspectRatio * scale * CameraRight.xyz +
+                            uv.y * scale * CameraUp.xyz);
      
     vec3 rayOrigin  = CameraPos.xyz;
     vec3 rayPos     = rayOrigin;
@@ -75,13 +73,13 @@ void main()
     int index = -1;
     for (int i = 0; 
          i < 4096; 
-         ++i, rayPos += rayDir * 0.12) 
+         ++i, rayPos += rayDir * 0.08) 
     {
         ivec3 voxelCoord = ivec3(floor(rayPos));
     
-        if (voxelCoord.x < 0 || voxelCoord.x > GridSize.x ||
-            voxelCoord.y < 0 || voxelCoord.y > GridSize.y ||
-            voxelCoord.z < 0 || voxelCoord.z > GridSize.z) {
+        if (voxelCoord.x < 0 || voxelCoord.x >= GridSize.x ||
+            voxelCoord.y < 0 || voxelCoord.y >= GridSize.y ||
+            voxelCoord.z < 0 || voxelCoord.z >= GridSize.z) {
             break;
         }
        
@@ -95,7 +93,7 @@ void main()
             float b = float((voxel.Color << 16) >> 24) / 255.;
             float g = float((voxel.Color << 8)  >> 24) / 255.;
             float r = float(voxel.Color         >> 24) / 255.;
-            float a = float(voxel.Color) / 255.;
+            float a = float(voxel.Color & 0xFFu) / 255.;
             vec3 baseColor = vec3(r, g, b);
 
             vec3 normal = computeNormal(voxelCoord);

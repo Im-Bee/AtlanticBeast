@@ -11,6 +11,10 @@ struct alignas(16) Vec4
         : x(x), y(y), z(z), w(w)
     { }
 
+    explicit Vec4(const Vec3& vec3, float w = 0)
+        : x(vec3.x), y(vec3.y), z(vec3.z), w(w)
+    { }
+
     float x;
     float y;
     float z;

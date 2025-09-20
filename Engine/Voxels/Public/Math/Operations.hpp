@@ -18,7 +18,7 @@ Vector Normalize(const Vector& v)
     for (size_t i = 0; i < Vector::Size; ++i) 
         mod += v[i] * v[i];
 
-    if (mod == 0) {
+    if (mod == 0.f) {
         return result;
     }
 

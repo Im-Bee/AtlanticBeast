@@ -32,6 +32,12 @@ int main()
     ib.keyboard.KeyCode = Core::AB_KEY_S;
     input.Bind(pwc.get(), &PlayablePaper::UseActionMoveBack, ib);
 
+    ib.keyboard.KeyCode = Core::AB_KEY_Q;
+    input.Bind(pwc.get(), &PlayablePaper::UseActionMoveUp, ib);
+
+    ib.keyboard.KeyCode = Core::AB_KEY_E;
+    input.Bind(pwc.get(), &PlayablePaper::UseActionMoveDown, ib);
+
     ib.keyboard.KeyCode = Core::AB_KEY_1;
     input.Bind(pwc.get(), &PlayablePaper::UseActionLeftYaw, ib);
 
@@ -46,7 +52,7 @@ int main()
 
     input.StartCapturing();
     
-    pwc->SetRotation(Voxels::Vec3 { 0.5, 0.5, 1. });
+    pwc->SetRotation(Voxels::Vec3 { -0.5, 1.25, 0. });
 
     render.SetCurrentCamera(::std::dynamic_pointer_cast<Voxels::Camera>(pwc));
     render.Initialize(window.GetWindowDesc());
