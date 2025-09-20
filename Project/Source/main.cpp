@@ -15,16 +15,17 @@ int main()
 
     window.Create();
 
-    PaperWeightController pwc;
+    PlayablePaper pwc;
     Core::InputBind ib;
     ib.Type = Core::EBindType::Keyboard;
     ib.keyboard = Core::KeyboardBind { Core::EKeyState::Press, Core::AB_KEY_A };
 
-    input.Bind(&pwc, &PaperWeightController::UseActionMove, ib);
+    input.Bind(&pwc, &PlayablePaper::UseActionMove, ib);
     input.StartCapturing();
     
     render.Initialize(window.GetWindowDesc());
     
+    pwc.~PlayablePaper();
     while (Core::AppStatus::GetAppCurrentStatus()) 
     {
         window.Update();

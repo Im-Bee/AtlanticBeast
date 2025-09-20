@@ -16,9 +16,19 @@ public:
 
 };
 
-class PaperWeightController : public PaperWeightCamera, 
+class PlayablePaper : public PaperWeightCamera, 
                               public Core::ControllerObject
 {
+public:
+
+    template<class... U>
+    explicit PlayablePaper(U&&... args)
+        : PaperWeightCamera(::std::forward<U>(args)...)
+    { }
+
+
+    ~PlayablePaper() = default;
+
 public:
     
     AB_DECL_ACTION(PaperWeightCamera, Move);
