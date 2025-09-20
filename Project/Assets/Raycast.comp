@@ -48,7 +48,7 @@ void main()
 {
     ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
 
-    float fov = radians(90.0);
+    float fov = radians(60.0);
     float aspectRatio = float(imageSize(outputImage).x) / float(imageSize(outputImage).y);
     float scale = tan(fov * 0.5);
 
