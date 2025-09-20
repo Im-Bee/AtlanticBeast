@@ -52,13 +52,14 @@ private:
 
 } // !Core
 
-#define AB_DECL_ACTION(baseClass, action, ...)                  \
-    static ::Core::ActionType UseAction##action(void* pThis)    \
-    {                                                           \
-        AB_ASSERT(pThis != nullptr);                            \
-                                                                \
-        static_cast<baseClass*>(pThis)->action(__VA_ARGS__);    \
-        return ::Core::ActionType();                            \
+#define AB_DECL_ACTION(baseClass, action, customName, ...)              \
+    static ::Core::ActionType UseAction##customName(void* pThis)        \
+    {                                                                   \
+        AB_ASSERT(pThis != nullptr);                                    \
+        AB_LOG(::Core::Debug::Info, L"Pressing " L#customName);          \
+                                                                        \
+        static_cast<baseClass*>(pThis)->action(__VA_ARGS__);            \
+        return ::Core::ActionType();                                    \
     }
 
 

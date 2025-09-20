@@ -11,16 +11,21 @@ namespace Voxels
 template<class Vector>
 Vector Normalize(const Vector& v)
 {
-    Vector result = { };
+    Vector result = Vector { };
     float mod = 0.f;
     float invMag;
 
     for (size_t i = 0; i < Vector::Size; ++i) 
-        mod += result[i];
+        mod += v[i];
 
-    AB_ASSERT(mod != 0.f);
+    if (mod == 0) {
+        for (size_t i = 0; i < Vector::Size; ++i) {
+            result[i] = 0.;
+            return result;
+        }
+    }
 
-    invMag = 1. / ::std::sqrt(mod);
+    invMag = 1. / ::std::sqrt(::std::abs(mod));
 
     for (size_t i = 0; i < Vector::Size; ++i)
         result[i] = v[i] * invMag;

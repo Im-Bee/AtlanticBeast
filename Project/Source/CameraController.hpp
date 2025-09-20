@@ -3,27 +3,16 @@
 #include "Core.h"
 #include "Input/ControllerObject.hpp"
 #include "Input/UserInput.hpp"
+#include "Primitives/Camera.hpp"
 
-class PaperWeightCamera
-{
-
-public:
-
-    void Move()
-    {
-        AB_LOG(Core::Debug::Info, L"I'm moving");
-    }
-
-};
-
-class PlayablePaper : public PaperWeightCamera, 
-                              public Core::ControllerObject
+class PlayablePaper : public Voxels::Camera, 
+                      public Core::ControllerObject
 {
 public:
 
     template<class... U>
     explicit PlayablePaper(U&&... args)
-        : PaperWeightCamera(::std::forward<U>(args)...)
+        : Camera(::std::forward<U>(args)...)
     { }
 
 
@@ -31,6 +20,20 @@ public:
 
 public:
     
-    AB_DECL_ACTION(PaperWeightCamera, Move);
+    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveRight, Voxels::Vec3 { 1., 0, 0 });
+
+    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveLeft, Voxels::Vec3 { -1., 0, 0 });
+
+    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveFront, Voxels::Vec3 { 0., 0, 1. });
+
+    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveBack, Voxels::Vec3{ 0., 0, -1. });
+
+    AB_DECL_ACTION(Voxels::Camera, AddRotation, RightYaw, Voxels::Vec3{ 0.1, 0, 0. });
+
+    AB_DECL_ACTION(Voxels::Camera, AddRotation, LeftYaw, Voxels::Vec3{ -0.1, 0, 0. });
+
+    AB_DECL_ACTION(Voxels::Camera, AddRotation, UpPitch, Voxels::Vec3{ 0., 0.1, 0. });
+
+    AB_DECL_ACTION(Voxels::Camera, AddRotation, DownPitch, Voxels::Vec3{ 0., -0.1, 0. });
 
 };

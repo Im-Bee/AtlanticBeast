@@ -34,7 +34,7 @@ public:
 	{ return m_vPosition; }
 
 	const Vec3& GetRotation() const
-	{ return m_vPosition; }
+	{ return m_vRotation; }
 
 private:
 

@@ -36,6 +36,23 @@ public:
 
 public:
 
+    void SetCurrentCamera(::std::shared_ptr<Camera> camera)
+    { m_pCamera = camera; }
+
+public:
+
+    ::std::shared_ptr<Camera>& GetCurrentCamera()
+    {
+        if (m_pCamera == nullptr) {
+            AB_LOG(Core::Debug::Warning, L"Renderer doesn't have a camera. Recreating camera for getter.");
+            m_pCamera = ::std::make_shared<Camera>();
+        }
+
+        return m_pCamera;
+    }
+
+public:
+
     void Initialize(::std::shared_ptr<const WindowDesc> wd);
 
     void Update();
@@ -62,6 +79,8 @@ private:
 
     VkCommandPool       m_CommandPool       = VK_NULL_HANDLE;
     VkCommandBuffer     m_CommandBuffer     = VK_NULL_HANDLE;
+
+    ::std::shared_ptr<Camera> m_pCamera = nullptr;
 
 };
 

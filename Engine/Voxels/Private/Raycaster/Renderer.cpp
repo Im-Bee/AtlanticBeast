@@ -21,6 +21,10 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd)
 
     m_pPipeline->ReserveGridBuffer(m_pVoxelGrid);
     m_pPipeline->LoadGrid(m_pVoxelGrid);
+
+    if (m_pCamera == nullptr) {
+        m_pCamera = make_shared<Camera>();
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -40,7 +44,14 @@ void Renderer::Update()
 
     m_pVoxelGrid->ModifyVoxel(--index, std::move(v));
     m_pPipeline->LoadGrid(m_pVoxelGrid);
-    m_pPipeline->LoadPushConstants(Vec3(.0f, .5f, .0f), Mat4());
+
+    Vec3 cameraRight = Normalize(Cross(Vec3{ 0., 1., 0. }, m_pCamera->GetRotation()));
+    Vec3 cameraUp = Cross(m_pCamera->GetRotation(), cameraRight);
+
+    m_pPipeline->LoadPushConstants(m_pCamera->GetPosition(), 
+                                   m_pCamera->GetRotation(), 
+                                   cameraRight,
+                                   cameraUp);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
