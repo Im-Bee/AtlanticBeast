@@ -10,7 +10,7 @@ Work in progress.
 Build dependencies:
   - Vulkan SDK
   - CMake or Visual Studio with CMake support
-  - Compiler that supports at leas C++17
+  - Compiler that supports at least C++17
   - Windows or Linux operating system
 
 ## Linux
