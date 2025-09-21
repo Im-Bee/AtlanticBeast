@@ -12,7 +12,7 @@ namespace Voxels
 class BEAST_VOXEL_API VoxelGrid
 {
 
-    static constexpr size_t VoxelGridDim = 64;
+    static constexpr size_t VoxelGridDim = 256;
 
 public:
 

@@ -63,16 +63,16 @@ void main()
 
     const vec3 lightPos = vec3(10.0, 25.0, 10.0);
     const vec3 lightColor = vec3(1.0, 1.0, 1.0);
-    const float ambientStrength = 0.1;
-    const float diffuseStrength = 1.0;
-    const float specularStrength = 0.5;
+    const float ambientStrength = 0.15;
+    const float diffuseStrength = 0.8;
+    const float specularStrength = 1.8;
     const float shininess = 132.0;
 
     vec4 finalColor = vec4(.2, .3, .7, 1.0);
 
     int index = -1;
     for (int i = 0; 
-         i < 4096; 
+         i < 1024; 
          ++i, rayPos += rayDir * 0.08) 
     {
         ivec3 voxelCoord = ivec3(floor(rayPos));

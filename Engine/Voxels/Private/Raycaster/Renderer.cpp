@@ -33,17 +33,18 @@ void Renderer::Update()
     static uint8_t r = 0;
     static uint8_t g = 111;
     static uint8_t b = 52;
-    static int32_t index = m_pVoxelGrid->GetAmountOfVoxels();
-    
-    Voxel v;
+    static int32_t index = 0; 
+                           
+    if (index < m_pVoxelGrid->GetAmountOfVoxels()) {
+        Voxel v;
+        v.Type = 1;
+        v.RGBA = (static_cast<uint32_t>(r++) << 24) |
+            (static_cast<uint32_t>(g++) << 16) |
+            (static_cast<uint32_t>(b++) << 8) | + 0x000000FF;
 
-    v.Type = 1;
-    v.RGBA = (static_cast<uint32_t>(r++) << 24) |
-             (static_cast<uint32_t>(g++) << 16) |
-             (static_cast<uint32_t>(b++) << 8) | + 0x000000FF;
-
-    m_pVoxelGrid->ModifyVoxel(--index, std::move(v));
-    m_pPipeline->LoadGrid(m_pVoxelGrid);
+        m_pVoxelGrid->ModifyVoxel(index++, std::move(v));
+        m_pPipeline->LoadGrid(m_pVoxelGrid);
+    }
 
     Vec3 rot = m_pCamera->GetRotation();
     Vec3 rotVec = Normalize(RotateY(RotateX(Vec3{ 0., 0., 1. }, rot.x), rot.y));
