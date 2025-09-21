@@ -19,11 +19,11 @@ void UserInput::Update()
 
     switch (is.Event) {
         case EAbInputEvents::AbKeyPress:
-            m_KeyPressMap.PlayAction(is.KeyId);
-
             if (m_KeysStatusMap[is.KeyId] == EKeyState::IsPressed) {
                 break;
             }
+
+            m_KeyPressMap.PlayAction(is.KeyId);
        
             m_CurrentlyPressedKeys.push_back(is.KeyId);
             m_KeyContinuous.PlayAction(is.KeyId);
