@@ -9,13 +9,6 @@
 namespace Core
 {
 
-struct PlayableAction
-{
-    void* pThis;
-    Action action;
-};
-
-
 class BEAST_API KeysMap 
 {
 
@@ -23,11 +16,7 @@ class BEAST_API KeysMap
 
 public:
     
-    KeysMap()
-        : m_Keys(AmountOfBindableKeys)
-    {
-        memset(&m_Keys[0], 0, sizeof(PlayableAction) * m_Keys.size());
-    }
+    KeysMap();
     
     ~KeysMap() = default;
 
@@ -47,7 +36,15 @@ public:
 
 private:
 
-    ::std::vector<PlayableAction> m_Keys;
+    struct DataForActionReplay
+    {
+        void* pThis;
+        Action action;
+    };
+
+private:
+
+    ::std::vector<DataForActionReplay> m_Keys;
 
 };
 

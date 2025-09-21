@@ -6,6 +6,7 @@
 #include "Input/KeysMap.hpp"
 #include "Window/WindowDesc.h"
 #include "CSystem.hpp"
+
 namespace Core
 {
 
@@ -19,9 +20,14 @@ public:
         , m_pWindowDesc(pWd)
         , m_KeyReleaseMap()
         , m_KeyPressMap()
+        , m_KeyContinuous()
         , m_ButtonReleaseMap()
         , m_ButtonPressMap()
-    { }
+        , m_CurrentlyPressedKeys()
+        , m_KeysStatusMap(AB_KEY_COUNT)
+    { 
+        memset(&m_KeysStatusMap[0], 0, sizeof(int8_t) * m_KeysStatusMap.size());
+    }
 
     ~UserInput() 
     { this->StopCapturing(); }
@@ -45,7 +51,10 @@ public:
     void Bind(void* pThis, Action pIa, InputBind bind);
 
     void Unbind(void* pThis);
-
+    
+    /**
+     * Updates are based on key state in m_pWindowDesc
+     * */
     void Update();
 
 private:
@@ -58,8 +67,12 @@ private:
 
     KeysMap m_KeyReleaseMap;
     KeysMap m_KeyPressMap;
+    KeysMap m_KeyContinuous;
     KeysMap m_ButtonReleaseMap;
     KeysMap m_ButtonPressMap;
+    
+    ::std::vector<int8_t> m_CurrentlyPressedKeys;
+    ::std::vector<int8_t> m_KeysStatusMap;
 
 };
 

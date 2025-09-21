@@ -19,7 +19,7 @@ int main()
 
     Core::InputBind ib;
     ib.Type     = Core::EBindType::Keyboard;
-    ib.keyboard = Core::KeyboardBind { Core::EKeyState::Press, Core::AB_KEY_A };
+    ib.keyboard = Core::KeyboardBind { Core::EOnKeyState::Continuous, Core::AB_KEY_A };
 
     input.Bind(pwc.get(), &PlayablePaper::UseActionMoveLeft, ib);
 

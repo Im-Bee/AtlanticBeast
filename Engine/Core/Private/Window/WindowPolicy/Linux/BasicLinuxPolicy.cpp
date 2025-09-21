@@ -17,15 +17,15 @@ uint32_t BasicLinuxWindowPolicy::CreateImpl(WindowDesc* pWd)
     }
 
     int screen = DefaultScreen(pWd->DisplayHandle);
-    Display* display = pWd->DisplayHandle;
+    Display* pDisplay = pWd->DisplayHandle;
 
     Window window = XCreateSimpleWindow(pWd->DisplayHandle,
-                                        RootWindow(display, screen),
+                                        RootWindow(pDisplay, screen),
                                         100, 100,
                                         pWd->Width, pWd->Height,
                                         1,
-                                        BlackPixel(display, screen),
-                                        WhitePixel(display, screen));
+                                        BlackPixel(pDisplay, screen),
+                                        WhitePixel(pDisplay, screen));
 
 
     XTextProperty windowName;
@@ -34,11 +34,17 @@ uint32_t BasicLinuxWindowPolicy::CreateImpl(WindowDesc* pWd)
     szWindowName[uWriten] = '\0';
 
     XStringListToTextProperty(&szWindowName, 1, &windowName);
-    XSetWMName(display, window, &windowName);
+    XSetWMName(pDisplay, window, &windowName);
     free(szWindowName);
     XFree(windowName.value);
 
-    XSelectInput(display, window, ButtonMotionMask |
+    int bSupported;
+    XkbSetDetectableAutoRepeat(pDisplay, True, &bSupported);
+    if (!bSupported) {
+        AB_LOG(Debug::Error, L"Detectable auto repeat ISN`T SUPPORTED!");
+    }
+
+    XSelectInput(pDisplay, window, ButtonMotionMask |
                                   ButtonPressMask |
                                   ButtonReleaseMask |
                                   KeyPressMask |
@@ -47,13 +53,13 @@ uint32_t BasicLinuxWindowPolicy::CreateImpl(WindowDesc* pWd)
                                   StructureNotifyMask | 
                                   SubstructureNotifyMask |
                                   SubstructureRedirectMask);
-    XMapWindow(display, window);
+    XMapWindow(pDisplay, window);
 
-    pWd->Screen = DefaultScreen(display);
+    pWd->Screen = DefaultScreen(pDisplay);
     pWd->WindowHandle = window;
 
-    Atom wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", 0);
-    XSetWMProtocols(display, window, &wmDeleteMessage, 1);
+    Atom wmDeleteMessage = XInternAtom(pDisplay, "WM_DELETE_WINDOW", 0);
+    XSetWMProtocols(pDisplay, window, &wmDeleteMessage, 1);
 
     return 0;
 }
@@ -182,6 +188,8 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
 
                 break;
         }
+
+        pWd->LastEvent = EAbWindowEvents::NothingNew;
     }
 }
 

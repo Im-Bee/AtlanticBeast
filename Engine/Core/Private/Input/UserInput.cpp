@@ -7,19 +7,39 @@ namespace Core
 // ---------------------------------------------------------------------------------------------------------------------
 void UserInput::Update()
 { 
+    // Always replay the continuos keybinds that are currently pressed
+    for (const auto& keyId : m_CurrentlyPressedKeys)
+        m_KeyContinuous.PlayAction(keyId);
+    
     AbInputStruct& is = m_pWindowDesc->InputStruct;
 
-    if (is.Handled || !m_bIsCapturing) {
+    if (is.Handled || !m_bIsCapturing || (is.KeyId < AB_INVALID_KEY && is.KeyId >= AB_KEY_COUNT)) {
         return;
     }
 
     switch (is.Event) {
         case EAbInputEvents::AbKeyPress:
             m_KeyPressMap.PlayAction(is.KeyId);
+
+            if (m_KeysStatusMap[is.KeyId] == EKeyState::IsPressed) {
+                break;
+            }
+       
+            m_CurrentlyPressedKeys.push_back(is.KeyId);
+            m_KeyContinuous.PlayAction(is.KeyId);
+            m_KeysStatusMap[is.KeyId] = EKeyState::IsPressed;
             break;
 
         case EAbInputEvents::AbKeyRelease:
             m_KeyReleaseMap.PlayAction(is.KeyId);
+            m_KeysStatusMap[is.KeyId] = EKeyState::IsReleased;
+
+            for (size_t i = 0; i < m_CurrentlyPressedKeys.size(); ++i) {
+                if (m_CurrentlyPressedKeys[i] == is.KeyId) {
+                    m_CurrentlyPressedKeys.erase(m_CurrentlyPressedKeys.begin() + i,
+                                                 m_CurrentlyPressedKeys.begin() + i + 1);
+                }
+            }
             break;
 
         case EAbInputEvents::AbButtonPress:
@@ -47,10 +67,17 @@ void UserInput::Bind(void* pThis, Action action, InputBind bind)
             return;
         }
 
-        if (bind.keyboard.KeyState & EKeyState::Press) {
+        if (bind.keyboard.KeyState & EOnKeyState::Press) {
             m_KeyPressMap.SetKeyToAction(bind, pThis, action);
-            m_BindsHandles[pThis] = bind;
         }
+        else if (bind.keyboard.KeyState & EOnKeyState::Release) {
+            m_KeyReleaseMap.SetKeyToAction(bind, pThis, action);
+        }
+        else if (bind.keyboard.KeyState & EOnKeyState::Continuous) {
+            m_KeyContinuous.SetKeyToAction(bind, pThis, action);
+        }
+
+        m_BindsHandles[pThis] = bind;
 
         return;
     }
@@ -60,7 +87,7 @@ void UserInput::Bind(void* pThis, Action action, InputBind bind)
 // ---------------------------------------------------------------------------------------------------------------------
 void UserInput::Unbind(void* pThis)
 {
-    auto& bind = m_BindsHandles.find(pThis);
+    const auto& bind = m_BindsHandles.find(pThis);
 
     if (bind == m_BindsHandles.end()) {
         AB_LOG(Debug::Warning, L"Cannot unbind this bind from this UserInput, because UserInput doesn't handles it.");
@@ -70,14 +97,20 @@ void UserInput::Unbind(void* pThis)
     const auto& inputBind = bind->second;
 
     if (inputBind.Type & EBindType::Keyboard) {
-        if (inputBind.keyboard.KeyState & EKeyState::Press) {
+        if (inputBind.keyboard.KeyState & EOnKeyState::Press) {
             m_KeyPressMap.UnSetKey(inputBind);
 
             return;
         }
 
-        if (inputBind.keyboard.KeyState & EKeyState::Release) {
+        if (inputBind.keyboard.KeyState & EOnKeyState::Release) {
             m_KeyReleaseMap.UnSetKey(inputBind);
+
+            return;
+        }
+
+        if (inputBind.keyboard.KeyState & EOnKeyState::Continuous) {
+            m_KeyContinuous.UnSetKey(inputBind);
 
             return;
         }

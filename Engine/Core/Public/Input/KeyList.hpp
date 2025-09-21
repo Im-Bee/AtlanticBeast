@@ -77,7 +77,24 @@ constexpr const int8_t AB_KEY_NUMLOCK	 = 69;
 constexpr const int8_t AB_KEY_SCROLLLOCK = 70;
 constexpr const int8_t AB_KEY_F11        = 87;
 constexpr const int8_t AB_KEY_F12        = 88;
-constexpr const int8_t AB_KEY_COUNT      = AB_KEY_F12 + 1;
+constexpr const int8_t AB_KEY_RIGHTCTRL  = 97;
+constexpr const int8_t AB_KEY_KPSLASH    = 98;
+constexpr const int8_t AB_KEY_SYSRQ	     = 99;
+constexpr const int8_t AB_KEY_RIGHTALT   = 100;
+constexpr const int8_t AB_KEY_LINEFEED   = 101;
+constexpr const int8_t AB_KEY_HOME       = 102;
+constexpr const int8_t AB_KEY_UP         = 103;
+constexpr const int8_t AB_KEY_PAGEUP     = 104;
+constexpr const int8_t AB_KEY_LEFT       = 105;
+constexpr const int8_t AB_KEY_RIGHT	     = 106;
+constexpr const int8_t AB_KEY_END		 = 107;
+constexpr const int8_t AB_KEY_DOWN	     = 108;
+constexpr const int8_t AB_KEY_PAGEDOWN	 = 109;
+constexpr const int8_t AB_KEY_INSERT	 = 110;
+constexpr const int8_t AB_KEY_DELETE	 = 111;
+constexpr const int8_t AB_KEY_LEFTMETA	 = 125;
+constexpr const int8_t AB_KEY_RIGHTMETA	 = 126;
+constexpr const int8_t AB_KEY_COUNT      = AB_KEY_RIGHTMETA + 1;
 
 } // !Core
 

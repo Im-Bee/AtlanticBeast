@@ -6,13 +6,21 @@
 namespace Core
 {
 
-// Empty struct to force biding type safety. Like a rock for your shoe.
+/**
+ * Empty struct to force biding type safety. Like a rock for your shoe.
+ * */
 struct ActionType 
 { };
 
 using Action = ActionType(*)(void* pThis);
 
 enum EKeyState
+{
+    IsPressed = 1,
+    IsReleased = IsPressed << 1,
+};
+
+enum EOnKeyState
 {
     Release = 1,
     Press = Release << 1,
@@ -26,7 +34,7 @@ enum EBindType
 
 struct KeyboardBind
 {
-    EKeyState KeyState;
+    EOnKeyState KeyState;
     int8_t KeyCode;
 };
 

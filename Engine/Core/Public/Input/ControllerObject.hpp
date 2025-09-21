@@ -56,7 +56,6 @@ private:
     static ::Core::ActionType UseAction##customName(void* pThis)        \
     {                                                                   \
         AB_ASSERT(pThis != nullptr);                                    \
-        AB_LOG(::Core::Debug::Info, L"Pressing " L#customName);          \
                                                                         \
         static_cast<baseClass*>(pThis)->action(__VA_ARGS__);            \
         return ::Core::ActionType();                                    \
