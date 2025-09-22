@@ -4,15 +4,15 @@ Work in progress.
 
 Current default demo keybinds:
 
-W - Move forward along Z axis
-S - Move backward along Z axis
-D - Move forward (right) along X axis
-A - Move backward (left) along X axis
-
-1 - Rotate yaw to the right
-2 - Rotate yaw to the left
-3 - Pitch up
-4 - Pitch down
+W - Move forward along Z axis<br>
+S - Move backward along Z axis<br>
+D - Move forward (right) along X axis<br>
+A - Move backward (left) along X axis<br>
+<br>
+1 - Rotate yaw to the right<br>
+2 - Rotate yaw to the left<br>
+3 - Pitch up<br>
+4 - Pitch down<br>
 
 
 
