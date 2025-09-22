@@ -45,5 +45,15 @@ BEAST_API WindowDesc CreateWindowDesc(const wchar_t* pwszName,
 }
 #endif // !__cplusplus
 
+#ifdef __cplusplus
+template<size_t uNameLen>
+WindowDesc CreateWindowDesc(const wchar_t (&pwszName)[uNameLen], 
+                            int32_t width, 
+                            int32_t height)
+{
+    return CreateWindowDesc(pwszName, uNameLen, width, height);
+}
+#endif // !__cplusplus
+
 #endif // !AB_WINDOW_DESC_H
 

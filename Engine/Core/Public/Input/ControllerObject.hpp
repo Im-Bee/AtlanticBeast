@@ -1,6 +1,7 @@
 #ifndef AB_CONTROLLER_OBJECT_H
 #define AB_CONTROLLER_OBJECT_H
 
+#include "Debug/Assert.h"
 #include "Input/UserInput.hpp"
 #include "KeyBind.hpp"
 

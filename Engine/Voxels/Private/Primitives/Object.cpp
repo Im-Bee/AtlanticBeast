@@ -3,20 +3,20 @@
 namespace Voxels
 {
 
+// ---------------------------------------------------------------------------------------------------------------------
 void WorldObject::SetPositon(Vec3 pos)
 { m_vPosition = pos; }
 
+// ---------------------------------------------------------------------------------------------------------------------
 void WorldObject::SetRotation(Vec3 rot)
 { m_vRotation = rot; }
 
-void WorldObject::AddPositon(Vec3 pos)
-{
-	m_vPosition += pos;
-}
+// ---------------------------------------------------------------------------------------------------------------------
+void WorldObject::AddPositon(const Vec3& pos)
+{ m_vPosition += pos; }
 
-void WorldObject::AddRotation(Vec3 rot)
-{
-	m_vRotation += rot;
-}
+// ---------------------------------------------------------------------------------------------------------------------
+void WorldObject::AddRotation(const Rot3& rot)
+{ m_vRotation += rot; }
 
 } // !Voxels

@@ -51,9 +51,13 @@ public:
         return m_pCamera;
     }
 
+    ::std::shared_ptr<VoxelGrid>& GetGrid()
+    { return m_pVoxelGrid; }
+
 public:
 
-    void Initialize(::std::shared_ptr<const WindowDesc> wd);
+    void Initialize(::std::shared_ptr<const WindowDesc> wd,
+                    ::std::shared_ptr<VoxelGrid> vg = ::std::make_shared<VoxelGrid>());
 
     void Update();
 

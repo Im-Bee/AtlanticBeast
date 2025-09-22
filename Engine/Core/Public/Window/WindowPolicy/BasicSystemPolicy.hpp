@@ -10,7 +10,6 @@
 namespace Core
 {
 
-
 typedef 
 #if _WIN32
 	BasicWin32WindowPolicy

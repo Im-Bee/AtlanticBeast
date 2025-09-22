@@ -16,7 +16,9 @@
 
 #include <vulkan/vulkan.hpp>
 
-#undef LoadImage
+#ifdef _WIN32
+#   undef LoadImage
+#endif // !_WIN32
 
 #endif // !__cplusplus
 

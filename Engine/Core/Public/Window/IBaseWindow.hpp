@@ -10,6 +10,12 @@
 namespace Core
 {
 
+/**
+ * Basic wrapper for window class.
+ * It's possible to create your own implementation of WindowPolicy
+ * by hidding the base implementations of BasicSystemPolicy or creating your whole 
+ * policy from IWindowPolicy class, to create whole custom os logic.
+ * */
 template<typename Derived, typename WindowPolicy = DefaultSystemWindowPolicy>
 class IBaseWindow : private WindowPolicy
 {
@@ -89,13 +95,6 @@ public:
         }
 
         this->WindowPolicyUpdate(m_pWindowDesc.get());
-
-        // So, my decision is, that every client of this library, 
-        // should be able to handle Input events by themselves
-        // in HandleMessageImpl() or use the builtin UserInput class.
-        if (m_pWindowDesc->LastEvent & EAbWindowEvents::Input) {
-            m_pWindowDesc->InputStruct.Handled = false;
-        }
         
         if (m_pWindowDesc->LastEvent & EAbWindowEvents::Destroy) {
             AB_LOG(Core::Debug::Info, L"Window is being closed by user");
@@ -103,6 +102,13 @@ public:
         }
         
         static_cast<Derived*>(this)->HandleMessageImpl(m_pWindowDesc->LastEvent);
+
+        // So, my decision is, that every client of this library, 
+        // should be able to handle Input events by themselves
+        // in HandleMessageImpl() or use the builtin UserInput class.
+        if (m_pWindowDesc->LastEvent & EAbWindowEvents::Input) {
+            m_pWindowDesc->InputStruct.Handled = false;
+        }
         
         m_pWindowDesc->LastEvent = EAbWindowEvents::NothingNew;
     }

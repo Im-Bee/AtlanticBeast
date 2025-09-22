@@ -8,6 +8,10 @@
 namespace Core
 {
 
+/**
+ * If pwszClassName is provided, we assume that WCEX is already filled,
+ * otherwise we fall back to basic window class.
+ * */
 class BEAST_API BasicWin32WindowPolicy : public IWindowPolicy<BasicWin32WindowPolicy>
 {
 public:
@@ -29,8 +33,6 @@ public:
     void DestroyImpl(WindowDesc* pWd);
 
     void UpdateImpl(WindowDesc* pWd);
-
-private:
 
 };
 

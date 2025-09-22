@@ -94,9 +94,7 @@ uint32_t BasicWin32WindowPolicy::CreateImpl(WindowDesc* pWd)
         pWd->Wcex.lpfnWndProc = WindowProc;
     }
 
-    if (!AbAskForWindowClass(pWd->pwszClassName)) {
-        AbAskToRegisterWindowClass(pWd->Wcex);
-    }
+    AbAskToRegisterWindowClass(pWd->pwszClassName, pWd->Wcex);
 
     HWND hwnd = CreateWindow(pWd->pwszClassName,
                              pWd->Name,

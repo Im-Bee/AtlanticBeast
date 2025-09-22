@@ -8,7 +8,7 @@ namespace Voxels
 
 constexpr inline void ThrowIfFailed(VkResult result,
                                     wchar_t pwszCustomLogMsg[] = L"ThrowIfFailed, vulkan isn't working!!! "
-                                                                 L"Error code is: %d")
+                                                                 "Error code is: %d")
 {
     if (result != VK_SUCCESS) {
         AB_LOG(Core::Debug::Error, pwszCustomLogMsg, static_cast<int32_t>(result));

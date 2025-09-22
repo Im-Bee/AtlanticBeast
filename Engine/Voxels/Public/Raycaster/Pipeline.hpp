@@ -30,12 +30,17 @@ public:
 
     void LoadImage(VkImage image);
 
-    void LoadPushConstants(Vec3 cameraPos, Vec3 cameraLookDir, Vec3 cameraRight, Vec3 cameraUp)
+    void LoadPushConstants(float fFov, 
+                           Vec3 cameraPos, 
+                           Vec3 cameraLookDir,
+                           Vec3 cameraRight,
+                           Vec3 cameraUp)
     {
         m_Vpc.CameraPos = cameraPos;
         m_Vpc.CameraLookDir = cameraLookDir;
         m_Vpc.CameraRight = cameraRight;
         m_Vpc.CameraUp = cameraUp;
+        m_Vpc.fFov = fFov;
     }
 
 public:

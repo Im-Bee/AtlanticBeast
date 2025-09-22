@@ -10,9 +10,11 @@ SET(VOXELS_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
 SET(VOXELS_HEADRES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Consts.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Mat4.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Vec3.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Vec4.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Rot.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Operations.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Object.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Camera.hpp"

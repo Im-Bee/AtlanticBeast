@@ -1,4 +1,5 @@
 #include "Raycaster/Renderer.hpp"
+#include "Math/Consts.hpp"
 
 namespace Voxels
 {
@@ -6,14 +7,15 @@ namespace Voxels
 using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
-void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd) 
+void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
+                          ::std::shared_ptr<VoxelGrid> vg) 
 {
     m_pInstance         = make_shared<Instance>();
     m_pHardware         = make_shared<Hardware>(m_pInstance);
     m_pDeviceAdapter    = make_shared<DeviceAdapter>(m_pHardware);
     m_pWindowDesc       = wd;
     m_pSwapChain        = make_shared<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, wd);
-    m_pVoxelGrid        = make_shared<VoxelGrid>();
+    m_pVoxelGrid        = vg;
     m_pPipeline         = make_shared<Pipeline>(m_pHardware, m_pDeviceAdapter);
 
     m_CommandPool = CreateCommandPool(m_pDeviceAdapter, m_pDeviceAdapter->GetQueueFamilyIndex());
@@ -30,28 +32,15 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd)
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Update()
 {
-    static uint8_t r = 0;
-    static uint8_t g = 111;
-    static uint8_t b = 52;
-    static int32_t index = 0; 
-                           
-    if (index < m_pVoxelGrid->GetAmountOfVoxels()) {
-        Voxel v;
-        v.Type = 1;
-        v.RGBA = (static_cast<uint32_t>(r++) << 24) |
-            (static_cast<uint32_t>(g++) << 16) |
-            (static_cast<uint32_t>(b++) << 8) | + 0x000000FF;
-
-        m_pVoxelGrid->ModifyVoxel(index++, std::move(v));
-        m_pPipeline->LoadGrid(m_pVoxelGrid);
-    }
+    m_pPipeline->LoadGrid(m_pVoxelGrid);
 
     Vec3 rot = m_pCamera->GetRotation();
     Vec3 rotVec = Normalize(RotateY(RotateX(Vec3{ 0., 0., 1. }, rot.x), rot.y));
     Vec3 cameraRight = Normalize(Cross(rotVec, Vec3{ 0., 1., 0. }));
     Vec3 cameraUp = Cross(cameraRight, rotVec);
 
-    m_pPipeline->LoadPushConstants(m_pCamera->GetPosition(), 
+    m_pPipeline->LoadPushConstants(m_pCamera->GetFov() * AB_DEG_TO_RAD,
+                                   m_pCamera->GetPosition(), 
                                    rotVec, 
                                    cameraRight,
                                    cameraUp);

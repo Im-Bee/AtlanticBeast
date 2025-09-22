@@ -8,18 +8,30 @@
 #ifdef __cplusplus
 #ifdef __linux__
 
+/**
+ * Wraps display query logic for linux.
+ **/
 BEAST_API Display* AbAskForDisplayLinux(const char* pszDisplayName);
 
+/**
+ * Wraps display query logic for linux.
+ * Ensures that after window closes, we don't destroy display that is still in use.
+ **/
 BEAST_API void AbAskToCloseDisplayLinux(const char* pszDisplayName);
 
 #endif // !__linux__
 
 #ifdef _WIN32
 
-BEAST_API bool AbAskForWindowClass(const wchar_t* pwszClassName);
-
+/**
+ * Wraps window class query logic for win32.
+ **/
 BEAST_API void AbAskToRegisterWindowClass(WNDCLASSEX& wcex);
 
+/**
+ * Wraps window class query logic for win32.
+ * Ensures that after window closes, we don't unregister window class that is still in use.
+ **/
 BEAST_API void AbAskToCloseWindowClass(const wchar_t* pwszClassName);
 
 #endif // !_WIN32

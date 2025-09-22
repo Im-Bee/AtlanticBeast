@@ -22,6 +22,10 @@ layout(push_constant) uniform PushConstants
     vec4    CameraLookDir;
     vec4    CameraRight;
     vec4    CameraUp;
+    float   Fov;
+    uint    Padding1;
+    uint    Padding2;
+    uint    Padding3;
 };
 
 vec3 computeNormal(ivec3 voxelCoord) {
@@ -48,7 +52,7 @@ void main()
 {
     ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
 
-    float halfFov = radians(45.0);
+    float halfFov = Fov * 0.5;
     float aspectRatio = float(imageSize(outputImage).x) / float(imageSize(outputImage).y);
     float scale = tan(halfFov);
 

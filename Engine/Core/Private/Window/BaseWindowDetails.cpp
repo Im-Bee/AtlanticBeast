@@ -64,30 +64,22 @@ void AbAskToCloseDisplayLinux(const char* pszDisplayName)
 static unordered_map<wstring, size_t> RegisteredClasses = { };
 
 // ---------------------------------------------------------------------------------------------------------------------
-bool AbAskForWindowClass(const wchar_t* pwszClassName)
+void AbAskToRegisterWindowClass(const wchar_t* pwszClassName, WNDCLASSEX& wcex)
 {
     if (pwszClassName == NULL) {
         pwszClassName = L"";
     }
 
-    if (RegisteredClasses.find(pwszClassName) == RegisteredClasses.end()) {
-        return false;
-    }
-    else {
+    if (RegisteredClasses.find(pwszClassName) != RegisteredClasses.end()) {
         ++RegisteredClasses[pwszClassName];
-        return true;
     }
-}
 
-// ---------------------------------------------------------------------------------------------------------------------
-void AbAskToRegisterWindowClass(WNDCLASSEX& wcex)
-{
     wstring className = wcex.lpszClassName;
 
     if (RegisteredClasses.find(className) != RegisteredClasses.end() && 
         RegisteredClasses[className] != 0)
     {
-        throw AB_EXCEPT("Traying to register a class that already exists!!!");
+        throw AB_EXCEPT("Trying to register a class that already exists!!!");
     }
    
     ++RegisteredClasses[className];

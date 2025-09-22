@@ -6,26 +6,27 @@
 namespace Core
 {
 
+/**
+ * Basic empty window implementation used for renderer.
+ * */
 class EmptyCanvas : public ::Core::IBaseWindow<EmptyCanvas>
 {
 public:
 
-    EmptyCanvas()
-        : IBaseWindow<EmptyCanvas>(CreateWindowDesc(L"EmptyCanvas",
-                                                    sizeof(L"EmptyCanvas"), 
-                                                    1200, 700))
+    EmptyCanvas(std::wstring wstrWindowName = L"EmptyCanvas")
+        : IBaseWindow<EmptyCanvas>(CreateWindowDesc(wstrWindowName.c_str(), wstrWindowName.length(), 1200, 700))
     { }
     
-    explicit EmptyCanvas(const wchar_t* pwszName)
-        : IBaseWindow<EmptyCanvas>(CreateWindowDesc(pwszName,
-                                                    sizeof(L"EmptyCanvas"),
-                                                    1200, 700))
-    { }
-    
+    ~EmptyCanvas() = default;
+
+    EmptyCanvas(EmptyCanvas&&) noexcept = default;
+
+    EmptyCanvas(const EmptyCanvas&) = delete;
+
+public:
+
     void HandleMessageImpl(EAbWindowEvents)
-    {
-        // AB_LOG(Debug::Info, L"Proccessing a message! ... %u", msg);
-    }
+    { }
 
 };
 
@@ -35,3 +36,4 @@ public:
 
 
 #endif // !AB_EMPTYCANVAS_H
+

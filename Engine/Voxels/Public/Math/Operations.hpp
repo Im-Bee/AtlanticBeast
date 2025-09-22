@@ -30,6 +30,7 @@ Vector Normalize(const Vector& v)
     return result;
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>
 constexpr inline Vector Cross(const Vector& vA, const Vector& vB)
 {
@@ -44,6 +45,7 @@ constexpr inline Vector Cross(const Vector& vA, const Vector& vB)
     static_assert(true, "This size of a vector doesn't have impementation of cross product yet");
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>
 constexpr inline Vector RotateX(const Vector& v, float angleRad)
 {
@@ -62,6 +64,7 @@ constexpr inline Vector RotateX(const Vector& v, float angleRad)
     static_assert(true, "This size of a vector doesn't have impementation of rotate X yet");
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>
 constexpr inline Vector RotateY(const Vector& v, float angleRad)
 {
@@ -80,6 +83,7 @@ constexpr inline Vector RotateY(const Vector& v, float angleRad)
     static_assert(true, "This size of a vector doesn't have impementation of rotate Y yet");
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>
 constexpr inline Vector& AddAssign(Vector& vA, const Vector& vB)
 {

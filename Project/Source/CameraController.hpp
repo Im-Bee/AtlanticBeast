@@ -40,4 +40,8 @@ public:
 
     AB_DECL_ACTION(Voxels::Camera, AddRotation, LeftYaw, Voxels::Vec3{ 0., -0.01, 0. });
 
+    AB_DECL_ACTION(Voxels::Camera, IncreaseFov, FovUp, 1.0);
+
+    AB_DECL_ACTION(Voxels::Camera, IncreaseFov, FovDown, -1.0);
+
 };
