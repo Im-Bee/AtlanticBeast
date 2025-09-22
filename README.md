@@ -13,6 +13,8 @@ A - Move backward (left) along X axis<br>
 2 - Rotate yaw to the left<br>
 3 - Pitch up<br>
 4 - Pitch down<br>
+5 - Increase fov<br>
+6 - Decrease fov<br>
 
 
 
