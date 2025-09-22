@@ -6,7 +6,7 @@
 namespace Core
 {
 
-class AppResources
+class BEAST_API AppResources
 {
     AppResources();
 

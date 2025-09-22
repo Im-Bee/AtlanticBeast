@@ -26,7 +26,7 @@ BEAST_API void AbAskToCloseDisplayLinux(const char* pszDisplayName);
 /**
  * Wraps window class query logic for win32.
  **/
-BEAST_API void AbAskToRegisterWindowClass(WNDCLASSEX& wcex);
+BEAST_API void AbAskToRegisterWindowClass(const wchar_t* pwszClassName, WNDCLASSEX& wcex);
 
 /**
  * Wraps window class query logic for win32.
