@@ -2,6 +2,22 @@
 
 Work in progress.
 
+Current default demo keybinds:
+
+W - Move forward along Z axis
+S - Move backward along Z axis
+D - Move forward (right) along X axis
+A - Move backward (left) along X axis
+
+1 - Rotate yaw to the right
+2 - Rotate yaw to the left
+3 - Pitch up
+4 - Pitch down
+
+
+
+
+
 ![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/ReadMeScreenshot.jpg?raw=true)
 ![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/ReadMeScreenshot2.jpg?raw=true)
 
