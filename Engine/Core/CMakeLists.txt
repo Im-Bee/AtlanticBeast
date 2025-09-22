@@ -1,5 +1,6 @@
 SET(CORE_SOURCE 
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/AppStatus.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/AppResources.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Core.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Exception.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Debug/Logger.cpp"
@@ -14,6 +15,7 @@ SET(CORE_SOURCE
 SET(CORE_HEADRES 
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/AbLimits.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/AppStatus.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/AppResources.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/CSystem.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/CSystem.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Core.h"
