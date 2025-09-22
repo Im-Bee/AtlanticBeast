@@ -15,6 +15,8 @@ Build dependencies:
 
 ## Linux
 
+### CMake
+
 ``` sh
 mkdir Build &&
 cd Build &&
@@ -29,3 +31,11 @@ make
 Open root directory of the project with Visual Studio. Wait for cmake to build. Select AtlBee project as a build target.
 Prefer release build.
 
+### CMake
+
+``` sh
+mkdir Build &&
+cd Build &&
+cmake .. -DCMAKE_BUILD_TYPE=Release &&
+make 
+```
