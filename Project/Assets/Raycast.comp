@@ -32,7 +32,7 @@ vec3 ComputeNormal(vec3 ro, vec3 hitCenter)
     return normalize(ro - hitCenter);
 }
 
-bool MarchTheRay(vec3 ro, vec3 rd, out ivec3 hitCoords, out int hitIndex, out vec3 normal)
+bool MarchTheRay(vec3 ro, vec3 rd, int maxSteps, out ivec3 hitCoords, out int hitIndex, out float distance, out vec3 normal)
 {
     vec3 pos = floor(ro);
     ivec3 voxel = ivec3(pos);
@@ -48,8 +48,8 @@ bool MarchTheRay(vec3 ro, vec3 rd, out ivec3 hitCoords, out int hitIndex, out ve
 
     ivec3 step = ivec3(sign(rd));
     int lastStepAxis = -1;
+    distance = 0.;
 
-    const int maxSteps = 256;
     normal = vec3(0.);
 
     for (int stepCount = 0; stepCount < maxSteps; ++stepCount)
@@ -77,10 +77,12 @@ bool MarchTheRay(vec3 ro, vec3 rd, out ivec3 hitCoords, out int hitIndex, out ve
         {
             if (tMax.x < tMax.z) {
                 voxel.x += step.x;
+                distance = tMax.x;
                 tMax.x  += tDelta.x;
                 lastStepAxis = 0;
             } else {
                 voxel.z += step.z;
+                distance = tMax.z;
                 tMax.z  += tDelta.z;
                 lastStepAxis = 2;
             }
@@ -89,10 +91,12 @@ bool MarchTheRay(vec3 ro, vec3 rd, out ivec3 hitCoords, out int hitIndex, out ve
         {
             if (tMax.y < tMax.z) {
                 voxel.y += step.y;
+                distance = tMax.y;
                 tMax.y  += tDelta.y;
                 lastStepAxis = 1;
             } else {
                 voxel.z += step.z;
+                distance = tMax.z;
                 tMax.z  += tDelta.z;
                 lastStepAxis = 2;
             }
@@ -117,11 +121,14 @@ bool ShadowRay(vec3 from, vec3 to)
     vec3 dir = normalize(to - from);
     ivec3 dummyHit;
     int dummyIndex;
+    float dummyDistance;
     vec3 dummyNormal;
     return MarchTheRay(from + dir * 2.2,
                        dir,
+                       int(length(to - from) * 1.4),
                        dummyHit,
                        dummyIndex,
+                       dummyDistance,
                        dummyNormal);
 }
 
@@ -155,13 +162,17 @@ void main()
     ivec3 hitCoords;
     int index = 0;
     vec3 normal;
-    if (MarchTheRay(rayOrigin, rayDir, hitCoords, index, normal)) 
+    float distance;
+    if (MarchTheRay(rayOrigin, rayDir, 256, hitCoords, index, distance, normal)) 
     {
+        vec3 hitPos = rayOrigin + rayDir * distance;
+
         Voxel voxel = VoxelData[index];
 
         vec4 baseColor = ExtractColorInt(voxel.Color);
 
         vec3 voxelCenter = vec3(hitCoords) + vec3(0.5);
+        normal = normalize(hitPos - voxelCenter) * -normal;
                 
         vec3 lightDir = normalize(lightPos - voxelCenter);
         vec3 viewDir = normalize(rayOrigin - voxelCenter);
