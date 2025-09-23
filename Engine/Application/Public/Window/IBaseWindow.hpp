@@ -27,7 +27,7 @@ public:
     template<class U>
     explicit IBaseWindow(U&& windowDesc = WindowDesc())
         : m_pWindowDesc(::std::make_shared<WindowDesc>(::std::forward<U>(windowDesc)))
-        , m_Input(m_pWindowDesc)
+        , m_Input(::std::make_shared<UserInput>(m_pWindowDesc))
     { }
 
     ~IBaseWindow()
@@ -119,7 +119,7 @@ public:
     const ::std::shared_ptr<WindowDesc>& GetWindowDesc() const
     { return m_pWindowDesc; }
 
-    UserInput& GetInput()
+    ::std::shared_ptr<UserInput> GetInput()
     { return m_Input; }
 
 private:
@@ -133,7 +133,7 @@ private:
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
     
-    UserInput m_Input;
+    ::std::shared_ptr<UserInput> m_Input;
 
 };
 

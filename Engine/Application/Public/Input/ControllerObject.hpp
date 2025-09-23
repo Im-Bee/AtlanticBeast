@@ -30,9 +30,9 @@ public:
         : m_pUserInput(std::move(other.m_pUserInput))
     { }
 
-private:
+public:
 
-    void SignObject(::std::weak_ptr<UserInput> pUserInput, InputBind kb)
+    void SignObject(::std::weak_ptr<UserInput> pUserInput)
     { 
         // We can be signed by only one UserInput
         if (!m_pUserInput.expired()) {
@@ -41,14 +41,11 @@ private:
         }
 
         m_pUserInput = pUserInput;
-        m_KeyBind = kb;
     }
 
 private:
 
     ::std::weak_ptr<UserInput> m_pUserInput;
-
-    InputBind m_KeyBind;
 
 };
 

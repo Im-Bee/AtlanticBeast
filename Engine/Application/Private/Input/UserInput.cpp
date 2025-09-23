@@ -1,5 +1,6 @@
 #include "Input/UserInput.hpp"
 #include "Input/InputEvents.h"
+#include "Input/ControllerObject.hpp"
 
 namespace App
 {
