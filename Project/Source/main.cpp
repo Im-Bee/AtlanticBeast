@@ -20,11 +20,10 @@ int main()
     Voxels::Renderer render = { };
 
     // Set up
+    ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
+
     {
         renderWindow.Create();
-
-        ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
-
         pwc->SignObject(input);
 
         InputBind ib;
@@ -66,6 +65,10 @@ int main()
         ib.keyboard.KeyCode = AB_KEY_6;
         input->Bind(pwc.get(), &PlayablePaper::UseActionFovDown, ib);
 
+        ib.keyboard.KeyCode = AB_KEY_SPACE;
+        ib.keyboard.KeyState = Press;
+        input->Bind(pwc.get(), &PlayablePaper::UseActionPlaceBlock, ib);
+
         input->StartCapturing();
 
         pwc->SetRotation(Voxels::Vec3 { -0.5, 1.25, 0. });
@@ -76,6 +79,7 @@ int main()
     }
     
     auto vg = render.GetGrid();
+    pwc->SetGrid(vg); 
     while (AppStatus::GetAppCurrentStatus()) 
     {
         renderWindow.Update();

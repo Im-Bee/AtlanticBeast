@@ -15,7 +15,6 @@ SET(VOXELS_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Vec3.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Vec4.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Rot.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Rays.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Operations.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Object.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Camera.hpp"
@@ -29,6 +28,7 @@ SET(VOXELS_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/SingleVoxel.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/VoxelGrid.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/Renderer.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/Rays.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp"
 )
 
