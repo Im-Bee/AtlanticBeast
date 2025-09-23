@@ -1,6 +1,6 @@
 # AtlanticBeast
 
-Work in progress.
+Work in progress. In demo we can play a simple minecraft look a like game where you can place blocks.
 
 Current default demo keybinds:
 
