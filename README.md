@@ -16,6 +16,9 @@ A - Move backward (left) along X axis<br>
 5 - Increase fov<br>
 6 - Decrease fov<br>
 
+<br>
+SPACE - Place a block on +X axis<br>
+
 
 
 
