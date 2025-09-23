@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Core.h"
+#include "Voxels.hpp"
 #include "Input/ControllerObject.hpp"
 #include "Input/UserInput.hpp"
 #include "Primitives/Camera.hpp"
 
 class PlayablePaper : public Voxels::Camera, 
-                      public Core::ControllerObject
+                      public App::ControllerObject
 {
 public:
 

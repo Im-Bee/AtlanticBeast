@@ -20,7 +20,7 @@ Pipeline::Pipeline(::std::shared_ptr<const Hardware> hw,
     , m_DescriptorSet(CreateDescriptorSet(m_pDeviceAdapter, m_DescriptorPool, m_DescriptorLayout))
     , m_PipelineLayout(CreatePipelineLayout(m_pDeviceAdapter, m_DescriptorLayout))
     , m_ShaderModule(LoadShader(m_pDeviceAdapter, 
-                                Core::AppResources::Get().GetExecutablePathA() + "/Assets/Raycast.comp.spv"))
+                                App::AppResources::Get().GetExecutablePathA() + "/Assets/Raycast.comp.spv"))
     , m_ComputePipeline(CreateComputePipeline(m_pDeviceAdapter, m_PipelineLayout, m_ShaderModule))
     , m_VoxelGPUBuffer(VK_NULL_HANDLE)
     , m_VoxelBufferMemory(VK_NULL_HANDLE)

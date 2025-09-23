@@ -1,5 +1,4 @@
 #version 450
-#extension GL_EXT_debug_printf : enable
 
 layout(local_size_x = 16, local_size_y = 16) in;
 
@@ -28,25 +27,103 @@ layout(push_constant) uniform PushConstants
     uint    Padding3;
 };
 
-vec3 computeNormal(ivec3 voxelCoord) {
-    float dx = float(
-        (voxelCoord.x + 1 < GridSize.x && VoxelData[voxelCoord.x + 1 + voxelCoord.y * GridSize.x + voxelCoord.z * GridSize.x * GridSize.y].Type == 1 ? 1 : 0) -
-        (voxelCoord.x - 1 >= 0         && VoxelData[voxelCoord.x - 1 + voxelCoord.y * GridSize.x + voxelCoord.z * GridSize.x * GridSize.y].Type == 1 ? 1 : 0)
-    );
-
-    float dy = float(
-        (voxelCoord.y + 1 < GridSize.y && VoxelData[voxelCoord.x + (voxelCoord.y + 1) * GridSize.x + voxelCoord.z * GridSize.x * GridSize.y].Type == 1 ? 1 : 0) -
-        (voxelCoord.y - 1 >= 0         && VoxelData[voxelCoord.x + (voxelCoord.y - 1) * GridSize.x + voxelCoord.z * GridSize.x * GridSize.y].Type == 1 ? 1 : 0)
-    );
-
-    float dz = float(
-        (voxelCoord.z + 1 < GridSize.z && VoxelData[voxelCoord.x + voxelCoord.y * GridSize.x + (voxelCoord.z + 1) * GridSize.x * GridSize.y].Type == 1 ? 1 : 0) -
-        (voxelCoord.z - 1 >= 0         && VoxelData[voxelCoord.x + voxelCoord.y * GridSize.x + (voxelCoord.z - 1) * GridSize.x * GridSize.y].Type == 1 ? 1 : 0)
-    );
-
-    return -normalize(vec3(dx, dy, dz));
+vec3 ComputeNormal(vec3 ro, vec3 hitCenter) 
+{
+    return normalize(ro - hitCenter);
 }
 
+bool MarchTheRay(vec3 ro, vec3 rd, out ivec3 hitCoords, out int hitIndex, out vec3 normal)
+{
+    vec3 pos = floor(ro);
+    ivec3 voxel = ivec3(pos);
+
+    vec3 invDir = 1.0 / rd;
+    vec3 tDelta = abs(invDir);
+    vec3 tMax;
+
+    for (int i = 0; i < 3; ++i) {
+        float offset = (rd[i] > 0.0) ? (1.0 - fract(ro[i])) : fract(ro[i]);
+        tMax[i] = tDelta[i] * offset;
+    }
+
+    ivec3 step = ivec3(sign(rd));
+    int lastStepAxis = -1;
+
+    const int maxSteps = 256;
+    normal = vec3(0.);
+
+    for (int stepCount = 0; stepCount < maxSteps; ++stepCount)
+    {
+        if (voxel.x < 0 || voxel.x >= GridSize.x ||
+            voxel.y < 0 || voxel.y >= GridSize.y ||
+            voxel.z < 0 || voxel.z >= GridSize.z)
+        {
+            break;
+        }
+
+        int index = voxel.x + 
+                    voxel.y * GridSize.x +
+                    voxel.z * GridSize.x * GridSize.y;
+
+        if (VoxelData[index].Type == 1)
+        {
+            hitCoords = voxel;
+            hitIndex = index;
+            normal[lastStepAxis] = -float(step[lastStepAxis]);
+            return true;
+        }
+
+        if (tMax.x < tMax.y) 
+        {
+            if (tMax.x < tMax.z) {
+                voxel.x += step.x;
+                tMax.x  += tDelta.x;
+                lastStepAxis = 0;
+            } else {
+                voxel.z += step.z;
+                tMax.z  += tDelta.z;
+                lastStepAxis = 2;
+            }
+        } 
+        else 
+        {
+            if (tMax.y < tMax.z) {
+                voxel.y += step.y;
+                tMax.y  += tDelta.y;
+                lastStepAxis = 1;
+            } else {
+                voxel.z += step.z;
+                tMax.z  += tDelta.z;
+                lastStepAxis = 2;
+            }
+        }
+    }
+
+    return false;
+}
+
+vec4 ExtractColorInt(uint packendColor)
+{        
+    float b = float((packendColor << 16) >> 24) / 255.;
+    float g = float((packendColor << 8)  >> 24) / 255.;
+    float r = float(packendColor         >> 24) / 255.;
+    float a = float(packendColor & 0xFFu) / 255.;
+    
+    return vec4(r, g, b, a);
+}
+
+bool ShadowRay(vec3 from, vec3 to)
+{
+    vec3 dir = normalize(to - from);
+    ivec3 dummyHit;
+    int dummyIndex;
+    vec3 dummyNormal;
+    return MarchTheRay(from + dir * 2.2,
+                       dir,
+                       dummyHit,
+                       dummyIndex,
+                       dummyNormal);
+}
 
 void main() 
 {
@@ -63,64 +140,49 @@ void main()
                             uv.y * scale * CameraUp.xyz);
      
     vec3 rayOrigin  = CameraPos.xyz;
-    vec3 rayPos     = rayOrigin;
 
-    const vec3 lightPos = vec3(10.0, 25.0, 10.0);
+    const vec4 baseSkyColor = vec4(.2, .3, .7, 1.0);
+
+    const vec3 lightPos = vec3(20.0, 24.0, 10.0);
     const vec3 lightColor = vec3(1.0, 1.0, 1.0);
-    const float ambientStrength = 0.15;
+    const float ambientStrength = 0.04;
     const float diffuseStrength = 0.8;
-    const float specularStrength = 1.8;
-    const float shininess = 132.0;
+    const float specularStrength = 1.0;
+    const float shininess = 123.0;
 
-    vec4 finalColor = vec4(.2, .3, .7, 1.0);
+    vec4 finalColor = baseSkyColor;
 
-    int index = -1;
-    for (int i = 0; 
-         i < 1024; 
-         ++i, rayPos += rayDir * 0.08) 
+    ivec3 hitCoords;
+    int index = 0;
+    vec3 normal;
+    if (MarchTheRay(rayOrigin, rayDir, hitCoords, index, normal)) 
     {
-        ivec3 voxelCoord = ivec3(floor(rayPos));
-    
-        if (voxelCoord.x < 0 || voxelCoord.x >= GridSize.x ||
-            voxelCoord.y < 0 || voxelCoord.y >= GridSize.y ||
-            voxelCoord.z < 0 || voxelCoord.z >= GridSize.z) {
-            break;
-        }
-       
-        index = voxelCoord.x + 
-                (voxelCoord.y * GridSize.x) + 
-                (voxelCoord.z * GridSize.x * GridSize.y);
-
         Voxel voxel = VoxelData[index];
-        if (voxel.Type == 1) 
-        {
-            float b = float((voxel.Color << 16) >> 24) / 255.;
-            float g = float((voxel.Color << 8)  >> 24) / 255.;
-            float r = float(voxel.Color         >> 24) / 255.;
-            float a = float(voxel.Color & 0xFFu) / 255.;
-            vec3 baseColor = vec3(r, g, b);
 
-            vec3 normal = computeNormal(voxelCoord);
+        vec4 baseColor = ExtractColorInt(voxel.Color);
 
-            vec3 lightDir = normalize(lightPos - rayPos);
-            vec3 viewDir = normalize(CameraPos.xyz - rayPos);
-            vec3 reflectDir = reflect(-lightDir, normal);
+        vec3 voxelCenter = vec3(hitCoords) + vec3(0.5);
 
-            float diff = max(dot(normal, lightDir), 0.0);
-            float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+        vec3 lightDir = normalize(lightPos - voxelCenter);
+        vec3 viewDir = normalize(rayOrigin - voxelCenter);
+        vec3 reflectDir = reflect(-lightDir, normal);
 
-            vec3 ambient = ambientStrength * lightColor;
-            vec3 diffuse = diffuseStrength * diff * lightColor;
-            vec3 specular = specularStrength * spec * lightColor;
+        float diff = max(dot(normal, lightDir), 0.0);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
 
-            vec3 lighting = (ambient + diffuse + specular) * baseColor;
+        vec3 ambient = ambientStrength * lightColor;
+        vec3 diffuse = diffuseStrength * diff * lightColor;
+        vec3 specular = specularStrength * spec * lightColor;
 
-            finalColor = vec4(lighting, 1.0);
-            break;
-        }
+        float shadow = ShadowRay(voxelCenter, lightPos) ? 0.0 : 1.0;
+        diffuse *= shadow;
+        specular *= shadow;
+
+        vec3 lighting = ambient + diffuse + specular;
+
+        finalColor = vec4(lighting * baseColor.xyz, baseColor.w);
     }
 
-    // debugPrintfEXT("pixelCoord: %v2i uv: %v2f rayStart value: %v3f rayEnd value: %v3f rayDir: %v3f Index value: %d\n", pixelCoord.xy, uv, rayDir, rayDir, rayDir, index);
     imageStore(outputImage, pixelCoord, finalColor);
 }
 

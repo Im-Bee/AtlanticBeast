@@ -11,6 +11,7 @@
 #include <vulkan/vulkan_core.h>
 
 #include "Core.h"
+#include "App.h"
 
 #ifdef __cplusplus
 
