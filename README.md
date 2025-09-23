@@ -8,6 +8,8 @@ W - Move forward along Z axis<br>
 S - Move backward along Z axis<br>
 D - Move forward (right) along X axis<br>
 A - Move backward (left) along X axis<br>
+E - Move forward (Up) along Y axis<br>
+Q - Move backward (Down) along Y axis<br>
 <br>
 1 - Rotate yaw to the right<br>
 2 - Rotate yaw to the left<br>
