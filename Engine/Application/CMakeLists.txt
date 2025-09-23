@@ -9,6 +9,7 @@ SET(APPLICATION_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Input/KeysMap.cpp"
 )
 SET(APPLICATION_HEADRES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/App.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/AppStatus.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/AppResources.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowPolicy/IWindowPolicy.hpp"
