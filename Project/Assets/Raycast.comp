@@ -162,7 +162,7 @@ void main()
         vec4 baseColor = ExtractColorInt(voxel.Color);
 
         vec3 voxelCenter = vec3(hitCoords) + vec3(0.5);
-
+                
         vec3 lightDir = normalize(lightPos - voxelCenter);
         vec3 viewDir = normalize(rayOrigin - voxelCenter);
         vec3 reflectDir = reflect(-lightDir, normal);

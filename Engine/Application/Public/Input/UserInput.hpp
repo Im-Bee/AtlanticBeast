@@ -25,6 +25,7 @@ public:
         , m_ButtonPressMap()
         , m_CurrentlyPressedKeys()
         , m_KeysStatusMap(AB_KEY_COUNT)
+        , m_uPressed(0)
     { 
         memset(&m_KeysStatusMap[0], 0, sizeof(int8_t) * m_KeysStatusMap.size());
     }
@@ -73,6 +74,8 @@ private:
     
     ::std::vector<int8_t> m_CurrentlyPressedKeys;
     ::std::vector<int8_t> m_KeysStatusMap;
+
+    uint32_t m_uPressed;
 
 };
 

@@ -24,17 +24,21 @@ void UserInput::Update()
             if (m_KeysStatusMap[is.KeyId] == EKeyState::IsPressed) {
                 break;
             }
+            m_KeysStatusMap[is.KeyId] = EKeyState::IsPressed;
 
             m_KeyPressMap.PlayAction(is.KeyId);
        
             m_CurrentlyPressedKeys.push_back(is.KeyId);
             m_KeyContinuous.PlayAction(is.KeyId);
-            m_KeysStatusMap[is.KeyId] = EKeyState::IsPressed;
             break;
 
         case EAbInputEvents::AbKeyRelease:
-            m_KeyReleaseMap.PlayAction(is.KeyId);
+            if (m_KeysStatusMap[is.KeyId] == EKeyState::IsReleased) {
+                break;
+            }
             m_KeysStatusMap[is.KeyId] = EKeyState::IsReleased;
+
+            m_KeyReleaseMap.PlayAction(is.KeyId);
 
             for (size_t i = 0; i < m_CurrentlyPressedKeys.size(); ++i) {
                 if (m_CurrentlyPressedKeys[i] == is.KeyId) {

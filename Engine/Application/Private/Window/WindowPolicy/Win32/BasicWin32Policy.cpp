@@ -31,6 +31,12 @@ static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
         switch (uMsg) {
             case WM_KEYDOWN:
             {
+                bool bIsRepeated = (lParam & (static_cast<uint64_t>(1) << 30)) != 0;
+                if (bIsRepeated) {
+                    pWd->LastEvent = NothingNew;
+                    break;
+                }
+
                 pWd->LastEvent = EAbWindowEvents::Input;
                 uint32_t scanCode = (lParam >> 16) & 0xFF;
                 pWd->InputStruct.Event = EAbInputEvents::AbKeyPress;
@@ -163,6 +169,10 @@ void BasicWin32WindowPolicy::UpdateImpl(WindowDesc* pWd)
     while (PeekMessage(&msg, NULL, 0, 0, 1) != 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
+
+        if (pWd->LastEvent & Input) {
+            return;
+        }
     }
 }
 
