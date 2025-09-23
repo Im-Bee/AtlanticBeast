@@ -218,6 +218,10 @@ void main()
         finalColor = vec4(mix(lighting * baseColor.xyz, ref, 0.1), baseColor.w);
     }
 
+    if (distance > 100.f) {
+        finalColor = mix(finalColor, baseSkyColor, clamp(distance - 100.f, 0.f, 50.f) / 50.f);
+    }
+
     imageStore(outputImage, pixelCoord, finalColor);
 }
 
