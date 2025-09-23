@@ -27,10 +27,7 @@ layout(push_constant) uniform PushConstants
     uint    Padding3;
 };
 
-vec3 ComputeNormal(vec3 ro, vec3 hitCenter) 
-{
-    return normalize(ro - hitCenter);
-}
+const vec4 baseSkyColor = vec4(.2, .3, .7, 1.0);
 
 bool MarchTheRay(vec3 ro, vec3 rd, int maxSteps, out ivec3 hitCoords, out int hitIndex, out float distance, out vec3 normal)
 {
@@ -123,13 +120,39 @@ bool ShadowRay(vec3 from, vec3 to)
     int dummyIndex;
     float dummyDistance;
     vec3 dummyNormal;
-    return MarchTheRay(from + dir * 2.2,
+    return MarchTheRay(from + dir,
                        dir,
-                       int(length(to - from) * 1.4),
+                       int(length(to - from) * 1.5),
                        dummyHit,
                        dummyIndex,
                        dummyDistance,
                        dummyNormal);
+}
+
+vec3 Reflection(vec3 from, vec3 to, vec3 normal)
+{
+    vec3 incident = normalize(to - from);
+    vec3 dir = incident - 2. * dot(incident, normal) * normal;
+    ivec3 hit;
+    int index;
+    float dummyDistance;
+    vec3 dummyNormal;
+
+    vec3 reflectedColor = baseSkyColor.xyz;
+    if (MarchTheRay(to + dir,
+                    dir,
+                    64,
+                    hit,
+                    index,
+                    dummyDistance,
+                    dummyNormal))
+    {
+        Voxel voxel = VoxelData[index];
+        vec4 baseColor = ExtractColorInt(voxel.Color);
+        reflectedColor = baseColor.xyz;
+    }
+
+    return reflectedColor;
 }
 
 void main() 
@@ -172,7 +195,7 @@ void main()
         vec4 baseColor = ExtractColorInt(voxel.Color);
 
         vec3 voxelCenter = vec3(hitCoords) + vec3(0.5);
-        normal = normalize(hitPos - voxelCenter) * -normal;
+        // normal = normalize(hitPos - voxelCenter);
                 
         vec3 lightDir = normalize(lightPos - voxelCenter);
         vec3 viewDir = normalize(rayOrigin - voxelCenter);
@@ -184,14 +207,15 @@ void main()
         vec3 ambient = ambientStrength * lightColor;
         vec3 diffuse = diffuseStrength * diff * lightColor;
         vec3 specular = specularStrength * spec * lightColor;
-
-        float shadow = ShadowRay(voxelCenter, lightPos) ? 0.0 : 1.0;
+    
+        vec3 ref = Reflection(rayOrigin, hitPos, normal);
+        float shadow = ShadowRay(hitPos, lightPos) ? 0.1 : 1.0;
         diffuse *= shadow;
         specular *= shadow;
 
         vec3 lighting = ambient + diffuse + specular;
 
-        finalColor = vec4(lighting * baseColor.xyz, baseColor.w);
+        finalColor = vec4(mix(lighting * baseColor.xyz, ref, 0.1), baseColor.w);
     }
 
     imageStore(outputImage, pixelCoord, finalColor);
