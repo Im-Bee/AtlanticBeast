@@ -13,8 +13,8 @@ namespace Core
 /**
  * Basic wrapper for window class.
  * It's possible to create your own implementation of WindowPolicy
- * by hidding the base implementations of BasicSystemPolicy or creating your whole 
- * policy from IWindowPolicy class, to create whole custom os logic.
+ * by hidding the base implementations of BasicSystemPolicy or creating your new
+ * policy from IWindowPolicy class, to create whole custom os level logic.
  * */
 template<typename Derived, typename WindowPolicy = DefaultSystemWindowPolicy>
 class IBaseWindow : private WindowPolicy
@@ -103,7 +103,7 @@ public:
         
         static_cast<Derived*>(this)->HandleMessageImpl(m_pWindowDesc->LastEvent);
 
-        // So, my decision is, that every client of this library, 
+        // My decision is, that every client of this library, 
         // should be able to handle Input events by themselves
         // in HandleMessageImpl() or use the builtin UserInput class.
         if (m_pWindowDesc->LastEvent & EAbWindowEvents::Input) {
