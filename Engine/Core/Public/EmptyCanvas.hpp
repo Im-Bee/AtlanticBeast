@@ -7,7 +7,7 @@ namespace Core
 {
 
 /**
- * Basic empty window implementation used for renderer.
+ * Basic empty window implementation, prefer this for renderer.
  * */
 class EmptyCanvas : public ::Core::IBaseWindow<EmptyCanvas>
 {
