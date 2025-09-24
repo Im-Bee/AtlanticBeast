@@ -72,7 +72,7 @@ public:
             return;
         }
 
-        this->AddRotation(Voxels::Rot3 { fY * -0.01f, fX * -0.01f, 0.f });
+        this->AddRotation(Voxels::Rot3 { fY * -0.006f, fX * -0.006f, 0.f });
     }
 
 public:

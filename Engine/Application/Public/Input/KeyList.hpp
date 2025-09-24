@@ -6,7 +6,7 @@
 namespace App
 {
 
-constexpr const int8_t AB_INVALID_KEY	 = 1;
+constexpr const int8_t AB_INVALID_KEY	 = 0;
 constexpr const int8_t AB_KEY_ESC	     = 1;
 constexpr const int8_t AB_KEY_1			 = 2;
 constexpr const int8_t AB_KEY_2			 = 3;
