@@ -64,24 +64,40 @@ VkDevice DeviceAdapter::CreateDeviceAdapter(shared_ptr<const Hardware>& gpu, uin
     VkDevice                                            device                                  = VK_NULL_HANDLE;
     VkDeviceCreateInfo                                  createInfo;
     VkDeviceQueueCreateInfo                             queueCreateInfo;
+    VkPhysicalDeviceTimelineSemaphoreFeatures           semaphoreFeatures;
+    VkPhysicalDevice8BitStorageFeatures                 bitStorageFeatures;
+    VkPhysicalDeviceVulkanMemoryModelFeatures           memoryModelFeatures;
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR       rayTracingPipelineFeatures;
     VkPhysicalDeviceAccelerationStructureFeaturesKHR    accelerationStructureFeatures;
     VkPhysicalDeviceBufferDeviceAddressFeatures         bufferDeviceAddressFeatures;
+    VkPhysicalDeviceFeatures                            deviceFeatures;
     float                                               queuePriorities[]                       = { 1. };
 
     const std::vector<const char*> vpszDeviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
         VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME,
         VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME,
-        VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME,
         VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME,
-        VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME,
-        VK_KHR_SPIRV_1_4_EXTENSION_NAME,
-        VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME,
     };
-    
+
+    semaphoreFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES;
+    semaphoreFeatures.pNext = NULL;
+    semaphoreFeatures.timelineSemaphore = VK_TRUE;
+
+    bitStorageFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR;
+    bitStorageFeatures.pNext = &semaphoreFeatures;
+    bitStorageFeatures.storageBuffer8BitAccess  = VK_TRUE;
+    bitStorageFeatures.storagePushConstant8     = VK_FALSE;
+    bitStorageFeatures.uniformAndStorageBuffer8BitAccess = VK_FALSE;
+
+    memoryModelFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES;
+    memoryModelFeatures.pNext = &bitStorageFeatures;
+    memoryModelFeatures.vulkanMemoryModel = VK_TRUE;
+    memoryModelFeatures.vulkanMemoryModelDeviceScope = VK_TRUE;
+    memoryModelFeatures.vulkanMemoryModelAvailabilityVisibilityChains = VK_FALSE;
+
     rayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
-    rayTracingPipelineFeatures.pNext                                                    = NULL;
+    rayTracingPipelineFeatures.pNext                                                    = &memoryModelFeatures;
     rayTracingPipelineFeatures.rayTracingPipeline                                       = VK_TRUE;
     rayTracingPipelineFeatures.rayTracingPipelineShaderGroupHandleCaptureReplay         = VK_FALSE;
     rayTracingPipelineFeatures.rayTracingPipelineShaderGroupHandleCaptureReplayMixed    = VK_FALSE;
@@ -109,6 +125,12 @@ VkDevice DeviceAdapter::CreateDeviceAdapter(shared_ptr<const Hardware>& gpu, uin
     queueCreateInfo.pQueuePriorities    = queuePriorities;
     queueCreateInfo.queueCount          = sizeof(queuePriorities) / sizeof(float);
 
+    memset(&deviceFeatures, VK_FALSE, sizeof(VkPhysicalDeviceFeatures));
+    
+    deviceFeatures.fragmentStoresAndAtomics         = VK_TRUE;
+    deviceFeatures.vertexPipelineStoresAndAtomics   = VK_TRUE;
+    deviceFeatures.shaderInt64                      = VK_TRUE;
+
     createInfo.sType                    = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     createInfo.pNext                    = &bufferDeviceAddressFeatures;
     createInfo.flags                    = 0;
@@ -118,7 +140,7 @@ VkDevice DeviceAdapter::CreateDeviceAdapter(shared_ptr<const Hardware>& gpu, uin
     createInfo.enabledLayerCount        = 0;
     createInfo.ppEnabledExtensionNames  = &vpszDeviceExtensions[0];
     createInfo.enabledExtensionCount    = vpszDeviceExtensions.size();
-    createInfo.pEnabledFeatures         = NULL;
+    createInfo.pEnabledFeatures         = &deviceFeatures;
 
     ThrowIfFailed(vkCreateDevice(gpu->GetPhysicalDevice(),
                                  &createInfo,
