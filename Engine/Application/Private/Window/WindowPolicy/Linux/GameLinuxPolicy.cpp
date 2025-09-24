@@ -74,12 +74,6 @@ uint32_t GameLinuxWindowPolicy::UpdateEvent(WindowDesc* pWd, XEvent& event)
                          pWd->Width * 0.5f, pWd->Height * 0.5f);
 
             XFlush(display);
-
-            AB_LOG(Core::Debug::Info, 
-                    L"%d %d, %d %d",
-                    pWd->InputStruct.MouseX - pWd->InputStruct.LastMouseX, 
-                    pWd->InputStruct.MouseY - pWd->InputStruct.LastMouseY,
-                    rootX, rootY);
             return 1;
     }
 

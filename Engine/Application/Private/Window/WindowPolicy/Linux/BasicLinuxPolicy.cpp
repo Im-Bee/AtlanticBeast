@@ -133,7 +133,7 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
         XNextEvent(display, &event);
 
         if (this->UpdateEvent(pWd, event) != 0)
-            return;
+            break;
     }
 }
 
