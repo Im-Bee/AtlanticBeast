@@ -52,22 +52,22 @@ private:
 } // !App
 
 #define AB_DECL_ACTION(baseClass, action, customName, ...)              \
-    static ::App::ActionType UseAction##customName(void* pThis)        \
+    static ::App::ActionType UseAction##customName(void* pThis)         \
     {                                                                   \
         AB_ASSERT(pThis != nullptr);                                    \
                                                                         \
         static_cast<baseClass*>(pThis)->action(__VA_ARGS__);            \
-        return ::App::ActionType();                                    \
+        return ::App::ActionType();                                     \
     }
 
 
-#define AB_DECL_MOUSE_ACTION(baseClass, action, customName, ...)                    \
-    static ::App::ActionType UseAction##customName(void* pThis, float fX, float fY) \
-    {                                                                               \
-        AB_ASSERT(pThis != nullptr);                                                 \
-                                                                                     \
-        static_cast<baseClass*>(pThis)->action(fX, fY, __VA_ARGS__);                \
-        return ::App::ActionType();                                                 \
+#define AB_DECL_MOUSE_ACTION(baseClass, action, customName)                             \
+    static ::App::ActionType UseAction##customName(void* pThis, float fX, float fY)     \
+    {                                                                                   \
+        AB_ASSERT(pThis != nullptr);                                                    \
+                                                                                        \
+        static_cast<baseClass*>(pThis)->action(fX, fY);                                 \
+        return ::App::ActionType();                                                     \
     }
 
 

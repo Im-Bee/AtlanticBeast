@@ -18,7 +18,7 @@ namespace App
  * policy from IWindowPolicy class, to create whole custom os level logic.
  * */
 template<typename Derived, typename WindowPolicy = DefaultSystemWindowPolicy>
-class IBaseWindow : private WindowPolicy
+class IBaseWindow : public WindowPolicy
 {
 public:
 

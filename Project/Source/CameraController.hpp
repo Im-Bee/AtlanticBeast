@@ -68,11 +68,7 @@ public:
 
     void MouseMove(float fX, float fY)
     {
-        if (fX > 100.f || fY > 100.f) {
-            return;
-        }
-
-        this->AddRotation(Voxels::Rot3 { fY * -0.006f, fX * -0.006f, 0.f });
+        this->AddRotation(Voxels::Rot3 { fY * -0.0015f, fX * -0.0015f, 0.f });
     }
 
 public:
