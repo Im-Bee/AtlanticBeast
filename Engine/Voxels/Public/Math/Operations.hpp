@@ -97,6 +97,40 @@ constexpr inline Vector& AddAssign(Vector& vA, const Vector& vB)
     static_assert(true, "This size of a vector doesn't have impementation of addition product yet");
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+template<class Vector>
+constexpr inline Vector Multiply(const Vector& vA, const Vector& vB)
+{
+    if constexpr (Vector::Size == 3) {
+        Vector r;
+
+        r.x = vA.x * vB.x;
+        r.y = vA.y * vB.y;
+        r.z = vA.z * vB.z;
+
+        return r;
+    }
+
+    static_assert(true, "This size of a vector doesn't have impementation of addition product yet");
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+template<class Vector>
+constexpr inline Vector MultiplySingle(const Vector& vA, const float vB)
+{
+    if constexpr (Vector::Size == 3) {
+        Vector r;
+
+        r.x = vA.x * vB;
+        r.y = vA.y * vB;
+        r.z = vA.z * vB;
+
+        return r;
+    }
+
+    static_assert(true, "This size of a vector doesn't have impementation of addition product yet");
+}
+
 } // !Voxels
   
 #endif // !AB_OPERATIONS_H

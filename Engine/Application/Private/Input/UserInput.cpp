@@ -55,7 +55,7 @@ void UserInput::Update()
             break;
 
         case EAbInputEvents::AbMotion:
-            // AB_LOG(Debug::Info, L"Mouse movement: %d %d", is.MouseX, is.MouseY);
+            m_MouseMap.PlayAction(is.MouseX - is.LastMouseX, is.MouseY - is.LastMouseY);
             break;
     }
 
@@ -63,7 +63,7 @@ void UserInput::Update()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void UserInput::Bind(void* pThis, Action action, InputBind bind)
+void UserInput::Bind(void* pThis, Action action, MouseAction mouseAction, InputBind bind)
 { 
     if (bind.Type & EBindType::Keyboard) {
         if (bind.keyboard.KeyCode <= AB_INVALID_KEY || bind.keyboard.KeyCode >= AB_KEY_COUNT)
@@ -89,6 +89,10 @@ void UserInput::Bind(void* pThis, Action action, InputBind bind)
         return;
     }
 
+    if (bind.Type & EBindType::Mouse)
+    {
+        m_MouseMap.SetKeyToAction(bind, pThis, mouseAction);
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

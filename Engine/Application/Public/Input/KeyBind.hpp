@@ -13,6 +13,7 @@ struct ActionType
 { };
 
 using Action = ActionType(*)(void* pThis);
+using MouseAction = ActionType(*)(void* pThis, float fX, float fY);
 
 enum EKeyState
 {
@@ -30,6 +31,7 @@ enum EOnKeyState
 enum EBindType
 {
     Keyboard = 1,
+    Mouse = Keyboard << 1,
 };
 
 struct KeyboardBind
