@@ -51,6 +51,16 @@ struct alignas(16) Vec3
     {
         return AddAssign(*this, vB);
     }
+
+    inline Vec3 operator*(const Vec3& vB)
+    {
+        return Multiply(*this, vB);
+    }
+
+    inline Vec3 operator*(const float vB)
+    {
+        return MultiplySingle(*this, vB);
+    }
 };
 
 // ---------------------------------------------------------------------------------------------------------------------

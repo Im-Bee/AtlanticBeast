@@ -7,6 +7,7 @@
 #include "Raycaster/VoxelGrid.hpp"
 #include "Raycaster/Rays.hpp"
 #include "Math/Vec3.hpp"
+#include "Math/Consts.hpp"
 
 class PlayablePaper : public Voxels::Camera, 
                       public App::ControllerObject
@@ -33,27 +34,47 @@ public:
 
     void PlaceBlock()
     { 
-        Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), Voxels::Vec3(1., 0., 0.), 5);
+        Voxels::Vec3 rot = this->GetRotation();
+        Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0., 0., 1. }, rot.x), rot.y));
+
+        Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
 
         if (hr.bHit)
         {
             Voxels::Voxel v;
             v.Type = 1;
             v.RGBA = 0xFFFF00FF;
-            m_vg->ModifyVoxel(hr.HitIndex + hr.Normal.x + hr.Normal.y + hr.Normal.z, v);
+            m_vg->ModifyVoxel((hr.HitCoords.x + hr.Normal.x) + 
+                              (hr.HitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() + 
+                              (hr.HitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth(), v);
         }
+    }
 
+    void MoveForwardBackwards(float fDir)
+    {
+        Voxels::Rot3 rot = this->GetRotation();
+        Voxels::Vec3 lookDir = Voxels::RotateY(Voxels::Vec3{ 0., 0., 1. }, rot.y);
+
+        this->AddPositon(lookDir * fDir);
+    }
+
+    void Strafe(float fDir)
+    {
+        Voxels::Rot3 rot = this->GetRotation();
+        Voxels::Vec3 lookDir = Voxels::RotateY(Voxels::Vec3{ 0., 0., 1. }, rot.y + (90.f * Voxels::AB_DEG_TO_RAD));
+
+        this->AddPositon(lookDir * fDir);
     }
 
 public:
     
-    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveRight, Voxels::Vec3 { 0.1, 0, 0 });
+    AB_DECL_ACTION(PlayablePaper, Strafe, MoveRight, -0.1f);
 
-    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveLeft, Voxels::Vec3 { -0.1, 0, 0 });
+    AB_DECL_ACTION(PlayablePaper, Strafe, MoveLeft, 0.1f);
 
-    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveFront, Voxels::Vec3 { 0., 0, 0.1 });
+    AB_DECL_ACTION(PlayablePaper, MoveForwardBackwards, MoveFront, 0.1f);
 
-    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveBack, Voxels::Vec3{ 0., 0, -0.1 });
+    AB_DECL_ACTION(PlayablePaper, MoveForwardBackwards, MoveBack, -0.1f);
 
     AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveUp, Voxels::Vec3{ 0., 0.1, 0. });
 
