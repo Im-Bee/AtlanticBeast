@@ -29,6 +29,13 @@ layout(push_constant) uniform PushConstants
 
 const vec4 baseSkyColor = vec4(.2, .3, .7, 1.0);
 
+const vec3 lightPos = vec3(20.0, 24.0, 10.0);
+const vec3 lightColor = vec3(1.0, 1.0, 1.0);
+const float ambientStrength = 0.04;
+const float diffuseStrength = 0.8;
+const float specularStrength = 1.0;
+const float shininess = 123.0;
+
 bool MarchTheRay(vec3 ro, vec3 rd, int maxSteps, out ivec3 hitCoords, out int hitIndex, out float distance, out vec3 normal)
 {
     vec3 pos = floor(ro);
@@ -120,7 +127,7 @@ bool ShadowRay(vec3 from, vec3 to)
     int dummyIndex;
     float dummyDistance;
     vec3 dummyNormal;
-    return MarchTheRay(from + dir,
+    return MarchTheRay(from + dir * 0.001,
                        dir,
                        int(length(to - from) * 1.5),
                        dummyHit,
@@ -135,21 +142,69 @@ vec3 Reflection(vec3 from, vec3 to, vec3 normal)
     vec3 dir = incident - 2. * dot(incident, normal) * normal;
     ivec3 hit;
     int index;
-    float dummyDistance;
-    vec3 dummyNormal;
+    float distance;
+    vec3 normalRef;
 
     vec3 reflectedColor = baseSkyColor.xyz;
-    if (MarchTheRay(to + dir,
-                    dir,
-                    64,
-                    hit,
-                    index,
-                    dummyDistance,
-                    dummyNormal))
+    // if (MarchTheRay(to + dir,
+    //                 dir,
+    //                 64,
+    //                 hit,
+    //                 index,
+    //                 distance,
+    //                 normalRef))
+    // {
+    //     Voxel voxel = VoxelData[index];
+    //     vec4 baseColor = ExtractColorInt(voxel.Color);
+    //     reflectedColor = baseColor.xyz;
+    // 
+    //     // mix(reflectedColor, Reflection(to, to + dir * distance, normalRef), 0.5);
+    // }
+
+    uint refAmount = 2;
+    for (uint i = 0; i < refAmount; ++i)
     {
+        if (!MarchTheRay(to + dir,
+                        dir,
+                        64,
+                        hit,
+                        index,
+                        distance,
+                        normalRef)) 
+        {
+            break;
+        }
+
+        from = to;
+        to = to + dir * distance;
+
+
         Voxel voxel = VoxelData[index];
         vec4 baseColor = ExtractColorInt(voxel.Color);
-        reflectedColor = baseColor.xyz;
+
+        vec3 voxelCenter = vec3(hit) + vec3(0.5);
+                
+        vec3 lightDir = normalize(lightPos - voxelCenter);
+        vec3 viewDir = normalize(to - voxelCenter);
+        vec3 reflectDir = reflect(-lightDir, normal);
+
+        float diff = max(dot(normal, lightDir), 0.0);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+
+        vec3 ambient = ambientStrength * lightColor;
+        vec3 diffuse = diffuseStrength * diff * lightColor;
+        vec3 specular = specularStrength * spec * lightColor;
+    
+        float shadow = ShadowRay(to, lightPos) ? 0.05 : 1.0;
+        diffuse *= shadow;
+        specular *= shadow;
+
+        vec3 lighting = ambient + diffuse + specular;
+
+        reflectedColor = mix(reflectedColor, lighting * baseColor.xyz, 0.9);
+
+        incident = normalize(to - from);
+        dir = incident - 2. * dot(incident, normal) * normal;
     }
 
     return reflectedColor;
@@ -170,15 +225,6 @@ void main()
                             uv.y * scale * CameraUp.xyz);
      
     vec3 rayOrigin  = CameraPos.xyz;
-
-    const vec4 baseSkyColor = vec4(.2, .3, .7, 1.0);
-
-    const vec3 lightPos = vec3(20.0, 24.0, 10.0);
-    const vec3 lightColor = vec3(1.0, 1.0, 1.0);
-    const float ambientStrength = 0.04;
-    const float diffuseStrength = 0.8;
-    const float specularStrength = 1.0;
-    const float shininess = 123.0;
 
     vec4 finalColor = baseSkyColor;
 
@@ -215,7 +261,7 @@ void main()
 
         vec3 lighting = ambient + diffuse + specular;
 
-        finalColor = vec4(mix(lighting * baseColor.xyz, ref, 0.1), baseColor.w);
+        finalColor = vec4(mix(lighting * baseColor.xyz, ref, 0.2), baseColor.w);
     }
 
     if (distance > 100.f) {

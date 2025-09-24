@@ -31,6 +31,7 @@ SPACE - Place a block<br>
 ![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot01.jpg?raw=true)
 ![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot02.jpg?raw=true)
 ![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot03.jpg?raw=true)
+![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot04.jpg?raw=true)
 
 # Build
 
