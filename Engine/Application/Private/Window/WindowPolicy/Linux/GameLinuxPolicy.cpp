@@ -49,34 +49,38 @@ uint32_t GameLinuxWindowPolicy::UpdateEvent(WindowDesc* pWd, XEvent& event)
             int rootX, rootY, dummy;
             Window dummyWindow;
 
-            if (XQueryPointer(display, 
-                              window,
-                              &dummyWindow,
-                              &dummyWindow,
-                              &rootX,
-                              &rootY,
-                              &dummy,
-                              &dummy,
-                              reinterpret_cast<unsigned int*>(&dummy)))
-            {
-                pWd->LastEvent = Input;
-                pWd->InputStruct.Event = AbMotion;
-                pWd->InputStruct.LastMouseX = pWd->InputStruct.MouseX;
-                pWd->InputStruct.LastMouseY = pWd->InputStruct.MouseY;
-                pWd->InputStruct.MouseX = rootX;
-                pWd->InputStruct.MouseY = rootY;
+            XQueryPointer(display, 
+                          window,
+                          &dummyWindow,
+                          &dummyWindow,
+                          &rootX,
+                          &rootY,
+                          &dummy,
+                          &dummy,
+                          reinterpret_cast<unsigned int*>(&dummy));
 
-                XWarpPointer(display, 
-                             None, 
-                             window, 
-                             0, 0, 
-                             0, 0, 
-                             pWd->Width * 0.5f, pWd->Height * 0.5f);
+            pWd->LastEvent = Input;
+            pWd->InputStruct.Event = AbMotion;
+            pWd->InputStruct.LastMouseX = pWd->InputStruct.MouseX;
+            pWd->InputStruct.LastMouseY = pWd->InputStruct.MouseY;
+            pWd->InputStruct.MouseX = rootX;
+            pWd->InputStruct.MouseY = rootY;
 
-                XFlush(display);
-                return 1;
-            }
-            break;
+            XWarpPointer(display, 
+                         None, 
+                         DefaultRootWindow(display), 
+                         0, 0, 
+                         0, 0, 
+                         pWd->Width * 0.5f, pWd->Height * 0.5f);
+
+            XFlush(display);
+
+            AB_LOG(Core::Debug::Info, 
+                    L"%d %d, %d %d",
+                    pWd->InputStruct.MouseX - pWd->InputStruct.LastMouseX, 
+                    pWd->InputStruct.MouseY - pWd->InputStruct.LastMouseY,
+                    rootX, rootY);
+            return 1;
     }
 
     return BasicLinuxWindowPolicy::UpdateEvent(pWd, event);
