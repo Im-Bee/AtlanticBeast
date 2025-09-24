@@ -46,8 +46,9 @@ uint32_t GameLinuxWindowPolicy::UpdateEvent(WindowDesc* pWd, XEvent& event)
             return 1;
 
         case MotionNotify:
-            int rootX, rootY, dummy;
+            int rootX, rootY, posX, posY;
             Window dummyWindow;
+            unsigned int dummy;
 
             XQueryPointer(display, 
                           window,
@@ -55,20 +56,27 @@ uint32_t GameLinuxWindowPolicy::UpdateEvent(WindowDesc* pWd, XEvent& event)
                           &dummyWindow,
                           &rootX,
                           &rootY,
-                          &dummy,
-                          &dummy,
+                          &posX,
+                          &posY,
                           reinterpret_cast<unsigned int*>(&dummy));
+
+            if (posX == static_cast<int>(pWd->Width * 0.5f) && 
+                posY == static_cast<int>(pWd->Height * 0.5f)) 
+            {
+                pWd->LastEvent = NothingNew;
+                return 1;
+            }
 
             pWd->LastEvent = Input;
             pWd->InputStruct.Event = AbMotion;
-            pWd->InputStruct.LastMouseX = pWd->InputStruct.MouseX;
-            pWd->InputStruct.LastMouseY = pWd->InputStruct.MouseY;
-            pWd->InputStruct.MouseX = rootX;
-            pWd->InputStruct.MouseY = rootY;
+            pWd->InputStruct.LastMouseX = 0;
+            pWd->InputStruct.LastMouseY = 0;
+            pWd->InputStruct.MouseX = posX - event.xmotion.x;
+            pWd->InputStruct.MouseY = posY - event.xmotion.y;
 
             XWarpPointer(display, 
                          None, 
-                         DefaultRootWindow(display), 
+                         window,
                          0, 0, 
                          0, 0, 
                          pWd->Width * 0.5f, pWd->Height * 0.5f);
