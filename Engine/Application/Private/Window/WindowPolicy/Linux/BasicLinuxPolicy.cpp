@@ -124,8 +124,8 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
         XPeekEvent(display, &event);
 
         if (event.xany.window != window && 
-                event.type != UnmapNotify &&
-                event.type != DestroyNotify) 
+            event.type != UnmapNotify &&
+            event.type != DestroyNotify) 
         {
             return;
         }
@@ -173,25 +173,23 @@ uint32_t BasicLinuxWindowPolicy::UpdateEvent(WindowDesc* pWd, XEvent& event)
             int rootX, rootY, dummy;
             Window dummyWindow;
 
-            if (XQueryPointer(display, 
-                              window,
-                              &dummyWindow,
-                              &dummyWindow,
-                              &rootX,
-                              &rootY,
-                              &dummy,
-                              &dummy,
-                              reinterpret_cast<unsigned int*>(&dummy)))
-            {
-                pWd->LastEvent = Input;
-                pWd->InputStruct.Event = AbMotion;
-                pWd->InputStruct.LastMouseX = pWd->InputStruct.MouseX;
-                pWd->InputStruct.LastMouseY = pWd->InputStruct.MouseY;
-                pWd->InputStruct.MouseX = static_cast<int32_t>(rootX);
-                pWd->InputStruct.MouseY = static_cast<int32_t>(rootY);
-                return 1;
-            }
-            break;
+            XQueryPointer(display, 
+                          window,
+                          &dummyWindow,
+                          &dummyWindow,
+                          &rootX,
+                          &rootY,
+                          &dummy,
+                          &dummy,
+                          reinterpret_cast<unsigned int*>(&dummy));
+
+            pWd->LastEvent = Input;
+            pWd->InputStruct.Event = AbMotion;
+            pWd->InputStruct.LastMouseX = pWd->InputStruct.MouseX;
+            pWd->InputStruct.LastMouseY = pWd->InputStruct.MouseY;
+            pWd->InputStruct.MouseX = static_cast<int32_t>(rootX);
+            pWd->InputStruct.MouseY = static_cast<int32_t>(rootY);
+            return 1;
 
 
         case Expose:
