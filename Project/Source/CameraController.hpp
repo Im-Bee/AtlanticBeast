@@ -66,6 +66,15 @@ public:
         this->AddPositon(lookDir * fDir);
     }
 
+    void MouseMove(float fX, float fY)
+    {
+        if (fX > 100.f || fY > 100.f) {
+            return;
+        }
+
+        this->AddRotation(Voxels::Rot3 { fY * -0.01f, fX * -0.01f, 0.f });
+    }
+
 public:
     
     AB_DECL_ACTION(PlayablePaper, Strafe, MoveRight, -0.1f);
@@ -93,6 +102,8 @@ public:
     AB_DECL_ACTION(Voxels::Camera, IncreaseFov, FovDown, -1.0);
 
     AB_DECL_ACTION(PlayablePaper, PlaceBlock, PlaceBlock);
+
+    AB_DECL_MOUSE_ACTION(PlayablePaper, MouseMove, Mouse);
 
 private:
 

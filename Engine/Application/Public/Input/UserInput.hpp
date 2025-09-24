@@ -6,6 +6,7 @@
 #include "Input/KeysMap.hpp"
 #include "Window/WindowDesc.h"
 #include "CSystem.hpp"
+#include "MouseMap.hpp"
 
 namespace App
 {
@@ -25,7 +26,7 @@ public:
         , m_ButtonPressMap()
         , m_CurrentlyPressedKeys()
         , m_KeysStatusMap(AB_KEY_COUNT)
-        , m_uPressed(0)
+        , m_MouseMap()
     { 
         memset(&m_KeysStatusMap[0], 0, sizeof(int8_t) * m_KeysStatusMap.size());
     }
@@ -49,7 +50,7 @@ public:
         m_bIsCapturing = false;
     }
 
-    void Bind(void* pThis, Action pIa, InputBind bind);
+    void Bind(void* pThis, Action pIa, MouseAction mouseAction, InputBind bind);
 
     void Unbind(void* pThis);
     
@@ -75,8 +76,7 @@ private:
     ::std::vector<int8_t> m_CurrentlyPressedKeys;
     ::std::vector<int8_t> m_KeysStatusMap;
 
-    uint32_t m_uPressed;
-
+    MouseMap m_MouseMap;
 };
 
 } // !App

@@ -30,44 +30,48 @@ int main()
         ib.Type     = EBindType::Keyboard;
         ib.keyboard = KeyboardBind { EOnKeyState::Continuous, AB_KEY_A };
 
-        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveLeft, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveLeft, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_D;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveRight, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveRight, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_W;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveFront, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveFront, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_S;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveBack, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveBack, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_Q;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveUp, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveUp, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_E;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveDown, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionMoveDown, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_1;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionLeftYaw, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionLeftYaw, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_2;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionRightYaw, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionRightYaw, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_3;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionUpPitch, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionUpPitch, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_4;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionDownPitch, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionDownPitch, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_5;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionFovUp, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionFovUp, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_6;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionFovDown, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionFovDown, nullptr, ib);
 
         ib.keyboard.KeyCode = AB_KEY_SPACE;
         ib.keyboard.KeyState = Press;
-        input->Bind(pwc.get(), &PlayablePaper::UseActionPlaceBlock, ib);
+        input->Bind(pwc.get(), &PlayablePaper::UseActionPlaceBlock, nullptr, ib);
+
+
+        ib.Type = Mouse;
+        input->Bind(pwc.get(), nullptr, &PlayablePaper::UseActionMouse, ib);
 
         input->StartCapturing();
 
