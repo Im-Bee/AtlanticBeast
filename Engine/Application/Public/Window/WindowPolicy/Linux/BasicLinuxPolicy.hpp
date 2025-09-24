@@ -30,6 +30,8 @@ public:
 
     void UpdateImpl(WindowDesc* pWd);
 
+    virtual uint32_t UpdateEvent(WindowDesc* pWd, XEvent& event);
+
 };
 
 } // !App

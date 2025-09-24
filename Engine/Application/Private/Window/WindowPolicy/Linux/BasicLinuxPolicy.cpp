@@ -46,15 +46,17 @@ uint32_t BasicLinuxWindowPolicy::CreateImpl(WindowDesc* pWd)
         AB_LOG(Debug::Error, L"Detectable auto repeat ISN`T SUPPORTED!");
     }
 
-    XSelectInput(pDisplay, window, ButtonMotionMask |
-                                  ButtonPressMask |
-                                  ButtonReleaseMask |
-                                  KeyPressMask |
-                                  KeyReleaseMask |
-                                  ExposureMask | 
-                                  StructureNotifyMask | 
-                                  SubstructureNotifyMask |
-                                  SubstructureRedirectMask);
+    XSelectInput(pDisplay, window, FocusChangeMask |
+                                   PointerMotionMask |
+                                   PointerMotionHintMask |
+                                   ButtonPressMask |
+                                   ButtonReleaseMask |
+                                   KeyPressMask |
+                                   KeyReleaseMask |
+                                   ExposureMask | 
+                                   StructureNotifyMask | 
+                                   SubstructureNotifyMask |
+                                   SubstructureRedirectMask);
     XMapWindow(pDisplay, window);
 
     pWd->Screen = DefaultScreen(pDisplay);
@@ -113,88 +115,116 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
     AB_ASSERT(pWd->DisplayHandle);
     AB_ASSERT(pWd->WindowHandle);
 
-    XEvent      event;
     Display*    display = pWd->DisplayHandle;
     Window      window  = pWd->WindowHandle;
+    XEvent      event;
 
-    Atom wmDeleteMessage;
-
-    while(XPending(display))
+    while(XPending(pWd->DisplayHandle))
     {
         XPeekEvent(display, &event);
 
         if (event.xany.window != window && 
-            event.type != UnmapNotify &&
-            event.type != DestroyNotify) 
+                event.type != UnmapNotify &&
+                event.type != DestroyNotify) 
         {
             return;
         }
 
         XNextEvent(display, &event);
 
-        switch (event.type) {
-            case KeyPress:
-                pWd->LastEvent = Input;
-                pWd->InputStruct.Event = AbKeyPress;
-                pWd->InputStruct.KeyId = event.xkey.keycode - 8;
-                return;
+        if (this->UpdateEvent(pWd, event) != 0)
+            return;
+    }
+}
 
-            case KeyRelease:
-                pWd->LastEvent = Input;
-                pWd->InputStruct.Event = AbKeyRelease;
-                pWd->InputStruct.KeyId = event.xkey.keycode - 8;
-                return;
+// ---------------------------------------------------------------------------------------------------------------------
+uint32_t BasicLinuxWindowPolicy::UpdateEvent(WindowDesc* pWd, XEvent& event)
+{
+    Display* display = pWd->DisplayHandle;
+    Window   window  = pWd->WindowHandle;
 
-            case ButtonPress:
-                pWd->LastEvent = Input;
-                pWd->InputStruct.Event = AbButtonPress;
-                // pWd->InputStruct.KeyId =  - 8;
-                return;
+    switch (event.type) 
+    {
+        case KeyPress:
+            pWd->LastEvent = Input;
+            pWd->InputStruct.Event = AbKeyPress;
+            pWd->InputStruct.KeyId = event.xkey.keycode - 8;
+            return 1;
 
-            case ButtonRelease:
-                pWd->LastEvent = Input;
-                pWd->InputStruct.Event = AbButtonRelease;
-                // pWd->InputStruct.KeyId = deviceEvent->detail - 8;
-                return;
+        case KeyRelease:
+            pWd->LastEvent = Input;
+            pWd->InputStruct.Event = AbKeyRelease;
+            pWd->InputStruct.KeyId = event.xkey.keycode - 8;
+            return 1;
 
-            case MotionNotify:
+        case ButtonPress:
+            pWd->LastEvent = Input;
+            pWd->InputStruct.Event = AbButtonPress;
+            // pWd->InputStruct.KeyId =  - 8;
+            return 1;
+
+        case ButtonRelease:
+            pWd->LastEvent = Input;
+            pWd->InputStruct.Event = AbButtonRelease;
+            // pWd->InputStruct.KeyId = deviceEvent->detail - 8;
+            return 1;
+
+        case MotionNotify:
+            int rootX, rootY, dummy;
+            Window dummyWindow;
+
+            if (XQueryPointer(display, 
+                              window,
+                              &dummyWindow,
+                              &dummyWindow,
+                              &rootX,
+                              &rootY,
+                              &dummy,
+                              &dummy,
+                              reinterpret_cast<unsigned int*>(&dummy)))
+            {
                 pWd->LastEvent = Input;
                 pWd->InputStruct.Event = AbMotion;
                 pWd->InputStruct.LastMouseX = pWd->InputStruct.MouseX;
                 pWd->InputStruct.LastMouseY = pWd->InputStruct.MouseY;
-                pWd->InputStruct.MouseX = static_cast<int32_t>(event.xmotion.x_root);
-                pWd->InputStruct.MouseY = static_cast<int32_t>(event.xmotion.y_root);
-                return;
+                pWd->InputStruct.MouseX = static_cast<int32_t>(rootX);
+                pWd->InputStruct.MouseY = static_cast<int32_t>(rootY);
+                return 1;
+            }
+            break;
 
-            case Expose:
-                pWd->LastEvent = Resize;
-                pWd->Width = event.xexpose.width;
-                pWd->Height = event.xexpose.height;
+
+        case Expose:
+            pWd->LastEvent = Resize;
+            pWd->Width  = event.xexpose.width;
+            pWd->Height = event.xexpose.height;
+            return 1;
+
+        case ConfigureNotify:
+            pWd->LastEvent = Resize;
+            pWd->Height = event.xconfigure.height;
+            pWd->Width  = event.xconfigure.width;
+            return 1;
+
+        case ClientMessage:
+            Atom wmDeleteMessage;
+    
+            if (event.xclient.window != window)
+                return 1;
+
+            if ((wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", 1)) == None)
                 break;
 
-            case ConfigureNotify:
-                pWd->LastEvent = Resize;
-                pWd->Height = event.xconfigure.height;
-                pWd->Width = event.xconfigure.width;
-                break;
+            if (static_cast<Atom>(event.xclient.data.l[0]) == wmDeleteMessage) {
+                pWd->LastEvent = Destroy;
+                return 1;
+            }
 
-            case ClientMessage:
-                if (event.xclient.window != window)
-                    return;
-
-                if ((wmDeleteMessage = XInternAtom(display, "WM_DELETE_WINDOW", 1)) == None)
-                    break;
-
-                if (static_cast<Atom>(event.xclient.data.l[0]) == wmDeleteMessage) {
-                    pWd->LastEvent = Destroy;
-                    return;
-                }
-
-                break;
-        }
-
-        pWd->LastEvent = EAbWindowEvents::NothingNew;
+            return 1;
     }
+
+    pWd->LastEvent = EAbWindowEvents::NothingNew;
+    return 0;
 }
 
 } // !App

@@ -2,6 +2,7 @@
 #define AB_EMPTYCANVAS_H
 
 #include "Window/IBaseWindow.hpp"
+#include "Window/WindowPolicy/Linux/GameLinuxPolicy.hpp"
 
 namespace App
 {
@@ -9,12 +10,13 @@ namespace App
 /**
  * Basic empty window implementation, prefer this for renderer.
  * */
-class EmptyCanvas : public ::App::IBaseWindow<EmptyCanvas>
+class EmptyCanvas : public ::App::IBaseWindow<EmptyCanvas, GameLinuxWindowPolicy>
 {
 public:
 
     EmptyCanvas(std::wstring wstrWindowName = L"EmptyCanvas")
-        : IBaseWindow<EmptyCanvas>(CreateWindowDesc(wstrWindowName.c_str(), wstrWindowName.length(), 1200, 700))
+        : IBaseWindow<EmptyCanvas, GameLinuxWindowPolicy>(
+                CreateWindowDesc(wstrWindowName.c_str(), wstrWindowName.length(), 1200, 700))
     { }
     
     ~EmptyCanvas() = default;

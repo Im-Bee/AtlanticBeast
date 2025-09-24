@@ -4,6 +4,7 @@ SET(APPLICATION_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowDesc.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/BaseWindowDetails.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Linux/BasicLinuxPolicy.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Linux/GameLinuxPolicy.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Win32/BasicWin32Policy.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Input/UserInput.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Input/KeysMap.cpp"
