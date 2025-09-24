@@ -132,13 +132,13 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
 
         XNextEvent(display, &event);
 
-        if (this->UpdateEvent(pWd, event) != 0)
+        if (this->OnUpdate(pWd, event) != 0)
             break;
     }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t BasicLinuxWindowPolicy::UpdateEvent(WindowDesc* pWd, XEvent& event)
+uint32_t BasicLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
 {
     Display* display = pWd->DisplayHandle;
     Window   window  = pWd->WindowHandle;

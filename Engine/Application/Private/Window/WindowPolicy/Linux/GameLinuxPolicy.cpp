@@ -7,7 +7,7 @@ namespace App
 using namespace Core;
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t GameLinuxWindowPolicy::UpdateEvent(WindowDesc* pWd, XEvent& event)
+uint32_t GameLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
 {
     Display* display = pWd->DisplayHandle;
     Window   window  = pWd->WindowHandle;
@@ -81,11 +81,13 @@ uint32_t GameLinuxWindowPolicy::UpdateEvent(WindowDesc* pWd, XEvent& event)
                          0, 0, 
                          pWd->Width * 0.5f, pWd->Height * 0.5f);
 
+            AB_LOG(Core::Debug::Info, L"%d %d", pWd->InputStruct.MouseX, pWd->InputStruct.MouseY);
+
             XFlush(display);
             return 1;
     }
 
-    return BasicLinuxWindowPolicy::UpdateEvent(pWd, event);
+    return BasicLinuxWindowPolicy::OnUpdate(pWd, event);
 }
 
 } // !App
