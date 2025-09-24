@@ -4,12 +4,14 @@ Work in progress. In demo we can play a simple minecraft look a like game where 
 
 Current default demo keybinds:
 
-W - Move forward along Z axis<br>
-S - Move backward along Z axis<br>
-D - Move forward (right) along X axis<br>
-A - Move backward (left) along X axis<br>
-E - Move forward (Up) along Y axis<br>
-Q - Move backward (Down) along Y axis<br>
+W - Move forward<br>
+S - Move backward<br>
+D - Strafe right<br>
+A - Strafe left<br>
+E - Fly up<br>
+Q - Fly down<br>
+<br>
+Mouse - camera rotation<br>
 <br>
 1 - Rotate yaw to the right<br>
 2 - Rotate yaw to the left<br>
@@ -18,7 +20,7 @@ Q - Move backward (Down) along Y axis<br>
 5 - Increase fov<br>
 6 - Decrease fov<br>
 <br>
-SPACE - Place a block on +X axis<br>
+SPACE - Place a block<br>
 <br>
 <br>
 
