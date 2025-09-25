@@ -221,6 +221,16 @@ void main()
 
     vec2 uv = ((vec2(pixelCoord) + vec2(0.5)) / vec2(imageSize(outputImage))) * 2. - 1.; 
 
+    vec2 d = abs(uv);
+
+    bool isVertical   = d.x < (2. / imageSize(outputImage).x);
+    bool isHorizontal = d.y < (2. / imageSize(outputImage).y);
+
+    if (isVertical && isHorizontal) {
+        imageStore(outputImage, pixelCoord, vec4(1., 1., 1., 1.));
+        return;
+    }
+
     vec3 rayDir = normalize(CameraLookDir.xyz +
                             uv.x * aspectRatio * scale * CameraRight.xyz +
                             uv.y * scale * CameraUp.xyz);
