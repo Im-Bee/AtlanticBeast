@@ -104,7 +104,7 @@ void BasicWin32WindowPolicy::UpdateImpl(WindowDesc* pWd)
         TranslateMessage(&msg);
         DispatchMessage(&msg);
 
-        if (pWd->LastEvent & Input && pWd->InputStruct.Event & (AbKeyPress | AbKeyRelease)) 
+        if (pWd->LastEvent & Input && pWd->InputStruct.Event & (AbKeyPress | AbKeyRelease))
             return;
     }
 }
