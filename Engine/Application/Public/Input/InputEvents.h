@@ -19,8 +19,6 @@ typedef struct AbInputStruct
     int32_t        KeyId;
     int32_t        MouseX;
     int32_t        MouseY;
-    int32_t        LastMouseX;
-    int32_t        LastMouseY;
 } AbInputStruct;
 
 #endif // !AB_INPUT_EVENTS_H

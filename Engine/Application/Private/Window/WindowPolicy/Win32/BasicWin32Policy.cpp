@@ -137,8 +137,6 @@ uint32_t BasicWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPa
     case WM_MOUSEMOVE:
         pWd->LastEvent = EAbWindowEvents::Input;
         pWd->InputStruct.Event = EAbInputEvents::AbMotion;
-        pWd->InputStruct.LastMouseX = pWd->InputStruct.MouseX;
-        pWd->InputStruct.LastMouseY = pWd->InputStruct.MouseY;
         pWd->InputStruct.MouseX = GET_X_LPARAM(lParam);
         pWd->InputStruct.MouseY = GET_Y_LPARAM(lParam);
         return 1;

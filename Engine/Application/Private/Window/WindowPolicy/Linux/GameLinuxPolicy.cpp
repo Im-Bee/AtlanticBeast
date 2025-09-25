@@ -69,8 +69,6 @@ uint32_t GameLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
 
             pWd->LastEvent = Input;
             pWd->InputStruct.Event = AbMotion;
-            pWd->InputStruct.LastMouseX = 0;
-            pWd->InputStruct.LastMouseY = 0;
             pWd->InputStruct.MouseX = posX - event.xmotion.x;
             pWd->InputStruct.MouseY = posY - event.xmotion.y;
 
