@@ -1,7 +1,6 @@
+#ifdef __linux__
 #ifndef AB_WINDOW_POLICY_H
 #define AB_WINDOW_POLICY_H
-
-#ifdef __linux__
 
 #include "Window/WindowPolicy/IWindowPolicy.hpp"
 
@@ -35,5 +34,5 @@ public:
 };
 
 } // !App
-#endif // __linux__
 #endif // !AB_WINDOW_POLICY_H
+#endif // __linux__

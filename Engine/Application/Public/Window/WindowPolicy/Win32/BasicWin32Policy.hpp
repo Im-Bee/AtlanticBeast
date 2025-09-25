@@ -1,7 +1,7 @@
+#ifdef _WIN32
+
 #ifndef AB_WINDOW_POLICY_H
 #define AB_WINDOW_POLICY_H
-
-#ifdef _WIN32
 
 #include "Window/WindowPolicy/IWindowPolicy.hpp"
 
@@ -18,7 +18,7 @@ public:
 
     BasicWin32WindowPolicy() = default;
     ~BasicWin32WindowPolicy() = default;
-
+     
     BasicWin32WindowPolicy(const BasicWin32WindowPolicy&) = default;
     BasicWin32WindowPolicy(BasicWin32WindowPolicy&&) noexcept = default;
 
@@ -34,8 +34,40 @@ public:
 
     void UpdateImpl(WindowDesc* pWd);
 
+public:
+
+    virtual void OnCreate(WindowDesc* pWd)
+    { }
+
+    virtual uint32_t OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+public:
+
+    template<class Policy = BasicWin32WindowPolicy>
+    static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    {
+        WindowDesc* pWd = NULL;
+
+        if (uMsg == WM_NCCREATE) {
+            CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+            pWd = reinterpret_cast<WindowDesc*>(pCreate->lpCreateParams);
+            SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWd));
+
+            pWd->Hwnd = hwnd;
+        }
+        else
+            pWd = reinterpret_cast<WindowDesc*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+
+
+        if (pWd) {
+            Policy p;
+            p.OnUpdate(pWd, uMsg, wParam, lParam);
+        }
+
+        return DefWindowProc(hwnd, uMsg, wParam, lParam);
+    }
 };
 
 } // !App
-#endif // _WIN32
 #endif // !AB_WINDOW_POLICY_H
+#endif // _WIN32

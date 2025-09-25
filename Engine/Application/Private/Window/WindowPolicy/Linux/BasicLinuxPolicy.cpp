@@ -185,8 +185,6 @@ uint32_t BasicLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
 
             pWd->LastEvent = Input;
             pWd->InputStruct.Event = AbMotion;
-            pWd->InputStruct.LastMouseX = pWd->InputStruct.MouseX;
-            pWd->InputStruct.LastMouseY = pWd->InputStruct.MouseY;
             pWd->InputStruct.MouseX = static_cast<int32_t>(rootX);
             pWd->InputStruct.MouseY = static_cast<int32_t>(rootY);
             return 1;

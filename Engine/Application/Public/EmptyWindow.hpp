@@ -1,5 +1,5 @@
-#ifndef AB_EMPTYCANVAS_H
-#define AB_EMPTYCANVAS_H
+#ifndef AB_EMPTYWINDOW_H
+#define AB_EMPTYWINDOW_H
 
 #include "Window/IBaseWindow.hpp"
 
@@ -38,4 +38,4 @@ public:
 };
 
 } // !App
-#endif // !AB_EMPTYCANVAS_H
+#endif // !AB_EMPTYWINDOW_H
