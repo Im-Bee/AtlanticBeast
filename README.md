@@ -33,7 +33,7 @@ SPACE - Place a block<br>
   <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot04.jpg?raw=true" alt="Screenshot" width="45%"/>
   <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot03.jpg?raw=true" alt="Screenshot" width="45%"/>
 </p>
-<img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot02.jpg?raw=true" alt="Screenshot" width="100%"/>
+<img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot02.jpg?raw=true" alt="Screenshot" width="90%"/>
 
 # Build
 
