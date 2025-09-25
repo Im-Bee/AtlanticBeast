@@ -2,7 +2,7 @@
 #define AB_GAME_SYSTEM_POLICY_H
 
 #if _WIN32
-#	include "Window/WindowPolicy/Win32/BasicWin32Policy.hpp"
+#	include "Window/WindowPolicy/Win32/GameWin32Policy.hpp"
 #elif __linux__
 #   include "Window/WindowPolicy/Linux/GameLinuxPolicy.hpp"
 #endif // !_WIN32
@@ -12,7 +12,7 @@ namespace App
 
 typedef 
 #if _WIN32
-	BasicWin32WindowPolicy
+	GameWin32WindowPolicy
 #elif __linux__
 	GameLinuxWindowPolicy
 #endif // !_WIN32

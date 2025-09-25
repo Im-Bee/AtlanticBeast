@@ -85,7 +85,9 @@ void AbAskToRegisterWindowClass(const wchar_t* pwszClassName, WNDCLASSEX& wcex)
    
     ++RegisteredClasses[className];
 
-    RegisterClassEx(&wcex);
+    if (RegisterClassEx(&wcex) == 0) {
+        throw AB_EXCEPT("Failed to register window");
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

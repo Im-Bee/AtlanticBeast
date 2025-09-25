@@ -1,7 +1,7 @@
+#ifdef __linux__
+
 #ifndef AB_GAME_WINDOW_POLICY_H
 #define AB_GAME_WINDOW_POLICY_H
-
-#ifdef __linux__
 
 #include "Window/WindowPolicy/Linux/BasicLinuxPolicy.hpp"
 
@@ -25,7 +25,7 @@ public:
 };
 
 } // !App
-#endif // __linux__
 #endif // !AB_GAME_WINDOW_POLICY_H
+#endif // __linux__
 
 

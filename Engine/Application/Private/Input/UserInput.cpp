@@ -56,6 +56,9 @@ void UserInput::Update()
 
         case EAbInputEvents::AbMotion:
             m_MouseMap.PlayAction(is.MouseX - is.LastMouseX, is.MouseY - is.LastMouseY);
+            is.MouseX = 0;
+            is.MouseY = 0;
+
             break;
     }
 
