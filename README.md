@@ -26,7 +26,7 @@ SPACE - Place a block<br>
 
 
 
-<img src="[screenshot.png](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot00.jpg?raw=true)" alt="Screenshot" width="300"/>
+<img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot00.jpg?raw=true" alt="Screenshot" width="300"/>
 
 ![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot00.jpg?raw=true)
 ![alt text](https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot01.jpg?raw=true)
