@@ -26,12 +26,12 @@ SPACE - Place a block<br>
 
 
 <p float="left">
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot00.jpg?raw=true" alt="Screenshot" width="50%"/>
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot01.jpg?raw=true" alt="Screenshot" width="50%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot00.jpg?raw=true" alt="Screenshot" width="45%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot01.jpg?raw=true" alt="Screenshot" width="45%"/>
 </p>
 <p float="left">
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot02.jpg?raw=true" alt="Screenshot" width="50%"/>
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot03.jpg?raw=true" alt="Screenshot" width="50%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot02.jpg?raw=true" alt="Screenshot" width="45%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot03.jpg?raw=true" alt="Screenshot" width="45%"/>
 </p>
 <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot04.jpg?raw=true" alt="Screenshot" width="100%"/>
 
