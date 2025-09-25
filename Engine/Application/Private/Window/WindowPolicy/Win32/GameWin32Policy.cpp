@@ -33,12 +33,12 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
 
             rid[0].usUsagePage  = 0x01;
             rid[0].usUsage      = 0x02;
-            rid[0].dwFlags      = RIDEV_NOLEGACY;
+            rid[0].dwFlags      = 0;
             rid[0].hwndTarget   = pWd->Hwnd;
 
             rid[1].usUsagePage  = 0x01;
             rid[1].usUsage      = 0x06;
-            rid[1].dwFlags      = RIDEV_NOLEGACY;
+            rid[1].dwFlags      = 0;
             rid[1].hwndTarget   = pWd->Hwnd;
 
             if (!RegisterRawInputDevices(rid, 2, sizeof(rid[0])))
@@ -132,6 +132,11 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
             delete[] buffer;
             return 1;
         }
+
+        case WM_KEYDOWN:
+        case WM_KEYUP:
+        case WM_MOUSEMOVE:
+            return 1;
     }
 
     return BasicWin32WindowPolicy::OnUpdate(pWd, uMsg, wParam, lParam);
