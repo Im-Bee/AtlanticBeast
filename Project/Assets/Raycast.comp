@@ -177,7 +177,7 @@ vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal)
         incident = normalize(to - from);
         dir = incident - 2. * dot(incident, normal) * normal;
 
-        if (!MarchTheRay(to + dir,
+        if (!MarchTheRay(to + dir * 0.001,
                         dir,
                         maxSteps,
                         hit,
@@ -241,14 +241,8 @@ void main()
         vec4 baseColor = ExtractColorInt(VoxelData[index].Color);
 
         vec3 shading = PhongShadows(CameraPos.xyz, hitPos, hitCoords, normal);
-        vec3 reflections;
+        vec3 reflections = Reflection(rayOrigin, hitPos, 64, 4, normal);
         
-        if (distance < maxRenderDist * 1.5f)
-            reflections = Reflection(rayOrigin, hitPos, 64, 4, normal);
-        else
-            materialReflect = 0.;
-
-
         finalColor = vec4(mix(shading * baseColor.xyz, 
                               reflections, 
                               materialReflect), 

@@ -12,7 +12,10 @@ class BEAST_API GameWin32WindowPolicy : public BasicWin32WindowPolicy
 {
 public:
 
-    GameWin32WindowPolicy() = default;
+    GameWin32WindowPolicy()
+        : m_uRiRead(0)
+        , m_vRi()
+    { }
 
     ~GameWin32WindowPolicy() = default;
 
@@ -24,6 +27,14 @@ public:
     void OnCreate(WindowDesc* pWd) override;
 
     uint32_t OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+
+private:
+
+    uint32_t m_uCenterX;
+    uint32_t m_uCenterY;
+
+    UINT m_uRiRead;
+    ::std::vector<BYTE> m_vRi;
 
 };
 

@@ -5,6 +5,7 @@
 namespace App
 {
 
+using namespace std;
 using namespace Core;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -29,19 +30,14 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
         case WM_CREATE:
         case WM_SETFOCUS:
         {
-            RAWINPUTDEVICE rid[2];
+            RAWINPUTDEVICE rid;
 
-            rid[0].usUsagePage  = 0x01;
-            rid[0].usUsage      = 0x02;
-            rid[0].dwFlags      = 0;
-            rid[0].hwndTarget   = pWd->Hwnd;
+            rid.usUsagePage  = 0x01;
+            rid.usUsage      = 0x02;
+            rid.dwFlags      = 0;
+            rid.hwndTarget   = pWd->Hwnd;
 
-            rid[1].usUsagePage  = 0x01;
-            rid[1].usUsage      = 0x06;
-            rid[1].dwFlags      = 0;
-            rid[1].hwndTarget   = pWd->Hwnd;
-
-            if (!RegisterRawInputDevices(rid, 2, sizeof(rid[0])))
+            if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
                 throw AB_EXCEPT("Couldn't register raw input");
         
             ShowCursor(FALSE);
@@ -56,19 +52,14 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
         case WM_KILLFOCUS:
         case WM_DESTROY:
         {
-            RAWINPUTDEVICE rid[2];
+            RAWINPUTDEVICE rid;
 
-            rid[0].usUsagePage  = 0x01;
-            rid[0].usUsage      = 0x02;
-            rid[0].dwFlags      = RIDEV_REMOVE;
-            rid[0].hwndTarget   = NULL;
+            rid.usUsagePage  = 0x01;
+            rid.usUsage      = 0x02;
+            rid.dwFlags      = RIDEV_REMOVE;
+            rid.hwndTarget   = NULL;
 
-            rid[1].usUsagePage  = 0x01;
-            rid[1].usUsage      = 0x06;
-            rid[1].dwFlags      = RIDEV_REMOVE;
-            rid[1].hwndTarget   = NULL;
-
-            if (!RegisterRawInputDevices(rid, 2, sizeof(rid[0])))
+            if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
                 throw AB_EXCEPT("Couldn't register raw input");
 
             ShowCursor(TRUE);
@@ -78,63 +69,56 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
 
         case WM_INPUT:
         {
-            UINT dwSize = 0;
-            if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, NULL, &dwSize, sizeof(RAWINPUTHEADER)) == static_cast<UINT>(-1))
+            UINT cbSize;
+
+            if (GetRawInputBuffer(NULL, &cbSize, sizeof(RAWINPUTHEADER)) != 0) {
+                AB_LOG(Core::Debug::Error, L"GetRawInputBuffer error %d", GetLastError());
                 break;
-
-            if (dwSize == 0)
-                break;
-
-            BYTE* buffer = new BYTE[dwSize];
-
-            if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, buffer, &dwSize, sizeof(RAWINPUTHEADER)) == dwSize)
-            {
-                RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(buffer);
-                if (raw->header.dwType == RIM_TYPEMOUSE)
-                {
-                    RAWMOUSE* rm = &raw->data.mouse;
-                    if (rm->usFlags & MOUSE_MOVE_ABSOLUTE) {
-                        delete[] buffer;
-                        return 1;
-                    }
-
-                    LONG dx = rm->lLastX;
-                    LONG dy = rm->lLastY;
-
-                    pWd->LastEvent = EAbWindowEvents::Input;
-                    pWd->InputStruct.Event = EAbInputEvents::AbMotion;
-                    pWd->InputStruct.MouseX += dx;
-                    pWd->InputStruct.MouseY += dy;
-                }
-                else if (raw->header.dwType == RIM_TYPEKEYBOARD)
-                {
-                    RAWKEYBOARD* rk = &raw->data.keyboard;
-
-                    bool isPress = (rk->Flags & RI_KEY_BREAK) == 0;
-                    uint32_t scanCode = rk->MakeCode;
-                    USHORT flags = rk->Flags;
-
-                    if (isPress)
-                    {
-                        pWd->LastEvent = EAbWindowEvents::Input;
-                        pWd->InputStruct.Event = EAbInputEvents::AbKeyPress;
-                        pWd->InputStruct.KeyId = scanCode;
-                    }
-                    else
-                    {
-                        pWd->LastEvent = EAbWindowEvents::Input;
-                        pWd->InputStruct.Event = EAbInputEvents::AbKeyRelease;
-                        pWd->InputStruct.KeyId = scanCode;
-                    }
-                }
             }
 
-            delete[] buffer;
+            if (cbSize == 0)
+                break;
+
+            UINT cbSize2 = cbSize * 16; 
+
+            if (m_vRi.size() < cbSize2)
+                m_vRi.resize(cbSize2);
+
+            m_uRiRead = GetRawInputBuffer(reinterpret_cast<PRAWINPUT>(&m_vRi[0]), &cbSize2, sizeof(RAWINPUTHEADER));
+            if (m_uRiRead == (UINT)-1) {
+                AB_LOG(Core::Debug::Error, L"GetRawInputBuffer error %d", GetLastError());
+                break;
+            }
+
+            pWd->LastEvent = EAbWindowEvents::Input;
+            pWd->InputStruct.Event = EAbInputEvents::AbMotion;
+            RAWINPUT* pRi = reinterpret_cast<PRAWINPUT>(&m_vRi[0]);
+            for (size_t i = 0; 
+                 i < m_uRiRead; 
+                 ++i, pRi = NEXTRAWINPUTBLOCK(pRi))
+            {
+                if (pRi->header.dwType != RIM_TYPEMOUSE ||
+                    pRi->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
+                    continue;
+
+                pWd->InputStruct.MouseX += pRi->data.mouse.lLastX;
+                pWd->InputStruct.MouseY += pRi->data.mouse.lLastY;
+            }
+
+            SetCursorPos(m_uCenterX, m_uCenterY);
             return 1;
         }
 
-        case WM_KEYDOWN:
-        case WM_KEYUP:
+        case WM_SIZE:
+            BasicWin32WindowPolicy::OnUpdate(pWd, uMsg, wParam, lParam);
+
+            RECT rect;
+            GetClientRect(pWd->Hwnd, &rect);
+            m_uCenterX = (rect.right - rect.left) + 0.5f * pWd->Height;
+            m_uCenterY = (rect.bottom - rect.top) + 0.5f * pWd->Width;
+
+            return 1;
+
         case WM_MOUSEMOVE:
             return 1;
     }
