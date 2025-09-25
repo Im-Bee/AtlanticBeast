@@ -241,7 +241,7 @@ void main()
         vec4 baseColor = ExtractColorInt(VoxelData[index].Color);
 
         vec3 shading = PhongShadows(CameraPos.xyz, hitPos, hitCoords, normal);
-        vec3 reflections = Reflection(rayOrigin, hitPos, 64, 4, normal);
+        vec3 reflections = Reflection(rayOrigin, hitPos, 64, 6, normal);
         
         finalColor = vec4(mix(shading * baseColor.xyz, 
                               reflections, 
