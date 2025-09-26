@@ -1,5 +1,8 @@
 # AtlanticBeast
 
+Shader uses voxel traversal algorithm implementation <br>
+based on: https://www.researchgate.net/publication/2611491_A_Fast_Voxel_Traversal_Algorithm_for_Ray_Tracing
+
 In demo we can play a simple minecraft look a like game where you can place blocks.
 
 Current default demo keybinds:
@@ -34,7 +37,6 @@ X - Remove a block<br>
   <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot04.jpg?raw=true" alt="Screenshot" width="45%"/>
   <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot03.jpg?raw=true" alt="Screenshot" width="45%"/>
 </p>
-<img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot02.jpg?raw=true" alt="Screenshot" width="90%"/>
 
 # Build
 
