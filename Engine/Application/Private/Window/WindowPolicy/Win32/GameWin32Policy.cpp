@@ -93,7 +93,7 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
             pWd->InputStruct.Event = EAbInputEvents::AbMotion;
             RAWINPUT* pRi = reinterpret_cast<PRAWINPUT>(&vRi[0]);
             for (size_t i = 0; 
-                 i < m_uRiRead; 
+                 i < uRiRead; 
                  ++i, pRi = NEXTRAWINPUTBLOCK(pRi))
             {
                 if (pRi->header.dwType != RIM_TYPEMOUSE ||
@@ -104,18 +104,15 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
                 pWd->InputStruct.MouseY += pRi->data.mouse.lLastY;
             }
 
-            SetCursorPos(m_uCenterX, m_uCenterY);
+            RECT rect;
+            GetClientRect(pWd->Hwnd, &rect);
+
+            SetCursorPos((rect.right - rect.left) + 0.5f * pWd->Width, (rect.bottom - rect.top) + 0.5f * pWd->Height);
             return 1;
         }
 
         case WM_SIZE:
             BasicWin32WindowPolicy::OnUpdate(pWd, uMsg, wParam, lParam);
-
-            RECT rect;
-            GetClientRect(pWd->Hwnd, &rect);
-            m_uCenterX = (rect.right - rect.left) + 0.5f * pWd->Height;
-            m_uCenterY = (rect.bottom - rect.top) + 0.5f * pWd->Width;
-
             return 1;
 
         case WM_MOUSEMOVE:
