@@ -33,12 +33,12 @@ X - Remove a block<br>
 
 # Screenshots
 <p float="left">
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot00.jpg?raw=true" alt="Screenshot" width="45%"/>
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot01.jpg?raw=true" alt="Screenshot" width="45%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot00.jpg?raw=true" alt="Screenshot" width="47%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot01.jpg?raw=true" alt="Screenshot" width="47%"/>
 </p>
 <p float="left">
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot04.jpg?raw=true" alt="Screenshot" width="45%"/>
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot03.jpg?raw=true" alt="Screenshot" width="45%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot04.jpg?raw=true" alt="Screenshot" width="47%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot05.jpg?raw=true" alt="Screenshot" width="47%"/>
 </p>
 
 # Build
