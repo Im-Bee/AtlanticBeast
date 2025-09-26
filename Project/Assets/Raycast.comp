@@ -129,7 +129,7 @@ bool ShadowRay(vec3 from, vec3 to, int maxDistance)
 
     return MarchTheRay(from + dir * 0.0001,
                        dir,
-                       maxDistance,// int(length(to - from) * 1.5),
+                       maxDistance,
                        dummyHit,
                        dummyIndex,
                        dummyDistance,
@@ -140,23 +140,20 @@ vec3 PhongShadows(in vec3 camPos, in vec3 pos, in vec3 coord, in vec3 normal, in
 {
     const float ambientStrength     = 0.1;
     const float diffuseStrength     = 0.8;
-    const float specularStrength    = 1.0;
-    const float shininess           = 123.0;
+    const float specularStrength    = 0.7;
+    const float shininess           = 64.0;
 
     vec3 lightDir   = normalize(lightPos - coord);
     vec3 viewDir    = normalize(camPos   - coord);
-    vec3 reflectDir = reflect(-lightDir, normal);
+    vec3 reflectDir = normalize(lightDir + viewDir);
 
     float diff = max(dot(normal, lightDir), 0.0);
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-
-    vec3 ambient    = ambientStrength * lightColor;
-    vec3 diffuse    = diffuseStrength * diff * lightColor;
-    vec3 specular   = specularStrength * spec * lightColor;
-    
+    float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
     float shadow = ShadowRay(pos, lightPos, int(maxDistance * 0.5)) ? 0.05 : 1.0;
-    diffuse     *= shadow;
-    specular    *= shadow;
+
+    vec3 ambient    = ambientStrength * lightColor ;
+    vec3 diffuse    = diffuseStrength * diff * lightColor * shadow;
+    vec3 specular   = specularStrength * spec * lightColor * shadow;
 
     return ambient + diffuse + specular;
 }
@@ -174,8 +171,7 @@ vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal)
 
     for (uint i = 0; i < bounces; ++i)
     {
-        incident = normalize(to - from);
-        dir = incident - 2. * dot(incident, normal) * normal;
+        dir = reflect(normalize(to - from), normal);
 
         if (!MarchTheRay(to + dir * 0.001,
                         dir,
