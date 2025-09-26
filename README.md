@@ -13,15 +13,16 @@ Q - Fly down<br>
 <br>
 Mouse - camera rotation<br>
 <br>
+SPACE - Place a block<br>
+X - Remove a block<br>
+<br>
 1 - Rotate yaw to the right<br>
 2 - Rotate yaw to the left<br>
 3 - Pitch up<br>
 4 - Pitch down<br>
 5 - Increase fov<br>
 6 - Decrease fov<br>
-<br>
-SPACE - Place a block<br>
-<br>
+
 <br>
 
 
