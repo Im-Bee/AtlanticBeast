@@ -27,8 +27,10 @@ layout(push_constant) uniform PushConstants
     uint    Padding3;
 };
 
+const float epsilon = 0.01;
 const vec4 baseSkyColor = vec4(.4078, .4725, 1., 1.);
-const float maxRenderDist = 100.f;
+const float maxRenderDist = 50.f;
+const int maxSteps = int(maxRenderDist * 2.6);
 float materialReflect = 0.43f;
 const bool coloredBySky = false;
 
@@ -127,13 +129,48 @@ bool ShadowRay(vec3 from, vec3 to, int maxDistance)
     float   dummyDistance;
     vec3    dummyNormal;
 
-    return MarchTheRay(from + dir * 0.0001,
+    return MarchTheRay(from + dir * epsilon,
                        dir,
                        maxDistance,
                        dummyHit,
                        dummyIndex,
                        dummyDistance,
                        dummyNormal);
+}
+
+float SoftShadowRay(vec3 from, vec3 to, int maxDistance)
+{
+    const float r = 4.;
+    const float samples = 32;
+
+    vec3    dir = normalize(to - from);
+    ivec3   dummyHit;
+    int     dummyIndex;
+    float   dummyDistance;
+    vec3    dummyNormal;
+    float   shadow = 1.;
+
+    for (int i = 0; i < samples; ++i)
+    {
+        float angle = (6.2831853 * float(i)) / samples;
+        vec3 offset = vec3(cos(angle), sin(angle), 0.0) * r; 
+        vec3 point  = to + offset;
+
+        dir = normalize(point - from);
+
+        if (MarchTheRay(from + dir * epsilon,
+                        dir,
+                        maxDistance,
+                        dummyHit,
+                        dummyIndex,
+                        dummyDistance,
+                        dummyNormal)) 
+        {
+            shadow -= (1. / samples);
+        }
+    }
+
+    return shadow;
 }
 
 vec3 PhongShadows(in vec3 camPos, in vec3 pos, in vec3 coord, in vec3 normal, in int maxDistance)
@@ -149,7 +186,9 @@ vec3 PhongShadows(in vec3 camPos, in vec3 pos, in vec3 coord, in vec3 normal, in
 
     float diff = max(dot(normal, lightDir), 0.0);
     float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
-    float shadow = ShadowRay(pos, lightPos, int(maxDistance * 0.5)) ? 0.05 : 1.0;
+    // float shadow = ShadowRay(pos, lightPos, int(maxDistance * 0.5)) ? 0.05 : 1.0;
+    float shadow = SoftShadowRay(pos, lightPos, int(maxDistance));
+    
 
     vec3 ambient    = ambientStrength * lightColor ;
     vec3 diffuse    = diffuseStrength * diff * lightColor * shadow;
@@ -173,7 +212,7 @@ vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal)
     {
         dir = reflect(normalize(to - from), normal);
 
-        if (!MarchTheRay(to + dir * 0.001,
+        if (!MarchTheRay(to + dir * epsilon,
                         dir,
                         maxSteps,
                         hit,
@@ -229,18 +268,23 @@ void main()
     vec3    normal;
     float   distance;
 
-    if (MarchTheRay(rayOrigin, rayDir, 256, hitCoords, index, distance, normal)) 
+    if (MarchTheRay(rayOrigin, rayDir, maxSteps, hitCoords, index, distance, normal)) 
     {
         vec3 hitPos = rayOrigin + rayDir * distance;
-        vec4 baseColor = ExtractColorInt(VoxelData[index].Color);
+        finalColor = ExtractColorInt(VoxelData[index].Color);
 
-        vec3 shading = PhongShadows(CameraPos.xyz, hitPos, hitCoords, normal, int(length(hitPos - lightPos) * 1.5));
-        vec3 reflections = Reflection(rayOrigin, hitPos, 128, 4, normal);
+        vec3 shading;
+        vec3 reflections;
+
+        if (distance <= maxSteps) {
+            shading = PhongShadows(CameraPos.xyz, hitPos, hitCoords, normal, int(length(hitPos - lightPos) * 1.5));
+            reflections = Reflection(rayOrigin, hitPos, 128, 4, normal);
         
-        finalColor = vec4(mix(shading * baseColor.xyz, 
-                              reflections, 
-                              materialReflect), 
-                          baseColor.w);
+            finalColor = vec4(mix(shading * finalColor.xyz, 
+                                  reflections, 
+                                  materialReflect), 
+                              finalColor.w);
+        }
     }
 
     if (distance > maxRenderDist)

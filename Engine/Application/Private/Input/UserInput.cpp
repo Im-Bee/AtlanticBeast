@@ -11,9 +11,10 @@ using namespace Core;
 void UserInput::Update()
 { 
     // Always replay the continuos keybinds that are currently pressed
-    for (size_t i = 0; i < AB_KEY_COUNT; ++i)
-        if (m_vCurrentlyPressedKeys.test(i))
-            m_KeyContinuous.PlayAction(i);
+    if (m_vCurrentlyPressedKeys.any())
+        for (size_t i = 0; i < AB_KEY_COUNT; ++i)
+            if (m_vCurrentlyPressedKeys.test(i))
+                m_KeyContinuous.PlayAction(i);
     
     AbInputStruct& is = m_pWindowDesc->InputStruct;
     AbKeyId key = is.KeyId;

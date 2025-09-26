@@ -57,7 +57,7 @@ vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
                     z * uDim * uDim;
 
                 voxelGrid[uIndex].Type = 1;
-                voxelGrid[uIndex].RGBA = 0x32CD32FF;
+                voxelGrid[uIndex].RGBA = 0x42DD42FF;
             }
         }
     }
