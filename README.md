@@ -1,7 +1,8 @@
 # AtlanticBeast
 
 Project uses voxel traversal algorithm implementation <br>
-based on: https://www.researchgate.net/publication/2611491_A_Fast_Voxel_Traversal_Algorithm_for_Ray_Tracing
+based on 'A Fast Voxel Traversal Algorithm for Ray Tracing'<br>
+by John Amanatides, Andrew Woo (August 1987)
 
 In demo we can play a simple minecraft look a like game where you can place blocks.
 
@@ -72,3 +73,5 @@ cd Build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 ```
+
+
