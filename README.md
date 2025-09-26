@@ -1,6 +1,6 @@
 # AtlanticBeast
 
-Shader uses voxel traversal algorithm implementation <br>
+Project uses voxel traversal algorithm implementation <br>
 based on: https://www.researchgate.net/publication/2611491_A_Fast_Voxel_Traversal_Algorithm_for_Ray_Tracing
 
 In demo we can play a simple minecraft look a like game where you can place blocks.
