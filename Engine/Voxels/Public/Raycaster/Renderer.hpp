@@ -7,6 +7,7 @@
 #include "Vulkan/DeviceAdapter.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Raycaster/Pipeline.hpp"
+#include "Vulkan/FrameResources.hpp"
 
 #include "Primitives/Camera.hpp"
 
@@ -26,7 +27,8 @@ public:
         , m_pPipeline(nullptr)
         , m_pVoxelGrid(nullptr)
         , m_CommandPool(VK_NULL_HANDLE)
-        , m_CommandBuffer(VK_NULL_HANDLE)
+        , m_uCurrentFrame(0)
+        , m_vFrames()
     { }
 
     ~Renderer() 
@@ -69,6 +71,14 @@ private:
 
     VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const DeviceAdapter> da, VkCommandPool cmdPool);
 
+    ::std::vector<FrameResources> CreateFrameResources(::std::shared_ptr<const DeviceAdapter> da, VkCommandPool cmdPool, size_t uFrames);
+
+    void RecordCommands(VkCommandBuffer& cmdBuff,
+                        const ::std::shared_ptr<Pipeline>& pipeline, 
+                        uint32_t uImageIndex);
+
+    void RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::shared_ptr<Pipeline>& pipeline);
+
 private:
 
     ::std::shared_ptr<Instance>             m_pInstance         = nullptr;
@@ -79,10 +89,12 @@ private:
     ::std::shared_ptr<Pipeline>             m_pPipeline         = nullptr;
     ::std::shared_ptr<VoxelGrid>            m_pVoxelGrid        = nullptr;
 
-    VkCommandPool       m_CommandPool       = VK_NULL_HANDLE;
-    VkCommandBuffer     m_CommandBuffer     = VK_NULL_HANDLE;
+    VkCommandPool m_CommandPool = VK_NULL_HANDLE;
 
     ::std::shared_ptr<Camera> m_pCamera = nullptr;
+
+    size_t m_uCurrentFrame;
+    ::std::vector<FrameResources> m_vFrames;
 
 };
 

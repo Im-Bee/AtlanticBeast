@@ -106,7 +106,7 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
 
             RECT rect;
             GetClientRect(pWd->Hwnd, &rect);
-            SetCursorPos((rect.right - rect.left) + 0.5f * pWd->Width, (rect.bottom - rect.top) + 0.5f * pWd->Height);
+            SetCursorPos(rect.left + 0.5f * pWd->Width, rect.top + 0.5f * pWd->Height);
             return 1;
         }
 
