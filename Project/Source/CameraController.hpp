@@ -50,6 +50,24 @@ public:
         }
     }
 
+    void RemoveBlock()
+    {
+        Voxels::Vec3 rot = this->GetRotation();
+        Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0., 0., 1. }, rot.x), rot.y));
+
+        Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
+
+        if (hr.bHit)
+        {
+            Voxels::Voxel v;
+            v.Type = 0;
+            v.RGBA = 0x0;
+            m_vg->ModifyVoxel(hr.HitCoords.x +
+                              hr.HitCoords.y * m_vg->GetGridWidth() +
+                              hr.HitCoords.z * m_vg->GetGridWidth() * m_vg->GetGridWidth(), v);
+        }
+    }
+
     void MoveForwardBackwards(float fDir)
     {
         Voxels::Rot3 rot = this->GetRotation();
@@ -98,6 +116,8 @@ public:
     AB_DECL_ACTION(Voxels::Camera, IncreaseFov, FovDown, -1.0);
 
     AB_DECL_ACTION(PlayablePaper, PlaceBlock, PlaceBlock);
+
+    AB_DECL_ACTION(PlayablePaper, RemoveBlock, RemoveBlock);
 
     AB_DECL_MOUSE_ACTION(PlayablePaper, MouseMove, Mouse);
 

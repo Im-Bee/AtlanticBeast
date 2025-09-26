@@ -69,6 +69,10 @@ int main()
         ib.keyboard.KeyState = Press;
         input->Bind(pwc.get(), &PlayablePaper::UseActionPlaceBlock, nullptr, ib);
 
+        ib.keyboard.KeyCode = AB_KEY_X;
+        ib.keyboard.KeyState = Press;
+        input->Bind(pwc.get(), &PlayablePaper::UseActionRemoveBlock, nullptr, ib);
+
 
         ib.Type = Mouse;
         input->Bind(pwc.get(), nullptr, &PlayablePaper::UseActionMouse, ib);

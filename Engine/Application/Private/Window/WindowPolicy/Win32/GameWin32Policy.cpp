@@ -81,7 +81,9 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
 
             UINT cbSize2 = cbSize * 16; 
 
-            ::std::vector<BYTE> vRi(cbSize2);
+            static ::std::vector<BYTE> vRi(cbSize2);
+            if (vRi.size() < cbSize2)
+                vRi.resize(cbSize2);
 
             size_t uRiRead = GetRawInputBuffer(reinterpret_cast<PRAWINPUT>(&vRi[0]), &cbSize2, sizeof(RAWINPUTHEADER));
             if (uRiRead == (UINT)-1) {
