@@ -12,10 +12,11 @@ namespace App
 {
 
 /**
- * Basic wrapper for window class.
+ * @brief Basic wrapper for window class.
+ *
  * It's possible to create your own implementation of WindowPolicy
- * by hidding the base implementations of BasicSystemPolicy or creating your new
- * policy from IWindowPolicy class, to create whole custom os level logic.
+ * by overriding virtual methods of the base class or crreate your new
+ * policy from IWindowPolicy class, to handle different and custom os level logic.
  * */
 template<typename Derived, typename WindowPolicy = DefaultSystemWindowPolicy>
 class IBaseWindow : public WindowPolicy
@@ -27,7 +28,7 @@ public:
     template<class U>
     explicit IBaseWindow(U&& windowDesc = WindowDesc())
         : m_pWindowDesc(::std::make_shared<WindowDesc>(::std::forward<U>(windowDesc)))
-        , m_Input(::std::make_shared<UserInput>(m_pWindowDesc))
+        , m_pInput(::std::make_shared<UserInput>(m_pWindowDesc))
     { }
 
     ~IBaseWindow()
@@ -39,7 +40,7 @@ public:
     
     IBaseWindow(IBaseWindow&& other) noexcept
         : m_pWindowDesc(::std::move(other.m_pWindowDesc))
-        , m_Input(::std::move(other.m_Input))
+        , m_pInput(::std::move(other.m_pInput))
     { }
 
 public:
@@ -120,7 +121,7 @@ public:
     { return m_pWindowDesc; }
 
     ::std::shared_ptr<UserInput> GetInput()
-    { return m_Input; }
+    { return m_pInput; }
 
 private:
 
@@ -133,7 +134,7 @@ private:
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
     
-    ::std::shared_ptr<UserInput> m_Input;
+    ::std::shared_ptr<UserInput> m_pInput;
 
 };
 

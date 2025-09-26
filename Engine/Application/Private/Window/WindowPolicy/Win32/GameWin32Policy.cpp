@@ -81,18 +81,17 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
 
             UINT cbSize2 = cbSize * 16; 
 
-            if (m_vRi.size() < cbSize2)
-                m_vRi.resize(cbSize2);
+            ::std::vector<BYTE> vRi(cbSize2);
 
-            m_uRiRead = GetRawInputBuffer(reinterpret_cast<PRAWINPUT>(&m_vRi[0]), &cbSize2, sizeof(RAWINPUTHEADER));
-            if (m_uRiRead == (UINT)-1) {
+            size_t uRiRead = GetRawInputBuffer(reinterpret_cast<PRAWINPUT>(&vRi[0]), &cbSize2, sizeof(RAWINPUTHEADER));
+            if (uRiRead == (UINT)-1) {
                 AB_LOG(Core::Debug::Error, L"GetRawInputBuffer error %d", GetLastError());
                 break;
             }
 
             pWd->LastEvent = EAbWindowEvents::Input;
             pWd->InputStruct.Event = EAbInputEvents::AbMotion;
-            RAWINPUT* pRi = reinterpret_cast<PRAWINPUT>(&m_vRi[0]);
+            RAWINPUT* pRi = reinterpret_cast<PRAWINPUT>(&vRi[0]);
             for (size_t i = 0; 
                  i < m_uRiRead; 
                  ++i, pRi = NEXTRAWINPUTBLOCK(pRi))

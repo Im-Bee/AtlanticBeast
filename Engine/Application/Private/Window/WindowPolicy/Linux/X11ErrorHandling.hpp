@@ -1,0 +1,6 @@
+#ifndef AB_X11_ERROR_HANDLING_H
+#define AB_X11_ERROR_HANDLING_H
+
+
+
+#endif // !AB_X11_ERROR_HANDLING_H

@@ -12,7 +12,7 @@ void MouseMap::SetKeyToAction(const InputBind& ib, void* pThis, MouseAction a)
 {
 	AB_ASSERT(ib.Type == EBindType::Mouse);
 
-	m_MouseBinds.push_back(DataForActionReplay { pThis, a });
+	m_vMouseBinds.push_back(DataForActionReplay { pThis, a });
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -26,12 +26,9 @@ void MouseMap::UnSetKey(const InputBind& ib)
 // ---------------------------------------------------------------------------------------------------------------------
 void MouseMap::PlayAction(float fX, float fY)
 {
-	for (const auto& bind : m_MouseBinds)
-	{
-		if (bind.pThis) {
+	for (const auto& bind : m_vMouseBinds)
+		if (bind.pThis)
 			bind.action(bind.pThis, fX, fY);
-		}
-	}
 }
 
 } // !App

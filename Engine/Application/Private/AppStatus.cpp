@@ -11,7 +11,7 @@ using namespace Core;
 EAppStatus AppStatus::m_AppCurrentStatus = EAppStatus::Dead;
 
 AppStatus::AppStatus():
-    m_NumberOfWindows(0)
+    m_uNumberOfWindows(0)
 { }
 
 AppStatus::~AppStatus()
@@ -32,32 +32,32 @@ uint32_t AppStatus::SendClosedWindowSignal()
 {
     AB_LOG(Debug::Info, L"Got close window signal");
 
-    if (m_NumberOfWindows > 0)
+    if (m_uNumberOfWindows > 0)
     {
-        --m_NumberOfWindows;
+        --m_uNumberOfWindows;
     }
 
     UpdateStatus();
 
-    return m_NumberOfWindows;
+    return m_uNumberOfWindows;
 }
 
 uint32_t AppStatus::SendOpenedWindowSignal()
 {
     AB_LOG(Debug::Info, L"Got new window signal");
 
-    ++m_NumberOfWindows;
+    ++m_uNumberOfWindows;
 
     UpdateStatus();
 
-    return m_NumberOfWindows;
+    return m_uNumberOfWindows;
 }
 
 void AppStatus::UpdateStatus()
 {
-	AB_LOG(Debug::ESeverity::Info, L"AppStatus: Number of windows: %d", m_NumberOfWindows);
+	AB_LOG(Debug::ESeverity::Info, L"AppStatus: Number of windows: %d", m_uNumberOfWindows);
 
-    if (m_NumberOfWindows == 0)
+    if (m_uNumberOfWindows == 0)
     {
         m_AppCurrentStatus = EAppStatus::Dead;
         return;

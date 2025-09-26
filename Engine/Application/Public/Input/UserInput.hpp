@@ -24,11 +24,11 @@ public:
         , m_KeyContinuous()
         , m_ButtonReleaseMap()
         , m_ButtonPressMap()
-        , m_CurrentlyPressedKeys()
-        , m_KeysStatusMap(AB_KEY_COUNT)
+        , m_vCurrentlyPressedKeys()
+        , m_vKeysStatusMap(AB_KEY_COUNT)
         , m_MouseMap()
     { 
-        memset(&m_KeysStatusMap[0], 0, sizeof(int8_t) * m_KeysStatusMap.size());
+        memset(&m_vKeysStatusMap[0], 0, sizeof(int8_t) * m_vKeysStatusMap.size());
     }
 
     ~UserInput() 
@@ -73,8 +73,8 @@ private:
     KeysMap m_ButtonReleaseMap;
     KeysMap m_ButtonPressMap;
     
-    ::std::vector<int8_t> m_CurrentlyPressedKeys;
-    ::std::vector<int8_t> m_KeysStatusMap;
+    ::std::vector<int8_t> m_vCurrentlyPressedKeys;
+    ::std::vector<int8_t> m_vKeysStatusMap;
 
     MouseMap m_MouseMap;
 };

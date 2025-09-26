@@ -44,7 +44,7 @@ private:
 
 private:
 
-    ::std::vector<DataForActionReplay> m_Keys;
+    ::std::vector<DataForActionReplay> m_vKeys;
 
 };
 

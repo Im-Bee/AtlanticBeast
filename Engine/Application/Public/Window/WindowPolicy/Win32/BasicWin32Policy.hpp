@@ -9,6 +9,8 @@ namespace App
 {
 
 /**
+ * @brief Basic implementation of window that uses WinApi.
+ *
  * If pwszClassName is provided, we assume that WCEX is already filled,
  * otherwise we fall back to basic window class.
  * */
@@ -36,9 +38,15 @@ public:
 
 public:
 
+    /**
+     * @brief Called first on Create. Use it to create WCEX.
+     */
     virtual void OnCreate(WindowDesc* pWd)
     { }
 
+    /**
+     * @brief Called on every Update. Can capture the event or pass it to base class implementation.
+     */
     virtual uint32_t OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
