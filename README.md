@@ -10,26 +10,27 @@ In demo we can play a simple minecraft lookalike game where you can place and re
 
 ## Current default demo keybinds:
 
+### Movement:
 W - Move forward<br>
 S - Move backward<br>
 D - Strafe right<br>
 A - Strafe left<br>
 E - Fly up<br>
 Q - Fly down<br>
-<br>
 Mouse - camera rotation<br>
-<br>
+
+### Interactions:
 SPACE - Place a block<br>
 X - Remove a block<br>
-<br>
+
+### Debug:
 1 - Rotate yaw to the left<br>
 2 - Rotate yaw to the right<br>
 3 - Pitch up<br>
 4 - Pitch down<br>
 5 - Increase fov<br>
 6 - Decrease fov<br>
-<br>
-<br>
+
 # Screenshots
 <p float="left">
   <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot00.jpg?raw=true" alt="Screenshot" width="45%"/>
