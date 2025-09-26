@@ -35,10 +35,7 @@ public:
 
     VkImage GetImage(uint32_t i) const
     { 
-        if (i >= m_SwapChainImages.size()) {
-            throw AB_EXCEPT("Getting VkImage out of bounds!");
-        }
-
+        AB_ASSERT(i < m_SwapChainImages.size());
         return m_SwapChainImages[i]; 
     }
 
