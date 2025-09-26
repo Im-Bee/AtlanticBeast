@@ -1,31 +1,37 @@
 # AtlanticBeast
 
-In demo we can play a simple minecraft look a like game where you can place blocks.
+Project uses voxel traversal algorithm implementation based on <br>
+'A Fast Voxel Traversal Algorithm for Ray Tracing'<br>
+by John Amanatides and Andrew Woo (1987) and Phong Reflection lighting.
 
-Current default demo keybinds:
+# Demo
 
+In demo we can play a simple minecraft lookalike game where you can place and remove blocks.
+
+## Current default demo keybinds:
+
+### Movement:
 W - Move forward<br>
 S - Move backward<br>
 D - Strafe right<br>
 A - Strafe left<br>
 E - Fly up<br>
 Q - Fly down<br>
-<br>
 Mouse - camera rotation<br>
-<br>
+
+### Interactions:
 SPACE - Place a block<br>
 X - Remove a block<br>
-<br>
-1 - Rotate yaw to the right<br>
-2 - Rotate yaw to the left<br>
+
+### Debug:
+1 - Rotate yaw to the left<br>
+2 - Rotate yaw to the right<br>
 3 - Pitch up<br>
 4 - Pitch down<br>
 5 - Increase fov<br>
 6 - Decrease fov<br>
 
-<br>
-
-
+# Screenshots
 <p float="left">
   <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot00.jpg?raw=true" alt="Screenshot" width="45%"/>
   <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot01.jpg?raw=true" alt="Screenshot" width="45%"/>
@@ -34,7 +40,6 @@ X - Remove a block<br>
   <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot04.jpg?raw=true" alt="Screenshot" width="45%"/>
   <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot03.jpg?raw=true" alt="Screenshot" width="45%"/>
 </p>
-<img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot02.jpg?raw=true" alt="Screenshot" width="90%"/>
 
 # Build
 
@@ -70,3 +75,5 @@ cd Build
 cmake .. -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 ```
+
+
