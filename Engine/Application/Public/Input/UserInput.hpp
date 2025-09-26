@@ -2,7 +2,7 @@
 #define AB_USER_INPUT_H
 
 #include "ExportImport.h"
-#include "KeyBind.hpp"
+#include "Bind.h"
 #include "Input/KeysMap.hpp"
 #include "Window/WindowDesc.h"
 #include "CSystem.hpp"
@@ -25,11 +25,8 @@ public:
         , m_ButtonReleaseMap()
         , m_ButtonPressMap()
         , m_vCurrentlyPressedKeys()
-        , m_vKeysStatusMap(AB_KEY_COUNT)
         , m_MouseMap()
-    { 
-        memset(&m_vKeysStatusMap[0], 0, sizeof(int8_t) * m_vKeysStatusMap.size());
-    }
+    { }
 
     ~UserInput() 
     { this->StopCapturing(); }
@@ -50,7 +47,7 @@ public:
         m_bIsCapturing = false;
     }
 
-    void Bind(void* pThis, Action pIa, MouseAction mouseAction, InputBind bind);
+    void Bind(void* pThis, AbAction pIa, AbMouseAction mouseAction, AbInputBind bind);
 
     void Unbind(void* pThis);
     
@@ -65,7 +62,7 @@ private:
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
 
-    ::std::unordered_map<void*, InputBind> m_BindsHandles;
+    ::std::unordered_map<void*, AbInputBind> m_BindsHandles;
 
     KeysMap m_KeyReleaseMap;
     KeysMap m_KeyPressMap;
@@ -73,8 +70,7 @@ private:
     KeysMap m_ButtonReleaseMap;
     KeysMap m_ButtonPressMap;
     
-    ::std::vector<int8_t> m_vCurrentlyPressedKeys;
-    ::std::vector<int8_t> m_vKeysStatusMap;
+    ::std::bitset<AB_KEY_COUNT> m_vCurrentlyPressedKeys;
 
     MouseMap m_MouseMap;
 };

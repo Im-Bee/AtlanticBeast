@@ -13,8 +13,8 @@ extern "C" {
 typedef struct WindowDesc
 {
     wchar_t*        Name;
-	const wchar_t*  pwszClassName;
     size_t          uNameLen;
+	const wchar_t*  pwszClassName;
     int32_t         Width;
     int32_t         Height;
     int32_t         IsAlive;
@@ -26,13 +26,10 @@ typedef struct WindowDesc
 #ifdef _WIN32
     HWND            Hwnd;
     WNDCLASSEX      Wcex;
-	HHOOK		    KeyboardHook;
-	HHOOK		    MouseHook;
 #elif __linux__
     Display*        DisplayHandle;
     Window          WindowHandle;
     int32_t         Screen;
-    int32_t         XiOpcode;
 #endif // !_WIN32
 } WindowDesc;
 

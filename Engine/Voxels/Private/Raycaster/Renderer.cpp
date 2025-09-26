@@ -88,19 +88,17 @@ void Renderer::Render()
                    m_pPipeline,
                    uImageIndex);
 
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
     VkSemaphore waitSemaphores[] = { frame.ImageAvailable };
-    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    static VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    VkSemaphore signalSemaphores[] = { frame.RenderFinished };
+
+    VkSubmitInfo submitInfo = { };
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.waitSemaphoreCount = 1;
     submitInfo.pWaitSemaphores = waitSemaphores;
     submitInfo.pWaitDstStageMask = waitStages;
-
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &frame.CommandBuffer;
-
-    VkSemaphore signalSemaphores[] = { frame.RenderFinished };
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
@@ -222,19 +220,19 @@ vector<FrameResources> Renderer::CreateFrameResources(::std::shared_ptr<const De
 {
     VkDevice device = da->GetAdapterHandle();
     vector<FrameResources> result(uFrames);
-    VkSemaphoreCreateInfo semaphoreInfo{};
+    VkSemaphoreCreateInfo semaphoreInfo = { };
+    VkFenceCreateInfo fenceInfo = { };
 
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-    VkFenceCreateInfo fenceInfo{};
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
     for (size_t i = 0; i < result.size(); i++) 
     {
-        if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &result[i].ImageAvailable) != VK_SUCCESS ||
-            vkCreateSemaphore(device, &semaphoreInfo, nullptr, &result[i].RenderFinished) != VK_SUCCESS ||
-            vkCreateFence(device, &fenceInfo, nullptr, &result[i].InFlightFence)          != VK_SUCCESS)
+        if (vkCreateSemaphore(device, &semaphoreInfo, NULL, &result[i].ImageAvailable) != VK_SUCCESS ||
+            vkCreateSemaphore(device, &semaphoreInfo, NULL, &result[i].RenderFinished) != VK_SUCCESS ||
+            vkCreateFence(device, &fenceInfo, NULL, &result[i].InFlightFence)          != VK_SUCCESS)
         {
             throw AB_EXCEPT("Failed to create frame resources!");
         }

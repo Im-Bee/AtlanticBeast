@@ -4,7 +4,7 @@
 #include "Core.h"
 #include "Debug/Assert.h"
 #include "Input/UserInput.hpp"
-#include "KeyBind.hpp"
+#include "Bind.h"
 
 namespace App
 {
@@ -52,22 +52,22 @@ private:
 } // !App
 
 #define AB_DECL_ACTION(baseClass, action, customName, ...)              \
-    static ::App::ActionType UseAction##customName(void* pThis)         \
+    static ::AbActionType UseAction##customName(void* pThis)            \
     {                                                                   \
         AB_ASSERT(pThis != nullptr);                                    \
                                                                         \
         static_cast<baseClass*>(pThis)->action(__VA_ARGS__);            \
-        return ::App::ActionType();                                     \
+        return ::AbActionType();                                        \
     }
 
 
 #define AB_DECL_MOUSE_ACTION(baseClass, action, customName)                             \
-    static ::App::ActionType UseAction##customName(void* pThis, float fX, float fY)     \
+    static ::AbActionType UseAction##customName(void* pThis, float fX, float fY)        \
     {                                                                                   \
         AB_ASSERT(pThis != nullptr);                                                    \
                                                                                         \
         static_cast<baseClass*>(pThis)->action(fX, fY);                                 \
-        return ::App::ActionType();                                                     \
+        return ::AbActionType();                                                        \
     }
 
 

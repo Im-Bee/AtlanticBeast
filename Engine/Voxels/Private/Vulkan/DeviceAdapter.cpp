@@ -48,11 +48,10 @@ uint32_t DeviceAdapter::FindQueueFamilyIndex(shared_ptr<const Hardware>& gpu)
     }
 
     uint32_t uFlags = VK_QUEUE_COMPUTE_BIT | VK_QUEUE_GRAPHICS_BIT;
-    for (uint32_t i = 0; i < uFamilyCount; ++i) {
-        if (vProperties[i].queueFlags & uFlags) {
+    for (uint32_t i = 0; i < uFamilyCount; ++i)
+        if (vProperties[i].queueFlags & uFlags)
             return i;
-        }
-    }
+
 
     AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!!");
     throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");

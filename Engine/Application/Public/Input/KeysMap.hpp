@@ -3,7 +3,7 @@
 
 #include "CSystem.hpp"
 
-#include "KeyBind.hpp"
+#include "Bind.h"
 #include "KeyList.hpp"
 
 namespace App
@@ -26,20 +26,20 @@ public:
 
 public:
 
-    void SetKeyToAction(const InputBind& ib, void* pThis, Action a);
+    void SetKeyToAction(const AbInputBind& ib, void* pThis, AbAction a);
 
-    void UnSetKey(const InputBind& ib);
+    void UnSetKey(const AbInputBind& ib);
 
 public:
 
-    void PlayAction(int8_t keyCode);
+    void PlayAction(AbKeyId keyCode);
 
 private:
 
     struct DataForActionReplay
     {
         void* pThis;
-        Action action;
+        AbAction action;
     };
 
 private:

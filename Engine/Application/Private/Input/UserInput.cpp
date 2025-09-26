@@ -11,41 +11,34 @@ using namespace Core;
 void UserInput::Update()
 { 
     // Always replay the continuos keybinds that are currently pressed
-    for (const auto& keyId : m_vCurrentlyPressedKeys)
-        m_KeyContinuous.PlayAction(keyId);
+    for (size_t i = 0; i < AB_KEY_COUNT; ++i)
+        if (m_vCurrentlyPressedKeys.test(i))
+            m_KeyContinuous.PlayAction(i);
     
     AbInputStruct& is = m_pWindowDesc->InputStruct;
+    AbKeyId key = is.KeyId;
 
-    if (is.Handled || !m_bIsCapturing || (is.KeyId < AB_INVALID_KEY && is.KeyId >= AB_KEY_COUNT))
+    if (is.Handled || !m_bIsCapturing || key <= AB_INVALID_KEY || key >= AB_KEY_COUNT)
         return;
 
     switch (is.Event) {
         case EAbInputEvents::AbKeyPress:
-            if (m_vKeysStatusMap[is.KeyId] == EKeyState::IsPressed)
+            if (m_vCurrentlyPressedKeys.test(key))
                 break;
 
-            m_vKeysStatusMap[is.KeyId] = EKeyState::IsPressed;
+            m_vCurrentlyPressedKeys.set(key);
 
-            m_KeyPressMap.PlayAction(is.KeyId);
-       
-            m_vCurrentlyPressedKeys.push_back(is.KeyId);
-            m_KeyContinuous.PlayAction(is.KeyId);
+            m_KeyPressMap.PlayAction(key);
+            m_KeyContinuous.PlayAction(key);
             break;
 
         case EAbInputEvents::AbKeyRelease:
-            if (m_vKeysStatusMap[is.KeyId] == EKeyState::IsReleased)
+            if (!m_vCurrentlyPressedKeys.test(key))
                 break;
             
-            m_vKeysStatusMap[is.KeyId] = EKeyState::IsReleased;
+            m_vCurrentlyPressedKeys.flip(key);
 
-            m_KeyReleaseMap.PlayAction(is.KeyId);
-
-            for (size_t i = 0; i < m_vCurrentlyPressedKeys.size(); ++i)
-                if (m_vCurrentlyPressedKeys[i] == is.KeyId) 
-                    m_vCurrentlyPressedKeys.erase(m_vCurrentlyPressedKeys.begin() + i,
-                                                  m_vCurrentlyPressedKeys.begin() + i + 1);
-
-
+            m_KeyReleaseMap.PlayAction(key);
             break;
 
         case EAbInputEvents::AbButtonPress:
@@ -65,9 +58,9 @@ void UserInput::Update()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void UserInput::Bind(void* pThis, Action action, MouseAction mouseAction, InputBind bind)
+void UserInput::Bind(void* pThis, AbAction action, AbMouseAction mouseAction, AbInputBind bind)
 { 
-    if (bind.Type & EBindType::Keyboard) {
+    if (bind.Type & EAbBindType::Keyboard) {
         if (bind.keyboard.KeyCode <= AB_INVALID_KEY || bind.keyboard.KeyCode >= AB_KEY_COUNT)
         {
             AB_LOG(Debug::Error, L"Key code is an invalid code (code outside of boundries for keys).");
@@ -76,13 +69,13 @@ void UserInput::Bind(void* pThis, Action action, MouseAction mouseAction, InputB
             return;
         }
 
-        if (bind.keyboard.KeyState & EOnKeyState::Press) {
+        if (bind.keyboard.KeyState & EAbOnKeyState::Press) {
             m_KeyPressMap.SetKeyToAction(bind, pThis, action);
         }
-        else if (bind.keyboard.KeyState & EOnKeyState::Release) {
+        else if (bind.keyboard.KeyState & EAbOnKeyState::Release) {
             m_KeyReleaseMap.SetKeyToAction(bind, pThis, action);
         }
-        else if (bind.keyboard.KeyState & EOnKeyState::Continuous) {
+        else if (bind.keyboard.KeyState & EAbOnKeyState::Continuous) {
             m_KeyContinuous.SetKeyToAction(bind, pThis, action);
         }
 
@@ -91,7 +84,7 @@ void UserInput::Bind(void* pThis, Action action, MouseAction mouseAction, InputB
         return;
     }
 
-    if (bind.Type & EBindType::Mouse)
+    if (bind.Type & EAbBindType::Mouse)
         m_MouseMap.SetKeyToAction(bind, pThis, mouseAction);
 }
 
@@ -107,23 +100,16 @@ void UserInput::Unbind(void* pThis)
 
     const auto& inputBind = bind->second;
 
-    if (inputBind.Type & EBindType::Keyboard) {
-        if (inputBind.keyboard.KeyState & EOnKeyState::Press) {
+    if (inputBind.Type & EAbBindType::Keyboard) 
+    {
+        if (inputBind.keyboard.KeyState & EAbOnKeyState::Press) {
             m_KeyPressMap.UnSetKey(inputBind);
-
-            return;
         }
-
-        if (inputBind.keyboard.KeyState & EOnKeyState::Release) {
+        else if (inputBind.keyboard.KeyState & EAbOnKeyState::Release) {
             m_KeyReleaseMap.UnSetKey(inputBind);
-
-            return;
         }
-
-        if (inputBind.keyboard.KeyState & EOnKeyState::Continuous) {
+        else if (inputBind.keyboard.KeyState & EAbOnKeyState::Continuous) {
             m_KeyContinuous.UnSetKey(inputBind);
-
-            return;
         }
     }
 }

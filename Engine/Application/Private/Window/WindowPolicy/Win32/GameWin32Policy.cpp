@@ -24,40 +24,41 @@ void GameWin32WindowPolicy::OnCreate(WindowDesc* pWd)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+void GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
-        case WM_CREATE:
         case WM_SETFOCUS:
         {
             RAWINPUTDEVICE rid;
 
-            rid.usUsagePage  = 0x01;
-            rid.usUsage      = 0x02;
-            rid.dwFlags      = 0;
-            rid.hwndTarget   = pWd->Hwnd;
+            rid.usUsagePage = 0x01;
+            rid.usUsage = 0x02;
+            rid.dwFlags = 0;
+            rid.hwndTarget = pWd->Hwnd;
 
             if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
                 throw AB_EXCEPT("Couldn't register raw input");
-        
+
             ShowCursor(FALSE);
 
             RECT rect;
             GetWindowRect(pWd->Hwnd, &rect);
             ClipCursor(&rect);
+            SetCursorPos(rect.left + 0.5f * pWd->Width, rect.top + 0.5f * pWd->Height);
+
 
             break;
         }
-        
+
         case WM_KILLFOCUS:
         case WM_DESTROY:
         {
             RAWINPUTDEVICE rid;
 
-            rid.usUsagePage  = 0x01;
-            rid.usUsage      = 0x02;
-            rid.dwFlags      = RIDEV_REMOVE;
-            rid.hwndTarget   = NULL;
+            rid.usUsagePage = 0x01;
+            rid.usUsage = 0x02;
+            rid.dwFlags = RIDEV_REMOVE;
+            rid.hwndTarget = NULL;
 
             if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
                 throw AB_EXCEPT("Couldn't register raw input");
@@ -86,7 +87,7 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
                 vRi.resize(cbSize2);
 
             size_t uRiRead = GetRawInputBuffer(reinterpret_cast<PRAWINPUT>(&vRi[0]), &cbSize2, sizeof(RAWINPUTHEADER));
-            if (uRiRead == (UINT)-1) {
+            if (uRiRead == static_cast<UINT>(-1)) {
                 AB_LOG(Core::Debug::Error, L"GetRawInputBuffer error %d", GetLastError());
                 break;
             }
@@ -98,26 +99,46 @@ uint32_t GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wPar
                  i < uRiRead; 
                  ++i, pRi = NEXTRAWINPUTBLOCK(pRi))
             {
-                if (pRi->header.dwType != RIM_TYPEMOUSE ||
-                    pRi->data.mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
+                auto& mouse = pRi->data.mouse;
+
+                if (pRi->header.dwType != RIM_TYPEMOUSE || mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
                     continue;
 
-                pWd->InputStruct.MouseX += pRi->data.mouse.lLastX;
-                pWd->InputStruct.MouseY += pRi->data.mouse.lLastY;
+                pWd->InputStruct.MouseX += mouse.lLastX;
+                pWd->InputStruct.MouseY += mouse.lLastY;
             }
 
-            RECT rect;
-            GetClientRect(pWd->Hwnd, &rect);
-            SetCursorPos(rect.left + 0.5f * pWd->Width, rect.top + 0.5f * pWd->Height);
-            return 1;
+            return;
+        }
+
+        case WM_KEYDOWN: {
+            bool bIsRepeated = (lParam & (static_cast<uint64_t>(1) << 30)) != 0;
+            if (bIsRepeated) {
+                pWd->LastEvent = NothingNew;
+                return;
+            }
+
+            pWd->LastEvent = EAbWindowEvents::Input;
+            uint32_t scanCode = (lParam >> 16) & 0xFF;
+            pWd->InputStruct.Event = EAbInputEvents::AbKeyPress;
+            pWd->InputStruct.KeyId = scanCode;
+            return;
+        }
+
+        case WM_KEYUP: {
+            pWd->LastEvent = EAbWindowEvents::Input;
+            uint32_t scanCode = (lParam >> 16) & 0xFF;
+            pWd->InputStruct.Event = EAbInputEvents::AbKeyRelease;
+            pWd->InputStruct.KeyId = scanCode;
+            return;
         }
 
         case WM_SIZE:
             BasicWin32WindowPolicy::OnUpdate(pWd, uMsg, wParam, lParam);
-            return 1;
+            return;
 
         case WM_MOUSEMOVE:
-            return 1;
+            return ;
     }
 
     return BasicWin32WindowPolicy::OnUpdate(pWd, uMsg, wParam, lParam);

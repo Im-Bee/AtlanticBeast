@@ -104,55 +104,55 @@ void BasicWin32WindowPolicy::UpdateImpl(WindowDesc* pWd)
         TranslateMessage(&msg);
         DispatchMessage(&msg);
 
-        if (pWd->LastEvent & Input && pWd->InputStruct.Event & (AbKeyPress | AbKeyRelease))
+        if (pWd->LastEvent & Input && pWd->InputStruct.Event & ~AbMotion)
             return;
     }
 }
 
-uint32_t BasicWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+void BasicWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
-    case WM_KEYDOWN: {
-        bool bIsRepeated = (lParam & (static_cast<uint64_t>(1) << 30)) != 0;
-        if (bIsRepeated) {
-            pWd->LastEvent = NothingNew;
-            return 1;
+        case WM_KEYDOWN: {
+            bool bIsRepeated = (lParam & (static_cast<uint64_t>(1) << 30)) != 0;
+            if (bIsRepeated) {
+                pWd->LastEvent = NothingNew;
+                return;
+            }
+
+            pWd->LastEvent = EAbWindowEvents::Input;
+            uint32_t scanCode = (lParam >> 16) & 0xFF;
+            pWd->InputStruct.Event = EAbInputEvents::AbKeyPress;
+            pWd->InputStruct.KeyId = scanCode;
+            return;
         }
 
-        pWd->LastEvent = EAbWindowEvents::Input;
-        uint32_t scanCode = (lParam >> 16) & 0xFF;
-        pWd->InputStruct.Event = EAbInputEvents::AbKeyPress;
-        pWd->InputStruct.KeyId = scanCode;
-        return 1;
-    }
+        case WM_KEYUP: {
+            pWd->LastEvent = EAbWindowEvents::Input;
+            uint32_t scanCode = (lParam >> 16) & 0xFF;
+            pWd->InputStruct.Event = EAbInputEvents::AbKeyRelease;
+            pWd->InputStruct.KeyId = scanCode;
+            return;
+        }
 
-    case WM_KEYUP: {
-        pWd->LastEvent = EAbWindowEvents::Input;
-        uint32_t scanCode = (lParam >> 16) & 0xFF;
-        pWd->InputStruct.Event = EAbInputEvents::AbKeyRelease;
-        pWd->InputStruct.KeyId = scanCode;
-        return 1;
-    }
+        case WM_MOUSEMOVE:
+            pWd->LastEvent = EAbWindowEvents::Input;
+            pWd->InputStruct.Event = EAbInputEvents::AbMotion;
+            pWd->InputStruct.MouseX = GET_X_LPARAM(lParam);
+            pWd->InputStruct.MouseY = GET_Y_LPARAM(lParam);
+            return;
 
-    case WM_MOUSEMOVE:
-        pWd->LastEvent = EAbWindowEvents::Input;
-        pWd->InputStruct.Event = EAbInputEvents::AbMotion;
-        pWd->InputStruct.MouseX = GET_X_LPARAM(lParam);
-        pWd->InputStruct.MouseY = GET_Y_LPARAM(lParam);
-        return 1;
+        case WM_SIZE:
+            pWd->Width = LOWORD(lParam);
+            pWd->Height = HIWORD(lParam);
+            pWd->LastEvent = EAbWindowEvents::Resize;
+            break;
 
-    case WM_SIZE:
-        pWd->Width = LOWORD(lParam);
-        pWd->Height = HIWORD(lParam);
-        pWd->LastEvent = EAbWindowEvents::Resize;
-        break;
+        case WM_CLOSE:
+            pWd->LastEvent = EAbWindowEvents::Destroy;
+            break;
 
-    case WM_CLOSE:
-        pWd->LastEvent = EAbWindowEvents::Destroy;
-        break;
-
-    default:
-        break;
+        default:
+            break;
     }
 }
 

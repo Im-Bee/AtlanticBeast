@@ -3,7 +3,7 @@
 
 #include "CSystem.hpp"
 
-#include "KeyBind.hpp"
+#include "Bind.h"
 
 namespace App
 {
@@ -12,7 +12,7 @@ class BEAST_API MouseMap
 {
 public:
     
-    MouseMap();
+    MouseMap() = default;
     
     ~MouseMap() = default;
 
@@ -22,9 +22,9 @@ public:
 
 public:
 
-    void SetKeyToAction(const InputBind& ib, void* pThis, MouseAction a);
+    void SetKeyToAction(const AbInputBind& ib, void* pThis, AbMouseAction a);
 
-    void UnSetKey(const InputBind& ib);
+    void UnSetKey(const AbInputBind& ib);
 
 public:
 
@@ -35,7 +35,7 @@ private:
     struct DataForActionReplay
     {
         void* pThis;
-        MouseAction action;
+        AbMouseAction action;
     };
 
 private:

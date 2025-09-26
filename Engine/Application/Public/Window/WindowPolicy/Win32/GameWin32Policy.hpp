@@ -27,7 +27,7 @@ public:
 
     void OnCreate(WindowDesc* pWd) override;
 
-    uint32_t OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+    static void OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 };
 

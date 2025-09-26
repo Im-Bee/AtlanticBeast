@@ -47,7 +47,7 @@ public:
     /**
      * @brief Called on every Update. Can capture the event or pass it to base class implementation.
      */
-    virtual uint32_t OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    static void OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
 
@@ -68,8 +68,7 @@ public:
 
 
         if (pWd) {
-            Policy p;
-            p.OnUpdate(pWd, uMsg, wParam, lParam);
+            Policy::OnUpdate(pWd, uMsg, wParam, lParam);
         }
 
         return DefWindowProc(hwnd, uMsg, wParam, lParam);

@@ -14,5 +14,7 @@
 #include <thread>
 #include <cmath>
 #include <unordered_map>
+#include <unordered_set>
+#include <bitset>
 
 #endif // !AB_CSYSTEM_H

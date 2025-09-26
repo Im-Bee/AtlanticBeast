@@ -27,13 +27,13 @@ layout(push_constant) uniform PushConstants
     uint    Padding3;
 };
 
-const vec4 baseSkyColor = vec4(.2, .3, .7, 1.0);
+const vec4 baseSkyColor = vec4(.4078, .4725, 1., 1.);
 const float maxRenderDist = 100.f;
-float materialReflect = 0.5f;
+float materialReflect = 0.43f;
 const bool coloredBySky = false;
 
 const vec3  lightPos    = vec3(20.0, 24.0, 10.0);
-const vec3  lightColor  = vec3(1.0, 1.0, 1.0);
+const vec3  lightColor  = vec3(1., 1., 1.);
 
 bool MarchTheRay(vec3 ro, vec3 rd, int maxSteps, out ivec3 hitCoords, out int hitIndex, out float distance, out vec3 normal)
 {
@@ -138,7 +138,7 @@ bool ShadowRay(vec3 from, vec3 to, int maxDistance)
 
 vec3 PhongShadows(in vec3 camPos, in vec3 pos, in vec3 coord, in vec3 normal, in int maxDistance)
 {
-    const float ambientStrength     = 0.04;
+    const float ambientStrength     = 0.1;
     const float diffuseStrength     = 0.8;
     const float specularStrength    = 1.0;
     const float shininess           = 123.0;
@@ -154,7 +154,7 @@ vec3 PhongShadows(in vec3 camPos, in vec3 pos, in vec3 coord, in vec3 normal, in
     vec3 diffuse    = diffuseStrength * diff * lightColor;
     vec3 specular   = specularStrength * spec * lightColor;
     
-    float shadow = ShadowRay(pos, lightPos, maxDistance) ? 0.05 : 1.0;
+    float shadow = ShadowRay(pos, lightPos, int(maxDistance * 0.5)) ? 0.05 : 1.0;
     diffuse     *= shadow;
     specular    *= shadow;
 
@@ -239,7 +239,7 @@ void main()
         vec4 baseColor = ExtractColorInt(VoxelData[index].Color);
 
         vec3 shading = PhongShadows(CameraPos.xyz, hitPos, hitCoords, normal, int(length(hitPos - lightPos) * 1.5));
-        vec3 reflections = Reflection(rayOrigin, hitPos, 64, 4, normal);
+        vec3 reflections = Reflection(rayOrigin, hitPos, 128, 4, normal);
         
         finalColor = vec4(mix(shading * baseColor.xyz, 
                               reflections, 

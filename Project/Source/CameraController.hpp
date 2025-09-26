@@ -43,7 +43,7 @@ public:
         {
             Voxels::Voxel v;
             v.Type = 1;
-            v.RGBA = 0xFFFF00FF;
+            v.RGBA = (m_uColor += 12739871) | 0x999999FF;
             m_vg->ModifyVoxel((hr.HitCoords.x + hr.Normal.x) + 
                               (hr.HitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() + 
                               (hr.HitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth(), v);
@@ -123,6 +123,8 @@ public:
 
 private:
 
-    std::shared_ptr<Voxels::VoxelGrid> m_vg;
+    ::std::shared_ptr<Voxels::VoxelGrid> m_vg;
+
+    uint32_t m_uColor;
 
 };

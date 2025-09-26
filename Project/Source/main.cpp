@@ -26,9 +26,9 @@ int main()
         renderWindow.Create();
         pwc->SignObject(input);
 
-        InputBind ib;
-        ib.Type     = EBindType::Keyboard;
-        ib.keyboard = KeyboardBind { EOnKeyState::Continuous, AB_KEY_A };
+        AbInputBind ib;
+        ib.Type     = EAbBindType::Keyboard;
+        ib.keyboard = AbKeyboardBind { EAbOnKeyState::Continuous, AB_KEY_A };
 
         input->Bind(pwc.get(), &PlayablePaper::UseActionMoveLeft, nullptr, ib);
 
@@ -80,7 +80,7 @@ int main()
         input->StartCapturing();
 
         pwc->SetRotation(Voxels::Vec3 { -0.5, 1.25, 0. });
-        pwc->SetPositon(Voxels::Vec3 { 14.5, 10.25, 25. });
+        pwc->SetPositon(Voxels::Vec3 { 14.5, 30.25, 25. });
 
         render.SetCurrentCamera(::std::dynamic_pointer_cast<Voxels::Camera>(pwc));
         render.Initialize(renderWindow.GetWindowDesc());
@@ -93,26 +93,23 @@ int main()
         renderWindow.Update();
         input->Update();
         
-        if (windowDesc1->IsAlive) 
-        {
-            static uint8_t r = 0;
-            static uint8_t g = 111;
-            static uint8_t b = 52;
-            static int32_t index = 0; 
-                                   
-            if (index < vg->GetAmountOfVoxels()) {
-                Voxels::Voxel v;
-                v.Type = 1;
-                v.RGBA = (static_cast<uint32_t>(r++) << 24) |
-                    (static_cast<uint32_t>(g++) << 16) |
-                    (static_cast<uint32_t>(b++) << 8) | + 0x000000FF;
+        static uint8_t r = 0;
+        static uint8_t g = 111;
+        static uint8_t b = 52;
+        static int32_t index = 0; 
+                               
+        if (index < vg->GetAmountOfVoxels()) {
+            Voxels::Voxel v;
+            v.Type = 1;
+            v.RGBA = (static_cast<uint32_t>(r++) << 24) |
+                     (static_cast<uint32_t>(g++) << 16) |
+                     (static_cast<uint32_t>(b++) << 8) | + 0x000000FF;
         
-                vg->ModifyVoxel(index++, std::move(v));
-            }
-
-            render.Update();
-            render.Render();
+            vg->ModifyVoxel(index++, std::move(v));
         }
+        
+        render.Update();
+        render.Render();
     }
 
     AB_LOG(Core::Debug::Info, L"App is closing...");

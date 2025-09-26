@@ -3,22 +3,18 @@
 namespace App
 {
 
-// MouseMap // ---------------------------------------------------------------------------------------------------------
-MouseMap::MouseMap()
-{ }
-
 // ---------------------------------------------------------------------------------------------------------------------
-void MouseMap::SetKeyToAction(const InputBind& ib, void* pThis, MouseAction a)
+void MouseMap::SetKeyToAction(const AbInputBind& ib, void* pThis, AbMouseAction a)
 {
-	AB_ASSERT(ib.Type == EBindType::Mouse);
+	AB_ASSERT(ib.Type == EAbBindType::Mouse);
 
 	m_vMouseBinds.push_back(DataForActionReplay { pThis, a });
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void MouseMap::UnSetKey(const InputBind& ib)
+void MouseMap::UnSetKey(const AbInputBind& ib)
 {
-	AB_ASSERT(ib.Type == EBindType::Mouse);
+	AB_ASSERT(ib.Type == EAbBindType::Mouse);
 
 	static_assert(true, "Not impemented yet");
 }
