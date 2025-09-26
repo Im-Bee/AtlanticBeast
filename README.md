@@ -4,7 +4,7 @@ Project uses voxel traversal algorithm implementation <br>
 based on 'A Fast Voxel Traversal Algorithm for Ray Tracing'<br>
 by John Amanatides, Andrew Woo (August 1987)
 
-In demo we can play a simple minecraft look a like game where you can place blocks.
+In demo we can play a simple minecraft lookalike game where you can place blocks.
 
 Current default demo keybinds:
 
