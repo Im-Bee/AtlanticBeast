@@ -4,7 +4,7 @@ Project uses voxel traversal algorithm implementation based on <br>
 'A Fast Voxel Traversal Algorithm for Ray Tracing'<br>
 by John Amanatides and Andrew Woo (1987) and Phong Reflection lighting.
 
-In demo we can play a simple minecraft lookalike game where you can place blocks.
+In demo we can play a simple minecraft lookalike game where you can place and remove blocks.
 
 Current default demo keybinds:
 
@@ -20,8 +20,8 @@ Mouse - camera rotation<br>
 SPACE - Place a block<br>
 X - Remove a block<br>
 <br>
-1 - Rotate yaw to the right<br>
-2 - Rotate yaw to the left<br>
+1 - Rotate yaw to the left<br>
+2 - Rotate yaw to the right<br>
 3 - Pitch up<br>
 4 - Pitch down<br>
 5 - Increase fov<br>
