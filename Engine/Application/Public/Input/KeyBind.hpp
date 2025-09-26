@@ -7,7 +7,7 @@ namespace App
 {
 
 /**
- * Empty struct to force biding type safety. Like a rock for your shoe.
+ * Empty struct to force binding type safety. Like a rock for your shoe.
  * */
 struct ActionType 
 { };

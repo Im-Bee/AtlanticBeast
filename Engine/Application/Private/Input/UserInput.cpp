@@ -11,42 +11,41 @@ using namespace Core;
 void UserInput::Update()
 { 
     // Always replay the continuos keybinds that are currently pressed
-    for (const auto& keyId : m_CurrentlyPressedKeys)
+    for (const auto& keyId : m_vCurrentlyPressedKeys)
         m_KeyContinuous.PlayAction(keyId);
     
     AbInputStruct& is = m_pWindowDesc->InputStruct;
 
-    if (is.Handled || !m_bIsCapturing || (is.KeyId < AB_INVALID_KEY && is.KeyId >= AB_KEY_COUNT)) {
+    if (is.Handled || !m_bIsCapturing || (is.KeyId < AB_INVALID_KEY && is.KeyId >= AB_KEY_COUNT))
         return;
-    }
 
     switch (is.Event) {
         case EAbInputEvents::AbKeyPress:
-            if (m_KeysStatusMap[is.KeyId] == EKeyState::IsPressed) {
+            if (m_vKeysStatusMap[is.KeyId] == EKeyState::IsPressed)
                 break;
-            }
-            m_KeysStatusMap[is.KeyId] = EKeyState::IsPressed;
+
+            m_vKeysStatusMap[is.KeyId] = EKeyState::IsPressed;
 
             m_KeyPressMap.PlayAction(is.KeyId);
        
-            m_CurrentlyPressedKeys.push_back(is.KeyId);
+            m_vCurrentlyPressedKeys.push_back(is.KeyId);
             m_KeyContinuous.PlayAction(is.KeyId);
             break;
 
         case EAbInputEvents::AbKeyRelease:
-            if (m_KeysStatusMap[is.KeyId] == EKeyState::IsReleased) {
+            if (m_vKeysStatusMap[is.KeyId] == EKeyState::IsReleased)
                 break;
-            }
-            m_KeysStatusMap[is.KeyId] = EKeyState::IsReleased;
+            
+            m_vKeysStatusMap[is.KeyId] = EKeyState::IsReleased;
 
             m_KeyReleaseMap.PlayAction(is.KeyId);
 
-            for (size_t i = 0; i < m_CurrentlyPressedKeys.size(); ++i) {
-                if (m_CurrentlyPressedKeys[i] == is.KeyId) {
-                    m_CurrentlyPressedKeys.erase(m_CurrentlyPressedKeys.begin() + i,
-                                                 m_CurrentlyPressedKeys.begin() + i + 1);
-                }
-            }
+            for (size_t i = 0; i < m_vCurrentlyPressedKeys.size(); ++i)
+                if (m_vCurrentlyPressedKeys[i] == is.KeyId) 
+                    m_vCurrentlyPressedKeys.erase(m_vCurrentlyPressedKeys.begin() + i,
+                                                  m_vCurrentlyPressedKeys.begin() + i + 1);
+
+
             break;
 
         case EAbInputEvents::AbButtonPress:
@@ -93,9 +92,7 @@ void UserInput::Bind(void* pThis, Action action, MouseAction mouseAction, InputB
     }
 
     if (bind.Type & EBindType::Mouse)
-    {
         m_MouseMap.SetKeyToAction(bind, pThis, mouseAction);
-    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

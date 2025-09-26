@@ -8,6 +8,10 @@
 namespace App
 {
 
+/**
+ * @brief Game version of BasicLinuxWindowPolicy, hides cursor, captures it and outputs raw deltas from the mouse
+ * for the InputStruct.
+ */
 class BEAST_API GameLinuxWindowPolicy : public BasicLinuxWindowPolicy
 {
 public:
@@ -20,7 +24,13 @@ public:
 
 public:
 
+    virtual void OnCreate(WindowDesc* pWd) override;
+
     uint32_t OnUpdate(WindowDesc* pWd, XEvent& event) override;
+
+private:
+
+    int m_OpCode;
 
 };
 

@@ -30,9 +30,7 @@ public:
     { }
 
     ~Renderer() 
-    {
-		this->Destroy();
-    }
+    { this->Destroy(); }
 
 public:
 

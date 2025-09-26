@@ -7,6 +7,9 @@
 namespace App
 {
 
+/**
+ * @brief Baisc linux window implementation that uses X11.
+ */
 class BEAST_API BasicLinuxWindowPolicy : public IWindowPolicy<BasicLinuxWindowPolicy>
 {
 public:
@@ -29,6 +32,18 @@ public:
 
     void UpdateImpl(WindowDesc* pWd);
 
+public:
+    /**
+     * @brief Called last on Create. Use it to query additional functionality from X11.
+     */
+    virtual void OnCreate(WindowDesc* pWd)
+    { }
+    
+    /**
+     * @brief Called first on every Update. Can capture the event or pass it to base class implementation.
+     * @return If return value isn't zero, then we immediately escape event processing loop.
+     * For examlpe when we just proccesed key press and want it to be immediately dispatched.
+     */
     virtual uint32_t OnUpdate(WindowDesc* pWd, XEvent& event);
 
 };

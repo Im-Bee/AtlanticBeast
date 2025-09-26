@@ -7,15 +7,92 @@ namespace App
 using namespace Core;
 
 // ---------------------------------------------------------------------------------------------------------------------
+void GameLinuxWindowPolicy::OnCreate(WindowDesc* pWd)
+{
+    Display*        pDisplay   = pWd->DisplayHandle;
+    Window          window     = RootWindow(pDisplay, pWd->Screen);
+    XIEventMask     evmask;
+    unsigned char   pMask[(XI_LASTEVENT + 7) / 8] = { 0 };
+
+    int event, error;
+    int major = 2, minor = 0;
+
+    XSync(pDisplay, False);
+
+    if (!XQueryExtension(pDisplay, "XInputExtension", &m_OpCode, &event, &error)) {
+        AB_LOG(Core::Debug::Error, L"XInput2 not available.");
+        return;
+    }
+
+    if (XIQueryVersion(pDisplay, &major, &minor) == BadRequest) {
+        AB_LOG(Core::Debug::Error, L"XInput2 isn't available. Need at least 2.0.");
+        return;
+    }
+    AB_LOG(Debug::Info, L"XInput2 version: %d.%d", major, minor);
+
+    XISetMask(pMask, XI_RawMotion);
+
+    evmask.deviceid = XIAllMasterDevices;
+    evmask.mask_len = sizeof(pMask);
+    evmask.mask     = pMask;
+
+    int status = XISelectEvents(pDisplay, window, &evmask, 1);
+    if (status != Success) {
+        AB_LOG(Core::Debug::Error, L"XISelectEvents failed.");
+    }
+
+    XFlush(pDisplay);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 uint32_t GameLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
 {
-    Display* display = pWd->DisplayHandle;
-    Window   window  = pWd->WindowHandle;
-    char     pEmptyData[8] = { 0 };
+    Display* pDisplay   = pWd->DisplayHandle;
+    Window   window     = pWd->WindowHandle;
+    static char pEmptyData[8] = { 0 };
+
+    if (event.xcookie.type      == GenericEvent &&
+        event.xcookie.extension == m_OpCode     &&
+        XGetEventData(pDisplay, &event.xcookie)) 
+    {
+        if (event.xcookie.evtype == XI_RawMotion) 
+        {
+            XIRawEvent* rawev = reinterpret_cast<XIRawEvent*>(event.xcookie.data);
+            double dx = 0.0, dy = 0.0;
+
+            for (size_t i = 0; i < rawev->valuators.mask_len * 8; ++i) 
+            {
+                if (XIMaskIsSet(rawev->valuators.mask, i)) 
+                {
+                    double val = rawev->raw_values[i];
+
+                    if (i == 0) 
+                        dx += val;
+                    if (i == 1) 
+                        dy += val; 
+                }
+            }
+
+            pWd->LastEvent = Input;
+            pWd->InputStruct.Event = AbMotion;
+            pWd->InputStruct.MouseX += dx;
+            pWd->InputStruct.MouseY += dy;
+
+            XWarpPointer(pDisplay, 
+                         None, 
+                         window,
+                         0, 0, 
+                         0, 0, 
+                         pWd->Width * 0.5f, pWd->Height * 0.5f);
+        }
+
+        XFreeEventData(pDisplay, &event.xcookie);
+        return 0;
+    }
   
     switch (event.type) {
         case FocusIn:
-            XGrabPointer(display, 
+            XGrabPointer(pDisplay, 
                          window,
                          True, 
                          PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
@@ -30,57 +107,24 @@ uint32_t GameLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
             XColor dummyColor;
             Cursor invisibleCursor;
 
-            pixMap = XCreateBitmapFromData(display, window, pEmptyData, 8, 8);
-            invisibleCursor = XCreatePixmapCursor(display, pixMap, pixMap, &dummyColor, &dummyColor, 0, 0);
+            pixMap = XCreateBitmapFromData(pDisplay, window, pEmptyData, 8, 8);
+            invisibleCursor = XCreatePixmapCursor(pDisplay, pixMap, pixMap, &dummyColor, &dummyColor, 0, 0);
 
-            XDefineCursor(display, window, invisibleCursor);
+            XDefineCursor(pDisplay, window, invisibleCursor);
 
-            XWarpPointer(display, 
+            XWarpPointer(pDisplay, 
                          None, 
                          window, 
                          0, 0, 
                          0, 0, 
                          pWd->Width * 0.5f, pWd->Height * 0.5f);
 
-            XFlush(display);
+            XFlush(pDisplay);
             return 1;
 
         case MotionNotify:
-            int rootX, rootY, posX, posY;
-            Window dummyWindow;
-            unsigned int dummy;
+            return 0;
 
-            XQueryPointer(display, 
-                          window,
-                          &dummyWindow,
-                          &dummyWindow,
-                          &rootX,
-                          &rootY,
-                          &posX,
-                          &posY,
-                          reinterpret_cast<unsigned int*>(&dummy));
-
-            if (posX == static_cast<int>(pWd->Width * 0.5f) && 
-                posY == static_cast<int>(pWd->Height * 0.5f)) 
-            {
-                pWd->LastEvent = NothingNew;
-                return 1;
-            }
-
-            pWd->LastEvent = Input;
-            pWd->InputStruct.Event = AbMotion;
-            pWd->InputStruct.MouseX = posX - event.xmotion.x;
-            pWd->InputStruct.MouseY = posY - event.xmotion.y;
-
-            XWarpPointer(display, 
-                         None, 
-                         window,
-                         0, 0, 
-                         0, 0, 
-                         pWd->Width * 0.5f, pWd->Height * 0.5f);
-
-            XFlush(display);
-            return 1;
     }
 
     return BasicLinuxWindowPolicy::OnUpdate(pWd, event);

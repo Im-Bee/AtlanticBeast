@@ -17,14 +17,13 @@ WindowDesc CreateWindowDesc(const wchar_t* pwszName,
     wd.LastEvent = NothingNew;
     wd.InputStruct.Handled = 1;
 
-    if (wd.uNameLen >= AB_SMALL_STRING) {
+    if (wd.uNameLen >= AB_SMALL_STRING) 
         wd.uNameLen = AB_SMALL_STRING;
-    }
     
     wd.Name = (wchar_t*)malloc(wd.uNameLen * sizeof(wchar_t));
-    for (size_t i = 0; i < wd.uNameLen - 1; ++i) {
+    for (size_t i = 0; i < wd.uNameLen; ++i) 
         wd.Name[i] = pwszName[i];
-    }
+
     wd.Name[wd.uNameLen - 1] = L'\0';
 
     return wd;

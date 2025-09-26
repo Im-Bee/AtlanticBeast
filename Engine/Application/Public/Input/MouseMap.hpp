@@ -40,7 +40,7 @@ private:
 
 private:
 
-    ::std::vector<DataForActionReplay> m_MouseBinds;
+    ::std::vector<DataForActionReplay> m_vMouseBinds;
 
 };
 

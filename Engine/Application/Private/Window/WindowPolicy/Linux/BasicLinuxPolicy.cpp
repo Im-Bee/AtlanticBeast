@@ -59,11 +59,13 @@ uint32_t BasicLinuxWindowPolicy::CreateImpl(WindowDesc* pWd)
                                    SubstructureRedirectMask);
     XMapWindow(pDisplay, window);
 
-    pWd->Screen = DefaultScreen(pDisplay);
+    pWd->Screen = screen;
     pWd->WindowHandle = window;
 
     Atom wmDeleteMessage = XInternAtom(pDisplay, "WM_DELETE_WINDOW", 0);
     XSetWMProtocols(pDisplay, window, &wmDeleteMessage, 1);
+
+    this->OnCreate(pWd);
 
     return 0;
 }
@@ -102,9 +104,9 @@ void BasicLinuxWindowPolicy::DestroyImpl(WindowDesc* pWd)
     UpdateImpl(pWd);
 
     AbAskToCloseDisplayLinux(NULL);
-    pWd->WindowHandle = 0;
-    pWd->DisplayHandle = NULL;
-    pWd->Screen = 0;
+    pWd->WindowHandle   = 0;
+    pWd->DisplayHandle  = NULL;
+    pWd->Screen         = 0;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -125,7 +127,8 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
 
         if (event.xany.window != window && 
             event.type != UnmapNotify &&
-            event.type != DestroyNotify) 
+            event.type != DestroyNotify &&
+            event.type != GenericEvent) 
         {
             return;
         }
@@ -183,23 +186,23 @@ uint32_t BasicLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
                           &dummy,
                           reinterpret_cast<unsigned int*>(&dummy));
 
-            pWd->LastEvent = Input;
-            pWd->InputStruct.Event = AbMotion;
+            pWd->LastEvent          = Input;
+            pWd->InputStruct.Event  = AbMotion;
             pWd->InputStruct.MouseX = static_cast<int32_t>(rootX);
             pWd->InputStruct.MouseY = static_cast<int32_t>(rootY);
             return 1;
 
 
         case Expose:
-            pWd->LastEvent = Resize;
-            pWd->Width  = event.xexpose.width;
-            pWd->Height = event.xexpose.height;
+            pWd->LastEvent  = Resize;
+            pWd->Width      = event.xexpose.width;
+            pWd->Height     = event.xexpose.height;
             return 1;
 
         case ConfigureNotify:
-            pWd->LastEvent = Resize;
-            pWd->Height = event.xconfigure.height;
-            pWd->Width  = event.xconfigure.width;
+            pWd->LastEvent  = Resize;
+            pWd->Height     = event.xconfigure.height;
+            pWd->Width      = event.xconfigure.width;
             return 1;
 
         case ClientMessage:

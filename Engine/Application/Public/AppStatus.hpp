@@ -42,7 +42,7 @@ private:
 
 private:
 
-    size_t m_NumberOfWindows;
+    size_t m_uNumberOfWindows;
 
 };
 
