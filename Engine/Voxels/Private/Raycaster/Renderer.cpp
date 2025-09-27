@@ -21,7 +21,6 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
     m_CommandPool = CreateCommandPool(m_pDeviceAdapter, m_pDeviceAdapter->GetQueueFamilyIndex());
 
     m_pPipeline->ReserveGridBuffer(m_pVoxelGrid);
-    m_pPipeline->LoadGrid(m_pVoxelGrid);
 
     m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter, m_CommandPool, MAX_FRAMES_IN_FLIGHT));
 
@@ -66,19 +65,7 @@ void Renderer::Render()
                                    &uImageIndex);
 
     if (result == VK_SUBOPTIMAL_KHR || result == VK_ERROR_OUT_OF_DATE_KHR) {
-        for (size_t i = 0; i < m_vFrames.size(); ++i)
-        {
-            vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].RenderFinished, nullptr);
-            vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].ImageAvailable, nullptr);
-            vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].InFlightFence, nullptr);
-            vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &m_vFrames[i].CommandBuffer);
-        }
-
-        m_pSwapChain = nullptr;
-        m_pSwapChain = make_unique<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, m_pWindowDesc);
-        m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter, m_CommandPool, MAX_FRAMES_IN_FLIGHT));
-        m_uCurrentFrame = 0;
-
+        RecreateSwapChain();
         return;
     }
 
@@ -115,23 +102,8 @@ void Renderer::Render()
     presentInfo.pImageIndices = &uImageIndex;
 
     result = vkQueuePresentKHR(m_pDeviceAdapter->GetQueueHandle(), &presentInfo);
-    if (result == VK_SUBOPTIMAL_KHR) {
-        if (m_pWindowDesc->IsAlive == false) {
-            return;
-        }
-        for (size_t i = 0; i < m_vFrames.size(); ++i)
-        {
-            vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].RenderFinished, nullptr);
-            vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].ImageAvailable, nullptr);
-            vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].InFlightFence, nullptr);
-            vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &m_vFrames[i].CommandBuffer);
-        }
-
-        m_pSwapChain = nullptr;
-        m_pSwapChain = make_unique<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, m_pWindowDesc);
-        m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter, m_CommandPool, MAX_FRAMES_IN_FLIGHT));
-        m_uCurrentFrame = 0;
-
+    if (result == VK_SUBOPTIMAL_KHR || result == VK_ERROR_OUT_OF_DATE_KHR) {
+        RecreateSwapChain();
         return;
     }
 
@@ -343,6 +315,32 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::sh
     uint32_t groupCountX = (m_pWindowDesc->Width + 15) / 16;
     uint32_t groupCountY = (m_pWindowDesc->Height + 15) / 16;
     vkCmdDispatch(cmdBuffer, groupCountX, groupCountY, 1);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+void Renderer::RecreateSwapChain()
+{
+    AB_LOG(Core::Debug::Info, L"Recreating swapchain");
+    if (m_pWindowDesc->IsAlive == false) {
+        return;
+    }
+    for (size_t i = 0; i < m_vFrames.size(); ++i)
+    {
+        vkWaitForFences(m_pDeviceAdapter->GetAdapterHandle(), 1, &m_vFrames[i].InFlightFence, VK_TRUE, UINT64_MAX);
+        vkResetFences(m_pDeviceAdapter->GetAdapterHandle(), 1, &m_vFrames[i].InFlightFence);
+        vkResetCommandBuffer(m_vFrames[i].CommandBuffer, 0);
+
+        vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].RenderFinished, nullptr);
+        vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].ImageAvailable, nullptr);
+        vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].InFlightFence, nullptr);
+        vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &m_vFrames[i].CommandBuffer);
+    }
+
+    m_pSwapChain = nullptr;
+    m_pSwapChain = make_unique<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, m_pWindowDesc);
+    m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter, m_CommandPool, MAX_FRAMES_IN_FLIGHT));
+    m_uCurrentFrame = 0;
+    AB_LOG(Core::Debug::Info, L"Swapchain recreated");
 }
 
 } // !Voxels

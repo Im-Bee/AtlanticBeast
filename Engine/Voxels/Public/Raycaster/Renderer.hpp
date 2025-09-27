@@ -79,6 +79,8 @@ private:
 
     void RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::shared_ptr<Pipeline>& pipeline);
 
+    void RecreateSwapChain();
+
 private:
 
     ::std::shared_ptr<Instance>             m_pInstance         = nullptr;

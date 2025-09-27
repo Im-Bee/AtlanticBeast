@@ -73,10 +73,14 @@ uint32_t GameLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
                 }
             }
 
-            pWd->LastEvent = Input;
-            pWd->InputStruct.Event = AbMotion;
-            pWd->InputStruct.MouseX += dx;
-            pWd->InputStruct.MouseY += dy;
+            pWd->LastEvent |= Input;
+            AbInputStruct is;
+
+            is.Event  = AbMotion;
+            is.Mouse.MouseX = dx;
+            is.Mouse.MouseY = dy;
+
+            pWd->InputStruct.push(is);
 
             XWarpPointer(pDisplay, 
                          None, 
