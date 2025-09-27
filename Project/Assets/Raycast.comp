@@ -141,7 +141,7 @@ bool ShadowRay(vec3 from, vec3 to, int maxDistance)
 float SoftShadowRay(vec3 from, vec3 to, int maxDistance)
 {
     const float r = 4.;
-    const float samples = 16;
+    const float samples = 24;
 
     vec3    dir = normalize(to - from);
     ivec3   dummyHit;
@@ -278,7 +278,7 @@ void main()
 
         if (distance <= maxSteps) {
             shading = PhongShadows(CameraPos.xyz, hitPos, hitCoords, normal, int(length(hitPos - lightPos) * 1.5));
-            reflections = Reflection(rayOrigin, hitPos, 128, 4, normal);
+            reflections = Reflection(rayOrigin, hitPos, 96, 4, normal);
         
             finalColor = vec4(mix(shading * finalColor.xyz, 
                                   reflections, 
