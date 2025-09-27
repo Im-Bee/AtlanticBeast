@@ -27,7 +27,7 @@ struct WindowDesc
 };
 
 template<class U>
-BEAST_API WindowDesc CreateWindowDesc(U&& wstrName,
+WindowDesc CreateWindowDesc(U&& wstrName,
                                       int32_t width, 
                                       int32_t height)
 { 
