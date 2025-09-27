@@ -1,18 +1,13 @@
 #ifndef AB_WINDOW_DESC_H
 #define AB_WINDOW_DESC_H
 
-#include "SystemIncludes.h"
 #include "ExportImport.h"
 #include "WindowEvents.h"
 #include "Input/InputEvents.h"
 
-#include "CSystem.hpp"
-    
-
 struct WindowDesc
 {
-    wchar_t*                        Name;
-    size_t                          uNameLen;
+    ::std::wstring                  Name;
 	const wchar_t*                  pwszClassName;
     int32_t                         Width;
     int32_t                         Height;
@@ -31,17 +26,20 @@ struct WindowDesc
 #endif // !_WIN32
 };
 
-BEAST_API WindowDesc CreateWindowDesc(const wchar_t* pwszName, 
-                                      size_t uNameLen, 
+template<class U>
+BEAST_API WindowDesc CreateWindowDesc(U&& wstrName,
                                       int32_t width, 
-                                      int32_t height);
+                                      int32_t height)
+{ 
+    WindowDesc wd;
 
-template<size_t uNameLen>
-WindowDesc CreateWindowDesc(const wchar_t (&pwszName)[uNameLen],
-                            int32_t width,
-                            int32_t height)
-{
-    return CreateWindowDesc(pwszName, uNameLen, width, height);
+    wd.Name = ::std::forward<U>(wstrName);
+    wd.pwszClassName = NULL;
+    wd.Width = width;
+    wd.Height = height;
+    wd.LastEvent = NothingNew;
+
+    return wd;
 }
 
 #endif // !AB_WINDOW_DESC_H

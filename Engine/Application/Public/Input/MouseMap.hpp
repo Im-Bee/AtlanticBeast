@@ -4,11 +4,12 @@
 #include "CSystem.hpp"
 
 #include "Bind.h"
+#include "Input/IBindMap.hpp"
 
 namespace App
 {
 
-class BEAST_API MouseMap 
+class BEAST_API MouseMap : public IBindMap
 {
 public:
     
@@ -22,9 +23,12 @@ public:
 
 public:
 
-    void SetKeyToAction(const AbInputBind& ib, void* pThis, AbMouseAction a);
+    virtual void BindAction(const AbInputBind& ib, 
+                            void* pThis,
+                            AbAction a,
+                            AbMouseAction ma) override final;
 
-    void UnSetKey(const AbInputBind& ib);
+    virtual void UnbindAction(const AbInputBind& ib, void* pThis) override final;
 
 public:
 

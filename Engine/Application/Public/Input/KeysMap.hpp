@@ -1,15 +1,14 @@
 #ifndef AB_KEYS_MAP_H
 #define AB_KEYS_MAP_H
 
-#include "CSystem.hpp"
-
 #include "Bind.h"
 #include "KeyList.hpp"
+#include "IBindMap.hpp"
 
 namespace App
 {
 
-class BEAST_API KeysMap 
+class BEAST_API KeysMap : public IBindMap
 {
 
     static constexpr size_t AmountOfBindableKeys = AB_KEY_COUNT;
@@ -26,9 +25,12 @@ public:
 
 public:
 
-    void SetKeyToAction(const AbInputBind& ib, void* pThis, AbAction a);
+    virtual void BindAction(const AbInputBind& ib, 
+                            void* pThis,
+                            AbAction a, 
+                            AbMouseAction ma) override final;
 
-    void UnSetKey(const AbInputBind& ib);
+    virtual void UnbindAction(const AbInputBind& ib, void* pThis) override final;
 
 public:
 
@@ -36,7 +38,7 @@ public:
 
 private:
 
-    struct DataForActionReplay
+    struct ActionReplayData
     {
         void* pThis;
         AbAction action;
@@ -44,7 +46,7 @@ private:
 
 private:
 
-    ::std::vector<DataForActionReplay> m_vKeys;
+    ::std::vector<ActionReplayData> m_vKeys;
 
 };
 

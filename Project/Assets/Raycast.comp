@@ -141,7 +141,7 @@ bool ShadowRay(vec3 from, vec3 to, int maxDistance)
 float SoftShadowRay(vec3 from, vec3 to, int maxDistance)
 {
     const float r = 4.;
-    const float samples = 24;
+    const float samples = 18;
 
     vec3    dir = normalize(to - from);
     ivec3   dummyHit;

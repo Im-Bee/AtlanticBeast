@@ -14,9 +14,14 @@ class EmptyCanvas : public ::App::IBaseWindow<EmptyCanvas, DefaultGameSystemWind
 {
 public:
 
-    EmptyCanvas(std::wstring wstrWindowName = L"EmptyCanvas")
+    explicit EmptyCanvas(std::wstring wstrWindowName = L"EmptyCanvas")
         : IBaseWindow<EmptyCanvas, DefaultGameSystemWindowPolicy>(
-                CreateWindowDesc(wstrWindowName.c_str(), wstrWindowName.length(), 1200, 700))
+                CreateWindowDesc(std::move(wstrWindowName), 1200, 700))
+    { } 
+
+    template<class U>
+    explicit EmptyCanvas(U&& desc)
+        : IBaseWindow<EmptyCanvas, DefaultGameSystemWindowPolicy>(::std::forward<U>(desc))
     { }
     
     ~EmptyCanvas() = default;

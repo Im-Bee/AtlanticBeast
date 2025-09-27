@@ -47,48 +47,14 @@ void GameLinuxWindowPolicy::OnCreate(WindowDesc* pWd)
 // ---------------------------------------------------------------------------------------------------------------------
 uint32_t GameLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
 {
-    Display* pDisplay   = pWd->DisplayHandle;
-    Window   window     = pWd->WindowHandle;
-    static char pEmptyData[8] = { 0 };
+    Display* pDisplay = pWd->DisplayHandle;
 
     if (event.xcookie.type      == GenericEvent &&
         event.xcookie.extension == m_OpCode     &&
         XGetEventData(pDisplay, &event.xcookie)) 
     {
         if (event.xcookie.evtype == XI_RawMotion) 
-        {
-            XIRawEvent* rawev = reinterpret_cast<XIRawEvent*>(event.xcookie.data);
-            double dx = 0.0, dy = 0.0;
-
-            for (size_t i = 0; i < rawev->valuators.mask_len * 8; ++i) 
-            {
-                if (XIMaskIsSet(rawev->valuators.mask, i)) 
-                {
-                    double val = rawev->raw_values[i];
-
-                    if (i == 0) 
-                        dx += val;
-                    if (i == 1) 
-                        dy += val; 
-                }
-            }
-
-            pWd->LastEvent |= Input;
-            AbInputStruct is;
-
-            is.Event  = AbMotion;
-            is.Mouse.MouseX = dx;
-            is.Mouse.MouseY = dy;
-
-            pWd->InputStruct.push(is);
-
-            XWarpPointer(pDisplay, 
-                         None, 
-                         window,
-                         0, 0, 
-                         0, 0, 
-                         pWd->Width * 0.5f, pWd->Height * 0.5f);
-        }
+            HandleRawInput(pWd, event);
 
         XFreeEventData(pDisplay, &event.xcookie);
         return 0;
@@ -96,34 +62,7 @@ uint32_t GameLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
   
     switch (event.type) {
         case FocusIn:
-            XGrabPointer(pDisplay, 
-                         window,
-                         True, 
-                         PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
-                         GrabModeAsync,
-                         GrabModeAsync,
-                         window,
-                         None,
-                         CurrentTime);
-
-            Pixmap pixMap;
-            Colormap colormap;
-            XColor dummyColor;
-            Cursor invisibleCursor;
-
-            pixMap = XCreateBitmapFromData(pDisplay, window, pEmptyData, 8, 8);
-            invisibleCursor = XCreatePixmapCursor(pDisplay, pixMap, pixMap, &dummyColor, &dummyColor, 0, 0);
-
-            XDefineCursor(pDisplay, window, invisibleCursor);
-
-            XWarpPointer(pDisplay, 
-                         None, 
-                         window, 
-                         0, 0, 
-                         0, 0, 
-                         pWd->Width * 0.5f, pWd->Height * 0.5f);
-
-            XFlush(pDisplay);
+            HandleFocusIn(pWd);
             return 1;
 
         case MotionNotify:
@@ -132,6 +71,79 @@ uint32_t GameLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
     }
 
     return BasicLinuxWindowPolicy::OnUpdate(pWd, event);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+void GameLinuxWindowPolicy::HandleRawInput(WindowDesc* pWd, XEvent& event)
+{
+    XIRawEvent* rawev = reinterpret_cast<XIRawEvent*>(event.xcookie.data);
+    double dx = 0.0, dy = 0.0;
+
+    for (size_t i = 0; i < rawev->valuators.mask_len * 8; ++i) 
+    {
+        if (XIMaskIsSet(rawev->valuators.mask, i)) 
+        {
+            double val = rawev->raw_values[i];
+
+            if (i == 0) 
+                dx += val;
+            else
+                dy += val; 
+        }
+    }
+
+    pWd->LastEvent |= Input;
+
+    AbInputStruct is;
+    is.Event  = AbMotion;
+    is.Mouse.MouseX = dx;
+    is.Mouse.MouseY = dy;
+
+    pWd->InputStruct.push(is);
+
+    XWarpPointer(pWd->DisplayHandle, 
+                 None, 
+                 pWd->WindowHandle,
+                 0, 0, 
+                 0, 0, 
+                 pWd->Width * 0.5f, pWd->Height * 0.5f);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+void GameLinuxWindowPolicy::HandleFocusIn(WindowDesc* pWd)
+{ 
+    static char pEmptyData[8] = { 0 };
+    Display* pDisplay   = pWd->DisplayHandle;
+    Window   window     = pWd->WindowHandle;
+
+    XGrabPointer(pDisplay, 
+                 window,
+                 True, 
+                 PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
+                 GrabModeAsync,
+                 GrabModeAsync,
+                 window,
+                 None,
+                 CurrentTime);
+
+    Pixmap pixMap;
+    Colormap colormap;
+    XColor dummyColor;
+    Cursor invisibleCursor;
+
+    pixMap = XCreateBitmapFromData(pDisplay, window, pEmptyData, 8, 8);
+    invisibleCursor = XCreatePixmapCursor(pDisplay, pixMap, pixMap, &dummyColor, &dummyColor, 0, 0);
+
+    XDefineCursor(pDisplay, window, invisibleCursor);
+
+    XWarpPointer(pDisplay, 
+                 None, 
+                 window, 
+                 0, 0, 
+                 0, 0, 
+                 pWd->Width * 0.5f, pWd->Height * 0.5f);
+
+    XFlush(pDisplay);
 }
 
 } // !App

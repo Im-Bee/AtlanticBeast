@@ -7,26 +7,29 @@ namespace App
 KeysMap::KeysMap()
     : m_vKeys(AmountOfBindableKeys)
 {
-    memset(&m_vKeys[0], 0, sizeof(DataForActionReplay) * m_vKeys.size());
+    memset(&m_vKeys[0], 0, sizeof(ActionReplayData) * m_vKeys.size());
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void KeysMap::SetKeyToAction(const AbInputBind& ib, void* pThis, AbAction a)
+void KeysMap::BindAction(const AbInputBind& ib, void* pThis, AbAction a, AbMouseAction ma)
 {
 	AB_ASSERT(ib.Type == EAbBindType::Keyboard);
 	AB_ASSERT(ib.keyboard.KeyCode > AB_INVALID_KEY && ib.keyboard.KeyCode < AB_KEY_COUNT);
 	AB_ASSERT(m_vKeys[ib.keyboard.KeyCode].pThis == nullptr);
+    AB_ASSERT(ma == nullptr);
+    AB_ASSERT(pThis != nullptr);
 
-	m_vKeys[ib.keyboard.KeyCode] = DataForActionReplay { pThis, a };
+	m_vKeys[ib.keyboard.KeyCode] = ActionReplayData { pThis, a };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void KeysMap::UnSetKey(const AbInputBind& ib)
+void KeysMap::UnbindAction(const AbInputBind& ib, void* pThis)
 {
 	AB_ASSERT(ib.Type == EAbBindType::Keyboard);
-	AB_ASSERT(ib.keyboard.KeyCode > AB_INVALID_KEY || ib.keyboard.KeyCode < AB_KEY_COUNT);
+	AB_ASSERT(ib.keyboard.KeyCode > AB_INVALID_KEY && ib.keyboard.KeyCode < AB_KEY_COUNT);
+    AB_ASSERT(pThis != nullptr);
 
-	m_vKeys[ib.keyboard.KeyCode] = DataForActionReplay { 0, 0 };
+	m_vKeys[ib.keyboard.KeyCode].pThis = nullptr;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -36,8 +39,9 @@ void KeysMap::PlayAction(AbKeyId keyCode)
 
 	const auto& playableAction = m_vKeys[keyCode];
 
-	if (playableAction.pThis)
-		playableAction.action(playableAction.pThis);
+    if (playableAction.pThis) {
+	    playableAction.action(playableAction.pThis);
+    }
 }
 
 } // !App

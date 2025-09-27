@@ -36,7 +36,8 @@ public:
     { 
         // We can be signed by only one UserInput
         if (!m_pUserInput.expired()) {
-            AB_ASSERT(m_pUserInput.lock() == pUserInput.lock());
+            AB_ASSERT(m_pUserInput.lock().get() == pUserInput.lock().get());
+            AB_LOG(Core::Debug::Warning, L"ControllerObject can be signed only by one UserInput.");
             return;
         }
 

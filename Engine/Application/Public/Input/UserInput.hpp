@@ -1,15 +1,15 @@
 #ifndef AB_USER_INPUT_H
 #define AB_USER_INPUT_H
 
-#include "ExportImport.h"
-#include "Bind.h"
-#include "Input/KeysMap.hpp"
 #include "Window/WindowDesc.hpp"
-#include "CSystem.hpp"
-#include "MouseMap.hpp"
+#include "Input/KeysMap.hpp"
+#include "Input/Bind.h"
+#include "Input/MouseMap.hpp"
 
 namespace App
 {
+
+class ControllerObject;
 
 class BEAST_API UserInput
 {
@@ -28,32 +28,29 @@ public:
         , m_MouseMap()
     { }
 
-    ~UserInput() 
-    { this->StopCapturing(); }
+    ~UserInput() = default;
 
 public:
 
-    void StartCapturing()
-    { 
-        if (!m_bIsCapturing && m_pWindowDesc)
-            m_bIsCapturing = true;
-    }
+    void StartCapturing();
 
-    void StopCapturing()
-    {
-        if (!m_bIsCapturing)
-            return;
+    void StopCapturing();
 
-        m_bIsCapturing = false;
-    }
-
-    void Bind(void* pThis, AbAction pIa, AbMouseAction mouseAction, AbInputBind bind);
+    /**
+     * @param pThis - pointer to an object on which we are performing action
+     * @param pCo - pointer to an object that controlls life time of pThis
+     * @param action - action to be performed, should be null, if we are performing mouse action instead
+     * @param mouseAction - mouse action to be performed, should be null, if we are performing action instead 
+     * @param bind - AbInputBind struct describing the bind
+     **/
+    void Bind(void* pThis, ControllerObject* pCo, AbAction action, AbMouseAction mouseAction, AbInputBind bind);
 
     void Unbind(void* pThis);
     
     /**
-     * Updates are based on key state in m_pWindowDesc
-     * */
+     * Reads and consumes the input queue from WindowDesc.
+     * Plays continues binds.
+     */
     void Update();
 
 private:
@@ -62,17 +59,18 @@ private:
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
 
-    ::std::unordered_map<void*, AbInputBind> m_BindsHandles;
+    ::std::unordered_map<void*, ::std::vector<AbInputBind>> m_BindsHandles;
+
+    ::std::bitset<AB_KEY_COUNT> m_vCurrentlyPressedKeys;
 
     KeysMap m_KeyReleaseMap;
     KeysMap m_KeyPressMap;
     KeysMap m_KeyContinuous;
     KeysMap m_ButtonReleaseMap;
     KeysMap m_ButtonPressMap;
-    
-    ::std::bitset<AB_KEY_COUNT> m_vCurrentlyPressedKeys;
 
     MouseMap m_MouseMap;
+
 };
 
 } // !App

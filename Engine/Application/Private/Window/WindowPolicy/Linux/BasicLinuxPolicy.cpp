@@ -32,7 +32,7 @@ uint32_t BasicLinuxWindowPolicy::CreateImpl(WindowDesc* pWd)
 
     XTextProperty windowName;
     char* szWindowName = (char*)malloc(sizeof(char) * AB_SMALL_STRING);
-    size_t uWriten = wcstombs(szWindowName, pWd->Name, pWd->uNameLen);
+    size_t uWriten = wcstombs(szWindowName, pWd->Name.c_str(), pWd->Name.length());
     szWindowName[uWriten] = '\0';
 
     XStringListToTextProperty(&szWindowName, 1, &windowName);
@@ -65,7 +65,7 @@ uint32_t BasicLinuxWindowPolicy::CreateImpl(WindowDesc* pWd)
     Atom wmDeleteMessage = XInternAtom(pDisplay, "WM_DELETE_WINDOW", 0);
     XSetWMProtocols(pDisplay, window, &wmDeleteMessage, 1);
 
-    this->OnCreate(pWd);
+    OnCreate(pWd);
 
     return 0;
 }
@@ -135,7 +135,7 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
 
         XNextEvent(display, &event);
 
-        if (this->OnUpdate(pWd, event) != 0)
+        if (OnUpdate(pWd, event) != 0)
             break;
     }
 }
@@ -146,27 +146,14 @@ uint32_t BasicLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
     Display* display = pWd->DisplayHandle;
     Window   window  = pWd->WindowHandle;
 
-    switch (event.type) 
-    {
-        case KeyPress: {
-            pWd->LastEvent |= Input;
-            AbInputStruct is;
-
-            is.Event = AbKeyPress;
-            is.Keyboard.KeyId = event.xkey.keycode - 8;
-            pWd->InputStruct.push(is);
+    switch (event.type) {
+        case KeyPress:
+            HandleKeyPressOrRelease(pWd, event, AbKeyPress);
             return 0;
-        }
 
-        case KeyRelease: {
-            pWd->LastEvent |= Input;
-            AbInputStruct is;
-
-            is.Event = AbKeyRelease;
-            is.Keyboard.KeyId = event.xkey.keycode - 8;
-            pWd->InputStruct.push(is);
+        case KeyRelease: 
+            HandleKeyPressOrRelease(pWd, event, AbKeyRelease);
             return 0;
-        }
 
         case ButtonPress:
             pWd->LastEvent |= Input;
@@ -232,6 +219,18 @@ uint32_t BasicLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
 
     pWd->LastEvent = EAbWindowEvents::NothingNew;
     return 0;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+void BasicLinuxWindowPolicy::HandleKeyPressOrRelease(WindowDesc* pWd, XEvent& event, EAbInputEvents ie)
+{
+    pWd->LastEvent |= Input;
+
+    AbInputStruct is;
+    is.Event = ie;
+    is.Keyboard.KeyId = event.xkey.keycode - 8;
+
+    pWd->InputStruct.push(is);
 }
 
 } // !App

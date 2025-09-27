@@ -26,7 +26,13 @@ public:
 
     virtual void OnCreate(WindowDesc* pWd) override;
 
-    uint32_t OnUpdate(WindowDesc* pWd, XEvent& event) override;
+    virtual uint32_t OnUpdate(WindowDesc* pWd, XEvent& event) override;
+
+private:
+
+    void HandleRawInput(WindowDesc* pWd, XEvent& event);
+
+    void HandleFocusIn(WindowDesc* pWd);
 
 private:
 

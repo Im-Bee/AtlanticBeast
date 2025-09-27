@@ -46,6 +46,10 @@ public:
      */
     virtual uint32_t OnUpdate(WindowDesc* pWd, XEvent& event);
 
+private:
+
+    void HandleKeyPressOrRelease(WindowDesc* pWd, XEvent& event, EAbInputEvents ie);
+
 };
 
 } // !App

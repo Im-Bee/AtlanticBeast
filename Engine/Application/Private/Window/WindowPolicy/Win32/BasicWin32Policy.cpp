@@ -37,7 +37,7 @@ uint32_t BasicWin32WindowPolicy::CreateImpl(WindowDesc* pWd)
 
     HWND hwnd = CreateWindowEx(WS_EX_OVERLAPPEDWINDOW,
                                pWd->pwszClassName,
-                               pWd->Name,
+                               pWd->Name.c_str(),
                                WS_OVERLAPPEDWINDOW,
                                CW_USEDEFAULT,
                                CW_USEDEFAULT,

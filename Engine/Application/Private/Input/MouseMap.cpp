@@ -4,27 +4,36 @@ namespace App
 {
 
 // ---------------------------------------------------------------------------------------------------------------------
-void MouseMap::SetKeyToAction(const AbInputBind& ib, void* pThis, AbMouseAction a)
+void MouseMap::BindAction(const AbInputBind& ib, void* pThis, AbAction a, AbMouseAction ma)
 {
 	AB_ASSERT(ib.Type == EAbBindType::Mouse);
+    AB_ASSERT(a == nullptr);
+    AB_ASSERT(pThis != nullptr);
 
-	m_vMouseBinds.push_back(DataForActionReplay { pThis, a });
+	m_vMouseBinds.push_back(DataForActionReplay { pThis, ma });
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void MouseMap::UnSetKey(const AbInputBind& ib)
+void MouseMap::UnbindAction(const AbInputBind& ib, void* pThis)
 {
 	AB_ASSERT(ib.Type == EAbBindType::Mouse);
+    AB_ASSERT(pThis != nullptr);
 
-	static_assert(true, "Not impemented yet");
+    for (auto it = m_vMouseBinds.begin(); it != m_vMouseBinds.end(); ++it) {
+        if (it->pThis == pThis) {
+            m_vMouseBinds.erase(it);
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 void MouseMap::PlayAction(float fX, float fY)
 {
-	for (const auto& bind : m_vMouseBinds)
-		if (bind.pThis)
-			bind.action(bind.pThis, fX, fY);
+	for (const auto& bind : m_vMouseBinds) {
+		AB_ASSERT(bind.pThis);
+
+		bind.action(bind.pThis, fX, fY);
+    }
 }
 
 } // !App

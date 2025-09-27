@@ -9,6 +9,7 @@
 #ifdef __cplusplus
 
 #include "Window/WindowDesc.hpp"
+#include "Input/KeyList.hpp"
 #include "AppStatus.hpp"
 #include "AppResources.hpp"
 

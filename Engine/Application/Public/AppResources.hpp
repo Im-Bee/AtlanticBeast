@@ -33,7 +33,7 @@ public:
     { 
         size_t len = std::wcstombs(nullptr, m_wstrExePath.c_str(), 0);
 
-        if (len != (size_t) - 1) {
+        if (len != static_cast<size_t>(-1)) {
             std::string str(len, '\0');
             std::wcstombs(&str[0], m_wstrExePath.c_str(), len);
             return str; 

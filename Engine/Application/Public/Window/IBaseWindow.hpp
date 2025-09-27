@@ -19,7 +19,7 @@ namespace App
  * policy from IWindowPolicy class, to handle different and custom os level logic.
  * */
 template<typename Derived, typename WindowPolicy = DefaultSystemWindowPolicy>
-class IBaseWindow : public WindowPolicy
+class IBaseWindow
 {
 public:
 
@@ -55,7 +55,7 @@ public:
         
         m_pWindowDesc->uUinqueIndex = App::AppStatus::Get().SendOpenedWindowSignal();
 
-        if (this->WindowPolicyCreate(m_pWindowDesc.get()) != 0) {
+        if (m_Policy.WindowPolicyCreate(m_pWindowDesc.get()) != 0) {
             throw AB_EXCEPT("Couldn't create the window");
         }
 
@@ -65,13 +65,13 @@ public:
     void Show()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
-        this->WindowPolicyShow(m_pWindowDesc.get()); 
+        m_Policy.WindowPolicyShow(m_pWindowDesc.get()); 
     }
 
     void Hide()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
-        this->WindowPolicyHide(m_pWindowDesc.get()); 
+        m_Policy.WindowPolicyHide(m_pWindowDesc.get()); 
     }
 
     void Destroy()
@@ -84,7 +84,7 @@ public:
         
         App::AppStatus::Get().SendClosedWindowSignal();
         
-        this->WindowPolicyDestroy(m_pWindowDesc.get());
+        m_Policy.WindowPolicyDestroy(m_pWindowDesc.get());
         
         m_pWindowDesc->IsAlive = false;
     }
@@ -97,7 +97,7 @@ public:
         }
 
         m_pWindowDesc->LastEvent &= 0;
-        this->WindowPolicyUpdate(m_pWindowDesc.get());
+        m_Policy.WindowPolicyUpdate(m_pWindowDesc.get());
         
         if (m_pWindowDesc->LastEvent & EAbWindowEvents::Destroy) {
             AB_LOG(Core::Debug::Info, L"Window is being closed by user");
@@ -123,6 +123,8 @@ private:
     }
 
 private:
+    
+    WindowPolicy m_Policy;
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
     

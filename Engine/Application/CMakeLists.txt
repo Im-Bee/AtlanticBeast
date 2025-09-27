@@ -1,7 +1,6 @@
 SET(APPLICATION_SOURCE 
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/AppStatus.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/AppResources.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowDesc.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/BaseWindowDetails.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Linux/X11ErrorHandling.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Linux/BasicLinuxPolicy.cpp"

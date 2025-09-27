@@ -36,8 +36,9 @@ void GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, 
             rid.dwFlags = 0;
             rid.hwndTarget = pWd->Hwnd;
 
-            if (!RegisterRawInputDevices(&rid, 1, sizeof(rid)))
-                throw AB_EXCEPT("Couldn't register raw input");
+            if (!RegisterRawInputDevices(&rid, 1, sizeof(rid))) {
+                AB_LOG(Core::Debug::Error, L"Couldn't register raw input");
+            }
 
             ShowCursor(FALSE);
 
@@ -149,7 +150,7 @@ void GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, 
             return;
 
         case WM_MOUSEMOVE:
-            return ;
+            return;
     }
 
     return BasicWin32WindowPolicy::OnUpdate(pWd, uMsg, wParam, lParam);
