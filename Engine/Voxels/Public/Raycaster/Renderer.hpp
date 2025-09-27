@@ -23,7 +23,7 @@ public:
         , m_pHardware(nullptr)
         , m_pDeviceAdapter(nullptr)
         , m_pWindowDesc(nullptr)
-        , m_pSwapChain(nullptr)
+        , m_pSwapChain()
         , m_pPipeline(nullptr)
         , m_pVoxelGrid(nullptr)
         , m_CommandPool(VK_NULL_HANDLE)
@@ -84,10 +84,11 @@ private:
     ::std::shared_ptr<Instance>             m_pInstance         = nullptr;
     ::std::shared_ptr<Hardware>             m_pHardware         = nullptr;
     ::std::shared_ptr<DeviceAdapter>        m_pDeviceAdapter    = nullptr;
+    ::std::unique_ptr<Swapchain>            m_pSwapChain         = nullptr;
     ::std::shared_ptr<const WindowDesc>     m_pWindowDesc       = nullptr;
-    ::std::shared_ptr<Swapchain>            m_pSwapChain        = nullptr;
     ::std::shared_ptr<Pipeline>             m_pPipeline         = nullptr;
     ::std::shared_ptr<VoxelGrid>            m_pVoxelGrid        = nullptr;
+
 
     VkCommandPool m_CommandPool = VK_NULL_HANDLE;
 

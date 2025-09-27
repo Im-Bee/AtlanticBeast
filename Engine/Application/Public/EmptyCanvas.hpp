@@ -27,7 +27,7 @@ public:
 
 public:
 
-    void HandleMessageImpl(EAbWindowEvents)
+    void HandleMessageImpl(int32_t)
     { }
 
 };

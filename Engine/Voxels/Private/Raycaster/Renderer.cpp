@@ -14,7 +14,7 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
     m_pHardware         = make_shared<Hardware>(m_pInstance);
     m_pDeviceAdapter    = make_shared<DeviceAdapter>(m_pHardware);
     m_pWindowDesc       = wd;
-    m_pSwapChain        = make_shared<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, wd);
+    m_pSwapChain        = make_unique<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, wd);
     m_pVoxelGrid        = vg;
     m_pPipeline         = make_shared<Pipeline>(m_pHardware, m_pDeviceAdapter);
 
@@ -66,9 +66,6 @@ void Renderer::Render()
                                    &uImageIndex);
 
     if (result == VK_SUBOPTIMAL_KHR || result == VK_ERROR_OUT_OF_DATE_KHR) {
-        AB_LOG(Core::Debug::Warning, L"Recreating swapchain!!!");
-        m_pSwapChain = nullptr;
-        m_pSwapChain = make_shared<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, m_pWindowDesc);
         for (size_t i = 0; i < m_vFrames.size(); ++i)
         {
             vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].RenderFinished, nullptr);
@@ -76,9 +73,12 @@ void Renderer::Render()
             vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].InFlightFence, nullptr);
             vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &m_vFrames[i].CommandBuffer);
         }
-        m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter, m_CommandPool, MAX_FRAMES_IN_FLIGHT));
 
-        AB_LOG(Core::Debug::Warning, L"Recreated swapchain!!!");
+        m_pSwapChain = nullptr;
+        m_pSwapChain = make_unique<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, m_pWindowDesc);
+        m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter, m_CommandPool, MAX_FRAMES_IN_FLIGHT));
+        m_uCurrentFrame = 0;
+
         return;
     }
 
@@ -89,7 +89,7 @@ void Renderer::Render()
                    uImageIndex);
 
     VkSemaphore waitSemaphores[] = { frame.ImageAvailable };
-    static VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
     VkSemaphore signalSemaphores[] = { frame.RenderFinished };
 
     VkSubmitInfo submitInfo = { };
@@ -102,7 +102,7 @@ void Renderer::Render()
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, frame.InFlightFence);
+    ThrowIfFailed(vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, frame.InFlightFence));
 
     VkSwapchainKHR swapchain = m_pSwapChain->GetSwapChainHandle();
 
@@ -115,16 +115,10 @@ void Renderer::Render()
     presentInfo.pImageIndices = &uImageIndex;
 
     result = vkQueuePresentKHR(m_pDeviceAdapter->GetQueueHandle(), &presentInfo);
-    if (result == VK_SUBOPTIMAL_KHR)
-    {
+    if (result == VK_SUBOPTIMAL_KHR) {
         if (m_pWindowDesc->IsAlive == false) {
             return;
-		}
-
-        AB_LOG(Core::Debug::Warning, L"Recreating swapchain!!!");
-        m_pSwapChain = nullptr;
-        m_pSwapChain = make_shared<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, m_pWindowDesc);
-
+        }
         for (size_t i = 0; i < m_vFrames.size(); ++i)
         {
             vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].RenderFinished, nullptr);
@@ -132,9 +126,12 @@ void Renderer::Render()
             vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].InFlightFence, nullptr);
             vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &m_vFrames[i].CommandBuffer);
         }
-        m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter, m_CommandPool, MAX_FRAMES_IN_FLIGHT));
 
-        AB_LOG(Core::Debug::Warning, L"Recreated swapchain!!!");
+        m_pSwapChain = nullptr;
+        m_pSwapChain = make_unique<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, m_pWindowDesc);
+        m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter, m_CommandPool, MAX_FRAMES_IN_FLIGHT));
+        m_uCurrentFrame = 0;
+
         return;
     }
 

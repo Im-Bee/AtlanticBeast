@@ -3,7 +3,7 @@
 
 #include "Core.h"
 #include "Debug/Assert.h"
-#include "Window/WindowDesc.h"
+#include "Window/WindowDesc.hpp"
 #include "Input/UserInput.hpp"
 #include "Window/WindowPolicy/BasicSystemPolicy.hpp"
 #include "AppStatus.hpp"
@@ -96,6 +96,7 @@ public:
             return;
         }
 
+        m_pWindowDesc->LastEvent &= 0;
         this->WindowPolicyUpdate(m_pWindowDesc.get());
         
         if (m_pWindowDesc->LastEvent & EAbWindowEvents::Destroy) {
@@ -104,15 +105,6 @@ public:
         }
         
         static_cast<Derived*>(this)->HandleMessageImpl(m_pWindowDesc->LastEvent);
-
-        // My decision is, that every client of this library, 
-        // should be able to handle Input events by themselves
-        // in HandleMessageImpl() or use the builtin UserInput class.
-        if (m_pWindowDesc->LastEvent & EAbWindowEvents::Input) {
-            m_pWindowDesc->InputStruct.Handled = false;
-        }
-        
-        m_pWindowDesc->LastEvent = EAbWindowEvents::NothingNew;
     }
 
 public:
@@ -125,7 +117,7 @@ public:
 
 private:
 
-    void HandleMessage(EAbWindowEvents msg)
+    void HandleMessage(int32_t msg)
     {
         static_cast<Derived*>(this)->HandleMessageImpl(msg);
     }

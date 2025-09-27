@@ -5,10 +5,10 @@
 
 #include "Window/BaseWindowDetails.h"
 #include "Window/WindowEvents.h"
-#include "Window/WindowDesc.h"
 
 #ifdef __cplusplus
 
+#include "Window/WindowDesc.hpp"
 #include "AppStatus.hpp"
 #include "AppResources.hpp"
 
