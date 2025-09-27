@@ -1,7 +1,7 @@
 SET(APPLICATION_SOURCE 
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/AppStatus.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/AppResources.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowDesc.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowDesc.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/BaseWindowDetails.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Linux/X11ErrorHandling.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Linux/BasicLinuxPolicy.cpp"
@@ -25,7 +25,7 @@ SET(APPLICATION_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowPolicy/GameSystemPolicy.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/BaseWindowDetails.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/IBaseWindow.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowDesc.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowDesc.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowEvents.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/UserInput.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/Bind.h"

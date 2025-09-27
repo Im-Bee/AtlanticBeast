@@ -103,9 +103,6 @@ void BasicWin32WindowPolicy::UpdateImpl(WindowDesc* pWd)
     while (PeekMessage(&msg, pWd->Hwnd, 0, 0, PM_REMOVE) != 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
-
-        if (pWd->LastEvent & Input && pWd->InputStruct.Event & ~AbMotion)
-            return;
     }
 }
 
@@ -115,40 +112,55 @@ void BasicWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam,
         case WM_KEYDOWN: {
             bool bIsRepeated = (lParam & (static_cast<uint64_t>(1) << 30)) != 0;
             if (bIsRepeated) {
-                pWd->LastEvent = NothingNew;
                 return;
             }
 
-            pWd->LastEvent = EAbWindowEvents::Input;
+            pWd->LastEvent |= EAbWindowEvents::Input;
+
+            AbInputStruct is;
             uint32_t scanCode = (lParam >> 16) & 0xFF;
-            pWd->InputStruct.Event = EAbInputEvents::AbKeyPress;
-            pWd->InputStruct.KeyId = scanCode;
+
+            is.Event = EAbInputEvents::AbKeyPress;
+            is.Keyboard.KeyId = scanCode;
+
+            pWd->InputStruct.push(is);
             return;
         }
 
         case WM_KEYUP: {
-            pWd->LastEvent = EAbWindowEvents::Input;
+            pWd->LastEvent |= EAbWindowEvents::Input;
+            AbInputStruct is;
             uint32_t scanCode = (lParam >> 16) & 0xFF;
-            pWd->InputStruct.Event = EAbInputEvents::AbKeyRelease;
-            pWd->InputStruct.KeyId = scanCode;
+
+            is.Event = EAbInputEvents::AbKeyRelease;
+            is.Keyboard.KeyId = scanCode;
+
+            pWd->InputStruct.push(is);
             return;
         }
 
-        case WM_MOUSEMOVE:
-            pWd->LastEvent = EAbWindowEvents::Input;
-            pWd->InputStruct.Event = EAbInputEvents::AbMotion;
-            pWd->InputStruct.MouseX = GET_X_LPARAM(lParam);
-            pWd->InputStruct.MouseY = GET_Y_LPARAM(lParam);
+        case WM_MOUSEMOVE: {
+            pWd->LastEvent |= EAbWindowEvents::Input;
+            AbInputStruct is;
+            uint32_t scanCode = (lParam >> 16) & 0xFF;
+
+            is.Event = EAbInputEvents::AbMotion;
+            is.Mouse.MouseX = GET_X_LPARAM(lParam);
+            is.Mouse.MouseY = GET_Y_LPARAM(lParam);
+
+            pWd->InputStruct.push(is);
+
             return;
+        }
 
         case WM_SIZE:
-            pWd->Width = LOWORD(lParam);
-            pWd->Height = HIWORD(lParam);
-            pWd->LastEvent = EAbWindowEvents::Resize;
+            pWd->Width   = LOWORD(lParam);
+            pWd->Height  = HIWORD(lParam);
+            pWd->LastEvent |= EAbWindowEvents::Resize;
             break;
 
         case WM_CLOSE:
-            pWd->LastEvent = EAbWindowEvents::Destroy;
+            pWd->LastEvent |= EAbWindowEvents::Destroy;
             break;
 
         default:

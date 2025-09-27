@@ -5,7 +5,7 @@
 #include "Instance.hpp"
 #include "Hardware.hpp"
 #include "DeviceAdapter.hpp"
-#include "Window/WindowDesc.h"
+#include "Window/WindowDesc.hpp"
 
 namespace Voxels
 {
@@ -21,17 +21,25 @@ public:
 
 public:
 
-    Swapchain(::std::shared_ptr<const Instance> inst,
-              ::std::shared_ptr<const Hardware> hw,
-              ::std::shared_ptr<const DeviceAdapter> da,
-              ::std::shared_ptr<const WindowDesc> wd);
+    Swapchain() = default;
+
+    explicit Swapchain(::std::shared_ptr<const Instance> inst,
+                       ::std::shared_ptr<const Hardware> hw,
+                       ::std::shared_ptr<const DeviceAdapter> da,
+                       ::std::shared_ptr<const WindowDesc> wd);
 
     ~Swapchain();
+
+    Swapchain(const Swapchain&) = default;
+    Swapchain(Swapchain&&) = default;
+
+    Swapchain& operator=(const Swapchain&) noexcept = default;
+    Swapchain& operator=(Swapchain&&) noexcept = default;
 
 public:
 
     VkSwapchainKHR GetSwapChainHandle() const
-    { return m_SwapChain; }
+    { return m_pSwapChain; }
 
     VkImage GetImage(uint32_t i) const
     { 
@@ -77,12 +85,12 @@ private:
     ::std::shared_ptr<const WindowDesc>     m_pWindowDesc       = nullptr;
 
     VkSurfaceKHR                m_Surface       = VK_NULL_HANDLE;
-    VkSurfaceCapabilitiesKHR    m_Capabilities;
-    VkExtent2D                  m_Extent;
-    const uint32_t              m_uImageCount;
-    VkSurfaceFormatKHR          m_SurfaceFormat;
-    VkPresentModeKHR            m_PresentMode;
-    VkSwapchainKHR              m_SwapChain     = VK_NULL_HANDLE;
+    VkSurfaceCapabilitiesKHR    m_Capabilities  = { };
+    VkExtent2D                  m_Extent        = { 0, 0 };
+    const uint32_t              m_uImageCount   = -1;
+    VkSurfaceFormatKHR          m_SurfaceFormat = { };
+    VkPresentModeKHR            m_PresentMode   = { };
+    VkSwapchainKHR              m_pSwapChain    = VK_NULL_HANDLE;
 
     uint32_t                m_uCurrentImageIndex = 0;
     ::std::vector<VkImage>  m_SwapChainImages;

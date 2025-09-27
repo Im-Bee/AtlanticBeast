@@ -11,51 +11,67 @@ using namespace Core;
 void UserInput::Update()
 { 
     // Always replay the continuos keybinds that are currently pressed
-    if (m_vCurrentlyPressedKeys.any())
-        for (size_t i = 0; i < AB_KEY_COUNT; ++i)
-            if (m_vCurrentlyPressedKeys.test(i))
-                m_KeyContinuous.PlayAction(i);
-    
-    AbInputStruct& is = m_pWindowDesc->InputStruct;
-    AbKeyId key = is.KeyId;
+    if (m_vCurrentlyPressedKeys.any()) {
+        for (size_t i = 0; i < AB_KEY_COUNT; ++i) {
+            if (!m_vCurrentlyPressedKeys.test(i)) {
+                continue;
+            }
+                       
 
-    if (is.Handled || !m_bIsCapturing || key <= AB_INVALID_KEY || key >= AB_KEY_COUNT)
-        return;
-
-    switch (is.Event) {
-        case EAbInputEvents::AbKeyPress:
-            if (m_vCurrentlyPressedKeys.test(key))
-                break;
-
-            m_vCurrentlyPressedKeys.set(key);
-
-            m_KeyPressMap.PlayAction(key);
-            m_KeyContinuous.PlayAction(key);
-            break;
-
-        case EAbInputEvents::AbKeyRelease:
-            if (!m_vCurrentlyPressedKeys.test(key))
-                break;
-            
-            m_vCurrentlyPressedKeys.flip(key);
-
-            m_KeyReleaseMap.PlayAction(key);
-            break;
-
-        case EAbInputEvents::AbButtonPress:
-        case EAbInputEvents::AbButtonRelease:
-            // AB_LOG(Debug::Info, L"Key press: %d", is.KeyId);
-            break;
-
-        case EAbInputEvents::AbMotion:
-            m_MouseMap.PlayAction(is.MouseX, is.MouseY);
-            is.MouseX = 0;
-            is.MouseY = 0;
-
-            break;
+            m_KeyContinuous.PlayAction(i);
+        }
     }
+    
+    while (!m_pWindowDesc->InputStruct.empty())
+    {
+        AbInputStruct& is = m_pWindowDesc->InputStruct.front();
+        m_pWindowDesc->InputStruct.pop();
 
-    is.Handled = true;
+        switch (is.Event) {
+        case EAbInputEvents::AbKeyPress: {
+                AbKeyId key = is.Keyboard.KeyId;
+
+                if (!m_bIsCapturing || key <= AB_INVALID_KEY || key >= AB_KEY_COUNT)
+                    return;
+
+                if (m_vCurrentlyPressedKeys.test(key))
+                    break;
+
+                m_vCurrentlyPressedKeys.set(key);
+
+                m_KeyPressMap.PlayAction(key);
+                m_KeyContinuous.PlayAction(key);
+                break;
+            }
+
+            case EAbInputEvents::AbKeyRelease: {
+                AbKeyId key = is.Keyboard.KeyId;
+
+                if (!m_bIsCapturing || key <= AB_INVALID_KEY || key >= AB_KEY_COUNT)
+                    return;
+
+                if (!m_vCurrentlyPressedKeys.test(key))
+                    break;
+
+                m_vCurrentlyPressedKeys.flip(key);
+
+                m_KeyReleaseMap.PlayAction(key);
+                break;
+            }
+
+            case EAbInputEvents::AbButtonPress:
+            case EAbInputEvents::AbButtonRelease:
+                // AB_LOG(Debug::Info, L"Key press: %d", is.KeyId);
+                break;
+
+            case EAbInputEvents::AbMotion:
+                m_MouseMap.PlayAction(is.Mouse.MouseX, is.Mouse.MouseY);
+                is.Mouse.MouseX = 0;
+                is.Mouse.MouseY = 0;
+
+                break;
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -3,7 +3,6 @@
 
 #include "ExportImport.h"
 #include "SystemIncludes.h"
-#include "WindowDesc.h"
 
 #ifdef __cplusplus
 #ifdef __linux__

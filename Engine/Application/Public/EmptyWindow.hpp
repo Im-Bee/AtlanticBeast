@@ -30,7 +30,7 @@ public:
 
 public:
 
-    virtual void HandleMessageImpl(EAbWindowEvents)
+    virtual void HandleMessageImpl(int32_t)
     {
         // AB_LOG(Debug::Info, L"Proccessing a message! ... %u", msg);
     }

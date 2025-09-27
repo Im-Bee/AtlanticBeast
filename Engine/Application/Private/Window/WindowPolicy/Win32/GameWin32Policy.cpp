@@ -46,7 +46,6 @@ void GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, 
             ClipCursor(&rect);
             SetCursorPos(rect.left + 0.5f * pWd->Width, rect.top + 0.5f * pWd->Height);
 
-
             break;
         }
 
@@ -92,8 +91,10 @@ void GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, 
                 break;
             }
 
-            pWd->LastEvent = EAbWindowEvents::Input;
-            pWd->InputStruct.Event = EAbInputEvents::AbMotion;
+            pWd->LastEvent |= EAbWindowEvents::Input;
+
+            AbInputStruct is = { };
+            is.Event = EAbInputEvents::AbMotion;
             RAWINPUT* pRi = reinterpret_cast<PRAWINPUT>(&vRi[0]);
             for (size_t i = 0; 
                  i < uRiRead; 
@@ -104,9 +105,11 @@ void GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, 
                 if (pRi->header.dwType != RIM_TYPEMOUSE || mouse.usFlags & MOUSE_MOVE_ABSOLUTE)
                     continue;
 
-                pWd->InputStruct.MouseX += mouse.lLastX;
-                pWd->InputStruct.MouseY += mouse.lLastY;
+                is.Mouse.MouseX += mouse.lLastX;
+                is.Mouse.MouseY += mouse.lLastY;
             }
+
+            pWd->InputStruct.push(is);
 
             return;
         }
@@ -114,22 +117,30 @@ void GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, 
         case WM_KEYDOWN: {
             bool bIsRepeated = (lParam & (static_cast<uint64_t>(1) << 30)) != 0;
             if (bIsRepeated) {
-                pWd->LastEvent = NothingNew;
                 return;
             }
 
-            pWd->LastEvent = EAbWindowEvents::Input;
+            pWd->LastEvent |= EAbWindowEvents::Input;
+
+            AbInputStruct is = { };
             uint32_t scanCode = (lParam >> 16) & 0xFF;
-            pWd->InputStruct.Event = EAbInputEvents::AbKeyPress;
-            pWd->InputStruct.KeyId = scanCode;
+
+            is.Event = EAbInputEvents::AbKeyPress;
+            is.Keyboard.KeyId = scanCode;
+
+            pWd->InputStruct.push(is);
             return;
         }
 
         case WM_KEYUP: {
-            pWd->LastEvent = EAbWindowEvents::Input;
+            pWd->LastEvent |= EAbWindowEvents::Input;
+            AbInputStruct is = { };
             uint32_t scanCode = (lParam >> 16) & 0xFF;
-            pWd->InputStruct.Event = EAbInputEvents::AbKeyRelease;
-            pWd->InputStruct.KeyId = scanCode;
+
+            is.Event = EAbInputEvents::AbKeyRelease;
+            is.Keyboard.KeyId = scanCode;
+
+            pWd->InputStruct.push(is);
             return;
         }
 

@@ -23,7 +23,7 @@ Swapchain::Swapchain(shared_ptr<const Instance> pInst,
     , m_uImageCount(GetImageCountInternal(m_Capabilities))
     , m_SurfaceFormat(PickFormat(m_pHardware, m_Surface))
     , m_PresentMode(PickMode(m_pHardware, m_Surface))
-    , m_SwapChain(CreateSwapChain(m_pDeviceAdapter,
+    , m_pSwapChain(CreateSwapChain(m_pDeviceAdapter,
                                   m_Surface,
                                   m_Capabilities,
                                   m_Extent,
@@ -31,7 +31,7 @@ Swapchain::Swapchain(shared_ptr<const Instance> pInst,
                                   m_SurfaceFormat,
                                   m_PresentMode))
     , m_uCurrentImageIndex(0)
-    , m_SwapChainImages(CreateSwapChainImages(m_pDeviceAdapter, m_SwapChain, m_uImageCount))
+    , m_SwapChainImages(CreateSwapChainImages(m_pDeviceAdapter, m_pSwapChain, m_uImageCount))
 {
     AB_LOG(Core::Debug::Info, L"Creating a swapchain!");
 }
@@ -39,9 +39,9 @@ Swapchain::Swapchain(shared_ptr<const Instance> pInst,
 // ---------------------------------------------------------------------------------------------------------------------
 Swapchain::~Swapchain()
 {
-    if (m_SwapChain != VK_NULL_HANDLE) {
-        vkDestroySwapchainKHR(m_pDeviceAdapter->GetAdapterHandle(), m_SwapChain, NULL);
-        m_SwapChain = VK_NULL_HANDLE;
+    if (m_pSwapChain != VK_NULL_HANDLE) {
+        vkDestroySwapchainKHR(m_pDeviceAdapter->GetAdapterHandle(), m_pSwapChain, NULL);
+        m_pSwapChain = VK_NULL_HANDLE;
     }
     if (m_Surface != VK_NULL_HANDLE) {
         vkDestroySurfaceKHR(m_pInstance->GetInstance(), m_Surface, NULL);
