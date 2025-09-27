@@ -1,5 +1,5 @@
 #include "Core.h"
-#include "Window/WindowDesc.h"
+#include "Window/WindowDesc.hpp"
 
 #include "AbLimits.h"
 
@@ -15,7 +15,6 @@ WindowDesc CreateWindowDesc(const wchar_t* pwszName,
     wd.Width = width;
     wd.Height = height;
     wd.LastEvent = NothingNew;
-    wd.InputStruct.Handled = 1;
 
     if (wd.uNameLen >= AB_SMALL_STRING) 
         wd.uNameLen = AB_SMALL_STRING;

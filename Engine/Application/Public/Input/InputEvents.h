@@ -15,10 +15,16 @@ typedef enum EAbInputEvents {
 typedef struct AbInputStruct 
 {
     EAbInputEvents Event;
-    uint8_t        Handled;
-    AbKeyId        KeyId;
-    int32_t        MouseX;
-    int32_t        MouseY;
+    union {
+        struct {
+            AbKeyId        KeyId;
+        } Keyboard;
+
+        struct {
+            int32_t        MouseX;
+            int32_t        MouseY;
+        } Mouse;
+    };
 } AbInputStruct;
 
 #endif // !AB_INPUT_EVENTS_H

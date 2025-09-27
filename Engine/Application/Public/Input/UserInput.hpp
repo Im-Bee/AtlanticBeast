@@ -4,7 +4,7 @@
 #include "ExportImport.h"
 #include "Bind.h"
 #include "Input/KeysMap.hpp"
-#include "Window/WindowDesc.h"
+#include "Window/WindowDesc.hpp"
 #include "CSystem.hpp"
 #include "MouseMap.hpp"
 

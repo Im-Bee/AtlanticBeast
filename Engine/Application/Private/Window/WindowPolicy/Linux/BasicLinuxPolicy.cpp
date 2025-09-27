@@ -148,29 +148,33 @@ uint32_t BasicLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
 
     switch (event.type) 
     {
-        case KeyPress:
-            pWd->LastEvent = Input;
-            pWd->InputStruct.Event = AbKeyPress;
-            pWd->InputStruct.KeyId = event.xkey.keycode - 8;
-            return 1;
+        case KeyPress: {
+            pWd->LastEvent |= Input;
+            AbInputStruct is;
 
-        case KeyRelease:
-            pWd->LastEvent = Input;
-            pWd->InputStruct.Event = AbKeyRelease;
-            pWd->InputStruct.KeyId = event.xkey.keycode - 8;
-            return 1;
+            is.Event = AbKeyPress;
+            is.Keyboard.KeyId = event.xkey.keycode - 8;
+            pWd->InputStruct.push(is);
+            return 0;
+        }
+
+        case KeyRelease: {
+            pWd->LastEvent |= Input;
+            AbInputStruct is;
+
+            is.Event = AbKeyRelease;
+            is.Keyboard.KeyId = event.xkey.keycode - 8;
+            pWd->InputStruct.push(is);
+            return 0;
+        }
 
         case ButtonPress:
-            pWd->LastEvent = Input;
-            pWd->InputStruct.Event = AbButtonPress;
-            // pWd->InputStruct.KeyId =  - 8;
-            return 1;
+            pWd->LastEvent |= Input;
+            return 0;
 
         case ButtonRelease:
-            pWd->LastEvent = Input;
-            pWd->InputStruct.Event = AbButtonRelease;
-            // pWd->InputStruct.KeyId = deviceEvent->detail - 8;
-            return 1;
+            pWd->LastEvent |= Input;
+            return 0;
 
         case MotionNotify:
             int rootX, rootY, dummy;
@@ -186,11 +190,15 @@ uint32_t BasicLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
                           &dummy,
                           reinterpret_cast<unsigned int*>(&dummy));
 
-            pWd->LastEvent          = Input;
-            pWd->InputStruct.Event  = AbMotion;
-            pWd->InputStruct.MouseX = static_cast<int32_t>(rootX);
-            pWd->InputStruct.MouseY = static_cast<int32_t>(rootY);
-            return 1;
+            pWd->LastEvent |= Input;
+            AbInputStruct is;
+
+            is.Event  = AbMotion;
+            is.Mouse.MouseX = static_cast<int32_t>(rootX);
+            is.Mouse.MouseY = static_cast<int32_t>(rootY);
+
+            pWd->InputStruct.push(is);
+            return 0;
 
 
         case Expose:

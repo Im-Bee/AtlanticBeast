@@ -5,23 +5,21 @@
 #include "ExportImport.h"
 #include "WindowEvents.h"
 #include "Input/InputEvents.h"
-    
-#ifdef __cplusplus
-extern "C" {
-#endif // !__cplusplus
 
-typedef struct WindowDesc
+#include "CSystem.hpp"
+    
+
+struct WindowDesc
 {
-    wchar_t*        Name;
-    size_t          uNameLen;
-	const wchar_t*  pwszClassName;
-    int32_t         Width;
-    int32_t         Height;
-    int32_t         IsAlive;
-    EAbWindowEvents LastEvent;
-    uint8_t         bInputSupport;
-    AbInputStruct   InputStruct;
-    uint32_t        uUinqueIndex;
+    wchar_t*                        Name;
+    size_t                          uNameLen;
+	const wchar_t*                  pwszClassName;
+    int32_t                         Width;
+    int32_t                         Height;
+    int32_t                         IsAlive;
+    int32_t                         LastEvent;
+    ::std::queue<AbInputStruct>     InputStruct;
+    uint32_t                        uUinqueIndex;
 
 #ifdef _WIN32
     HWND            Hwnd;
@@ -31,26 +29,20 @@ typedef struct WindowDesc
     Window          WindowHandle;
     int32_t         Screen;
 #endif // !_WIN32
-} WindowDesc;
+};
 
 BEAST_API WindowDesc CreateWindowDesc(const wchar_t* pwszName, 
                                       size_t uNameLen, 
                                       int32_t width, 
                                       int32_t height);
 
-#ifdef __cplusplus
-}
-#endif // !__cplusplus
-
-#ifdef __cplusplus
 template<size_t uNameLen>
-WindowDesc CreateWindowDesc(const wchar_t (&pwszName)[uNameLen], 
-                            int32_t width, 
+WindowDesc CreateWindowDesc(const wchar_t (&pwszName)[uNameLen],
+                            int32_t width,
                             int32_t height)
 {
     return CreateWindowDesc(pwszName, uNameLen, width, height);
 }
-#endif // !__cplusplus
 
 #endif // !AB_WINDOW_DESC_H
 

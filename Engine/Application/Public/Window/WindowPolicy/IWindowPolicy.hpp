@@ -1,7 +1,7 @@
 #ifndef AB_IWINDOW_POLICY_H
 #define AB_IWINDOW_POLICY_H
 
-#include "Window/WindowDesc.h"
+#include "Window/WindowDesc.hpp"
 
 namespace App
 {
