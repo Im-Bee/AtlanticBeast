@@ -81,6 +81,7 @@ jobs:
       
     - name: Cache Vulkan SDK (Windows)
       if: runner.os == 'Windows' 
+      id: cache-vulkan
       uses: actions/cache@v4
       with:
         path: C:/VulkanSDK/1.4.321.1
