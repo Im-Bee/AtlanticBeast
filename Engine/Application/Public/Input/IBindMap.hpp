@@ -4,23 +4,28 @@
 namespace App
 {
 
+template<class Map>
 class IBindMap
 {
 public:
 
-    virtual ~IBindMap() = default;
+
+    IBindMap() = default;
+    ~IBindMap() = default;
+
 
 public:
 
-    virtual void BindAction(const AbInputBind& ib, 
-                            void* pThis,
-                            AbAction a,
-                            AbMouseAction ma) = 0;
+    void BindAction(const AbInputBind& ib, 
+                    void* pThis,
+                    AbAction a,
+                    AbMouseAction ma) 
+    { static_cast<Map*>(this)->BindActionImpl(ib, pThis, a, ma); }
 
-    virtual void UnbindAction(const AbInputBind& ib, void* pThis) = 0;
+    void UnbindAction(const AbInputBind& ib, void* pThis)
+    { static_cast<Map*>(this)->UnbindActionImpl(ib, pThis); }
 
 };
 
 } // !Core
-
 #endif // !AB_BIND_MAP_H

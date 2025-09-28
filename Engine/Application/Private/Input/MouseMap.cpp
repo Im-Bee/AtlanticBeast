@@ -4,7 +4,7 @@ namespace App
 {
 
 // ---------------------------------------------------------------------------------------------------------------------
-void MouseMap::BindAction(const AbInputBind& ib, void* pThis, AbAction a, AbMouseAction ma)
+void MouseMap::BindActionImpl(const AbInputBind& ib, void* pThis, AbAction a, AbMouseAction ma)
 {
 	AB_ASSERT(ib.Type == EAbBindType::Mouse);
     AB_ASSERT(a == nullptr);
@@ -14,7 +14,7 @@ void MouseMap::BindAction(const AbInputBind& ib, void* pThis, AbAction a, AbMous
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void MouseMap::UnbindAction(const AbInputBind& ib, void* pThis)
+void MouseMap::UnbindActionImpl(const AbInputBind& ib, void* pThis)
 {
 	AB_ASSERT(ib.Type == EAbBindType::Mouse);
     AB_ASSERT(pThis != nullptr);

@@ -8,7 +8,7 @@
 namespace App
 {
 
-class BEAST_API KeysMap : public IBindMap
+class BEAST_API KeysMap : public IBindMap<KeysMap>
 {
 
     static constexpr size_t AmountOfBindableKeys = AB_KEY_COUNT;
@@ -25,12 +25,12 @@ public:
 
 public:
 
-    virtual void BindAction(const AbInputBind& ib, 
-                            void* pThis,
-                            AbAction a, 
-                            AbMouseAction ma) override final;
+    void BindActionImpl(const AbInputBind& ib, 
+                        void* pThis,
+                        AbAction a, 
+                        AbMouseAction ma);
 
-    virtual void UnbindAction(const AbInputBind& ib, void* pThis) override final;
+    void UnbindActionImpl(const AbInputBind& ib, void* pThis);
 
 public:
 

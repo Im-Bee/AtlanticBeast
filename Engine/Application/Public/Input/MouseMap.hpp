@@ -9,7 +9,7 @@
 namespace App
 {
 
-class BEAST_API MouseMap : public IBindMap
+class BEAST_API MouseMap : public IBindMap<MouseMap>
 {
 public:
     
@@ -23,12 +23,12 @@ public:
 
 public:
 
-    virtual void BindAction(const AbInputBind& ib, 
-                            void* pThis,
-                            AbAction a,
-                            AbMouseAction ma) override final;
+    void BindActionImpl(const AbInputBind& ib, 
+                        void* pThis,
+                        AbAction a,
+                        AbMouseAction ma);
 
-    virtual void UnbindAction(const AbInputBind& ib, void* pThis) override final;
+    void UnbindActionImpl(const AbInputBind& ib, void* pThis);
 
 public:
 

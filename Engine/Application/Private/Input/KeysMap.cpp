@@ -11,7 +11,7 @@ KeysMap::KeysMap()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void KeysMap::BindAction(const AbInputBind& ib, void* pThis, AbAction a, AbMouseAction ma)
+void KeysMap::BindActionImpl(const AbInputBind& ib, void* pThis, AbAction a, AbMouseAction ma)
 {
 	AB_ASSERT(ib.Type == EAbBindType::Keyboard);
 	AB_ASSERT(ib.keyboard.KeyCode > AB_INVALID_KEY && ib.keyboard.KeyCode < AB_KEY_COUNT);
@@ -23,7 +23,7 @@ void KeysMap::BindAction(const AbInputBind& ib, void* pThis, AbAction a, AbMouse
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void KeysMap::UnbindAction(const AbInputBind& ib, void* pThis)
+void KeysMap::UnbindActionImpl(const AbInputBind& ib, void* pThis)
 {
 	AB_ASSERT(ib.Type == EAbBindType::Keyboard);
 	AB_ASSERT(ib.keyboard.KeyCode > AB_INVALID_KEY && ib.keyboard.KeyCode < AB_KEY_COUNT);

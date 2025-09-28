@@ -28,17 +28,24 @@ struct WindowDesc
 
 template<class U>
 WindowDesc CreateWindowDesc(U&& wstrName,
-                                      int32_t width, 
-                                      int32_t height)
+                            int32_t width, 
+                            int32_t height)
 { 
     WindowDesc wd;
 
-    wd.Name = ::std::forward<U>(wstrName);
-    wd.pwszClassName = NULL;
-    wd.Width = width;
-    wd.Height = height;
-    wd.LastEvent = NothingNew;
-
+    wd.Name         = ::std::forward<U>(wstrName);
+    wd.Width        = width;
+    wd.Height       = height;
+    wd.LastEvent    = NothingNew;
+    wd.IsAlive      = false;
+   
+#ifdef _WIN32
+    wd.Hwnd = NULL;
+#elif __linux__
+    wd.DisplayHandle = NULL;
+    wd.Window = 0;
+    wd.Screen = 0;
+#endif // !_WIN32
     return wd;
 }
 
