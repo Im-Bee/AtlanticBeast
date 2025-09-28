@@ -54,7 +54,12 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Cache APT Packages
+    - name: Setup CMake
+      uses: jwlawson/actions-setup-cmake@v1
+      with:
+          cmake-version: '3.31.x'
+
+    - name: Cache APT Packages (Linux)
       # You may pin to the exact commit or the version.
       # uses: awalsh128/cache-apt-pkgs-action@2c09a5e66da6c8016428a2172bd76e5e4f14bb17
       uses: awalsh128/cache-apt-pkgs-action@v1.5.3
@@ -62,7 +67,6 @@ jobs:
         # Space delimited list of packages to install. Version can be specified optionally using APT command syntax of <name>=<version> (e.g. xdot=1.2-2).
         packages: cmake make libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev vulkan-tools libvulkan-dev vulkan-utility-libraries-dev glslang-tools spirv-tools
 
-        
     - name: Configure CMake (Linux)
       if: runner.os == 'Linux'
       run: 
