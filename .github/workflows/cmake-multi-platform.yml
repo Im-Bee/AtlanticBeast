@@ -60,8 +60,7 @@ jobs:
           cmake-version: '3.31.x'
 
     - name: Cache APT Packages (Linux)
-      # You may pin to the exact commit or the version.
-      # uses: awalsh128/cache-apt-pkgs-action@2c09a5e66da6c8016428a2172bd76e5e4f14bb17
+      if: runner.os == 'Linux'
       uses: awalsh128/cache-apt-pkgs-action@v1.5.3
       with:
         # Space delimited list of packages to install. Version can be specified optionally using APT command syntax of <name>=<version> (e.g. xdot=1.2-2).
