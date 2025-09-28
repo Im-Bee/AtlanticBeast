@@ -70,6 +70,7 @@ jobs:
               vulkan-tools \
               libvulkan-dev \
               vulkan-utility-libraries-dev \
+              glslang-tools \
               spirv-tools
 
     - name: Install Vulkan SDK on Windows
@@ -81,7 +82,12 @@ jobs:
 
     - name: Configure CMake (Windows)
       if: runner.os == 'Windows'
-      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      run: 
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -S ${{ github.workspace }}
       env:
           VULKAN_SDK: "C:/VulkanSDK/1.4.321.1"
           PATH: ${{ env.PATH }};C:/VulkanSDK/1.4.321.1/Bin;C:/VulkanSDK/1.4.321.1/Lib
