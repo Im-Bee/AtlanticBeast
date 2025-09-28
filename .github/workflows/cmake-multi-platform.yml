@@ -59,7 +59,7 @@ jobs:
       with:
           cmake-version: '3.31.x'
 
-    - name: Install dependencies
+    - name: Install dependencies (Linux)
       if: runner.os == 'Linux'
       run: |
             sudo apt-get update
@@ -78,14 +78,37 @@ jobs:
               glslang-tools \
               spirv-tools
 
-    - name: Install Vulkan SDK on Windows
-      if: runner.os == 'Windows'
+        
+    - name: Configure CMake (Linux)
+      if: runner.os == 'Linux'
+      run: 
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -S ${{ github.workspace }}
+
+    - name: Build (Linux)
+      if: runner.os == 'Linux'
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
+      
+    - name: Cache Vulkan SDK (Windows)
+      if: runner.os == 'Windows' 
+      uses: actions/cache@v4
+      with:
+        path: C:/VulkanSDK/1.4.321.1
+        key: ${{ runner.os }}-vulkan-1.4.321.1
+
+    - name: Install Vulkan SDK (Windows)
+      if: runner.os == 'Windows' && steps.cache-vulkan.outputs.cache-hit != 'true'
+      id: vulkan
       run: |
           curl -L https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe --output VulkanSDK.exe
           ./VulkanSDK.exe --accept-licenses --default-answer --confirm-command install
       shell: pwsh
 
-    - name: Configure CMake
+    - name: Configure CMake (Windows)
+      if: runner.os == 'Windows'
       run: 
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
@@ -96,8 +119,8 @@ jobs:
         VULKAN_SDK: C:/VulkanSDK/1.4.321.1
         PATH: ${{ runner.tool_cache }}/cmake/current/bin;${{ env.PATH }};C:/VulkanSDK/1.4.321.1/Bin
 
-    - name: Build
-      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+    - name: Build (Windows)
+      if: runner.os == 'Windows'
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
       env:
         VULKAN_SDK: C:/VulkanSDK/1.4.321.1
