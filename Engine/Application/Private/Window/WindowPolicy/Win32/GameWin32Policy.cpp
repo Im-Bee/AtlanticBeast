@@ -45,7 +45,8 @@ void GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, 
             RECT rect;
             GetWindowRect(pWd->Hwnd, &rect);
             ClipCursor(&rect);
-            SetCursorPos(rect.left + 0.5f * pWd->Width, rect.top + 0.5f * pWd->Height);
+            SetCursorPos(static_cast<int>(rect.left + 0.5f * pWd->Width), 
+                         static_cast<int>(rect.top + 0.5f * pWd->Height));
 
             break;
         }

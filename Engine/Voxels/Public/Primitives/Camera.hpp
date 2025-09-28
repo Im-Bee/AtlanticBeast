@@ -10,15 +10,15 @@ namespace Voxels
  * Basic camera.
  * Fov is horizontal, stored in degrees.
  * */
-class BEAST_VOXEL_API Camera : public WorldObject
+class Camera : public WorldObject
 {
 public:
 
-	Camera(float fFov = 90.f)
+    Camera(float fFov = 90.f)
 		: m_fFov(fFov)
 	{ }
 
-	~Camera() = default;
+    ~Camera() = default;
 
 public:
 

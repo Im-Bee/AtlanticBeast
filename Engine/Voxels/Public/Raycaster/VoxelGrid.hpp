@@ -9,26 +9,26 @@
 namespace Voxels
 {
 
-class BEAST_VOXEL_API VoxelGrid
+class VoxelGrid
 {
 
     static constexpr size_t VoxelGridDim = 256;
 
 public:
 
-    explicit VoxelGrid(size_t uGridWidth = VoxelGridDim);
+    BEAST_VOXEL_API explicit VoxelGrid(size_t uGridWidth = VoxelGridDim);
     
-    ~VoxelGrid() = default;
+    BEAST_VOXEL_API ~VoxelGrid() = default;
 
 public:
 
-    const ::std::vector<Voxel>& GetGrid() const
+    BEAST_VOXEL_API const ::std::vector<Voxel>& GetGrid() const
     { return m_VoxelGrid; }
 
-    size_t GetAmountOfVoxels() const
+    BEAST_VOXEL_API size_t GetAmountOfVoxels() const
     { return m_VoxelGrid.size(); }
 
-    size_t GetGridWidth() const
+    BEAST_VOXEL_API size_t GetGridWidth() const
     { return m_uGridDim; }
 
 public:

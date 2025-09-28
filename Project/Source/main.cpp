@@ -73,8 +73,8 @@ int main()
 
         input->StartCapturing();
 
-        pwc->SetRotation(Voxels::Vec3 { -0.5, 1.25, 0. });
-        pwc->SetPositon(Voxels::Vec3 { 14.5, 30.25, 25. });
+        pwc->SetRotation(Voxels::Vec3 { -0.5f, 1.25f, 0.f });
+        pwc->SetPositon(Voxels::Vec3 { 14.5f, 30.25f, 25.f });
 
         render.SetCurrentCamera(::std::dynamic_pointer_cast<Voxels::Camera>(pwc));
         render.Initialize(renderWindow.GetWindowDesc());

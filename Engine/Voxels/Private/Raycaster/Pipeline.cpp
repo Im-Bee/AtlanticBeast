@@ -111,7 +111,8 @@ void Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
     m_VoxelGPUBuffer    = voxelBuffer;
     m_VoxelBufferMemory = voxelBufferMemory;
     m_VoxelGrid         = vg;
-    m_Vpc.GridSize      = iVec4(m_VoxelGrid->GetGridWidth(), m_VoxelGrid->GetGridWidth(), m_VoxelGrid->GetGridWidth());
+    int32_t w = static_cast<int32_t>(m_VoxelGrid->GetGridWidth());
+    m_Vpc.GridSize      = iVec4(w, w, w);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

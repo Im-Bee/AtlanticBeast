@@ -42,6 +42,6 @@ typedef struct AbInputBind {
 } AbInputBind;
 
 typedef AbActionType (*AbAction)(void* pThis);
-typedef AbActionType (*AbMouseAction)(void* pThis, float fX, float fY);
+typedef AbActionType (*AbMouseAction)(void* pThis, int32_t X, int32_t y);
   
 #endif // !AB_KEY_BIND_H

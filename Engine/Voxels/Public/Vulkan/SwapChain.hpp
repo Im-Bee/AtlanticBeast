@@ -10,7 +10,7 @@
 namespace Voxels
 {
 
-class BEAST_VOXEL_API Swapchain
+class Swapchain
 {
 
 	friend class Renderer;
@@ -21,20 +21,20 @@ public:
 
 public:
 
-    Swapchain() = default;
+    BEAST_VOXEL_API Swapchain() = default;
 
-    explicit Swapchain(::std::shared_ptr<const Instance> inst,
-                       ::std::shared_ptr<const Hardware> hw,
-                       ::std::shared_ptr<const DeviceAdapter> da,
-                       ::std::shared_ptr<const WindowDesc> wd);
+    BEAST_VOXEL_API explicit Swapchain(::std::shared_ptr<const Instance> inst,
+                                       ::std::shared_ptr<const Hardware> hw,
+                                       ::std::shared_ptr<const DeviceAdapter> da,
+                                       ::std::shared_ptr<const WindowDesc> wd);
 
-    ~Swapchain();
+    BEAST_VOXEL_API ~Swapchain();
 
-    Swapchain(const Swapchain&) = default;
-    Swapchain(Swapchain&&) = default;
+    BEAST_VOXEL_API Swapchain(const Swapchain&) = default;
+    BEAST_VOXEL_API Swapchain(Swapchain&&) = default;
 
-    Swapchain& operator=(const Swapchain&) noexcept = default;
-    Swapchain& operator=(Swapchain&&) noexcept = default;
+    BEAST_VOXEL_API Swapchain& operator=(const Swapchain&) noexcept = default;
+    BEAST_VOXEL_API Swapchain& operator=(Swapchain&&) noexcept = default;
 
 public:
 

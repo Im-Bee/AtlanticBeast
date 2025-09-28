@@ -35,7 +35,7 @@ public:
     void PlaceBlock()
     { 
         Voxels::Vec3 rot = this->GetRotation();
-        Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0., 0., 1. }, rot.x), rot.y));
+        Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0.f, 0.f, 1.f }, rot.x), rot.y));
 
         Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
 
@@ -44,16 +44,17 @@ public:
             Voxels::Voxel v;
             v.Type = 1;
             v.RGBA = (m_uColor += 12739871) | 0x999999FF;
-            m_vg->ModifyVoxel((hr.HitCoords.x + hr.Normal.x) + 
-                              (hr.HitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() + 
-                              (hr.HitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth(), v);
+            m_vg->ModifyVoxel(static_cast<size_t>((hr.HitCoords.x + hr.Normal.x) + 
+                                                  (hr.HitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() + 
+                                                  (hr.HitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth()),
+                              v);
         }
     }
 
     void RemoveBlock()
     {
         Voxels::Vec3 rot = this->GetRotation();
-        Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0., 0., 1. }, rot.x), rot.y));
+        Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0.f, 0.f, 1.f }, rot.x), rot.y));
 
         Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
 
@@ -71,7 +72,7 @@ public:
     void MoveForwardBackwards(float fDir)
     {
         Voxels::Rot3 rot = this->GetRotation();
-        Voxels::Vec3 lookDir = Voxels::RotateY(Voxels::Vec3{ 0., 0., 1. }, rot.y);
+        Voxels::Vec3 lookDir = Voxels::RotateY(Voxels::Vec3{ 0.f, 0.f, 1.f }, rot.y);
 
         this->AddPositon(lookDir * fDir);
     }
@@ -79,14 +80,14 @@ public:
     void Strafe(float fDir)
     {
         Voxels::Rot3 rot = this->GetRotation();
-        Voxels::Vec3 lookDir = Voxels::RotateY(Voxels::Vec3{ 0., 0., 1. }, rot.y + (90.f * Voxels::AB_DEG_TO_RAD));
+        Voxels::Vec3 lookDir = Voxels::RotateY(Voxels::Vec3{ 0.f, 0.f, 1.f }, rot.y + (90.f * Voxels::AB_DEG_TO_RAD));
 
         this->AddPositon(lookDir * fDir);
     }
 
-    void MouseMove(float fX, float fY)
+    void MouseMove(int32_t fX, int32_t fY)
     {
-        this->AddRotation(Voxels::Rot3 { fY * -0.0015f, fX * -0.0015f, 0.f });
+        this->AddRotation(Voxels::Rot3 { -0.0015f * fY, -0.0015f * fX, 0.f });
     }
 
 public:
@@ -99,21 +100,21 @@ public:
 
     AB_DECL_ACTION(PlayablePaper, MoveForwardBackwards, MoveBack, -0.1f);
 
-    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveUp, Voxels::Vec3{ 0., 0.1, 0. });
+    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveUp, Voxels::Vec3{ 0.f, 0.1f, 0.f });
 
-    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveDown, Voxels::Vec3{ 0., -0.1, 0. });
+    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveDown, Voxels::Vec3{ 0.f, -0.1f, 0.f });
 
-    AB_DECL_ACTION(Voxels::Camera, AddRotation, UpPitch, Voxels::Vec3{ 0.01, 0, 0. });
+    AB_DECL_ACTION(Voxels::Camera, AddRotation, UpPitch, Voxels::Vec3{ 0.01f, 0.f, 0.f });
 
-    AB_DECL_ACTION(Voxels::Camera, AddRotation, DownPitch, Voxels::Vec3{ -0.01, 0, 0. });
+    AB_DECL_ACTION(Voxels::Camera, AddRotation, DownPitch, Voxels::Vec3{ -0.01f, 0.f, 0.f });
 
-    AB_DECL_ACTION(Voxels::Camera, AddRotation, RightYaw, Voxels::Vec3{ 0., 0.01, 0. });
+    AB_DECL_ACTION(Voxels::Camera, AddRotation, RightYaw, Voxels::Vec3{ 0.f, 0.01f, 0.f });
 
-    AB_DECL_ACTION(Voxels::Camera, AddRotation, LeftYaw, Voxels::Vec3{ 0., -0.01, 0. });
+    AB_DECL_ACTION(Voxels::Camera, AddRotation, LeftYaw, Voxels::Vec3{ 0.f, -0.01f, 0.f });
 
-    AB_DECL_ACTION(Voxels::Camera, IncreaseFov, FovUp, 1.0);
+    AB_DECL_ACTION(Voxels::Camera, IncreaseFov, FovUp, 1.0f);
 
-    AB_DECL_ACTION(Voxels::Camera, IncreaseFov, FovDown, -1.0);
+    AB_DECL_ACTION(Voxels::Camera, IncreaseFov, FovDown, -1.0f);
 
     AB_DECL_ACTION(PlayablePaper, PlaceBlock, PlaceBlock);
 

@@ -10,27 +10,27 @@
 namespace Voxels
 {
 
-class BEAST_VOXEL_API Pipeline
+class Pipeline
 {
 
     friend class Renderer;
 
 public:
 
-    Pipeline(::std::shared_ptr<const Hardware> hw, 
-             ::std::shared_ptr<const DeviceAdapter> da);
+    BEAST_VOXEL_API Pipeline(::std::shared_ptr<const Hardware> hw,
+                             ::std::shared_ptr<const DeviceAdapter> da);
 
-    ~Pipeline();
+    BEAST_VOXEL_API ~Pipeline();
 
 public:
 
-    void ReserveGridBuffer(::std::shared_ptr<const VoxelGrid> vg);
+    BEAST_VOXEL_API void ReserveGridBuffer(::std::shared_ptr<const VoxelGrid> vg);
 
-    void LoadGrid(const ::std::shared_ptr<const VoxelGrid>& vg);
+    BEAST_VOXEL_API void LoadGrid(const ::std::shared_ptr<const VoxelGrid>& vg);
 
-    void LoadImage(VkImage image);
+    BEAST_VOXEL_API void LoadImage(VkImage image);
 
-    void LoadPushConstants(float fFov, 
+    void LoadPushConstants(float fFov,
                            Vec3 cameraPos, 
                            Vec3 cameraLookDir,
                            Vec3 cameraRight,

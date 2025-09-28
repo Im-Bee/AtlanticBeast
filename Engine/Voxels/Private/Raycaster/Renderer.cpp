@@ -35,8 +35,8 @@ void Renderer::Update()
     m_pPipeline->LoadGrid(m_pVoxelGrid);
 
     Vec3 rot = m_pCamera->GetRotation();
-    Vec3 rotVec = Normalize(RotateY(RotateX(Vec3{ 0., 0., 1. }, rot.x), rot.y));
-    Vec3 cameraRight = Normalize(Cross(rotVec, Vec3{ 0., 1., 0. }));
+    Vec3 rotVec = Normalize(RotateY(RotateX(Vec3 { 0.f, 0.f, 1.f }, rot.x), rot.y));
+    Vec3 cameraRight = Normalize(Cross(rotVec, Vec3 { 0.f, 1.f, 0.f }));
     Vec3 cameraUp = Cross(cameraRight, rotVec);
 
     m_pPipeline->LoadPushConstants(m_pCamera->GetFov() * AB_DEG_TO_RAD,

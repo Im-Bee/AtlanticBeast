@@ -6,13 +6,13 @@
 namespace Voxels
 {
 
-class BEAST_VOXEL_API DeviceAdapter
+class DeviceAdapter
 {
 public:
 
-    DeviceAdapter(::std::shared_ptr<const Hardware> gpu);
+    BEAST_VOXEL_API DeviceAdapter(::std::shared_ptr<const Hardware> gpu);
 
-    ~DeviceAdapter();
+    BEAST_VOXEL_API ~DeviceAdapter();
     
 public:
 

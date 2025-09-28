@@ -61,9 +61,9 @@ VkInstance Instance::CreateInstance()
 
     validationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
     validationFeatures.pNext = NULL;
-    validationFeatures.enabledValidationFeatureCount    = enabledVaditationFeatures.size();
+    validationFeatures.enabledValidationFeatureCount    = static_cast<uint32_t>(enabledVaditationFeatures.size());
     validationFeatures.pEnabledValidationFeatures       = &enabledVaditationFeatures[0];
-    validationFeatures.disabledValidationFeatureCount   = disabledVaditationFeatures.size();
+    validationFeatures.disabledValidationFeatureCount   = static_cast<uint32_t>(disabledVaditationFeatures.size());
     validationFeatures.pDisabledValidationFeatures      = &disabledVaditationFeatures[0];
 
 
@@ -91,7 +91,7 @@ VkInstance Instance::CreateInstance()
 	layerSetting.pLayerName   = "VK_LAYER_KHRONOS_validation";
 	layerSetting.pSettingName = "enables";
 	layerSetting.type         = VK_LAYER_SETTING_TYPE_STRING_EXT;
-	layerSetting.valueCount   = layerEnables.size();
+	layerSetting.valueCount   = static_cast<uint32_t>(layerEnables.size());
 	layerSetting.pValues      = &layerEnables;
 
     VkLayerSettingsCreateInfoEXT settingsCreateInfo;

@@ -11,12 +11,12 @@ namespace App
 
 class ControllerObject;
 
-class BEAST_API UserInput
+class UserInput
 {
 
 public:
 
-    explicit UserInput(::std::shared_ptr<WindowDesc> pWd = nullptr) 
+    BEAST_API explicit UserInput(::std::shared_ptr<WindowDesc> pWd = nullptr)
         : m_bIsCapturing(false)
         , m_pWindowDesc(pWd)
         , m_KeyReleaseMap()
@@ -28,13 +28,13 @@ public:
         , m_MouseMap()
     { }
 
-    ~UserInput() = default;
+    BEAST_API ~UserInput() = default;
 
 public:
 
-    void StartCapturing();
+    BEAST_API void StartCapturing();
 
-    void StopCapturing();
+    BEAST_API void StopCapturing();
 
     /**
      * @param pThis - pointer to an object on which we are performing action
@@ -43,15 +43,15 @@ public:
      * @param mouseAction - mouse action to be performed, should be null, if we are performing action instead 
      * @param bind - AbInputBind struct describing the bind
      **/
-    void Bind(void* pThis, ControllerObject* pCo, AbAction action, AbMouseAction mouseAction, AbInputBind bind);
+    BEAST_API void Bind(void* pThis, ControllerObject* pCo, AbAction action, AbMouseAction mouseAction, AbInputBind bind);
 
-    void Unbind(void* pThis);
+    BEAST_API void Unbind(void* pThis);
     
     /**
      * Reads and consumes the input queue from WindowDesc.
      * Plays continues binds.
      */
-    void Update();
+    BEAST_API void Update();
 
 private:
 

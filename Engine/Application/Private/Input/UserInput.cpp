@@ -27,7 +27,7 @@ void UserInput::Update()
 { 
     // Always replay the continuos keybinds that are currently pressed
     if (m_vCurrentlyPressedKeys.any()) {
-        for (size_t i = 0; i < AB_KEY_COUNT; ++i) {
+        for (AbKeyId i = 0; i < AB_KEY_COUNT; ++i) {
             if (!m_vCurrentlyPressedKeys.test(i)) {
                 continue;
             }

@@ -53,7 +53,6 @@ Swapchain::~Swapchain()
 VkSurfaceKHR Swapchain::CreateSurface(shared_ptr<const Instance>& pInstance, shared_ptr<const WindowDesc>& pWindowDesc)
 {
     VkSurfaceKHR surface = VK_NULL_HANDLE;
-    VkResult     result;
 
 #ifdef _WIN32
     VkWin32SurfaceCreateInfoKHR createInfo;

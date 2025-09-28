@@ -14,11 +14,11 @@
 namespace Voxels
 {
 
-class BEAST_VOXEL_API Renderer
+class Renderer
 {
 public:
 
-    Renderer()
+    BEAST_VOXEL_API Renderer()
         : m_pInstance(nullptr)
         , m_pHardware(nullptr)
         , m_pDeviceAdapter(nullptr)
@@ -31,7 +31,7 @@ public:
         , m_vFrames()
     { }
 
-    ~Renderer() 
+    BEAST_VOXEL_API ~Renderer()
     { this->Destroy(); }
 
 public:
@@ -56,14 +56,14 @@ public:
 
 public:
 
-    void Initialize(::std::shared_ptr<const WindowDesc> wd,
-                    ::std::shared_ptr<VoxelGrid> vg = ::std::make_shared<VoxelGrid>());
+    BEAST_VOXEL_API void Initialize(::std::shared_ptr<const WindowDesc> wd,
+                                    ::std::shared_ptr<VoxelGrid> vg = ::std::make_shared<VoxelGrid>());
 
-    void Update();
+    BEAST_VOXEL_API void Update();
 
-    void Render();
+    BEAST_VOXEL_API void Render();
 
-    void Destroy();
+    BEAST_VOXEL_API void Destroy();
 
 private:
 

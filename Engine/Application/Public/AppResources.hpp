@@ -6,9 +6,9 @@
 namespace App
 {
 
-class BEAST_API AppResources
+class AppResources
 {
-    AppResources();
+    BEAST_API AppResources();
 
     AppResources(AppResources&&) = delete;
     
@@ -16,20 +16,20 @@ class BEAST_API AppResources
 
 public:
 
-    static AppResources& Get()
+    BEAST_API static AppResources& Get()
     {
         static AppResources instance;
         return instance;
     }
 
-    ~AppResources() = default;
+    BEAST_API ~AppResources() = default;
 
 public:
 
-    const ::std::wstring& GetExecutablePathW() const
+    BEAST_API const ::std::wstring& GetExecutablePathW() const
     { return m_wstrExePath; }
 
-    ::std::string GetExecutablePathA() const
+    BEAST_API ::std::string GetExecutablePathA() const
     { 
         size_t len = std::wcstombs(nullptr, m_wstrExePath.c_str(), 0);
 

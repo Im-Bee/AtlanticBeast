@@ -10,12 +10,12 @@ namespace Voxels
 /**
  * Holds positon of an object and rotation in radians.
  * */
-class BEAST_VOXEL_API WorldObject
+class WorldObject
 {
 public:
 
-	explicit WorldObject(Vec3 positon = Vec3 { 0., 0., 0. }, 
-						 Vec3 rotation = Vec3 { 0., 0., 0. })
+	BEAST_VOXEL_API explicit WorldObject(Vec3 positon = Vec3 { 0.f, 0.f, 0.f },
+										 Vec3 rotation = Vec3 { 0.f, 0.f, 0.f })
 		: m_vPosition(Vec3())
 		, m_vRotation(Rot3())
 	{ }
@@ -24,20 +24,20 @@ public:
 
 public:
 
-	void SetPositon(Vec3 pos);
+	BEAST_VOXEL_API void SetPositon(Vec3 pos);
 
-	void SetRotation(Rot3 rot);
+	BEAST_VOXEL_API void SetRotation(Rot3 rot);
 
-	void AddPositon(const Vec3& pos);
+	BEAST_VOXEL_API void AddPositon(const Vec3& pos);
 
-	void AddRotation(const Rot3& rot);
+	BEAST_VOXEL_API void AddRotation(const Rot3& rot);
 
 public:
 
-	const Vec3& GetPosition() const
+	BEAST_VOXEL_API const Vec3& GetPosition() const
 	{ return m_vPosition; }
 
-	const Rot3& GetRotation() const
+	BEAST_VOXEL_API const Rot3& GetRotation() const
 	{ return m_vRotation; }
 
 private:

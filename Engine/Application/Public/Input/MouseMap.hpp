@@ -9,7 +9,7 @@
 namespace App
 {
 
-class BEAST_API MouseMap : public IBindMap<MouseMap>
+class MouseMap : public IBindMap<MouseMap>
 {
 public:
     
@@ -32,7 +32,7 @@ public:
 
 public:
 
-    void PlayAction(float fX, float fY);
+    void PlayAction(int32_t fX, int32_t fY);
 
 private:
 

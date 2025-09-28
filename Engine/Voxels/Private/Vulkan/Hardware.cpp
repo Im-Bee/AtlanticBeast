@@ -26,7 +26,6 @@ VkPhysicalDevice Hardware::ChooseGPU(shared_ptr<const Instance>& instance)
     uint32_t                    uDeviceCount;
     VkResult                    result;
     vector<VkPhysicalDevice>    vPhysicalDevices;
-    VkPhysicalDeviceFeatures2   pFeatures;
 
 
     ThrowIfFailed(vkEnumeratePhysicalDevices(instance->GetInstance(),

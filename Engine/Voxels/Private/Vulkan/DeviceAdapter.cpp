@@ -138,7 +138,7 @@ VkDevice DeviceAdapter::CreateDeviceAdapter(shared_ptr<const Hardware>& gpu, uin
     createInfo.ppEnabledLayerNames      = NULL;
     createInfo.enabledLayerCount        = 0;
     createInfo.ppEnabledExtensionNames  = &vpszDeviceExtensions[0];
-    createInfo.enabledExtensionCount    = vpszDeviceExtensions.size();
+    createInfo.enabledExtensionCount    = static_cast<uint32_t>(vpszDeviceExtensions.size());
     createInfo.pEnabledFeatures         = &deviceFeatures;
 
     ThrowIfFailed(vkCreateDevice(gpu->GetPhysicalDevice(),

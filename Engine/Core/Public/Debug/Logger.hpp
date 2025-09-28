@@ -14,9 +14,9 @@ enum ESeverity
     Error = Warning << 1,
 };
 
-class BEAST_API Logger
+class Logger
 {
-    Logger();
+    BEAST_API Logger();
 
     Logger(const Logger&) = delete;
     Logger(Logger&&) = delete;
@@ -26,13 +26,13 @@ class BEAST_API Logger
 
 public:
 
-    static Logger* Get();
+    BEAST_API static Logger* Get();
     
-    ~Logger();
+    BEAST_API ~Logger();
 
 public:
 
-    void Log(const ESeverity sev, const wchar_t pwszFmt[], ...);
+    BEAST_API void Log(const ESeverity sev, const wchar_t pwszFmt[], ...);
 
 private:
 

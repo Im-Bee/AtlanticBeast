@@ -63,7 +63,7 @@ private:
 
 
 #define AB_DECL_MOUSE_ACTION(baseClass, action, customName)                             \
-    static ::AbActionType UseAction##customName(void* pThis, float fX, float fY)        \
+    static ::AbActionType UseAction##customName(void* pThis, int32_t fX, int32_t fY)    \
     {                                                                                   \
         AB_ASSERT(pThis != nullptr);                                                    \
                                                                                         \
