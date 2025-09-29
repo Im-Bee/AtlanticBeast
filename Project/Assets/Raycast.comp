@@ -27,11 +27,11 @@ layout(push_constant) uniform PushConstants
     uint    Padding3;
 };
 
-const float epsilon = 0.01;
+const float epsilon = 0.002;
 const vec4 baseSkyColor = vec4(.4078, .4725, 1., 1.);
 const float maxRenderDist = 50.f;
 const int maxSteps = int(maxRenderDist * 2.6);
-float materialReflect = 0.43f;
+float materialReflect = 0.2f;
 const bool coloredBySky = false;
 
 const vec3  lightPos    = vec3(20.0, 24.0, 10.0);
@@ -199,6 +199,8 @@ vec3 PhongShadows(in vec3 camPos, in vec3 pos, in vec3 coord, in vec3 normal, in
 
 vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal)
 {
+    float localReflect = materialReflect;
+
     vec3 incident;
     vec3 dir;
     ivec3 hit;
@@ -220,25 +222,25 @@ vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal)
                         distance,
                         normalRef)) 
         {
-            if (!coloredBySky)
-                materialReflect = 0.1;
-
             break;
         }
 
         from = to;
         to = to + dir * distance;
+        normal = normalRef;
 
         vec4 baseColor = ExtractColorInt(VoxelData[index].Color);
         
         if (i > 0 || coloredBySky) {
             reflectedColor = mix(reflectedColor, 
                                  PhongShadows(CameraPos.xyz, to, hit, normal, maxSteps) * baseColor.xyz,
-                                 materialReflect);
+                                 localReflect);
         }
         else {
             reflectedColor = PhongShadows(CameraPos.xyz, to, hit, normal, maxSteps) * baseColor.xyz;
         }
+
+        // localReflect *= 1. - fract(materialReflect);
     }
 
     return reflectedColor;
