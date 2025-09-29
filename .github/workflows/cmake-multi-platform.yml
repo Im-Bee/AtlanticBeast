@@ -58,11 +58,6 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Setup CMake
-      uses: jwlawson/actions-setup-cmake@v1
-      with:
-          cmake-version: '3.31.x'
-
     - name: Cache APT Packages (Linux)
       if: runner.os == 'Linux'
       uses: awalsh128/cache-apt-pkgs-action@v1.5.3
@@ -96,7 +91,9 @@ jobs:
       id: vulkan
       run: |
           curl -L https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe --output VulkanSDK.exe
-          ./VulkanSDK.exe --accept-licenses --default-answer --confirm-command install
+          ./VulkanSDK.exe --accept-licenses --default-answer --confirm-command install && 
+          $env:VULKAN_SDK = C:/VulkanSDK/1.4.321.1 &&
+          $env:PATH += ";$env:VULKAN_SDK\Bin;"
       shell: pwsh
 
     - name: Configure CMake (Windows)
@@ -107,16 +104,10 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
-      env:
-        VULKAN_SDK: C:/VulkanSDK/1.4.321.1
-        PATH: ${{ runner.tool_cache }}/cmake/current/bin;${{ env.PATH }};C:/VulkanSDK/1.4.321.1/Bin
 
     - name: Build (Windows)
       if: runner.os == 'Windows'
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
-      env:
-        VULKAN_SDK: C:/VulkanSDK/1.4.321.1
-        PATH: ${{ runner.tool_cache }}/cmake/current/bin;${{ env.PATH }};C:/VulkanSDK/1.4.321.1/Bin
 
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
