@@ -29,7 +29,7 @@ Exception::Exception(const char* szMessage,
     size_t uOldIndex = uIndex;
  
     if (uIndex >= AB_LONG_STRING) {
-        delete[] m_pszMessage;
+        delete[] szErrorMessage;
         LogAndReturnMessage(m_pszMessage, uOldIndex);
         m_uMesLen = uOldIndex;
         return;

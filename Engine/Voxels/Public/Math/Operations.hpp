@@ -22,7 +22,7 @@ Vector Normalize(const Vector& v)
         return result;
     }
 
-    invMag = 1.f / ::std::sqrtf(mod);
+    invMag = 1.f / ::std::sqrt(mod);
 
     for (size_t i = 0; i < Vector::Size; ++i)
         result[i] = v[i] * invMag;
