@@ -64,19 +64,6 @@ jobs:
       with:
         # Space delimited list of packages to install. Version can be specified optionally using APT command syntax of <name>=<version> (e.g. xdot=1.2-2).
         packages: cmake make libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev vulkan-tools libvulkan-dev vulkan-utility-libraries-dev glslang-tools spirv-tools
-
-    - name: Configure CMake (Linux)
-      if: runner.os == 'Linux'
-      run: 
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
-        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
-        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -S ${{ github.workspace }}
-
-    - name: Build (Linux)
-      if: runner.os == 'Linux'
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
       
     - name: Cache Vulkan SDK (Windows)
       if: runner.os == 'Windows' 
@@ -96,8 +83,14 @@ jobs:
           $env:PATH += ";$env:VULKAN_SDK\Bin;"
       shell: pwsh
 
-    - name: Configure CMake (Windows)
+    - name: Add Vulkan SDK to path (Windows)
       if: runner.os == 'Windows'
+      run: |
+          $env:VULKAN_SDK = C:/VulkanSDK/1.4.321.1 &&
+          $env:PATH += ";$env:VULKAN_SDK\Bin;"
+      shell: pwsh
+      
+    - name: Configure CMake
       run: 
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
@@ -105,10 +98,9 @@ jobs:
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -S ${{ github.workspace }}
 
-    - name: Build (Windows)
-      if: runner.os == 'Windows'
+    - name: Build
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
-
+      
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
