@@ -33,12 +33,16 @@ X - Remove a block<br>
 
 # Screenshots
 <p float="left">
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot00.jpg?raw=true" alt="Screenshot" width="47%"/>
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot06.jpg?raw=true" alt="Screenshot" width="47%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/readmeSrceenshot_1.jpg?raw=true" alt="Screenshot" width="49%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/readmeSrceenshot _2.jpg?raw=true" alt="Screenshot" width="49%"/>
 </p>
 <p float="left">
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot04.jpg?raw=true" alt="Screenshot" width="47%"/>
-  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/screenshot05.jpg?raw=true" alt="Screenshot" width="47%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/readmeSrceenshot_3.jpg?raw=true" alt="Screenshot" width="49%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/readmeSrceenshot_4.jpg?raw=true" alt="Screenshot" width="49%"/>
+</p>
+<p float="left">
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/readmeSrceenshot_5.jpg?raw=true" alt="Screenshot" width="49%"/>
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/readmeSrceenshot_6.jpg?raw=true" alt="Screenshot" width="49%"/>
 </p>
 
 # Build
