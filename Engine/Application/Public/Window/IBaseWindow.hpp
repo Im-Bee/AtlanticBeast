@@ -44,6 +44,21 @@ public:
 
 public:
 
+    template<class NewPolicy>
+    void ChangePolicy()
+    {
+		bool bWasAlive = m_pWindowDesc->IsAlive;
+
+        m_Policy.WindowPolicyDestroy(m_pWindowDesc.get());
+
+		m_Policy = NewPolicy();
+        
+        if (bWasAlive) 
+            this->Create();
+    }
+
+public:
+
     void Create()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);

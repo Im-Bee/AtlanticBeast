@@ -12,24 +12,25 @@ namespace App
  *
  * @param bManualInputUpdate - if true, input update will not be called automatically on every window update,
  * this way you can manualy update the input on another thread or at a different time.
+ * @param GamePolicy - policy that defines window behaviour on different os level events. Defaults to DefaultGameSystemWindowPolicy
  * */
-template<bool bManualInputUpdate = false>
-class EmptyCanvas : public ::App::IBaseWindow<EmptyCanvas<bManualInputUpdate>, DefaultGameSystemWindowPolicy>
+template<bool bManualInputUpdate = false, class GamePolicy = DefaultGameSystemWindowPolicy>
+class EmptyCanvas : public ::App::IBaseWindow<EmptyCanvas<bManualInputUpdate>, GamePolicy>
 {
 
-	friend class IBaseWindow<EmptyCanvas<bManualInputUpdate>, DefaultGameSystemWindowPolicy>;
+	friend class IBaseWindow<EmptyCanvas<bManualInputUpdate>, GamePolicy>;
 
 public:
 
     explicit EmptyCanvas(std::wstring wstrWindowName = L"EmptyCanvas")
-        : IBaseWindow<EmptyCanvas, DefaultGameSystemWindowPolicy>(
+        : IBaseWindow<EmptyCanvas, GamePolicy>(
                 CreateWindowDesc(std::move(wstrWindowName), 1200, 700))
 		, m_pInput(::std::make_shared<UserInput>(this->GetWindowDesc()))
     { } 
 
     template<class U>
     explicit EmptyCanvas(U&& desc)
-        : IBaseWindow<EmptyCanvas, DefaultGameSystemWindowPolicy>(::std::forward<U>(desc))
+        : IBaseWindow<EmptyCanvas, GamePolicy>(::std::forward<U>(desc))
     { }
     
     ~EmptyCanvas() = default;

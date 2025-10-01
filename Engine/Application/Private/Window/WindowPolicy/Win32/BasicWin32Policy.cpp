@@ -42,17 +42,17 @@ uint32_t BasicWin32WindowPolicy::CreateImpl(WindowDesc* pWd)
     if (m_pWindowDesc->Hwnd == NULL)
     {
         HWND hwnd = CreateWindowEx(WS_EX_OVERLAPPEDWINDOW,
-            pWd->pwszClassName,
-            pWd->Name.c_str(),
-            WS_OVERLAPPEDWINDOW,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            pWd->Width,
-            pWd->Height,
-            NULL,
-            NULL,
-            GetModuleHandle(NULL),
-            this);
+                                   pWd->pwszClassName,
+                                   pWd->Name.c_str(),
+                                   WS_OVERLAPPEDWINDOW,
+                                   CW_USEDEFAULT,
+                                   CW_USEDEFAULT,
+                                   pWd->Width,
+                                   pWd->Height,
+                                   NULL,
+                                   NULL,
+                                   GetModuleHandle(NULL),
+                                   this);
 
         if (hwnd == NULL) {
             AB_LOG(Core::Debug::Error, L"Couldn't CreateWindow(), last error %u", GetLastError());

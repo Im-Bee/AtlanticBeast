@@ -12,16 +12,16 @@ namespace App
  * @brief Game version of BasicWin32WindowPolicy, hides cursor, captures it and outputs raw deltas from the mouse
  * for the InputStruct.
  */
-class BEAST_API GameWin32WindowPolicy : public BasicWin32WindowPolicy
+class BEAST_API WindowModeGameWin32WindowPolicy : public BasicWin32WindowPolicy
 {
 public:
 
-    GameWin32WindowPolicy() = default;
+    WindowModeGameWin32WindowPolicy() = default;
 
-    ~GameWin32WindowPolicy() = default;
+    ~WindowModeGameWin32WindowPolicy() = default;
 
-    GameWin32WindowPolicy(const GameWin32WindowPolicy&) = default;
-    GameWin32WindowPolicy(GameWin32WindowPolicy&&) noexcept = default;
+    WindowModeGameWin32WindowPolicy(const WindowModeGameWin32WindowPolicy&) = default;
+    WindowModeGameWin32WindowPolicy(WindowModeGameWin32WindowPolicy&&) noexcept = default;
 
 public:
 

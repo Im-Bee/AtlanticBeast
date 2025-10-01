@@ -1,6 +1,6 @@
 #ifdef _WIN32
 
-#include "Window/WindowPolicy/Win32/GameWin32Policy.hpp"
+#include "Window/WindowPolicy/Win32/WindowModeGameWin32Policy.hpp"
 
 namespace App
 {
@@ -9,7 +9,7 @@ using namespace std;
 using namespace Core;
 
 // ---------------------------------------------------------------------------------------------------------------------
-void GameWin32WindowPolicy::OnPreWcex()
+void WindowModeGameWin32WindowPolicy::OnPreWcex()
 {
     WindowDesc* pWd = this->GetWindowDesc();
 
@@ -22,11 +22,11 @@ void GameWin32WindowPolicy::OnPreWcex()
     pWd->Wcex.hInstance     = GetModuleHandle(NULL);
     pWd->Wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
     pWd->Wcex.lpszClassName = pWd->pwszClassName;
-    pWd->Wcex.lpfnWndProc   = WindowProc<GameWin32WindowPolicy>;
+    pWd->Wcex.lpfnWndProc   = WindowProc<WindowModeGameWin32WindowPolicy>;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void GameWin32WindowPolicy::OnUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam)
+void WindowModeGameWin32WindowPolicy::OnUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	WindowDesc* pWd = this->GetWindowDesc();
 
