@@ -84,9 +84,9 @@ private:
 private:
 
     ::std::shared_ptr<Instance>             m_pInstance         = nullptr;
-    ::std::shared_ptr<RTXHardware>             m_pHardware         = nullptr;
-    ::std::shared_ptr<RTXDeviceAdapter>        m_pDeviceAdapter    = nullptr;
-    ::std::unique_ptr<Swapchain>            m_pSwapChain         = nullptr;
+    ::std::shared_ptr<RTXHardware>          m_pHardware         = nullptr;
+    ::std::shared_ptr<RTXDeviceAdapter>     m_pDeviceAdapter    = nullptr;
+    ::std::unique_ptr<Swapchain>            m_pSwapChain        = nullptr;
     ::std::shared_ptr<const WindowDesc>     m_pWindowDesc       = nullptr;
     ::std::shared_ptr<Pipeline>             m_pPipeline         = nullptr;
     ::std::shared_ptr<VoxelGrid>            m_pVoxelGrid        = nullptr;

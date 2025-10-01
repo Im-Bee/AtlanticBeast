@@ -82,7 +82,7 @@ private:
     
     ::std::shared_ptr<const RTXHardware>       m_pHardware         = nullptr;
     ::std::shared_ptr<const RTXDeviceAdapter>  m_pDeviceAdapter    = nullptr;
-    ::std::shared_ptr<const Swapchain>      m_pSwapChain        = nullptr;
+    ::std::shared_ptr<const Swapchain>         m_pSwapChain        = nullptr;
 
     ::std::shared_ptr<const VoxelGrid> m_VoxelGrid = nullptr;
 

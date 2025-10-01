@@ -24,7 +24,7 @@ VkPhysicalDevice RTXHardware::ChooseGPU(shared_ptr<const Instance>& instance)
 { 
     VkPhysicalDevice            chosenPhysicalDevice    = VK_NULL_HANDLE;
     uint32_t                    uDeviceCount;
-    VkResult                    result;
+    VkResult                    result                  = VK_SUCCESS;
     vector<VkPhysicalDevice>    vPhysicalDevices;
 
 
