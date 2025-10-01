@@ -14,73 +14,23 @@ int main()
     Voxels::Renderer render = { };
 
     ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
+	const auto& pc = pwc->GetCharacter();
 
     // Set up
-    {
-        renderWindow.Create();
-        pwc->SignObject(input);
+    renderWindow.Create();
+    pwc->BindToInput(input);
 
-        AbInputBind ib;
-        ib.Type     = EAbBindType::Keyboard;
-        ib.keyboard = AbKeyboardBind { EAbOnKeyState::Continuous, AB_KEY_A };
+    input->StartCapturing();
 
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionMoveLeft, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_D;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionMoveRight, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_W;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionMoveFront, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_S;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionMoveBack, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_Q;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionMoveUp, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_E;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionMoveDown, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_1;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionLeftYaw, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_2;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionRightYaw, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_3;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionUpPitch, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_4;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionDownPitch, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_5;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionFovUp, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_6;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionFovDown, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_SPACE;
-        ib.keyboard.KeyState = Press;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionPlaceBlock, nullptr, ib);
-
-        ib.keyboard.KeyCode = AB_KEY_X;
-        ib.keyboard.KeyState = Press;
-        input->Bind(pwc.get(), pwc.get(), &PlayablePaper::UseActionRemoveBlock, nullptr, ib);
-
-        ib.Type = Mouse;
-        input->Bind(pwc.get(), pwc.get(), nullptr, &PlayablePaper::UseActionMouse, ib);
-
-        input->StartCapturing();
-
-        pwc->SetRotation(Voxels::Vec3 { -0.5f, 1.25f, 0.f });
-        pwc->SetPositon(Voxels::Vec3 { 14.5f, 30.25f, 25.f });
-
-        render.SetCurrentCamera(::std::dynamic_pointer_cast<Voxels::Camera>(pwc));
-        render.Initialize(renderWindow.GetWindowDesc());
-    }
+    render.SetCurrentCamera(::std::dynamic_pointer_cast<Voxels::Camera>(pc));
+    render.Initialize(renderWindow.GetWindowDesc());
     
     auto vg = render.GetGrid();
-    pwc->SetGrid(vg); 
+    pc->SetRotation(Voxels::Vec3 { -0.5f, 1.25f, 0.f });
+    pc->SetPositon(Voxels::Vec3 { 14.5f, 30.25f, 25.f });
+    pc->SetGrid(vg); 
+
+	// Main loop
     while (AppStatus::GetAppCurrentStatus()) 
     {
         renderWindow.Update();

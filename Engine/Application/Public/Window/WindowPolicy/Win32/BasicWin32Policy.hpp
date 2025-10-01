@@ -73,9 +73,8 @@ public:
             pPolicy = reinterpret_cast<Policy*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
 
-        if (pPolicy) {
+        if (pPolicy)
             pPolicy->OnUpdate(uMsg, wParam, lParam);
-        }
 
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }

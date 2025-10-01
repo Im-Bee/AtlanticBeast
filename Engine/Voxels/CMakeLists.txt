@@ -4,6 +4,7 @@ SET(VOXELS_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/RTXHardware.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/RTXDeviceAdapter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/SwapChain.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/Rays.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/Pipeline.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/VoxelGrid.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/Renderer.cpp"
@@ -36,7 +37,7 @@ SET(VOXELS_HEADRES
 ADD_LIBRARY(VoxelsLib SHARED 
     "${VOXELS_SOURCE}"
     "${VOXELS_HEADRES}"
-)
+ "Private/Raycaster/Rays.cpp")
 
 FIND_PACKAGE(Vulkan REQUIRED)
 
