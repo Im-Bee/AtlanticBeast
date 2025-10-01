@@ -5,13 +5,14 @@
 #include "Input/KeysMap.hpp"
 #include "Input/Bind.h"
 #include "Input/MouseMap.hpp"
+#include "Window/WindowListener.hpp"
 
 namespace App
 {
 
 class ControllerObject;
 
-class UserInput
+class UserInput : public WindowListener
 {
 
 public:

@@ -24,6 +24,7 @@ SET(APPLICATION_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowPolicy/GameSystemPolicy.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/BaseWindowDetails.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/IBaseWindow.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowListener.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowDesc.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowEvents.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/UserInput.hpp"

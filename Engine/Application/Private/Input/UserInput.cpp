@@ -83,6 +83,9 @@ void UserInput::Update()
                 is.Mouse.MouseY = 0;
                 continue;
         }
+
+		// Consume the input event
+		m_pWindowDesc->LastEvent &= ~EAbWindowEvents::Input;
     }
 }
 

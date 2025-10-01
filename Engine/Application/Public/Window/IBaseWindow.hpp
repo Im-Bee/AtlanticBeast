@@ -28,7 +28,6 @@ public:
     template<class U>
     explicit IBaseWindow(U&& windowDesc = WindowDesc())
         : m_pWindowDesc(::std::make_shared<WindowDesc>(::std::forward<U>(windowDesc)))
-        , m_pInput(::std::make_shared<UserInput>(m_pWindowDesc))
     { }
 
     ~IBaseWindow()
@@ -112,14 +111,11 @@ public:
     const ::std::shared_ptr<WindowDesc>& GetWindowDesc() const
     { return m_pWindowDesc; }
 
-    ::std::shared_ptr<UserInput> GetInput()
-    { return m_pInput; }
-
 private:
 
-    void HandleMessage(int32_t msg)
+    void HandleMessage(EAbWindowEventsFlags events)
     {
-        static_cast<Derived*>(this)->HandleMessageImpl(msg);
+        static_cast<Derived*>(this)->HandleMessageImpl(events);
     }
 
 private:
@@ -127,8 +123,6 @@ private:
     WindowPolicy m_Policy;
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
-    
-    ::std::shared_ptr<UserInput> m_pInput;
 
 };
 

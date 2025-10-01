@@ -11,6 +11,8 @@ namespace App
  * */
 class EmptyWindow : public ::App::IBaseWindow<EmptyWindow>
 {
+	friend class IBaseWindow<EmptyWindow>;
+
 public:
 
     explicit EmptyWindow(::std::wstring wstrName = L"EmptyWindow")
@@ -28,9 +30,9 @@ public:
 
     EmptyWindow(const EmptyWindow&) = delete;
 
-public:
+private:
 
-    virtual void HandleMessageImpl(int32_t)
+    virtual void HandleMessageImpl(EAbWindowEventsFlags)
     {
         // AB_LOG(Debug::Info, L"Proccessing a message! ... %u", msg);
     }

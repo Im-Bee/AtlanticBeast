@@ -10,8 +10,7 @@ using namespace App;
 int main()
 {
     EmptyCanvas renderWindow;
-    auto input = renderWindow.GetInput();
-    auto windowDesc1 = renderWindow.GetWindowDesc();
+    const auto& input = renderWindow.GetInput();
     Voxels::Renderer render = { };
 
     ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
@@ -85,7 +84,6 @@ int main()
     while (AppStatus::GetAppCurrentStatus()) 
     {
         renderWindow.Update();
-        input->Update();
         
         static uint8_t r = 0;
         static uint8_t g = 111;
