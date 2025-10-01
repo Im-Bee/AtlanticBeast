@@ -3,10 +3,10 @@
 layout(local_size_x = 16, local_size_y = 16) in;
 
 struct Voxel {
-    uint Type;
-    uint Color;
-    uint Padding;
-    uint Padding2;
+    uint    Type;
+    uint    Color;
+    float   MaterialReflect;
+    uint    Padding2;
 };
 
 layout(binding = 0, rgba8) uniform image2D outputImage;
@@ -29,7 +29,7 @@ layout(push_constant) uniform PushConstants
 
 const float PI      = 3.141592;
 const float TWO_PI  = 6.283185;
-const float EPSILON = 0.002;
+const float EPSILON = 0.0001;
 const vec4 baseSkyColor = vec4(.4078, .4725, 1., 1.);
 const float maxRenderDist = 50.f;
 const int maxSteps = int(maxRenderDist * 2.6);
@@ -221,9 +221,9 @@ vec3 PhongShadows(in vec3 camPos, in vec3 pos, in vec3 coord, in vec3 normal, in
     return ambient + diffuse + specular;
 }
 
-vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal)
+vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal, vec3 baseColor, float MaterialReflect)
 {
-    float localReflect = materialReflect;
+    float localReflect = MaterialReflect;
 
     vec3 incident;
     vec3 dir;
@@ -232,11 +232,15 @@ vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal)
     float distance;
     vec3 normalRef;
 
-    vec3 reflectedColor = baseSkyColor.xyz;
-    const float roughness = 0.05;
+    vec3 reflectedColor = baseColor;
+    vec3 hitBaseColor;
+    const float roughness = 0.02;
 
     for (uint i = 0; i < bounces; ++i)
     {
+        if (localReflect <= 0.0)
+            break;
+
         dir = reflect(normalize(to - from), normal);
         dir = mix(dir, RandomPointOnHemisphere(normal), roughness);
 
@@ -248,6 +252,7 @@ vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal)
                         distance,
                         normalRef)) 
         {
+            reflectedColor = mix(reflectedColor, baseSkyColor.xyz, localReflect);
             break;
         }
 
@@ -255,18 +260,13 @@ vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal)
         to      = to + dir * distance;
         normal  = normalRef;
 
-        vec4 baseColor = ExtractColorInt(VoxelData[index].Color);
+        hitBaseColor = ExtractColorInt(VoxelData[index].Color).xyz;
         
-        if (i > 0 || coloredBySky) {
-            reflectedColor = mix(reflectedColor, 
-                                 PhongShadows(CameraPos.xyz, to, hit, normal, maxSteps) * baseColor.xyz,
-                                 localReflect);
-        }
-        else {
-            reflectedColor = PhongShadows(CameraPos.xyz, to, hit, normal, maxSteps) * baseColor.xyz;
-        }
+        reflectedColor = mix(reflectedColor, 
+                             PhongShadows(CameraPos.xyz, to, hit, normal, maxSteps) * hitBaseColor,
+                             localReflect);
 
-        // localReflect *= 1. - fract(materialReflect);
+        localReflect *= VoxelData[index].MaterialReflect * 2;
     }
 
     return reflectedColor;
@@ -306,12 +306,15 @@ void main()
 
         if (distance <= maxSteps) {
             shading = PhongShadows(CameraPos.xyz, hitPos, hitCoords, normal, int(length(hitPos - lightPos) * 1.5));
-            reflections = Reflection(rayOrigin, hitPos, 96, 4, normal);
+            reflections = Reflection(rayOrigin, 
+                                     hitPos, 
+                                     96, 
+                                     4, 
+                                     normal,
+                                     shading * ExtractColorInt(VoxelData[index].Color).xyz, 
+                                     VoxelData[index].MaterialReflect);
         
-            finalColor = vec4(mix(shading * finalColor.xyz, 
-                                  reflections, 
-                                  materialReflect), 
-                              finalColor.w);
+            finalColor = vec4(reflections, finalColor.w);
         }
     }
 

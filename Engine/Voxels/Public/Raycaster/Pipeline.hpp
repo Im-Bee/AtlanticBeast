@@ -2,7 +2,7 @@
 #define AB_PIPELINE_H
 
 #include "Vulkan/SwapChain.hpp"
-#include "Vulkan/DeviceAdapter.hpp"
+#include "Vulkan/RTXDeviceAdapter.hpp"
 #include "Raycaster/PushConstants.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Voxels.hpp"
@@ -17,8 +17,8 @@ class Pipeline
 
 public:
 
-    BEAST_VOXEL_API Pipeline(::std::shared_ptr<const Hardware> hw,
-                             ::std::shared_ptr<const DeviceAdapter> da);
+    BEAST_VOXEL_API Pipeline(::std::shared_ptr<const RTXHardware> hw,
+                             ::std::shared_ptr<const RTXDeviceAdapter> da);
 
     BEAST_VOXEL_API ~Pipeline();
 
@@ -59,20 +59,20 @@ public:
 
 private:
 
-    VkDescriptorSetLayout CreateDescriptorLayout(::std::shared_ptr<const DeviceAdapter>& da);
+    VkDescriptorSetLayout CreateDescriptorLayout(::std::shared_ptr<const RTXDeviceAdapter>& da);
 
-    VkDescriptorPool CreateDescriptorPool(::std::shared_ptr<const DeviceAdapter>& da);
+    VkDescriptorPool CreateDescriptorPool(::std::shared_ptr<const RTXDeviceAdapter>& da);
 
-    VkDescriptorSet CreateDescriptorSet(::std::shared_ptr<const DeviceAdapter>& da,
+    VkDescriptorSet CreateDescriptorSet(::std::shared_ptr<const RTXDeviceAdapter>& da,
                                         VkDescriptorPool dp,
                                         VkDescriptorSetLayout dLayout);
 
-    VkPipelineLayout CreatePipelineLayout(::std::shared_ptr<const DeviceAdapter>& da,
+    VkPipelineLayout CreatePipelineLayout(::std::shared_ptr<const RTXDeviceAdapter>& da,
                                           VkDescriptorSetLayout descriptorSetLayout);
 
-    VkShaderModule LoadShader(::std::shared_ptr<const DeviceAdapter>& da, const ::std::string& strPath);
+    VkShaderModule LoadShader(::std::shared_ptr<const RTXDeviceAdapter>& da, const ::std::string& strPath);
 
-    VkPipeline CreateComputePipeline(::std::shared_ptr<const DeviceAdapter>& da, 
+    VkPipeline CreateComputePipeline(::std::shared_ptr<const RTXDeviceAdapter>& da, 
                                      VkPipelineLayout pipelineLayout, 
                                      VkShaderModule shaderModule);
 
@@ -80,9 +80,9 @@ private:
 
 private:
     
-    ::std::shared_ptr<const Hardware>       m_pHardware         = nullptr;
-    ::std::shared_ptr<const DeviceAdapter>  m_pDeviceAdapter    = nullptr;
-    ::std::shared_ptr<const Swapchain>      m_pSwapChain        = nullptr;
+    ::std::shared_ptr<const RTXHardware>       m_pHardware         = nullptr;
+    ::std::shared_ptr<const RTXDeviceAdapter>  m_pDeviceAdapter    = nullptr;
+    ::std::shared_ptr<const Swapchain>         m_pSwapChain        = nullptr;
 
     ::std::shared_ptr<const VoxelGrid> m_VoxelGrid = nullptr;
 

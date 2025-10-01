@@ -1,5 +1,4 @@
 #ifdef _WIN32
-
 #ifndef AB_WINDOW_POLICY_H
 #define AB_WINDOW_POLICY_H
 
@@ -41,38 +40,53 @@ public:
     /**
      * @brief Called first on Create. Use it to create WCEX.
      */
-    virtual void OnCreate(WindowDesc* pWd)
+    virtual void OnPreWcex()
+    { }
+
+    /**
+     * @brief Called later on Create. Use it to register window in custom way.
+     */
+    virtual void OnPreRegister()
     { }
 
     /**
      * @brief Called on every Update. Can capture the event or pass it to base class implementation.
      */
-    static void OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    virtual void OnUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
 
     template<class Policy = BasicWin32WindowPolicy>
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
-        WindowDesc* pWd = NULL;
+        Policy* pPolicy = NULL;
 
         if (uMsg == WM_NCCREATE) {
             CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
-            pWd = reinterpret_cast<WindowDesc*>(pCreate->lpCreateParams);
-            SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWd));
+            pPolicy = reinterpret_cast<Policy*>(pCreate->lpCreateParams);
+            SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pPolicy));
 
-            pWd->Hwnd = hwnd;
+            pPolicy->m_pWindowDesc->Hwnd = hwnd;
         }
         else
-            pWd = reinterpret_cast<WindowDesc*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
+            pPolicy = reinterpret_cast<Policy*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 
 
-        if (pWd) {
-            Policy::OnUpdate(pWd, uMsg, wParam, lParam);
-        }
+        if (pPolicy)
+            pPolicy->OnUpdate(uMsg, wParam, lParam);
 
         return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
+
+protected:
+
+    WindowDesc* GetWindowDesc() const
+	{ return m_pWindowDesc; }
+
+private:
+
+	WindowDesc* m_pWindowDesc = nullptr;
+
 };
 
 } // !App

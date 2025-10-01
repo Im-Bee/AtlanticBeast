@@ -15,7 +15,7 @@ namespace App
  * @brief Basic wrapper for window class.
  *
  * It's possible to create your own implementation of WindowPolicy
- * by overriding virtual methods of the base class or crreate your new
+ * by overriding virtual methods of the base class or creating your new
  * policy from IWindowPolicy class, to handle different and custom os level logic.
  * */
 template<typename Derived, typename WindowPolicy = DefaultSystemWindowPolicy>
@@ -28,7 +28,6 @@ public:
     template<class U>
     explicit IBaseWindow(U&& windowDesc = WindowDesc())
         : m_pWindowDesc(::std::make_shared<WindowDesc>(::std::forward<U>(windowDesc)))
-        , m_pInput(::std::make_shared<UserInput>(m_pWindowDesc))
     { }
 
     ~IBaseWindow()
@@ -40,8 +39,22 @@ public:
     
     IBaseWindow(IBaseWindow&& other) noexcept
         : m_pWindowDesc(::std::move(other.m_pWindowDesc))
-        , m_pInput(::std::move(other.m_pInput))
     { }
+
+public:
+
+    template<class NewPolicy>
+    void ChangePolicy()
+    {
+        bool bWasAlive = m_pWindowDesc->IsAlive;
+
+        m_Policy.WindowPolicyDestroy(m_pWindowDesc.get());
+
+        m_Policy = NewPolicy();
+        
+        if (bWasAlive) 
+            this->Create();
+    }
 
 public:
 
@@ -112,14 +125,11 @@ public:
     const ::std::shared_ptr<WindowDesc>& GetWindowDesc() const
     { return m_pWindowDesc; }
 
-    ::std::shared_ptr<UserInput> GetInput()
-    { return m_pInput; }
-
 private:
 
-    void HandleMessage(int32_t msg)
+    void HandleMessage(EAbWindowEventsFlags events)
     {
-        static_cast<Derived*>(this)->HandleMessageImpl(msg);
+        static_cast<Derived*>(this)->HandleMessageImpl(events);
     }
 
 private:
@@ -127,8 +137,6 @@ private:
     WindowPolicy m_Policy;
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
-    
-    ::std::shared_ptr<UserInput> m_pInput;
 
 };
 

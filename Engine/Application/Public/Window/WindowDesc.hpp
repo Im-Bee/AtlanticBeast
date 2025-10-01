@@ -5,6 +5,12 @@
 #include "WindowEvents.h"
 #include "Input/InputEvents.h"
 
+/**
+* Struct that contains all the handles and information about the window.
+* Can be used to connect with different instances 
+* of classes derived from WindowListener (like UserInput) [Engine/Application/Public/Window/WindowListener.hpp]
+* that require window handle.
+*/
 struct WindowDesc
 {
     ::std::wstring                  Name;
@@ -12,7 +18,7 @@ struct WindowDesc
     int32_t                         Width;
     int32_t                         Height;
     int32_t                         IsAlive;
-    int32_t                         LastEvent;
+    EAbWindowEventsFlags            LastEvent;
     ::std::queue<AbInputStruct>     InputStruct;
     uint32_t                        uUinqueIndex;
 

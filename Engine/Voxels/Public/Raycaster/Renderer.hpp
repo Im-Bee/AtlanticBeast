@@ -3,8 +3,8 @@
 
 #include "Vulkan/ErrorHandling.hpp"
 #include "Vulkan/Instance.hpp"
-#include "Vulkan/Hardware.hpp"
-#include "Vulkan/DeviceAdapter.hpp"
+#include "Vulkan/RTXHardware.hpp"
+#include "Vulkan/RTXDeviceAdapter.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Raycaster/Pipeline.hpp"
 #include "Vulkan/FrameResources.hpp"
@@ -67,11 +67,11 @@ public:
 
 private:
 
-    VkCommandPool CreateCommandPool(::std::shared_ptr<const DeviceAdapter> da, uint32_t uQueueFamily);
+    VkCommandPool CreateCommandPool(::std::shared_ptr<const RTXDeviceAdapter> da, uint32_t uQueueFamily);
 
-    VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const DeviceAdapter> da, VkCommandPool cmdPool);
+    VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const RTXDeviceAdapter> da, VkCommandPool cmdPool);
 
-    ::std::vector<FrameResources> CreateFrameResources(::std::shared_ptr<const DeviceAdapter> da, VkCommandPool cmdPool, size_t uFrames);
+    ::std::vector<FrameResources> CreateFrameResources(::std::shared_ptr<const RTXDeviceAdapter> da, VkCommandPool cmdPool, size_t uFrames);
 
     void RecordCommands(VkCommandBuffer& cmdBuff,
                         const ::std::shared_ptr<Pipeline>& pipeline, 
@@ -84,9 +84,9 @@ private:
 private:
 
     ::std::shared_ptr<Instance>             m_pInstance         = nullptr;
-    ::std::shared_ptr<Hardware>             m_pHardware         = nullptr;
-    ::std::shared_ptr<DeviceAdapter>        m_pDeviceAdapter    = nullptr;
-    ::std::unique_ptr<Swapchain>            m_pSwapChain         = nullptr;
+    ::std::shared_ptr<RTXHardware>          m_pHardware         = nullptr;
+    ::std::shared_ptr<RTXDeviceAdapter>     m_pDeviceAdapter    = nullptr;
+    ::std::unique_ptr<Swapchain>            m_pSwapChain        = nullptr;
     ::std::shared_ptr<const WindowDesc>     m_pWindowDesc       = nullptr;
     ::std::shared_ptr<Pipeline>             m_pPipeline         = nullptr;
     ::std::shared_ptr<VoxelGrid>            m_pVoxelGrid        = nullptr;

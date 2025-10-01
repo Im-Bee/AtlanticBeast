@@ -1,9 +1,10 @@
 SET(VOXELS_SOURCE 
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Primitives/Object.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/Instance.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/Hardware.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/DeviceAdapter.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/RTXHardware.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/RTXDeviceAdapter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/SwapChain.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/Rays.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/Pipeline.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/VoxelGrid.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/Renderer.cpp"
@@ -20,8 +21,8 @@ SET(VOXELS_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Camera.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/ErrorHandling.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/Instance.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/Hardware.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/DeviceAdapter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/RTXHardware.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/RTXDeviceAdapter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/SwapChain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/FrameResources.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/Pipeline.hpp"
@@ -36,7 +37,7 @@ SET(VOXELS_HEADRES
 ADD_LIBRARY(VoxelsLib SHARED 
     "${VOXELS_SOURCE}"
     "${VOXELS_HEADRES}"
-)
+ "Private/Raycaster/Rays.cpp")
 
 FIND_PACKAGE(Vulkan REQUIRED)
 

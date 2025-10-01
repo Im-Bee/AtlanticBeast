@@ -15,7 +15,9 @@ uint32_t BasicWin32WindowPolicy::CreateImpl(WindowDesc* pWd)
     AB_ASSERT(pWd->Hwnd == NULL);
     AB_ASSERT(!pWd->IsAlive);
 
-    this->OnCreate(pWd);
+    m_pWindowDesc = pWd;
+
+    this->OnPreWcex();
 
     // Fallback to default class name if none is provided,
     // if pwszClassName is provided, we assume that WCEX is already filled
@@ -35,28 +37,32 @@ uint32_t BasicWin32WindowPolicy::CreateImpl(WindowDesc* pWd)
 
     AbAskToRegisterWindowClass(pWd->pwszClassName, pWd->Wcex);
 
-    HWND hwnd = CreateWindowEx(WS_EX_OVERLAPPEDWINDOW,
-                               pWd->pwszClassName,
-                               pWd->Name.c_str(),
-                               WS_OVERLAPPEDWINDOW,
-                               CW_USEDEFAULT,
-                               CW_USEDEFAULT,
-                               pWd->Width,
-                               pWd->Height,
-                               NULL,
-                               NULL,
-                               GetModuleHandle(NULL),
-                               pWd);
+    this->OnPreRegister();
 
-    if (hwnd == NULL) {
-        AB_LOG(Core::Debug::Error, L"Couldn't CreateWindow(), last error %u", GetLastError());
+    if (m_pWindowDesc->Hwnd == NULL)
+    {
+        HWND hwnd = CreateWindowEx(WS_EX_OVERLAPPEDWINDOW,
+                                   pWd->pwszClassName,
+                                   pWd->Name.c_str(),
+                                   WS_OVERLAPPEDWINDOW,
+                                   CW_USEDEFAULT,
+                                   CW_USEDEFAULT,
+                                   pWd->Width,
+                                   pWd->Height,
+                                   NULL,
+                                   NULL,
+                                   GetModuleHandle(NULL),
+                                   this);
 
-        return -1;
+        if (hwnd == NULL) {
+            AB_LOG(Core::Debug::Error, L"Couldn't CreateWindow(), last error %u", GetLastError());
+            return -1;
+        }
+
+        pWd->Hwnd = hwnd;
     }
 
-    ShowWindow(hwnd, SW_SHOW);
-
-    pWd->Hwnd = hwnd;
+    ShowWindow(m_pWindowDesc->Hwnd, SW_SHOW);
 
     return 0;
 }
@@ -106,7 +112,8 @@ void BasicWin32WindowPolicy::UpdateImpl(WindowDesc* pWd)
     }
 }
 
-void BasicWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+// ---------------------------------------------------------------------------------------------------------------------
+void BasicWin32WindowPolicy::OnUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg) {
         case WM_KEYDOWN: {
@@ -115,7 +122,7 @@ void BasicWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam,
                 return;
             }
 
-            pWd->LastEvent |= EAbWindowEvents::Input;
+            m_pWindowDesc->LastEvent |= EAbWindowEvents::Input;
 
             AbInputStruct is;
             uint32_t scanCode = (lParam >> 16) & 0xFF;
@@ -123,24 +130,24 @@ void BasicWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam,
             is.Event = EAbInputEvents::AbKeyPress;
             is.Keyboard.KeyId = scanCode;
 
-            pWd->InputStruct.push(is);
+            m_pWindowDesc->InputStruct.push(is);
             return;
         }
 
         case WM_KEYUP: {
-            pWd->LastEvent |= EAbWindowEvents::Input;
+            m_pWindowDesc->LastEvent |= EAbWindowEvents::Input;
             AbInputStruct is;
             uint32_t scanCode = (lParam >> 16) & 0xFF;
 
             is.Event = EAbInputEvents::AbKeyRelease;
             is.Keyboard.KeyId = scanCode;
 
-            pWd->InputStruct.push(is);
+            m_pWindowDesc->InputStruct.push(is);
             return;
         }
 
         case WM_MOUSEMOVE: {
-            pWd->LastEvent |= EAbWindowEvents::Input;
+            m_pWindowDesc->LastEvent |= EAbWindowEvents::Input;
             AbInputStruct is;
             uint32_t scanCode = (lParam >> 16) & 0xFF;
 
@@ -148,19 +155,19 @@ void BasicWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam,
             is.Mouse.MouseX = GET_X_LPARAM(lParam);
             is.Mouse.MouseY = GET_Y_LPARAM(lParam);
 
-            pWd->InputStruct.push(is);
+            m_pWindowDesc->InputStruct.push(is);
 
             return;
         }
 
         case WM_SIZE:
-            pWd->Width   = LOWORD(lParam);
-            pWd->Height  = HIWORD(lParam);
-            pWd->LastEvent |= EAbWindowEvents::Resize;
+            m_pWindowDesc->Width   = LOWORD(lParam);
+            m_pWindowDesc->Height  = HIWORD(lParam);
+            m_pWindowDesc->LastEvent |= EAbWindowEvents::Resize;
             break;
 
         case WM_CLOSE:
-            pWd->LastEvent |= EAbWindowEvents::Destroy;
+            m_pWindowDesc->LastEvent |= EAbWindowEvents::Destroy;
             break;
 
         default:

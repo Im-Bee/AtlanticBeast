@@ -7,8 +7,8 @@
 #include "Voxels.hpp"
 
 namespace Voxels
-
 {
+
 struct alignas(16) VoxelPushConstants
 {
     Vec3        CameraPos;

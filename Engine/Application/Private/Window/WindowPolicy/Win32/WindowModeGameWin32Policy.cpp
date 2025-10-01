@@ -1,6 +1,6 @@
 #ifdef _WIN32
 
-#include "Window/WindowPolicy/Win32/GameWin32Policy.hpp"
+#include "Window/WindowPolicy/Win32/WindowModeGameWin32Policy.hpp"
 
 namespace App
 {
@@ -9,8 +9,10 @@ using namespace std;
 using namespace Core;
 
 // ---------------------------------------------------------------------------------------------------------------------
-void GameWin32WindowPolicy::OnCreate(WindowDesc* pWd)
+void WindowModeGameWin32WindowPolicy::OnPreWcex()
 {
+    WindowDesc* pWd = this->GetWindowDesc();
+
     pWd->pwszClassName = L"GameAtlanticClass";
 
     memset(&pWd->Wcex, 0, sizeof(WNDCLASSEX));
@@ -20,12 +22,14 @@ void GameWin32WindowPolicy::OnCreate(WindowDesc* pWd)
     pWd->Wcex.hInstance     = GetModuleHandle(NULL);
     pWd->Wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
     pWd->Wcex.lpszClassName = pWd->pwszClassName;
-    pWd->Wcex.lpfnWndProc   = WindowProc<GameWin32WindowPolicy>;
+    pWd->Wcex.lpfnWndProc   = WindowProc<WindowModeGameWin32WindowPolicy>;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+void WindowModeGameWin32WindowPolicy::OnUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	WindowDesc* pWd = this->GetWindowDesc();
+
     switch (uMsg) {
         case WM_SETFOCUS:
         {
@@ -45,7 +49,7 @@ void GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, 
             RECT rect;
             GetWindowRect(pWd->Hwnd, &rect);
             ClipCursor(&rect);
-            SetCursorPos(static_cast<int>(rect.left + 0.5f * pWd->Width), 
+            SetCursorPos(static_cast<int>(rect.left + 0.5f * pWd->Width),
                          static_cast<int>(rect.top + 0.5f * pWd->Height));
 
             break;
@@ -147,14 +151,14 @@ void GameWin32WindowPolicy::OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, 
         }
 
         case WM_SIZE:
-            BasicWin32WindowPolicy::OnUpdate(pWd, uMsg, wParam, lParam);
+            BasicWin32WindowPolicy::OnUpdate(uMsg, wParam, lParam);
             return;
 
         case WM_MOUSEMOVE:
             return;
     }
 
-    return BasicWin32WindowPolicy::OnUpdate(pWd, uMsg, wParam, lParam);
+    return BasicWin32WindowPolicy::OnUpdate(uMsg, wParam, lParam);
 }
 
 

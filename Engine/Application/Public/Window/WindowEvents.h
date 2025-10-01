@@ -1,6 +1,8 @@
 #ifndef AB_WINDOW_EVENTS_H
 #define AB_WINDOW_EVENTS_H
 
+typedef uint32_t EAbWindowEventsFlags;
+
 typedef enum EAbWindowEvents
 {
     NothingNew = 1,

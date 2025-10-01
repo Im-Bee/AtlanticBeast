@@ -1,5 +1,4 @@
 #ifdef __linux__
-
 #ifndef AB_GAME_WINDOW_POLICY_H
 #define AB_GAME_WINDOW_POLICY_H
 

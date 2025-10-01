@@ -1,4 +1,4 @@
-#include "Vulkan/DeviceAdapter.hpp"
+#include "Vulkan/RTXDeviceAdapter.hpp"
 
 #include "Vulkan/ErrorHandling.hpp"
 
@@ -7,8 +7,8 @@ namespace Voxels
 
 using namespace std;
 
-// DeviceAdapter // ----------------------------------------------------------------------------------------------------
-DeviceAdapter::DeviceAdapter(shared_ptr<const Hardware> gpu)
+// RTXDeviceAdapter // ----------------------------------------------------------------------------------------------------
+RTXDeviceAdapter::RTXDeviceAdapter(shared_ptr<const RTXHardware> gpu)
     : m_pHardware(gpu)
     , m_uQueueFamily(FindQueueFamilyIndex(m_pHardware))
     , m_Device(CreateDeviceAdapter(m_pHardware, m_uQueueFamily))
@@ -18,7 +18,7 @@ DeviceAdapter::DeviceAdapter(shared_ptr<const Hardware> gpu)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-DeviceAdapter::~DeviceAdapter()
+RTXDeviceAdapter::~RTXDeviceAdapter()
 { 
     if (m_Device != VK_NULL_HANDLE) {
         vkDestroyDevice(m_Device, nullptr);
@@ -27,7 +27,7 @@ DeviceAdapter::~DeviceAdapter()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t DeviceAdapter::FindQueueFamilyIndex(shared_ptr<const Hardware>& gpu)
+uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(shared_ptr<const RTXHardware>& gpu)
 {
     uint32_t                            uFamilyIndex    = 0;
     uint32_t                            uFamilyCount;
@@ -58,7 +58,7 @@ uint32_t DeviceAdapter::FindQueueFamilyIndex(shared_ptr<const Hardware>& gpu)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDevice DeviceAdapter::CreateDeviceAdapter(shared_ptr<const Hardware>& gpu, uint32_t uQueueIndex)
+VkDevice RTXDeviceAdapter::CreateDeviceAdapter(shared_ptr<const RTXHardware>& gpu, uint32_t uQueueIndex)
 { 
     VkDevice                                            device                                  = VK_NULL_HANDLE;
     VkDeviceCreateInfo                                  createInfo;
@@ -150,7 +150,7 @@ VkDevice DeviceAdapter::CreateDeviceAdapter(shared_ptr<const Hardware>& gpu, uin
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkQueue DeviceAdapter::CreateQueue(VkDevice dv, uint32_t uQueueIndex)
+VkQueue RTXDeviceAdapter::CreateQueue(VkDevice dv, uint32_t uQueueIndex)
 {
     VkQueue graphicsQueue;
 

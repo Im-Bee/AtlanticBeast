@@ -11,8 +11,8 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
                           ::std::shared_ptr<VoxelGrid> vg) 
 {
     m_pInstance         = make_shared<Instance>();
-    m_pHardware         = make_shared<Hardware>(m_pInstance);
-    m_pDeviceAdapter    = make_shared<DeviceAdapter>(m_pHardware);
+    m_pHardware         = make_shared<RTXHardware>(m_pInstance);
+    m_pDeviceAdapter    = make_shared<RTXDeviceAdapter>(m_pHardware);
     m_pWindowDesc       = wd;
     m_pSwapChain        = make_unique<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, wd);
     m_pVoxelGrid        = vg;
@@ -151,7 +151,7 @@ void Renderer::Destroy()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkCommandPool Renderer::CreateCommandPool(shared_ptr<const DeviceAdapter> da, uint32_t uQueueFamily)
+VkCommandPool Renderer::CreateCommandPool(shared_ptr<const RTXDeviceAdapter> da, uint32_t uQueueFamily)
 {
     VkCommandPool           cmdPool;
     VkCommandPoolCreateInfo cmdPoolInfo;
@@ -167,7 +167,7 @@ VkCommandPool Renderer::CreateCommandPool(shared_ptr<const DeviceAdapter> da, ui
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
-VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const DeviceAdapter> da, VkCommandPool cmdPool)
+VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const RTXDeviceAdapter> da, VkCommandPool cmdPool)
 {
     VkCommandBuffer             cmdBuffer;
     VkCommandBufferAllocateInfo allocInfo;
@@ -185,7 +185,7 @@ VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const DeviceAdap
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-vector<FrameResources> Renderer::CreateFrameResources(::std::shared_ptr<const DeviceAdapter> da, VkCommandPool cmdPool, size_t uFrames)
+vector<FrameResources> Renderer::CreateFrameResources(::std::shared_ptr<const RTXDeviceAdapter> da, VkCommandPool cmdPool, size_t uFrames)
 {
     VkDevice device = da->GetAdapterHandle();
     vector<FrameResources> result(uFrames);
