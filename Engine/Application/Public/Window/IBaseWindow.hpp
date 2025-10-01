@@ -47,11 +47,11 @@ public:
     template<class NewPolicy>
     void ChangePolicy()
     {
-		bool bWasAlive = m_pWindowDesc->IsAlive;
+        bool bWasAlive = m_pWindowDesc->IsAlive;
 
         m_Policy.WindowPolicyDestroy(m_pWindowDesc.get());
 
-		m_Policy = NewPolicy();
+        m_Policy = NewPolicy();
         
         if (bWasAlive) 
             this->Create();
