@@ -10,8 +10,8 @@ namespace Voxels
 using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
-Pipeline::Pipeline(::std::shared_ptr<const Hardware> hw, 
-                   ::std::shared_ptr<const DeviceAdapter> da)
+Pipeline::Pipeline(::std::shared_ptr<const RTXHardware> hw, 
+                   ::std::shared_ptr<const RTXDeviceAdapter> da)
     : m_pHardware(hw)
     , m_pDeviceAdapter(da)
     , m_VoxelGrid(nullptr)
@@ -196,7 +196,7 @@ void Pipeline::LoadImage(VkImage image)
 
 
 // Private // ----------------------------------------------------------------------------------------------------------
-VkDescriptorSetLayout Pipeline::CreateDescriptorLayout(shared_ptr<const DeviceAdapter>& da)
+VkDescriptorSetLayout Pipeline::CreateDescriptorLayout(shared_ptr<const RTXDeviceAdapter>& da)
 {
     array<VkDescriptorSetLayoutBinding, 2>  bindings                = { };
     VkDescriptorSetLayoutCreateInfo         layoutCreateInfo;
@@ -229,7 +229,7 @@ VkDescriptorSetLayout Pipeline::CreateDescriptorLayout(shared_ptr<const DeviceAd
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDescriptorPool Pipeline::CreateDescriptorPool(shared_ptr<const DeviceAdapter>& da)
+VkDescriptorPool Pipeline::CreateDescriptorPool(shared_ptr<const RTXDeviceAdapter>& da)
 {
     VkDescriptorPool            descriptorPool;
     VkDescriptorPoolCreateInfo  poolInfo;
@@ -251,7 +251,7 @@ VkDescriptorPool Pipeline::CreateDescriptorPool(shared_ptr<const DeviceAdapter>&
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDescriptorSet Pipeline::CreateDescriptorSet(shared_ptr<const DeviceAdapter>& da,
+VkDescriptorSet Pipeline::CreateDescriptorSet(shared_ptr<const RTXDeviceAdapter>& da,
                                               VkDescriptorPool dp,
                                               VkDescriptorSetLayout dLayout)
 {
@@ -270,7 +270,7 @@ VkDescriptorSet Pipeline::CreateDescriptorSet(shared_ptr<const DeviceAdapter>& d
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPipelineLayout Pipeline::CreatePipelineLayout(shared_ptr<const DeviceAdapter>& da,
+VkPipelineLayout Pipeline::CreatePipelineLayout(shared_ptr<const RTXDeviceAdapter>& da,
                                                 VkDescriptorSetLayout descriptorSetLayout)
 { 
     VkPushConstantRange         pushConstantRange;
@@ -298,7 +298,7 @@ VkPipelineLayout Pipeline::CreatePipelineLayout(shared_ptr<const DeviceAdapter>&
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkShaderModule Pipeline::LoadShader(shared_ptr<const DeviceAdapter>& da, const string& strPath)
+VkShaderModule Pipeline::LoadShader(shared_ptr<const RTXDeviceAdapter>& da, const string& strPath)
 {
     vector<char>                vBuffer;
     size_t                      uFileSize;
@@ -332,7 +332,7 @@ VkShaderModule Pipeline::LoadShader(shared_ptr<const DeviceAdapter>& da, const s
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPipeline Pipeline::CreateComputePipeline(shared_ptr<const DeviceAdapter>& da, 
+VkPipeline Pipeline::CreateComputePipeline(shared_ptr<const RTXDeviceAdapter>& da, 
                                            VkPipelineLayout pipelineLayout, 
                                            VkShaderModule shaderModule)
 { 

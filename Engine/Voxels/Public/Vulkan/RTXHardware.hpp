@@ -6,13 +6,13 @@
 namespace Voxels
 {
 
-class Hardware
+class RTXHardware
 {
 public:
 
-    BEAST_VOXEL_API Hardware(::std::shared_ptr<const Instance> instance);
+    BEAST_VOXEL_API RTXHardware(::std::shared_ptr<const Instance> instance);
 
-    BEAST_VOXEL_API ~Hardware();
+    BEAST_VOXEL_API ~RTXHardware();
 
 public:
     

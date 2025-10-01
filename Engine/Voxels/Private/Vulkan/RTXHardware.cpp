@@ -1,4 +1,4 @@
-#include "Vulkan/Hardware.hpp"
+#include "Vulkan/RTXHardware.hpp"
 
 #include "Vulkan/ErrorHandling.hpp"
 
@@ -7,8 +7,8 @@ namespace Voxels
 
 using namespace std;
 
-// Hardware // ---------------------------------------------------------------------------------------------------------
-Hardware::Hardware(shared_ptr<const Instance> instance)
+// RTXHardware // ---------------------------------------------------------------------------------------------------------
+RTXHardware::RTXHardware(shared_ptr<const Instance> instance)
     : m_pInstance(instance)
     , m_DeviceHandle(ChooseGPU(m_pInstance))
 { 
@@ -16,11 +16,11 @@ Hardware::Hardware(shared_ptr<const Instance> instance)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-Hardware::~Hardware()
+RTXHardware::~RTXHardware()
 { }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPhysicalDevice Hardware::ChooseGPU(shared_ptr<const Instance>& instance)
+VkPhysicalDevice RTXHardware::ChooseGPU(shared_ptr<const Instance>& instance)
 { 
     VkPhysicalDevice            chosenPhysicalDevice    = VK_NULL_HANDLE;
     uint32_t                    uDeviceCount;
