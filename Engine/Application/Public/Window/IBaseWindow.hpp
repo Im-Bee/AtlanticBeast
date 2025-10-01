@@ -15,7 +15,7 @@ namespace App
  * @brief Basic wrapper for window class.
  *
  * It's possible to create your own implementation of WindowPolicy
- * by overriding virtual methods of the base class or crreate your new
+ * by overriding virtual methods of the base class or creating your new
  * policy from IWindowPolicy class, to handle different and custom os level logic.
  * */
 template<typename Derived, typename WindowPolicy = DefaultSystemWindowPolicy>

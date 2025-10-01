@@ -25,9 +25,9 @@ public:
 
 public:
 
-    void OnCreate(WindowDesc* pWd) override;
+    void OnPreWcex() override;
 
-    static void OnUpdate(WindowDesc* pWd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    void OnUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
 };
 
