@@ -234,7 +234,7 @@ vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal, vec
 
     vec3 reflectedColor = baseColor;
     vec3 hitBaseColor;
-    const float roughness = 0.05;
+    const float roughness = 0.02;
 
     for (uint i = 0; i < bounces; ++i)
     {
@@ -266,7 +266,7 @@ vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal, vec
                              PhongShadows(CameraPos.xyz, to, hit, normal, maxSteps) * hitBaseColor,
                              localReflect);
 
-        localReflect *= VoxelData[index].MaterialReflect;
+        localReflect *= VoxelData[index].MaterialReflect * 2;
     }
 
     return reflectedColor;
@@ -309,7 +309,7 @@ void main()
             reflections = Reflection(rayOrigin, 
                                      hitPos, 
                                      96, 
-                                     4, 
+                                     12, 
                                      normal,
                                      shading * ExtractColorInt(VoxelData[index].Color).xyz, 
                                      VoxelData[index].MaterialReflect);

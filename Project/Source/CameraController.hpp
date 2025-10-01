@@ -44,7 +44,7 @@ public:
             Voxels::Voxel v;
             v.Type = 1;
             v.RGBA = (m_uColor += 12739871) | 0x999999FF;
-            v.MaterialReflect = 0.4f;
+            v.MaterialReflect = 0.5f;
             v._Padding2 = 0;
             m_vg->ModifyVoxel(static_cast<size_t>((hr.HitCoords.x + hr.Normal.x) +
                 (hr.HitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() +
