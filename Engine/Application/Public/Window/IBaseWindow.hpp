@@ -27,7 +27,8 @@ public:
 
     template<class U>
     explicit IBaseWindow(U&& windowDesc = WindowDesc())
-        : m_pWindowDesc(::std::make_shared<WindowDesc>(::std::forward<U>(windowDesc)))
+		: m_Policy(::std::make_unique<WindowPolicy>())
+        , m_pWindowDesc(::std::make_shared<WindowDesc>(::std::forward<U>(windowDesc)))
     { }
 
     ~IBaseWindow()
@@ -38,8 +39,8 @@ public:
     IBaseWindow(const IBaseWindow& other) = delete;
     
     IBaseWindow(IBaseWindow&& other) noexcept
-        : m_pWindowDesc(::std::move(other.m_pWindowDesc))
-        , m_pInput(::std::move(other.m_pInput))
+		: m_Policy(::std::move(other.m_Policy))
+        , m_pWindowDesc(::std::move(other.m_pWindowDesc))
     { }
 
 public:
@@ -49,9 +50,10 @@ public:
     {
         bool bWasAlive = m_pWindowDesc->IsAlive;
 
-        m_Policy.WindowPolicyDestroy(m_pWindowDesc.get());
+        if (bWasAlive)
+            this->Destroy();
 
-        m_Policy = NewPolicy();
+        m_Policy = ::std::make_unique<NewPolicy>();
         
         if (bWasAlive) 
             this->Create();
@@ -62,6 +64,7 @@ public:
     void Create()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
+		AB_ASSERT(m_Policy != nullptr);
 
         if (m_pWindowDesc->IsAlive) {
             return;
@@ -69,7 +72,7 @@ public:
         
         m_pWindowDesc->uUinqueIndex = App::AppStatus::Get().SendOpenedWindowSignal();
 
-        if (m_Policy.WindowPolicyCreate(m_pWindowDesc.get()) != 0) {
+        if (m_Policy->WindowPolicyCreate(m_pWindowDesc.get()) != 0) {
             throw AB_EXCEPT("Couldn't create the window");
         }
 
@@ -79,18 +82,23 @@ public:
     void Show()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
-        m_Policy.WindowPolicyShow(m_pWindowDesc.get()); 
+        AB_ASSERT(m_Policy != nullptr);
+
+        m_Policy->WindowPolicyShow(m_pWindowDesc.get()); 
     }
 
     void Hide()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
-        m_Policy.WindowPolicyHide(m_pWindowDesc.get()); 
+        AB_ASSERT(m_Policy != nullptr);
+
+        m_Policy->WindowPolicyHide(m_pWindowDesc.get()); 
     }
 
     void Destroy()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
+        AB_ASSERT(m_Policy != nullptr);
 
         if (!m_pWindowDesc->IsAlive) {
             return;
@@ -98,7 +106,7 @@ public:
         
         App::AppStatus::Get().SendClosedWindowSignal();
         
-        m_Policy.WindowPolicyDestroy(m_pWindowDesc.get());
+        m_Policy->WindowPolicyDestroy(m_pWindowDesc.get());
         
         m_pWindowDesc->IsAlive = false;
     }
@@ -106,12 +114,14 @@ public:
     void Update()
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
+        AB_ASSERT(m_Policy != nullptr);
+
         if (!m_pWindowDesc->IsAlive) {
             return;
         }
 
         m_pWindowDesc->LastEvent &= 0;
-        m_Policy.WindowPolicyUpdate(m_pWindowDesc.get());
+        m_Policy->WindowPolicyUpdate(m_pWindowDesc.get());
         
         if (m_pWindowDesc->LastEvent & EAbWindowEvents::Destroy) {
             AB_LOG(Core::Debug::Info, L"Window is being closed by user");
@@ -135,7 +145,7 @@ private:
 
 private:
     
-    WindowPolicy m_Policy;
+    ::std::unique_ptr<WindowPolicy> m_Policy;
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
 
