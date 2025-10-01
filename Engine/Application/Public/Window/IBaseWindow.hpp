@@ -39,7 +39,6 @@ public:
     
     IBaseWindow(IBaseWindow&& other) noexcept
         : m_pWindowDesc(::std::move(other.m_pWindowDesc))
-        , m_pInput(::std::move(other.m_pInput))
     { }
 
 public:
