@@ -20,6 +20,7 @@ SET(APPLICATION_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowPolicy/Linux/GameLinuxPolicy.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowPolicy/Win32/BasicWin32Policy.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowPolicy/Win32/WindowModeGameWin32Policy.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowPolicy/Win32/BorderlessGameWin32Policy.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowPolicy/BasicSystemPolicy.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/WindowPolicy/GameSystemPolicy.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Window/BaseWindowDetails.h"

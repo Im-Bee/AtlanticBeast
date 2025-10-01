@@ -17,67 +17,66 @@ class BorderlessGameWin32Policy : public WindowModeGameWin32WindowPolicy
 {
 public:
 
-	BorderlessGameWin32Policy() = default;
-	~BorderlessGameWin32Policy() = default;
+    BorderlessGameWin32Policy() = default;
+    ~BorderlessGameWin32Policy() = default;
 
-	BorderlessGameWin32Policy(const BorderlessGameWin32Policy&) = default;
-	BorderlessGameWin32Policy(BorderlessGameWin32Policy&&) noexcept = default;
+    BorderlessGameWin32Policy(const BorderlessGameWin32Policy&) = default;
+    BorderlessGameWin32Policy(BorderlessGameWin32Policy&&) noexcept = default;
 
 public:
 
-	void OnPreWcex() override
-	{
-		WindowDesc* pWd = this->GetWindowDesc();
+    void OnPreWcex() override
+    {
+        WindowDesc* pWd = this->GetWindowDesc();
 
-		pWd->pwszClassName = L"GameAtlanticClass";
+        pWd->pwszClassName = L"BorderlessGameAtlanticClass";
 
-		memset(&pWd->Wcex, 0, sizeof(WNDCLASSEX));
+        memset(&pWd->Wcex, 0, sizeof(WNDCLASSEX));
 
-		pWd->Wcex.cbSize = sizeof(WNDCLASSEX);
-		pWd->Wcex.style = CS_HREDRAW | CS_VREDRAW;
-		pWd->Wcex.hInstance = GetModuleHandle(NULL);
-		pWd->Wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-		pWd->Wcex.lpszClassName = pWd->pwszClassName;
-		pWd->Wcex.lpfnWndProc = WindowProc<WindowModeGameWin32WindowPolicy>;
+        pWd->Wcex.cbSize		= sizeof(WNDCLASSEX);
+        pWd->Wcex.style			= CS_HREDRAW | CS_VREDRAW;
+        pWd->Wcex.hInstance		= GetModuleHandle(NULL);
+        pWd->Wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
+        pWd->Wcex.lpszClassName = pWd->pwszClassName;
+        pWd->Wcex.lpfnWndProc	= WindowProc<WindowModeGameWin32WindowPolicy>;
 
-		DEVMODE dm;
+        DEVMODE dm;
 
-		::ZeroMemory(&dm, sizeof(dm));
-		dm.dmSize = sizeof(dm);
+        ::ZeroMemory(&dm, sizeof(dm));
+        dm.dmSize = sizeof(dm);
 
-		if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm)) {
-			pWd->Width = dm.dmPelsWidth;
-			pWd->Height = dm.dmPelsHeight;
-		}
-	}
+        if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm)) {
+            pWd->Width = dm.dmPelsWidth;
+            pWd->Height = dm.dmPelsHeight;
+        }
+    }
 
-	void OnPreRegister() override
-	{
-		WindowDesc* pWd = this->GetWindowDesc();
+    void OnPreRegister() override
+    {
+        WindowDesc* pWd = this->GetWindowDesc();
 
-		HWND hwnd = CreateWindowEx(WS_EX_APPWINDOW,
-								   pWd->pwszClassName,
-								   pWd->Name.c_str(),
-								   WS_POPUP,
-								   CW_USEDEFAULT,
-								   CW_USEDEFAULT,
-								   pWd->Width,
-								   pWd->Height,
-								   NULL,
-								   NULL,
-								   GetModuleHandle(NULL),
-								   this);
+        HWND hwnd = CreateWindowEx(WS_EX_APPWINDOW,
+                                   pWd->pwszClassName,
+                                   pWd->Name.c_str(),
+                                   WS_POPUP,
+                                   CW_USEDEFAULT,
+                                   CW_USEDEFAULT,
+                                   pWd->Width,
+                                   pWd->Height,
+                                   NULL,
+                                   NULL,
+                                   GetModuleHandle(NULL),
+                                   this);
 
-		if (hwnd == NULL) {
-			AB_LOG(Core::Debug::Error, L"Couldn't CreateWindow(), last error %u", GetLastError());
-			return;
-		}
+        if (hwnd == NULL) {
+            AB_LOG(Core::Debug::Error, L"Couldn't CreateWindow(), last error %u", GetLastError());
+            return;
+        }
 
-		pWd->Hwnd = hwnd;
-	}
+        pWd->Hwnd = hwnd;
+    }
 };
 
 } // !App
-
 #endif // !AB_BORDERLESS_GAME_WIN32_POLICY_H
 #endif // !_WIN32

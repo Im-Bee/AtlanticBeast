@@ -1,5 +1,4 @@
 #ifdef _WIN32
-
 #ifndef AB_GAME_POLICY_H
 #define AB_GAME_POLICY_H
 

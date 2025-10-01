@@ -56,7 +56,6 @@ uint32_t BasicWin32WindowPolicy::CreateImpl(WindowDesc* pWd)
 
         if (hwnd == NULL) {
             AB_LOG(Core::Debug::Error, L"Couldn't CreateWindow(), last error %u", GetLastError());
-
             return -1;
         }
 

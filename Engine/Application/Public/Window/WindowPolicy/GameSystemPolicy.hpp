@@ -13,7 +13,7 @@ namespace App
 
 typedef 
 #if _WIN32
-	BorderlessGameWin32Policy
+	WindowModeGameWin32WindowPolicy
 #elif __linux__
 	GameLinuxWindowPolicy
 #endif // !_WIN32

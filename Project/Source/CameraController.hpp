@@ -44,6 +44,8 @@ public:
             Voxels::Voxel v;
             v.Type = 1;
             v.RGBA = (m_uColor += 12739871) | 0x999999FF;
+            v.MaterialReflect = 0.4f;
+            v._Padding2 = 0;
             m_vg->ModifyVoxel(static_cast<size_t>((hr.HitCoords.x + hr.Normal.x) +
                 (hr.HitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() +
                 (hr.HitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth()),
@@ -62,10 +64,9 @@ public:
         {
             Voxels::Voxel v;
             v.Type = 0;
-            v.RGBA = 0x0;
             m_vg->ModifyVoxel(hr.HitCoords.x +
-                hr.HitCoords.y * m_vg->GetGridWidth() +
-                hr.HitCoords.z * m_vg->GetGridWidth() * m_vg->GetGridWidth(), v);
+                              hr.HitCoords.y * m_vg->GetGridWidth() +
+                              hr.HitCoords.z * m_vg->GetGridWidth() * m_vg->GetGridWidth(), v);
         }
     }
 
@@ -102,9 +103,9 @@ class PaperController : public App::ControllerObject
 {
 public:
 
-	PaperController() = default;
+    PaperController() = default;
 
-	~PaperController() = default;
+    ~PaperController() = default;
 
 public:
 
@@ -147,22 +148,22 @@ public:
     PlayablePaper()
         : m_Character(::std::make_shared<PaperCharacter>())
         , m_Controller()
-	{ }
+    { }
 
-	~PlayablePaper() = default;
+    ~PlayablePaper() = default;
 
 public:
 
     void BindToInput(const ::std::shared_ptr<App::UserInput>& pInput);
 
     ::std::shared_ptr<PaperCharacter>& GetCharacter()
-	{
-		return m_Character;
-	}
+    {
+        return m_Character;
+    }
 
 private:
 
-	::std::shared_ptr<PaperCharacter> m_Character;
-	PaperController m_Controller;
+    ::std::shared_ptr<PaperCharacter> m_Character;
+    PaperController m_Controller;
 
 };
