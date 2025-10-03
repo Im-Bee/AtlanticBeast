@@ -1,4 +1,6 @@
 #include "Raycaster/Renderer.hpp"
+
+#include "Vulkan/ErrorHandling.hpp"
 #include "Math/Consts.hpp"
 
 namespace Voxels

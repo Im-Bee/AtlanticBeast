@@ -41,7 +41,7 @@ Pipeline::~Pipeline()
     if (m_VoxelBufferMemory != VK_NULL_HANDLE) {
         vkFreeMemory(m_pDeviceAdapter->GetAdapterHandle(), m_VoxelBufferMemory, NULL);
     }
-    
+ 
     if (m_ComputePipeline != VK_NULL_HANDLE) {
         vkDestroyPipeline(m_pDeviceAdapter->GetAdapterHandle(), m_ComputePipeline, NULL);
         m_ComputePipeline = VK_NULL_HANDLE;

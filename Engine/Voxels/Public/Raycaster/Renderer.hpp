@@ -1,7 +1,6 @@
 #ifndef AB_RENDERER_H
 #define AB_RENDERER_H
 
-#include "Vulkan/ErrorHandling.hpp"
 #include "Vulkan/Instance.hpp"
 #include "Vulkan/RTXHardware.hpp"
 #include "Vulkan/RTXDeviceAdapter.hpp"
@@ -71,7 +70,9 @@ private:
 
     VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const RTXDeviceAdapter> da, VkCommandPool cmdPool);
 
-    ::std::vector<FrameResources> CreateFrameResources(::std::shared_ptr<const RTXDeviceAdapter> da, VkCommandPool cmdPool, size_t uFrames);
+    ::std::vector<FrameResources> CreateFrameResources(::std::shared_ptr<const RTXDeviceAdapter> da,
+                                                       VkCommandPool cmdPool,
+                                                       size_t uFrames);
 
     void RecordCommands(VkCommandBuffer& cmdBuff,
                         const ::std::shared_ptr<Pipeline>& pipeline, 
