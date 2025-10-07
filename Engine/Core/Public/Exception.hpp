@@ -7,14 +7,14 @@
 namespace Core
 {
 
-class Exception : public ::std::exception
+class BEAST_API Exception : public ::std::exception
 {
     
     static constexpr int32_t InvalidLine = -1;
 
 public:
 
-    BEAST_API explicit Exception(const char*  szMessage       = nullptr,
+    explicit Exception(const char*  szMessage       = nullptr,
                                  size_t       uMesLen         = 0,
                                  int32_t      uLine           = InvalidLine,
                                  const char*  szFileName      = nullptr,
@@ -27,15 +27,15 @@ public:
         : Exception(pszMessage, uMesLen, uLine, pszFileName, uFileNameLen)
     { }
 
-    BEAST_API ~Exception() noexcept;
+    ~Exception() noexcept;
 
-    BEAST_API Exception(const Exception&) noexcept;
+    Exception(const Exception&) noexcept;
 
-    BEAST_API Exception(Exception&&) noexcept = default;
+    Exception(Exception&&) noexcept = default;
 
 public: 
 
-    BEAST_API virtual const char* what() const noexcept final override;
+    virtual const char* what() const noexcept final override;
 
 private:
 
