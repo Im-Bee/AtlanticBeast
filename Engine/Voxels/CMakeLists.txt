@@ -20,6 +20,7 @@ SET(VOXELS_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Object.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Camera.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/ErrorHandling.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/GPUBuffer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/Instance.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/RTXHardware.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/RTXDeviceAdapter.hpp"

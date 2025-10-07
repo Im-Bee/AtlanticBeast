@@ -12,32 +12,38 @@ typedef struct AbActionType {
 
 typedef uint8_t AbKeyId;
 
-typedef enum EKeyState {
+typedef enum EState {
     IsPressed = 1,
     IsReleased = IsPressed << 1,
-} EKeyState;
+} EState;
 
-typedef enum EAbOnKeyState {
+typedef enum EAbOnState {
     Release = 1,
     Press = Release << 1,
     Continuous = Press << 1,
-} EAbOnKeyState;
+} EAbOnState;
  
 typedef enum EAbBindType {
     Keyboard = 1,
     Mouse = Keyboard << 1,
+    MouseButton = Mouse << 1,
 } EAbBindType;
 
 typedef struct AbKeyboardBind {
-    EAbOnKeyState KeyState;
+    EAbOnState KeyState;
     AbKeyId KeyCode;
 } AbKeyboardBind;
+
+typedef struct AbMouseButtonBind {
+    EAbOnState ButtonState;
+} AbMouseButtonBind;
 
 typedef struct AbInputBind {
     EAbBindType Type;
 
     union {
-        AbKeyboardBind keyboard;
+        AbKeyboardBind Keyboard;
+        AbMouseButtonBind MouseButton;
     };
 } AbInputBind;
 

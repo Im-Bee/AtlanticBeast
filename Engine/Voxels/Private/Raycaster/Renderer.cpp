@@ -1,4 +1,9 @@
 #include "Raycaster/Renderer.hpp"
+
+#include "Raycaster/Pipeline.hpp"
+#include "Raycaster/VoxelFrameResources.hpp"
+#include "Raycaster/VoxelGrid.hpp"
+#include "Vulkan/ErrorHandling.hpp"
 #include "Math/Consts.hpp"
 
 namespace Voxels
@@ -14,15 +19,15 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
     m_pHardware         = make_shared<RTXHardware>(m_pInstance);
     m_pDeviceAdapter    = make_shared<RTXDeviceAdapter>(m_pHardware);
     m_pWindowDesc       = wd;
-    m_pSwapChain        = make_unique<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, wd);
     m_pVoxelGrid        = vg;
     m_pPipeline         = make_shared<Pipeline>(m_pHardware, m_pDeviceAdapter);
 
     m_CommandPool = CreateCommandPool(m_pDeviceAdapter, m_pDeviceAdapter->GetQueueFamilyIndex());
 
     m_pPipeline->ReserveGridBuffer(m_pVoxelGrid);
-
-    m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter, m_CommandPool, MAX_FRAMES_IN_FLIGHT));
+    
+    // Recreating swap chain also creates frame resources and initializes swap chain
+    RecreateSwapChain();
 
     if (m_pCamera == nullptr) {
         m_pCamera = make_shared<Camera>();
@@ -32,7 +37,7 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Update()
 {
-    m_pPipeline->LoadGrid(m_pVoxelGrid);
+    m_pPipeline->LoadGrid(m_pVoxelGrid, m_vFrames[m_uCurrentFrame].VoxelBuffer);
 
     Vec3 rot = m_pCamera->GetRotation();
     Vec3 rotVec = Normalize(RotateY(RotateX(Vec3 { 0.f, 0.f, 1.f }, rot.x), rot.y));
@@ -185,10 +190,14 @@ VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const RTXDeviceA
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-vector<FrameResources> Renderer::CreateFrameResources(::std::shared_ptr<const RTXDeviceAdapter> da, VkCommandPool cmdPool, size_t uFrames)
+vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_ptr<const RTXDeviceAdapter>& da,
+                                                           const ::std::shared_ptr<Pipeline>& pipeline,
+                                                           const ::std::shared_ptr<const VoxelGrid>& vg,
+                                                           VkCommandPool cmdPool,
+                                                           size_t uFrames)
 {
     VkDevice device = da->GetAdapterHandle();
-    vector<FrameResources> result(uFrames);
+    vector<VoxelFrameResources> result(uFrames);
     VkSemaphoreCreateInfo semaphoreInfo = { };
     VkFenceCreateInfo fenceInfo = { };
 
@@ -207,6 +216,7 @@ vector<FrameResources> Renderer::CreateFrameResources(::std::shared_ptr<const RT
         }
 
         result[i].CommandBuffer = CreateCommandBuffer(da, cmdPool);
+        result[i].VoxelBuffer = std::move(pipeline->ReserveGridBuffer(vg));
     }
 
     return result;
@@ -299,7 +309,7 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::sh
     voxelBufferBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
     voxelBufferBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     voxelBufferBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    voxelBufferBarrier.buffer = m_pPipeline->m_VoxelGPUBuffer;
+    voxelBufferBarrier.buffer = m_vFrames[m_uCurrentFrame].VoxelBuffer.GetBufferHandle();
     voxelBufferBarrier.offset = 0;
     voxelBufferBarrier.size = VK_WHOLE_SIZE;
 
@@ -338,7 +348,11 @@ void Renderer::RecreateSwapChain()
 
     m_pSwapChain = nullptr;
     m_pSwapChain = make_unique<Swapchain>(m_pInstance, m_pHardware, m_pDeviceAdapter, m_pWindowDesc);
-    m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter, m_CommandPool, MAX_FRAMES_IN_FLIGHT));
+    m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter,
+                                               m_pPipeline,
+                                               m_pVoxelGrid,
+                                               m_CommandPool,
+                                               MAX_FRAMES_IN_FLIGHT));
     m_uCurrentFrame = 0;
     AB_LOG(Core::Debug::Info, L"Swapchain recreated");
 }

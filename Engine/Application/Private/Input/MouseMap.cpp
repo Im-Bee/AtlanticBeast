@@ -1,4 +1,7 @@
 #include "Input/MouseMap.hpp"
+#include "Core.h"
+#include "Debug/Assert.h"
+#include "Debug/Logger.hpp"
 
 namespace App
 {
@@ -19,11 +22,15 @@ void MouseMap::UnbindActionImpl(const AbInputBind& ib, void* pThis)
 	AB_ASSERT(ib.Type == EAbBindType::Mouse);
     AB_ASSERT(pThis != nullptr);
 
-    for (auto it = m_vMouseBinds.begin(); it != m_vMouseBinds.end(); ++it) {
+    auto it = m_vMouseBinds.begin();
+    for (; it != m_vMouseBinds.end(); ++it) {
         if (it->pThis == pThis) {
             m_vMouseBinds.erase(it);
+            return;
         }
     }
+
+    AB_ASSERT(it != m_vMouseBinds.end());
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

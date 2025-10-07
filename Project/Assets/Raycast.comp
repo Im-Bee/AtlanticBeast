@@ -39,7 +39,13 @@ const bool coloredBySky = false;
 const vec3  lightPos    = vec3(20.0, 24.0, 10.0);
 const vec3  lightColor  = vec3(1., 1., 1.);
 
-bool MarchTheRay(vec3 ro, vec3 rd, int maxSteps, out ivec3 hitCoords, out int hitIndex, out float distance, out vec3 normal)
+bool MarchTheRay(vec3 ro,
+                 vec3 rd,
+                 int maxSteps,
+                 out ivec3 hitCoords,
+                 out int hitIndex,
+                 out float distance,
+                 out vec3 normal)
 {
     vec3 pos = floor(ro);
     ivec3 voxel = ivec3(pos);
@@ -198,7 +204,11 @@ float SoftShadowRay(vec3 from, vec3 to, in vec3 normal, int maxDistance)
     return shadow;
 }
 
-vec3 PhongShadows(in vec3 camPos, in vec3 pos, in vec3 coord, in vec3 normal, in int maxDistance)
+vec3 PhongShadows(in vec3 camPos,
+                  in vec3 pos,
+                  in vec3 coord,
+                  in vec3 normal,
+                  in int maxDistance)
 {
     const float ambientStrength     = 0.1;
     const float diffuseStrength     = 0.8;
@@ -214,14 +224,20 @@ vec3 PhongShadows(in vec3 camPos, in vec3 pos, in vec3 coord, in vec3 normal, in
     // float shadow = ShadowRay(pos, lightPos, int(maxDistance * 0.5)) ? 0.05 : 1.0;
     float shadow = SoftShadowRay(pos, lightPos, normal, int(maxDistance));
 
-    vec3 ambient    = ambientStrength * lightColor ;
+    vec3 ambient    = ambientStrength * lightColor;
     vec3 diffuse    = diffuseStrength * diff * lightColor * shadow;
     vec3 specular   = specularStrength * spec * lightColor * shadow;
 
     return ambient + diffuse + specular;
 }
 
-vec3 Reflection(vec3 from, vec3 to, int maxSteps, uint bounces, vec3 normal, vec3 baseColor, float MaterialReflect)
+vec3 Reflection(vec3 from,
+                vec3 to,
+                int maxSteps,
+                uint bounces,
+                vec3 normal,
+                vec3 baseColor,
+                float MaterialReflect)
 {
     float localReflect = MaterialReflect;
 

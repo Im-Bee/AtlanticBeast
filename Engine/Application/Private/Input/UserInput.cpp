@@ -1,4 +1,6 @@
 #include "Input/UserInput.hpp"
+#include "Core.h"
+#include "Debug/Logger.hpp"
 #include "Input/InputEvents.h"
 #include "Input/ControllerObject.hpp"
 
@@ -10,7 +12,7 @@ using namespace Core;
 // ---------------------------------------------------------------------------------------------------------------------
 void UserInput::StartCapturing()
 { 
-    if (!m_bIsCapturing && m_pWindowDesc)
+    if (!m_bIsCapturing && this->GetWindowDesc())
         m_bIsCapturing = true;
 }
 
@@ -36,9 +38,9 @@ void UserInput::Update()
         }
     }
     
-    while (!m_pWindowDesc->InputStruct.empty()) {
-        AbInputStruct& is = m_pWindowDesc->InputStruct.front();
-        m_pWindowDesc->InputStruct.pop();
+    while (!this->GetWindowDesc()->InputStruct.empty()) {
+        AbInputStruct& is = this->GetWindowDesc()->InputStruct.front();
+        this->GetWindowDesc()->InputStruct.pop();
 
         switch (is.Event) {
             case EAbInputEvents::AbKeyPress: {
@@ -85,7 +87,7 @@ void UserInput::Update()
         }
 
 		// Consume the input event
-		m_pWindowDesc->LastEvent &= ~EAbWindowEvents::Input;
+		this->GetWindowDesc()->LastEvent &= ~EAbWindowEvents::Input;
     }
 }
 
@@ -99,57 +101,61 @@ void UserInput::Bind(void* pThis, ControllerObject* pCo, AbAction action, AbMous
 
     if (bind.Type & EAbBindType::Keyboard) 
     {
-        if (bind.keyboard.KeyCode <= AB_INVALID_KEY || bind.keyboard.KeyCode >= AB_KEY_COUNT) {
+        if (bind.Keyboard.KeyCode <= AB_INVALID_KEY || bind.Keyboard.KeyCode >= AB_KEY_COUNT) {
             AB_LOG(Debug::Error, L"Key code is an invalid code (code outside of boundries for keys).");
             AB_LOG(Debug::Error, L"Can't bind the action for the keyboard.");
             AB_LOG(Debug::Error, L"Action wasn't bound.");
             return;
         }
 
-        if (bind.keyboard.KeyState & EAbOnKeyState::Press) {
+        if (bind.Keyboard.KeyState & EAbOnState::Press) {
             m_KeyPressMap.BindAction(bind, pThis, action, nullptr);
         }
-        else if (bind.keyboard.KeyState & EAbOnKeyState::Release) {
+        else if (bind.Keyboard.KeyState & EAbOnState::Release) {
             m_KeyReleaseMap.BindAction(bind, pThis, action, nullptr);
         }
-        else if (bind.keyboard.KeyState & EAbOnKeyState::Continuous) {
+        else if (bind.Keyboard.KeyState & EAbOnState::Continuous) {
             m_KeyContinuous.BindAction(bind, pThis, action, nullptr);
         }
-
-        m_BindsHandles[pThis].push_back(bind);
     }
     else if (bind.Type & EAbBindType::Mouse) {
         m_MouseMap.BindAction(bind, pThis, nullptr, mouseAction);
     }
+
+    m_BindsHandles[pCo].push_back({ bind, pThis });
+    AB_LOG(Core::Debug::Info, L"New bind for %p, type %d", pCo, bind.Type);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void UserInput::Unbind(void* pThis)
+void UserInput::Unbind(ControllerObject* pCo)
 {
-    const auto& handle = m_BindsHandles.find(pThis);
+    const auto& handle = m_BindsHandles.find(pCo);
     
     if (handle == m_BindsHandles.end()) {
-        AB_LOG(Debug::Warning, L"Cannot unbind this bind from this UserInput, because UserInput doesn't handles it.");
+        AB_LOG(Debug::Warning, L"Cannot unbind this bind from this UserInput, because UserInput doesn't handles it. "
+                                "%p", pCo);
         return;
     }
+    AB_LOG(Core::Debug::Info, L"Unbind for %p", pCo);
 
-    for (const auto& inputBind : handle->second) {
+    for (const auto& bindHandle : handle->second) {
+        auto& inputBind = bindHandle.Ib;
 
         if (inputBind.Type & EAbBindType::Keyboard) 
         {
-            if (inputBind.keyboard.KeyState & EAbOnKeyState::Press) {
-                m_KeyPressMap.UnbindAction(inputBind, pThis);
+            if (inputBind.Keyboard.KeyState & EAbOnState::Press) {
+                m_KeyPressMap.UnbindAction(inputBind, bindHandle.pThis);
             }
-            else if (inputBind.keyboard.KeyState & EAbOnKeyState::Release) {
-                m_KeyReleaseMap.UnbindAction(inputBind, pThis);
+            else if (inputBind.Keyboard.KeyState & EAbOnState::Release) {
+                m_KeyReleaseMap.UnbindAction(inputBind, bindHandle.pThis);
             }
-            else if (inputBind.keyboard.KeyState & EAbOnKeyState::Continuous) {
-                m_KeyContinuous.UnbindAction(inputBind, pThis);
+            else if (inputBind.Keyboard.KeyState & EAbOnState::Continuous) {
+                m_KeyContinuous.UnbindAction(inputBind, bindHandle.pThis);
             }
         }
         else if (inputBind.Type & EAbBindType::Mouse)
         {
-            m_MouseMap.UnbindAction(inputBind, pThis);
+            m_MouseMap.UnbindAction(inputBind, bindHandle.pThis);
         }
     }
 

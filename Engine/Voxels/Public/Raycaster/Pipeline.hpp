@@ -1,6 +1,7 @@
 #ifndef AB_PIPELINE_H
 #define AB_PIPELINE_H
 
+#include "Vulkan/GPUBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Vulkan/RTXDeviceAdapter.hpp"
 #include "Raycaster/PushConstants.hpp"
@@ -24,9 +25,9 @@ public:
 
 public:
 
-    BEAST_VOXEL_API void ReserveGridBuffer(::std::shared_ptr<const VoxelGrid> vg);
+    BEAST_VOXEL_API GPUBuffer ReserveGridBuffer(::std::shared_ptr<const VoxelGrid> vg);
 
-    BEAST_VOXEL_API void LoadGrid(const ::std::shared_ptr<const VoxelGrid>& vg);
+    BEAST_VOXEL_API void LoadGrid(const ::std::shared_ptr<const VoxelGrid>& vg, GPUBuffer& outBuffer);
 
     BEAST_VOXEL_API void LoadImage(VkImage image);
 
@@ -96,9 +97,6 @@ private:
     VkPipeline              m_ComputePipeline   = VK_NULL_HANDLE;
 
     VkImageView m_ImageView = VK_NULL_HANDLE;
-
-    VkBuffer        m_VoxelGPUBuffer        = VK_NULL_HANDLE;
-    VkDeviceMemory  m_VoxelBufferMemory     = VK_NULL_HANDLE;
 };
 
 } // !Voxels

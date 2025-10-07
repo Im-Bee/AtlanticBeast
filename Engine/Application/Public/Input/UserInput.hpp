@@ -18,8 +18,8 @@ class UserInput : public WindowListener
 public:
 
     BEAST_API explicit UserInput(::std::shared_ptr<WindowDesc> pWd = nullptr)
-        : m_bIsCapturing(false)
-        , m_pWindowDesc(pWd)
+        : WindowListener(pWd)
+        , m_bIsCapturing(false)
         , m_KeyReleaseMap()
         , m_KeyPressMap()
         , m_KeyContinuous()
@@ -38,6 +38,8 @@ public:
     BEAST_API void StopCapturing();
 
     /**
+     * @brief Binds an action or mouse action to a key or mouse.
+     *
      * @param pThis - pointer to an object on which we are performing action
      * @param pCo - pointer to an object that controlls life time of pThis
      * @param action - action to be performed, should be null, if we are performing mouse action instead
@@ -46,7 +48,7 @@ public:
      **/
     BEAST_API void Bind(void* pThis, ControllerObject* pCo, AbAction action, AbMouseAction mouseAction, AbInputBind bind);
 
-    BEAST_API void Unbind(void* pThis);
+    BEAST_API void Unbind(ControllerObject* pCo);
     
     /**
      * Reads and consumes the input queue from WindowDesc.
@@ -56,11 +58,17 @@ public:
 
 private:
 
+    struct BindHandle
+    {
+        AbInputBind Ib;
+        void* pThis;
+    };
+
+private:
+
     bool m_bIsCapturing;
 
-    ::std::shared_ptr<WindowDesc> m_pWindowDesc;
-
-    ::std::unordered_map<void*, ::std::vector<AbInputBind>> m_BindsHandles;
+    ::std::unordered_map<void*, ::std::vector<BindHandle>> m_BindsHandles;
 
     ::std::bitset<AB_KEY_COUNT> m_vCurrentlyPressedKeys;
 
