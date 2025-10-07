@@ -8,7 +8,7 @@ namespace Voxels
 using namespace std;
 
 // RTXDeviceAdapter // ----------------------------------------------------------------------------------------------------
-RTXDeviceAdapter::RTXDeviceAdapter(shared_ptr<const RTXHardware> gpu)
+RTXDeviceAdapter::RTXDeviceAdapter(shared_ptr<const WrapperHardware> gpu)
     : m_pHardware(gpu)
     , m_uQueueFamily(FindQueueFamilyIndex(m_pHardware))
     , m_Device(CreateDeviceAdapter(m_pHardware, m_uQueueFamily))
@@ -27,7 +27,7 @@ RTXDeviceAdapter::~RTXDeviceAdapter()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(shared_ptr<const RTXHardware>& gpu)
+uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(shared_ptr<const WrapperHardware>& gpu)
 {
     uint32_t                            uFamilyIndex    = 0;
     uint32_t                            uFamilyCount;
@@ -58,7 +58,7 @@ uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(shared_ptr<const RTXHardware>& g
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDevice RTXDeviceAdapter::CreateDeviceAdapter(shared_ptr<const RTXHardware>& gpu, uint32_t uQueueIndex)
+VkDevice RTXDeviceAdapter::CreateDeviceAdapter(shared_ptr<const WrapperHardware>& gpu, uint32_t uQueueIndex)
 { 
     VkDevice                                            device                                  = VK_NULL_HANDLE;
     VkDeviceCreateInfo                                  createInfo;

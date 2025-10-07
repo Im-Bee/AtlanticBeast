@@ -9,8 +9,8 @@ using namespace std;
 
 // RTXHardware // ---------------------------------------------------------------------------------------------------------
 RTXHardware::RTXHardware(shared_ptr<const Instance> pInstance)
-    : m_pInstance(pInstance)
-    , WrapperHardware((ChooseGPU(m_pInstance)))
+    : WrapperHardware(ChooseGPU(pInstance))
+    , m_pInstance(pInstance)
 { 
     AB_LOG(Core::Debug::Info, L"Creating a hardware!");
 }
@@ -22,6 +22,7 @@ VkPhysicalDevice RTXHardware::ChooseGPU(const shared_ptr<const Instance>& pInsta
     vector<VkPhysicalDevice>    vPhysicalDevices        = GetPhysicalDevices(pInstance->GetInstance());
 
     VkPhysicalDeviceProperties                          deviceProperties;
+
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR       rayTracingPipelineFeatures;
     VkPhysicalDeviceAccelerationStructureFeaturesKHR    accelStructFeatures;
     VkPhysicalDeviceBufferDeviceAddressFeatures         bufferAddressFeatures;

@@ -23,10 +23,10 @@ public:
 
     BEAST_VOXEL_API Swapchain() = default;
 
-    BEAST_VOXEL_API explicit Swapchain(::std::shared_ptr<const Instance> inst,
-                                       ::std::shared_ptr<const RTXHardware> hw,
-                                       ::std::shared_ptr<const RTXDeviceAdapter> da,
-                                       ::std::shared_ptr<const WindowDesc> wd);
+    BEAST_VOXEL_API Swapchain(::std::shared_ptr<const Instance> inst,
+                              ::std::shared_ptr<const WrapperHardware> hw,
+                              ::std::shared_ptr<const RTXDeviceAdapter> da,
+                              ::std::shared_ptr<const WindowDesc> wd);
 
     BEAST_VOXEL_API ~Swapchain();
 
@@ -46,16 +46,16 @@ private:
     VkSurfaceKHR CreateSurface(::std::shared_ptr<const Instance>& pInstance,
                                ::std::shared_ptr<const WindowDesc>& pWindowDesc);
 
-    VkSurfaceCapabilitiesKHR GetCapabilitesInternal(::std::shared_ptr<const RTXHardware> pHardware, VkSurfaceKHR surface);
+    VkSurfaceCapabilitiesKHR GetCapabilitesInternal(::std::shared_ptr<const WrapperHardware> pHardware, VkSurfaceKHR surface);
 
     VkExtent2D GetExtentInternal(VkSurfaceCapabilitiesKHR& capabilities, 
                                  ::std::shared_ptr<const WindowDesc> pWindowDesc);
     
     uint32_t GetImageCountInternal(VkSurfaceCapabilitiesKHR& capabilities);
 
-    VkSurfaceFormatKHR PickFormat(::std::shared_ptr<const RTXHardware>& pHardware, VkSurfaceKHR surface);
+    VkSurfaceFormatKHR PickFormat(::std::shared_ptr<const WrapperHardware>& pHardware, VkSurfaceKHR surface);
 
-    VkPresentModeKHR PickMode(::std::shared_ptr<const RTXHardware>& pHardware, VkSurfaceKHR surface);
+    VkPresentModeKHR PickMode(::std::shared_ptr<const WrapperHardware>& pHardware, VkSurfaceKHR surface);
 
     VkSwapchainKHR CreateSwapChain(::std::shared_ptr<const RTXDeviceAdapter>& pAdapter,
                                    VkSurfaceKHR surface,
@@ -73,10 +73,10 @@ private:
 
 private:
 
-    ::std::shared_ptr<const Instance>       m_pInstance         = nullptr;
-    ::std::shared_ptr<const RTXHardware>       m_pHardware         = nullptr;
-    ::std::shared_ptr<const RTXDeviceAdapter>  m_pDeviceAdapter    = nullptr;
-    ::std::shared_ptr<const WindowDesc>     m_pWindowDesc       = nullptr;
+    ::std::shared_ptr<const Instance>           m_pInstance         = nullptr;
+    ::std::shared_ptr<const WrapperHardware>    m_pHardware         = nullptr;
+    ::std::shared_ptr<const RTXDeviceAdapter>   m_pDeviceAdapter    = nullptr;
+    ::std::shared_ptr<const WindowDesc>         m_pWindowDesc       = nullptr;
 
     VkSurfaceKHR                m_Surface       = VK_NULL_HANDLE;
     VkSurfaceCapabilitiesKHR    m_Capabilities  = { };

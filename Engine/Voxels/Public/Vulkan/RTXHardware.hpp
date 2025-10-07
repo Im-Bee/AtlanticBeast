@@ -7,7 +7,6 @@
 namespace Voxels
 {
 
-
 /**
 * Hardware wrapper that selects a GPU with features:
 * - rayTracingPipeline

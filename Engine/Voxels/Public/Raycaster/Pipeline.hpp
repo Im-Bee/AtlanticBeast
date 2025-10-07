@@ -18,7 +18,7 @@ class Pipeline
 
 public:
 
-    BEAST_VOXEL_API Pipeline(::std::shared_ptr<const RTXHardware> hw,
+    BEAST_VOXEL_API Pipeline(::std::shared_ptr<const WrapperHardware> hw,
                              ::std::shared_ptr<const RTXDeviceAdapter> da);
 
     BEAST_VOXEL_API ~Pipeline();
@@ -81,7 +81,7 @@ private:
 
 private:
     
-    ::std::shared_ptr<const RTXHardware>       m_pHardware         = nullptr;
+    ::std::shared_ptr<const WrapperHardware>   m_pHardware         = nullptr;
     ::std::shared_ptr<const RTXDeviceAdapter>  m_pDeviceAdapter    = nullptr;
     ::std::shared_ptr<const Swapchain>         m_pSwapChain        = nullptr;
 

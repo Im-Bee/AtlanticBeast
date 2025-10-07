@@ -11,7 +11,7 @@ namespace Voxels
 using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
-Pipeline::Pipeline(::std::shared_ptr<const RTXHardware> hw, 
+Pipeline::Pipeline(::std::shared_ptr<const WrapperHardware> hw, 
                    ::std::shared_ptr<const RTXDeviceAdapter> da)
     : m_pHardware(hw)
     , m_pDeviceAdapter(da)

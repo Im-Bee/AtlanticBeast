@@ -2,6 +2,7 @@
 #define AB_DEVICE_ADAPTER_H
 
 #include "RTXHardware.hpp"
+#include "Vulkan/WrapperHardware.hpp"
 
 namespace Voxels
 {
@@ -10,7 +11,7 @@ class RTXDeviceAdapter
 {
 public:
 
-    BEAST_VOXEL_API RTXDeviceAdapter(::std::shared_ptr<const RTXHardware> gpu);
+    BEAST_VOXEL_API RTXDeviceAdapter(::std::shared_ptr<const WrapperHardware> gpu);
 
     BEAST_VOXEL_API ~RTXDeviceAdapter();
     
@@ -27,15 +28,15 @@ public:
 
 private:
 
-    uint32_t FindQueueFamilyIndex(::std::shared_ptr<const RTXHardware>& gpu);
+    uint32_t FindQueueFamilyIndex(::std::shared_ptr<const WrapperHardware>& gpu);
 
-    VkDevice CreateDeviceAdapter(::std::shared_ptr<const RTXHardware>& gpu, uint32_t uQueueIndex);
+    VkDevice CreateDeviceAdapter(::std::shared_ptr<const WrapperHardware>& gpu, uint32_t uQueueIndex);
 
     VkQueue CreateQueue(VkDevice dv, uint32_t uQueueIndex);
 
 private:
 
-    ::std::shared_ptr<const RTXHardware> m_pHardware = nullptr;
+    ::std::shared_ptr<const WrapperHardware> m_pHardware = nullptr;
 
     uint32_t m_uQueueFamily = 0;
 

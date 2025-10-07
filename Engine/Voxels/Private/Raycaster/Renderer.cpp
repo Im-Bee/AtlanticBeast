@@ -5,6 +5,7 @@
 #include "Raycaster/VoxelGrid.hpp"
 #include "Vulkan/ErrorHandling.hpp"
 #include "Math/Consts.hpp"
+#include "Vulkan/MinimalHardware.hpp"
 
 namespace Voxels
 {
@@ -16,7 +17,7 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
                           ::std::shared_ptr<VoxelGrid> vg) 
 {
     m_pInstance         = make_shared<Instance>();
-    m_pHardware         = make_shared<RTXHardware>(m_pInstance);
+    m_pHardware         = make_shared<MinimalHardware>(m_pInstance);
     m_pDeviceAdapter    = make_shared<RTXDeviceAdapter>(m_pHardware);
     m_pWindowDesc       = wd;
     m_pVoxelGrid        = vg;

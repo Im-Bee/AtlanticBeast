@@ -1,6 +1,7 @@
 #include "Vulkan/SwapChain.hpp"
 
 #include "Vulkan/ErrorHandling.hpp"
+#include "Vulkan/WrapperHardware.hpp"
 
 
 namespace Voxels
@@ -10,7 +11,7 @@ using namespace std;
 
 // Swapchain // --------------------------------------------------------------------------------------------------------
 Swapchain::Swapchain(shared_ptr<const Instance> pInst, 
-                     shared_ptr<const RTXHardware> hw,
+                     shared_ptr<const WrapperHardware> hw,
                      shared_ptr<const RTXDeviceAdapter> da,
                      shared_ptr<const WindowDesc> wd)
     : m_pInstance(pInst)
@@ -84,7 +85,8 @@ VkSurfaceKHR Swapchain::CreateSurface(shared_ptr<const Instance>& pInstance, sha
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkSurfaceCapabilitiesKHR Swapchain::GetCapabilitesInternal(shared_ptr<const RTXHardware> pHardware, VkSurfaceKHR surface)
+VkSurfaceCapabilitiesKHR Swapchain::GetCapabilitesInternal(shared_ptr<const WrapperHardware> pHardware,
+                                                           VkSurfaceKHR surface)
 {
     VkSurfaceCapabilitiesKHR capabilities;
 
@@ -167,7 +169,7 @@ VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const RTXDeviceAdapter>& pA
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const RTXHardware>& pHardware, VkSurfaceKHR surface)
+VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const WrapperHardware>& pHardware, VkSurfaceKHR surface)
 {
     VkPhysicalDevice            physicalDeviceHandle    = pHardware->GetPhysicalDevice();
     uint32_t                    uFormatCount            = 0;
@@ -214,7 +216,7 @@ VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const RTXHardware>& pHardwar
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPresentModeKHR Swapchain::PickMode(shared_ptr<const RTXHardware>& pHardware, VkSurfaceKHR surface)
+VkPresentModeKHR Swapchain::PickMode(shared_ptr<const WrapperHardware>& pHardware, VkSurfaceKHR surface)
 { 
     VkPhysicalDevice            physicalDeviceHandle    = pHardware->GetPhysicalDevice();
     uint32_t                    uPresentModeCount       = 0;

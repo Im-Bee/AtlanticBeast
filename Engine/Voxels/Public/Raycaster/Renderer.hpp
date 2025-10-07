@@ -2,6 +2,7 @@
 #define AB_RENDERER_H
 
 #include "Vulkan/Instance.hpp"
+#include "Vulkan/MinimalHardware.hpp"
 #include "Vulkan/RTXHardware.hpp"
 #include "Vulkan/RTXDeviceAdapter.hpp"
 #include "Vulkan/SwapChain.hpp"
@@ -87,7 +88,7 @@ private:
 private:
 
     ::std::shared_ptr<Instance>             m_pInstance         = nullptr;
-    ::std::shared_ptr<RTXHardware>          m_pHardware         = nullptr;
+    ::std::shared_ptr<MinimalHardware>      m_pHardware         = nullptr;
     ::std::shared_ptr<RTXDeviceAdapter>     m_pDeviceAdapter    = nullptr;
     ::std::unique_ptr<Swapchain>            m_pSwapChain        = nullptr;
     ::std::shared_ptr<const WindowDesc>     m_pWindowDesc       = nullptr;
