@@ -30,12 +30,6 @@ public:
 
     BEAST_VOXEL_API ~Swapchain();
 
-    BEAST_VOXEL_API Swapchain(const Swapchain&) = default;
-    BEAST_VOXEL_API Swapchain(Swapchain&&) = default;
-
-    BEAST_VOXEL_API Swapchain& operator=(const Swapchain&) noexcept = default;
-    BEAST_VOXEL_API Swapchain& operator=(Swapchain&&) noexcept = default;
-
 public:
 
     VkSwapchainKHR GetSwapChainHandle() const

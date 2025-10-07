@@ -7,6 +7,13 @@
 namespace Voxels
 {
 
+
+/**
+* Hardware wrapper that selects a GPU with features:
+* - rayTracingPipeline
+* - accelerationStructure
+* - bufferDeviceAddress
+**/
 class RTXHardware : public WrapperHardware
 {
 public:
