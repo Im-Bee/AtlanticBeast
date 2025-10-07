@@ -1,36 +1,30 @@
-#ifndef AB_HARDWARE_H
-#define AB_HARDWARE_H
+#ifndef AB_RTX_HARDWARE_H
+#define AB_RTX_HARDWARE_H
 
 #include "Instance.hpp"
+#include "WrapperHardware.hpp"
 
 namespace Voxels
 {
 
-class RTXHardware
+class RTXHardware : public WrapperHardware
 {
 public:
 
-    BEAST_VOXEL_API RTXHardware(::std::shared_ptr<const Instance> instance);
+    BEAST_VOXEL_API RTXHardware(::std::shared_ptr<const Instance> pInstance);
 
-    BEAST_VOXEL_API ~RTXHardware();
-
-public:
-    
-    VkPhysicalDevice GetPhysicalDevice() const
-    { return m_DeviceHandle; }
+    BEAST_VOXEL_API ~RTXHardware() = default;
 
 private:
     
-    VkPhysicalDevice ChooseGPU(::std::shared_ptr<const Instance>& instance);
+    VkPhysicalDevice ChooseGPU(::std::shared_ptr<const Instance>& pInstance);
 
 private:
 
     ::std::shared_ptr<const Instance> m_pInstance = nullptr;
 
-    VkPhysicalDevice m_DeviceHandle = VK_NULL_HANDLE;
-
 };
 
 } // !Voxels
 
-#endif // !AB_HARDWARE_H
+#endif // !AB_RTX_HARDWARE_H

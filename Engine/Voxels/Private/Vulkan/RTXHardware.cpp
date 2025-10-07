@@ -8,35 +8,32 @@ namespace Voxels
 using namespace std;
 
 // RTXHardware // ---------------------------------------------------------------------------------------------------------
-RTXHardware::RTXHardware(shared_ptr<const Instance> instance)
-    : m_pInstance(instance)
-    , m_DeviceHandle(ChooseGPU(m_pInstance))
+RTXHardware::RTXHardware(shared_ptr<const Instance> pInstance)
+    : m_pInstance(pInstance)
+    , WrapperHardware((ChooseGPU(m_pInstance)))
 { 
     AB_LOG(Core::Debug::Info, L"Creating a hardware!");
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-RTXHardware::~RTXHardware()
-{ }
-
-// ---------------------------------------------------------------------------------------------------------------------
-VkPhysicalDevice RTXHardware::ChooseGPU(shared_ptr<const Instance>& instance)
+VkPhysicalDevice RTXHardware::ChooseGPU(shared_ptr<const Instance>& pInstance)
 { 
     VkPhysicalDevice            chosenPhysicalDevice    = VK_NULL_HANDLE;
     uint32_t                    uDeviceCount;
     VkResult                    result                  = VK_SUCCESS;
     vector<VkPhysicalDevice>    vPhysicalDevices;
+    VkInstance pInstanceHandle = pInstance->GetInstance();
 
 
-    ThrowIfFailed(vkEnumeratePhysicalDevices(instance->GetInstance(),
-                                             &uDeviceCount,
-                                             NULL));
+    THROW_IF_FAILED(vkEnumeratePhysicalDevices(pInstanceHandle,
+                                               &uDeviceCount,
+                                               NULL));
 
     vPhysicalDevices.resize(uDeviceCount);
 
-    ThrowIfFailed(vkEnumeratePhysicalDevices(instance->GetInstance(), 
-                                             &uDeviceCount,
-                                             &vPhysicalDevices[0]));
+    THROW_IF_FAILED(vkEnumeratePhysicalDevices(pInstanceHandle,
+                                               &uDeviceCount,
+                                               &vPhysicalDevices[0]));
 
 
     VkPhysicalDeviceProperties                          deviceProperties;

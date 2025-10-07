@@ -15,7 +15,7 @@ class WorldObject
 public:
 
 	BEAST_VOXEL_API explicit WorldObject(Vec3 positon = Vec3 { 0.f, 0.f, 0.f },
-										 Vec3 rotation = Vec3 { 0.f, 0.f, 0.f })
+										 Rot3 rotation = Vec3 { 0.f, 0.f, 0.f })
 		: m_vPosition(Vec3())
 		, m_vRotation(Rot3())
 	{ }

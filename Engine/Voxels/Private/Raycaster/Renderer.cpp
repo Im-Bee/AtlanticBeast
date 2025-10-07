@@ -94,7 +94,7 @@ void Renderer::Render()
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    ThrowIfFailed(vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, frame.InFlightFence));
+    THROW_IF_FAILED(vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, frame.InFlightFence));
 
     VkSwapchainKHR swapchain = m_pSwapChain->GetSwapChainHandle();
 
@@ -166,7 +166,7 @@ VkCommandPool Renderer::CreateCommandPool(shared_ptr<const RTXDeviceAdapter> da,
     cmdPoolInfo.flags               = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     cmdPoolInfo.queueFamilyIndex    = uQueueFamily;
 
-    ThrowIfFailed(vkCreateCommandPool(da->GetAdapterHandle(), &cmdPoolInfo, NULL, &cmdPool));
+    THROW_IF_FAILED(vkCreateCommandPool(da->GetAdapterHandle(), &cmdPoolInfo, NULL, &cmdPool));
 
     return cmdPool;
 }
@@ -183,8 +183,8 @@ VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const RTXDeviceA
     allocInfo.level                 = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount    = 1;
 
-    ThrowIfFailed(vkAllocateCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), &allocInfo, &cmdBuffer));
-    ThrowIfFailed(vkResetCommandBuffer(cmdBuffer, 0));
+    THROW_IF_FAILED(vkAllocateCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), &allocInfo, &cmdBuffer));
+    THROW_IF_FAILED(vkResetCommandBuffer(cmdBuffer, 0));
 
     return cmdBuffer;
 }
@@ -235,7 +235,7 @@ void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     beginInfo.pInheritanceInfo = NULL;
 
-    ThrowIfFailed(vkBeginCommandBuffer(cmdBuff, &beginInfo));
+    THROW_IF_FAILED(vkBeginCommandBuffer(cmdBuff, &beginInfo));
     vkCmdBindPipeline(cmdBuff, VK_PIPELINE_BIND_POINT_COMPUTE, m_pPipeline->GetPipelineHandle());
 
     VkImageMemoryBarrier barrier;
@@ -281,7 +281,7 @@ void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
                          0, NULL,
                          1, &presentBarrier);
 
-    ThrowIfFailed(vkEndCommandBuffer(cmdBuff));
+    THROW_IF_FAILED(vkEndCommandBuffer(cmdBuff));
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

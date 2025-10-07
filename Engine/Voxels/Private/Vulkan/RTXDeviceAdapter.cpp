@@ -141,7 +141,7 @@ VkDevice RTXDeviceAdapter::CreateDeviceAdapter(shared_ptr<const RTXHardware>& gp
     createInfo.enabledExtensionCount    = static_cast<uint32_t>(vpszDeviceExtensions.size());
     createInfo.pEnabledFeatures         = &deviceFeatures;
 
-    ThrowIfFailed(vkCreateDevice(gpu->GetPhysicalDevice(),
+    THROW_IF_FAILED(vkCreateDevice(gpu->GetPhysicalDevice(),
                                  &createInfo,
                                  NULL,
                                  &device));

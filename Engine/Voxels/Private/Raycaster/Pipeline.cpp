@@ -77,7 +77,7 @@ GPUBuffer Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
 	bufferInfo.queueFamilyIndexCount = 0;
 	bufferInfo.pQueueFamilyIndices = NULL;
 
-    ThrowIfFailed(vkCreateBuffer(m_pDeviceAdapter->GetAdapterHandle(), 
+    THROW_IF_FAILED(vkCreateBuffer(m_pDeviceAdapter->GetAdapterHandle(), 
                                  &bufferInfo,
                                  NULL,
                                  &voxelBuffer));
@@ -91,12 +91,12 @@ GPUBuffer Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
                                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
                                                  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-    ThrowIfFailed(vkAllocateMemory(da, &allocInfo, NULL, &voxelBufferMemory));
-    ThrowIfFailed(vkBindBufferMemory(da, voxelBuffer, voxelBufferMemory, 0));
+    THROW_IF_FAILED(vkAllocateMemory(da, &allocInfo, NULL, &voxelBufferMemory));
+    THROW_IF_FAILED(vkBindBufferMemory(da, voxelBuffer, voxelBufferMemory, 0));
 
-    m_VoxelGrid         = vg;
+    m_VoxelGrid     = vg;
     int32_t w = static_cast<int32_t>(m_VoxelGrid->GetGridWidth());
-    m_Vpc.GridSize      = iVec4(w, w, w);
+    m_Vpc.GridSize  = iVec4(w, w, w);
 
     return GPUBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, bufferSizeInBytes);
 }
@@ -163,7 +163,7 @@ void Pipeline::LoadImage(VkImage image)
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    ThrowIfFailed(vkCreateImageView(m_pDeviceAdapter->GetAdapterHandle(), &viewInfo, nullptr, &m_ImageView));
+    THROW_IF_FAILED(vkCreateImageView(m_pDeviceAdapter->GetAdapterHandle(), &viewInfo, nullptr, &m_ImageView));
 
     VkDescriptorImageInfo imageInfo{};
     imageInfo.imageView = m_ImageView;
@@ -207,7 +207,7 @@ VkDescriptorSetLayout Pipeline::CreateDescriptorLayout(shared_ptr<const RTXDevic
     layoutCreateInfo.bindingCount   = static_cast<uint32_t>(bindings.size());
     layoutCreateInfo.pBindings      = &bindings[0];
 
-    ThrowIfFailed(vkCreateDescriptorSetLayout(da->GetAdapterHandle(), 
+    THROW_IF_FAILED(vkCreateDescriptorSetLayout(da->GetAdapterHandle(), 
                                               &layoutCreateInfo,
                                               NULL,
                                               &descriptorSetLayout));
@@ -232,7 +232,7 @@ VkDescriptorPool Pipeline::CreateDescriptorPool(shared_ptr<const RTXDeviceAdapte
     poolInfo.pPoolSizes     = poolSizes;
     poolInfo.maxSets        = 1;
 
-    ThrowIfFailed(vkCreateDescriptorPool(da->GetAdapterHandle(), &poolInfo, NULL, &descriptorPool));
+    THROW_IF_FAILED(vkCreateDescriptorPool(da->GetAdapterHandle(), &poolInfo, NULL, &descriptorPool));
 
     return descriptorPool;
 }
@@ -251,7 +251,7 @@ VkDescriptorSet Pipeline::CreateDescriptorSet(shared_ptr<const RTXDeviceAdapter>
     allocInfo.descriptorSetCount    = 1;
     allocInfo.pSetLayouts           = &dLayout;
 
-    ThrowIfFailed(vkAllocateDescriptorSets(da->GetAdapterHandle(), &allocInfo, &descriptorSet));
+    THROW_IF_FAILED(vkAllocateDescriptorSets(da->GetAdapterHandle(), &allocInfo, &descriptorSet));
 
     return descriptorSet;
 }
@@ -276,7 +276,7 @@ VkPipelineLayout Pipeline::CreatePipelineLayout(shared_ptr<const RTXDeviceAdapte
     layoutInfo.pushConstantRangeCount   = 1;
     layoutInfo.pPushConstantRanges      = &pushConstantRange;
 
-    ThrowIfFailed(vkCreatePipelineLayout(da->GetAdapterHandle(), 
+    THROW_IF_FAILED(vkCreatePipelineLayout(da->GetAdapterHandle(), 
                                          &layoutInfo,
                                          NULL,
                                          &pipelineLayout));
@@ -313,7 +313,7 @@ VkShaderModule Pipeline::LoadShader(shared_ptr<const RTXDeviceAdapter>& da, cons
     shaderCreateInfo.codeSize   = vBuffer.size(); // Size is in bytes, so it's okay
     shaderCreateInfo.pCode      = reinterpret_cast<const uint32_t*>(&vBuffer[0]);
 
-    ThrowIfFailed(vkCreateShaderModule(da->GetAdapterHandle(), &shaderCreateInfo, NULL, &shaderModule));
+    THROW_IF_FAILED(vkCreateShaderModule(da->GetAdapterHandle(), &shaderCreateInfo, NULL, &shaderModule));
 
     return shaderModule;
 }
@@ -347,7 +347,7 @@ VkPipeline Pipeline::CreateComputePipeline(shared_ptr<const RTXDeviceAdapter>& d
     pipelineInfo.basePipelineIndex  = 0;
 
 
-    ThrowIfFailed(vkCreateComputePipelines(device,
+    THROW_IF_FAILED(vkCreateComputePipelines(device,
                                            VK_NULL_HANDLE,
                                            1,
                                            &pipelineInfo,
