@@ -6,7 +6,7 @@
 #include "Vulkan/RTXDeviceAdapter.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Raycaster/Pipeline.hpp"
-#include "Vulkan/FrameResources.hpp"
+#include "Raycaster/VoxelFrameResources.hpp"
 
 #include "Primitives/Camera.hpp"
 
@@ -70,9 +70,11 @@ private:
 
     VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const RTXDeviceAdapter> da, VkCommandPool cmdPool);
 
-    ::std::vector<FrameResources> CreateFrameResources(::std::shared_ptr<const RTXDeviceAdapter> da,
-                                                       VkCommandPool cmdPool,
-                                                       size_t uFrames);
+    ::std::vector<VoxelFrameResources> CreateFrameResources(const ::std::shared_ptr<const RTXDeviceAdapter>& da,
+                                                            const ::std::shared_ptr<Pipeline>& pipeline,
+                                                            const ::std::shared_ptr<const VoxelGrid>& vg,
+                                                            VkCommandPool cmdPool,
+                                                            size_t uFrames);
 
     void RecordCommands(VkCommandBuffer& cmdBuff,
                         const ::std::shared_ptr<Pipeline>& pipeline, 
@@ -98,7 +100,7 @@ private:
     ::std::shared_ptr<Camera> m_pCamera = nullptr;
 
     size_t m_uCurrentFrame;
-    ::std::vector<FrameResources> m_vFrames;
+    ::std::vector<VoxelFrameResources> m_vFrames;
 
 };
 

@@ -1,6 +1,7 @@
 #include "Raycaster/Pipeline.hpp"
 
 #include "Vulkan/ErrorHandling.hpp"
+#include "Vulkan/GPUBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
 
 
@@ -22,8 +23,6 @@ Pipeline::Pipeline(::std::shared_ptr<const RTXHardware> hw,
     , m_ShaderModule(LoadShader(m_pDeviceAdapter, 
                                 App::AppResources::Get().GetExecutablePathA() + "/Assets/Raycast.comp.spv"))
     , m_ComputePipeline(CreateComputePipeline(m_pDeviceAdapter, m_PipelineLayout, m_ShaderModule))
-    , m_VoxelGPUBuffer(VK_NULL_HANDLE)
-    , m_VoxelBufferMemory(VK_NULL_HANDLE)
 {
     AB_LOG(Core::Debug::Info, L"Creating a pipeline!");
 }
@@ -34,12 +33,6 @@ Pipeline::~Pipeline()
     if (m_ImageView != VK_NULL_HANDLE) {
         vkDestroyImageView(m_pDeviceAdapter->GetAdapterHandle(), m_ImageView, nullptr);
         m_ImageView = VK_NULL_HANDLE;
-    }
-    if (m_VoxelGPUBuffer != VK_NULL_HANDLE) {
-        vkDestroyBuffer(m_pDeviceAdapter->GetAdapterHandle(), m_VoxelGPUBuffer, NULL);
-    }
-    if (m_VoxelBufferMemory != VK_NULL_HANDLE) {
-        vkFreeMemory(m_pDeviceAdapter->GetAdapterHandle(), m_VoxelBufferMemory, NULL);
     }
  
     if (m_ComputePipeline != VK_NULL_HANDLE) {
@@ -65,7 +58,7 @@ Pipeline::~Pipeline()
 }
 
 // Public // -----------------------------------------------------------------------------------------------------------
-void Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
+GPUBuffer Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
 {
     VkBufferCreateInfo      bufferInfo;
     VkDeviceSize            bufferSizeInBytes   = vg->GetAmountOfVoxels() * sizeof(Voxel);
@@ -74,13 +67,6 @@ void Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
     VkDeviceMemory          voxelBufferMemory;
     VkMemoryAllocateInfo    allocInfo;
     VkMemoryRequirements    memRequirements;
-
-    if (m_VoxelGPUBuffer != VK_NULL_HANDLE) {
-        vkDestroyBuffer(da, m_VoxelGPUBuffer, NULL);
-    }
-    if (m_VoxelBufferMemory != VK_NULL_HANDLE) {
-        vkFreeMemory(da, m_VoxelBufferMemory, NULL);
-    }
 
     bufferInfo.sType        = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.pNext        = NULL;
@@ -108,18 +94,19 @@ void Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
     ThrowIfFailed(vkAllocateMemory(da, &allocInfo, NULL, &voxelBufferMemory));
     ThrowIfFailed(vkBindBufferMemory(da, voxelBuffer, voxelBufferMemory, 0));
 
-    m_VoxelGPUBuffer    = voxelBuffer;
-    m_VoxelBufferMemory = voxelBufferMemory;
     m_VoxelGrid         = vg;
     int32_t w = static_cast<int32_t>(m_VoxelGrid->GetGridWidth());
     m_Vpc.GridSize      = iVec4(w, w, w);
+
+    return GPUBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, bufferSizeInBytes);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg)
+void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUBuffer& outBuffer)
 {
-    AB_ASSERT((m_VoxelGPUBuffer != VK_NULL_HANDLE));
-    AB_ASSERT((m_VoxelBufferMemory != VK_NULL_HANDLE));
+    AB_ASSERT((outBuffer.GetMemoryHandle() != VK_NULL_HANDLE));
+    AB_ASSERT((outBuffer.GetBufferHandle() != VK_NULL_HANDLE));
+    AB_ASSERT((outBuffer.GetSizeInBytes() == vg->GetAmountOfVoxels() * sizeof(Voxel)));
     AB_ASSERT((m_VoxelGrid != nullptr));
     AB_ASSERT((vg->GetAmountOfVoxels() == m_VoxelGrid->GetAmountOfVoxels()));
 
@@ -129,11 +116,11 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg)
     void*                   pData;
     size_t                  uBufferSizeInBytes  = vg->GetAmountOfVoxels() * sizeof(Voxel);
 
-    vkMapMemory(da, m_VoxelBufferMemory, 0, uBufferSizeInBytes, 0, &pData);
+    vkMapMemory(da, outBuffer.GetMemoryHandle(), 0, uBufferSizeInBytes, 0, &pData);
     memcpy(pData, &vg->GetGrid()[0], uBufferSizeInBytes);
-    vkUnmapMemory(da, m_VoxelBufferMemory);
+    vkUnmapMemory(da, outBuffer.GetMemoryHandle());
 
-    voxelBufferInfo.buffer  = m_VoxelGPUBuffer;
+    voxelBufferInfo.buffer  = outBuffer.GetBufferHandle();
     voxelBufferInfo.offset  = 0;
     voxelBufferInfo.range   = VK_WHOLE_SIZE;
 
