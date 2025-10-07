@@ -25,6 +25,7 @@ SET(VOXELS_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/RTXDeviceAdapter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/SwapChain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/FrameResources.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/GPUBuffer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/Pipeline.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/PushConstants.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/SingleVoxel.hpp"
