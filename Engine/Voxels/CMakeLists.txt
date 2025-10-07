@@ -1,6 +1,7 @@
 SET(VOXELS_SOURCE 
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Primitives/Object.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/Instance.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/WrapperHardware.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/RTXHardware.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/RTXDeviceAdapter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/SwapChain.cpp"

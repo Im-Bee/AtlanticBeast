@@ -21,6 +21,10 @@ public:
     VkPhysicalDevice GetPhysicalDevice() const
     { return m_PhysicalDevice; }
 
+protected:
+
+    ::std::vector<VkPhysicalDevice> GetPhysicalDevices(VkInstance Instance);
+
 private:
 
     VkPhysicalDevice m_PhysicalDevice = VK_NULL_HANDLE;

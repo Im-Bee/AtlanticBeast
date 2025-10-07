@@ -17,7 +17,7 @@ public:
 
 private:
     
-    VkPhysicalDevice ChooseGPU(::std::shared_ptr<const Instance>& pInstance);
+    VkPhysicalDevice ChooseGPU(const ::std::shared_ptr<const Instance>& pInstance);
 
 private:
 
