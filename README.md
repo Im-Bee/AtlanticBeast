@@ -3,6 +3,8 @@
 Project uses voxel traversal algorithm implementation based on <br>
 'A Fast Voxel Traversal Algorithm for Ray Tracing'<br>
 by John Amanatides and Andrew Woo (1987) and Blinn-Phong Reflection lighting.
+Implements a custom cross-platform window management system with runtime switchable behavior.
+Features a low-latency input system and a fully custom Vulkan-based compute rendering pipeline.
 
 # Demo
 
