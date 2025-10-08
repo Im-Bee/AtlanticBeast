@@ -12,7 +12,7 @@ using namespace std;
 // Swapchain // --------------------------------------------------------------------------------------------------------
 Swapchain::Swapchain(shared_ptr<const Instance> pInst, 
                      shared_ptr<const WrapperHardware> hw,
-                     shared_ptr<const RTXDeviceAdapter> da,
+                     shared_ptr<const WrapperAdapter> da,
                      shared_ptr<const WindowDesc> wd)
     : m_pInstance(pInst)
     , m_pHardware(hw)
@@ -130,7 +130,7 @@ VkExtent2D Swapchain::GetExtentInternal(VkSurfaceCapabilitiesKHR& capabilities,
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const RTXDeviceAdapter>& pAdapter,
+VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const WrapperAdapter>& pAdapter,
                                           VkSurfaceKHR surface,
                                           VkSurfaceCapabilitiesKHR& capabilities,
                                           VkExtent2D& extent2D,
@@ -244,7 +244,7 @@ VkPresentModeKHR Swapchain::PickMode(shared_ptr<const WrapperHardware>& pHardwar
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t Swapchain::CreateAmountOfSwapChainImages(::std::shared_ptr<const RTXDeviceAdapter>& pAdapter, 
+uint32_t Swapchain::CreateAmountOfSwapChainImages(::std::shared_ptr<const WrapperAdapter>& pAdapter, 
                                                   VkSwapchainKHR swapchain)
 {
     uint32_t uImageCount = 0;
@@ -255,7 +255,7 @@ uint32_t Swapchain::CreateAmountOfSwapChainImages(::std::shared_ptr<const RTXDev
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-::std::vector<VkImage> Swapchain::CreateSwapChainImages(::std::shared_ptr<const RTXDeviceAdapter>& pAdapter,
+::std::vector<VkImage> Swapchain::CreateSwapChainImages(::std::shared_ptr<const WrapperAdapter>& pAdapter,
                                                         VkSwapchainKHR swapchain,
                                                         uint32_t uAmount)
 {

@@ -17,7 +17,7 @@ public:
         , m_uSizeInBytes(0)
     { }
 
-    GPUBuffer(::std::shared_ptr<const RTXDeviceAdapter> da,
+    GPUBuffer(::std::shared_ptr<const WrapperAdapter> da,
               VkDeviceMemory deviceMemory,
               VkBuffer buffer,
               size_t sizeInBytes) 
@@ -81,7 +81,7 @@ public:
 
 protected:
 
-    ::std::shared_ptr<const RTXDeviceAdapter> m_pDeviceAdapter = nullptr;
+    ::std::shared_ptr<const WrapperAdapter> m_pDeviceAdapter = nullptr;
     VkDeviceMemory  m_DeviceMemory  = VK_NULL_HANDLE;
     VkBuffer        m_Buffer        = VK_NULL_HANDLE;
     size_t          m_uSizeInBytes  = 0;

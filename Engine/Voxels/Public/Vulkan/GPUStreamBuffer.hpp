@@ -15,7 +15,7 @@ public:
         : GPUBuffer() 
     { }
 
-    GPUStreamBuffer(::std::shared_ptr<const RTXDeviceAdapter> da,
+    GPUStreamBuffer(::std::shared_ptr<const WrapperAdapter> da,
                     VkDeviceMemory deviceMemory,
                     VkBuffer buffer,
                     void* pData,

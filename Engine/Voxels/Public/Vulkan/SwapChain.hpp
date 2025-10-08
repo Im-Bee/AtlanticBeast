@@ -25,7 +25,7 @@ public:
 
     BEAST_VOXEL_API Swapchain(::std::shared_ptr<const Instance> inst,
                               ::std::shared_ptr<const WrapperHardware> hw,
-                              ::std::shared_ptr<const RTXDeviceAdapter> da,
+                              ::std::shared_ptr<const WrapperAdapter> da,
                               ::std::shared_ptr<const WindowDesc> wd);
 
     BEAST_VOXEL_API ~Swapchain();
@@ -57,7 +57,7 @@ private:
 
     VkPresentModeKHR PickMode(::std::shared_ptr<const WrapperHardware>& pHardware, VkSurfaceKHR surface);
 
-    VkSwapchainKHR CreateSwapChain(::std::shared_ptr<const RTXDeviceAdapter>& pAdapter,
+    VkSwapchainKHR CreateSwapChain(::std::shared_ptr<const WrapperAdapter>& pAdapter,
                                    VkSurfaceKHR surface,
                                    VkSurfaceCapabilitiesKHR& capabilities,
                                    VkExtent2D& extent2D,
@@ -65,9 +65,9 @@ private:
                                    VkSurfaceFormatKHR& surfaceFormat,
                                    VkPresentModeKHR presentMode);
 
-    uint32_t CreateAmountOfSwapChainImages(::std::shared_ptr<const RTXDeviceAdapter>& pAdapter, VkSwapchainKHR swapchain);
+    uint32_t CreateAmountOfSwapChainImages(::std::shared_ptr<const WrapperAdapter>& pAdapter, VkSwapchainKHR swapchain);
 
-    ::std::vector<VkImage> CreateSwapChainImages(::std::shared_ptr<const RTXDeviceAdapter>& pAdapter,
+    ::std::vector<VkImage> CreateSwapChainImages(::std::shared_ptr<const WrapperAdapter>& pAdapter,
                                                  VkSwapchainKHR swapchain,
                                                  uint32_t uAmount);
 
@@ -75,7 +75,7 @@ private:
 
     ::std::shared_ptr<const Instance>           m_pInstance         = nullptr;
     ::std::shared_ptr<const WrapperHardware>    m_pHardware         = nullptr;
-    ::std::shared_ptr<const RTXDeviceAdapter>   m_pDeviceAdapter    = nullptr;
+    ::std::shared_ptr<const WrapperAdapter>     m_pDeviceAdapter    = nullptr;
     ::std::shared_ptr<const WindowDesc>         m_pWindowDesc       = nullptr;
 
     VkSurfaceKHR                m_Surface       = VK_NULL_HANDLE;

@@ -15,7 +15,7 @@ using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
 VoxelPipeline::VoxelPipeline(::std::shared_ptr<const WrapperHardware> hw, 
-                   ::std::shared_ptr<const RTXDeviceAdapter> da)
+                   ::std::shared_ptr<const WrapperAdapter> da)
     : m_pHardware(hw)
     , m_pDeviceAdapter(da)
     , m_VoxelGrid(nullptr)
@@ -198,7 +198,7 @@ void VoxelPipeline::LoadImage(VkImage image)
 
 
 // Private // ----------------------------------------------------------------------------------------------------------
-VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const RTXDeviceAdapter>& da)
+VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const WrapperAdapter>& da)
 {
     array<VkDescriptorSetLayoutBinding, 2>  bindings                = { };
     VkDescriptorSetLayoutCreateInfo         layoutCreateInfo;
@@ -231,7 +231,7 @@ VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const RTX
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDescriptorPool VoxelPipeline::CreateDescriptorPool(shared_ptr<const RTXDeviceAdapter>& da)
+VkDescriptorPool VoxelPipeline::CreateDescriptorPool(shared_ptr<const WrapperAdapter>& da)
 {
     const VkDescriptorPoolSize  poolSizes[] = {
         { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,  1 },
@@ -253,9 +253,9 @@ VkDescriptorPool VoxelPipeline::CreateDescriptorPool(shared_ptr<const RTXDeviceA
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDescriptorSet VoxelPipeline::CreateDescriptorSet(shared_ptr<const RTXDeviceAdapter>& da,
-                                              VkDescriptorPool dp,
-                                              VkDescriptorSetLayout dLayout)
+VkDescriptorSet VoxelPipeline::CreateDescriptorSet(shared_ptr<const WrapperAdapter>& da,
+                                                   VkDescriptorPool dp,
+                                                   VkDescriptorSetLayout dLayout)
 {
     VkDescriptorSet                 descriptorSet;
     VkDescriptorSetAllocateInfo     allocInfo;
@@ -272,8 +272,8 @@ VkDescriptorSet VoxelPipeline::CreateDescriptorSet(shared_ptr<const RTXDeviceAda
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPipelineLayout VoxelPipeline::CreatePipelineLayout(shared_ptr<const RTXDeviceAdapter>& da,
-                                                VkDescriptorSetLayout descriptorSetLayout)
+VkPipelineLayout VoxelPipeline::CreatePipelineLayout(shared_ptr<const WrapperAdapter>& da,
+                                                     VkDescriptorSetLayout descriptorSetLayout)
 { 
     VkPushConstantRange         pushConstantRange;
     VkPipelineLayoutCreateInfo  layoutInfo;
@@ -300,7 +300,7 @@ VkPipelineLayout VoxelPipeline::CreatePipelineLayout(shared_ptr<const RTXDeviceA
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkShaderModule VoxelPipeline::LoadShader(shared_ptr<const RTXDeviceAdapter>& da, const string& strPath)
+VkShaderModule VoxelPipeline::LoadShader(shared_ptr<const WrapperAdapter>& da, const string& strPath)
 {
     vector<char>                vBuffer;
     size_t                      uFileSize;
@@ -334,9 +334,9 @@ VkShaderModule VoxelPipeline::LoadShader(shared_ptr<const RTXDeviceAdapter>& da,
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPipeline VoxelPipeline::CreateComputePipeline(shared_ptr<const RTXDeviceAdapter>& da, 
-                                           VkPipelineLayout pipelineLayout, 
-                                           VkShaderModule shaderModule)
+VkPipeline VoxelPipeline::CreateComputePipeline(shared_ptr<const WrapperAdapter>& da, 
+                                                VkPipelineLayout pipelineLayout, 
+                                                VkShaderModule shaderModule)
 { 
     const VkDevice                  device          = da->GetAdapterHandle();
     VkPipeline                      pipeline        = VK_NULL_HANDLE;

@@ -3,10 +3,12 @@
 #include "Core.h"
 #include "Raycaster/VoxelFrameResources.hpp"
 #include "Raycaster/VoxelGrid.hpp"
+#include "Vulkan/ComputeAdapter.hpp"
 #include "Vulkan/ErrorHandling.hpp"
 #include "Math/Consts.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/MinimalHardware.hpp"
+#include "Vulkan/WrapperAdapter.hpp"
 
 namespace Voxels
 {
@@ -19,7 +21,7 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
 {
     m_pInstance         = make_shared<Instance>();
     m_pHardware         = make_shared<MinimalHardware>(m_pInstance);
-    m_pDeviceAdapter    = make_shared<RTXDeviceAdapter>(m_pHardware);
+    m_pDeviceAdapter    = make_shared<ComputeAdapter>(m_pHardware);
     m_pWindowDesc       = wd;
     m_pVoxelGrid        = vg;
     m_pPipeline         = make_shared<VoxelPipeline>(m_pHardware, m_pDeviceAdapter);
@@ -158,7 +160,7 @@ void Renderer::Destroy()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkCommandPool Renderer::CreateCommandPool(shared_ptr<const RTXDeviceAdapter> da, uint32_t uQueueFamily)
+VkCommandPool Renderer::CreateCommandPool(shared_ptr<const WrapperAdapter> da, uint32_t uQueueFamily)
 {
     VkCommandPool           cmdPool;
     VkCommandPoolCreateInfo cmdPoolInfo;
@@ -174,7 +176,7 @@ VkCommandPool Renderer::CreateCommandPool(shared_ptr<const RTXDeviceAdapter> da,
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
-VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const RTXDeviceAdapter> da, VkCommandPool cmdPool)
+VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const WrapperAdapter> da, VkCommandPool cmdPool)
 {
     VkCommandBuffer             cmdBuffer;
     VkCommandBufferAllocateInfo allocInfo;
@@ -192,7 +194,7 @@ VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const RTXDeviceA
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_ptr<const RTXDeviceAdapter>& da,
+vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_ptr<const WrapperAdapter>& da,
                                                            const ::std::shared_ptr<VoxelPipeline>& pipeline,
                                                            const ::std::shared_ptr<const VoxelGrid>& vg,
                                                            VkCommandPool cmdPool,
