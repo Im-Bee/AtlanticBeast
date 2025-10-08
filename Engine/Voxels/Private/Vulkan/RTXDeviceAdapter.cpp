@@ -9,27 +9,22 @@ using namespace std;
 
 // RTXDeviceAdapter // ----------------------------------------------------------------------------------------------------
 RTXDeviceAdapter::RTXDeviceAdapter(shared_ptr<const WrapperHardware> gpu)
-    : m_pHardware(gpu)
-    , m_uQueueFamily(FindQueueFamilyIndex(m_pHardware))
-    , m_Device(CreateDeviceAdapter(m_pHardware, m_uQueueFamily))
-    , m_Queue(CreateQueue(m_Device, m_uQueueFamily))
+    : WrapperAdapter(FindQueueFamilyIndex(gpu), 
+                     CreateDeviceAdapter(gpu, FindQueueFamilyIndex(gpu)),
+                     CreateQueue(CreateDeviceAdapter(gpu, FindQueueFamilyIndex(gpu)), FindQueueFamilyIndex(gpu)))
+    , m_pGPU(gpu)
 {
     AB_LOG(Core::Debug::Info, L"Creating a device adapter!");
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-RTXDeviceAdapter::~RTXDeviceAdapter()
-{ 
-    if (m_Device != VK_NULL_HANDLE) {
-        vkDestroyDevice(m_Device, nullptr);
-        m_Device = VK_NULL_HANDLE;
-    }
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(shared_ptr<const WrapperHardware>& gpu)
+uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(const shared_ptr<const WrapperHardware>& gpu)
 {
-    uint32_t                            uFamilyIndex    = 0;
+    static uint32_t uFamilyIndex = -1;
+    if (uFamilyIndex != -1) {
+        return uFamilyIndex;
+    }
+
     uint32_t                            uFamilyCount;
     vector<VkQueueFamilyProperties>     vProperties     = { };
     VkPhysicalDevice                    physicalDevice  = gpu->GetPhysicalDevice();
@@ -58,9 +53,13 @@ uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(shared_ptr<const WrapperHardware
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDevice RTXDeviceAdapter::CreateDeviceAdapter(shared_ptr<const WrapperHardware>& gpu, uint32_t uQueueIndex)
+VkDevice RTXDeviceAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHardware>& gpu, uint32_t uQueueIndex)
 { 
-    VkDevice                                            device                                  = VK_NULL_HANDLE;
+    static VkDevice device = VK_NULL_HANDLE;
+    if (device != VK_NULL_HANDLE) {
+        return device;
+    }
+
     VkDeviceCreateInfo                                  createInfo;
     VkDeviceQueueCreateInfo                             queueCreateInfo;
     VkPhysicalDeviceTimelineSemaphoreFeatures           semaphoreFeatures;
