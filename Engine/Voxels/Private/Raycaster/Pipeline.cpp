@@ -2,7 +2,9 @@
 
 #include "Vulkan/ErrorHandling.hpp"
 #include "Vulkan/GPUBuffer.hpp"
+#include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
+#include <vulkan/vulkan_core.h>
 
 
 namespace Voxels
@@ -58,29 +60,30 @@ Pipeline::~Pipeline()
 }
 
 // Public // -----------------------------------------------------------------------------------------------------------
-GPUBuffer Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
+GPUStreamBuffer Pipeline::ReserveGridBuffer(const shared_ptr<const VoxelGrid>& vg)
 {
+    const VkDeviceSize      uBufferSizeInBytes      = vg->GetAmountOfVoxels() * sizeof(Voxel);
+    const VkDevice          da                      = m_pDeviceAdapter->GetAdapterHandle();
     VkBufferCreateInfo      bufferInfo;
-    VkDeviceSize            bufferSizeInBytes   = vg->GetAmountOfVoxels() * sizeof(Voxel);
-    VkBuffer                voxelBuffer;
-    VkDevice                da                  = m_pDeviceAdapter->GetAdapterHandle();
-    VkDeviceMemory          voxelBufferMemory;
     VkMemoryAllocateInfo    allocInfo;
     VkMemoryRequirements    memRequirements;
+    VkBuffer                voxelBuffer;
+    VkDeviceMemory          voxelBufferMemory;
+    void*                   pData;
 
     bufferInfo.sType        = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.pNext        = NULL;
     bufferInfo.flags        = 0;
-    bufferInfo.size         = bufferSizeInBytes;
+    bufferInfo.size         = uBufferSizeInBytes;
     bufferInfo.usage        = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
     bufferInfo.sharingMode  = VK_SHARING_MODE_EXCLUSIVE;
 	bufferInfo.queueFamilyIndexCount = 0;
 	bufferInfo.pQueueFamilyIndices = NULL;
 
     THROW_IF_FAILED(vkCreateBuffer(m_pDeviceAdapter->GetAdapterHandle(), 
-                                 &bufferInfo,
-                                 NULL,
-                                 &voxelBuffer));
+                                   &bufferInfo,
+                                   NULL,
+                                   &voxelBuffer));
 
     vkGetBufferMemoryRequirements(da, voxelBuffer, &memRequirements);
 
@@ -98,11 +101,11 @@ GPUBuffer Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
     int32_t w = static_cast<int32_t>(m_VoxelGrid->GetGridWidth());
     m_Vpc.GridSize  = iVec4(w, w, w);
 
-    return GPUBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, bufferSizeInBytes);
+    return GPUStreamBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, pData, uBufferSizeInBytes);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUBuffer& outBuffer)
+void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUStreamBuffer& outBuffer)
 {
     AB_ASSERT((outBuffer.GetMemoryHandle() != VK_NULL_HANDLE));
     AB_ASSERT((outBuffer.GetBufferHandle() != VK_NULL_HANDLE));
@@ -113,12 +116,9 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUBuffer& outBuf
     VkDevice                da                  = m_pDeviceAdapter->GetAdapterHandle();
     VkDescriptorBufferInfo  voxelBufferInfo;
     VkWriteDescriptorSet    voxelWrite;
-    void*                   pData;
-    size_t                  uBufferSizeInBytes  = vg->GetAmountOfVoxels() * sizeof(Voxel);
-
-    vkMapMemory(da, outBuffer.GetMemoryHandle(), 0, uBufferSizeInBytes, 0, &pData);
-    memcpy(pData, &vg->GetGrid()[0], uBufferSizeInBytes);
-    vkUnmapMemory(da, outBuffer.GetMemoryHandle());
+    
+    THROW_IF_FAILED(vkMapMemory(da, outBuffer.GetMemoryHandle(), 0, outBuffer.GetSizeInBytes(), 0, outBuffer.GetDataPointer()));
+    memcpy(*outBuffer.GetDataPointer(), &vg->GetGrid()[0], outBuffer.GetSizeInBytes());
 
     voxelBufferInfo.buffer  = outBuffer.GetBufferHandle();
     voxelBufferInfo.offset  = 0;
@@ -140,7 +140,6 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUBuffer& outBuf
                            &voxelWrite,
                            0,
                            NULL);
-
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

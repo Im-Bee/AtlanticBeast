@@ -27,8 +27,23 @@ public:
         , m_uSizeInBytes(sizeInBytes)
     { }
 
+    GPUBuffer(const GPUBuffer& other) = delete;
+
+    GPUBuffer(GPUBuffer&& other) noexcept
+        : m_pDeviceAdapter(std::move(other.m_pDeviceAdapter))
+        , m_DeviceMemory(other.m_DeviceMemory)
+        , m_Buffer(other.m_Buffer)
+        , m_uSizeInBytes(other.m_uSizeInBytes)
+    {
+        other.m_DeviceMemory = VK_NULL_HANDLE;
+        other.m_Buffer = VK_NULL_HANDLE;
+    }
+
     ~GPUBuffer() 
     {
+        if (m_pDeviceAdapter == nullptr) {
+            return;
+        }
         if (m_Buffer != VK_NULL_HANDLE) {
             vkDestroyBuffer(m_pDeviceAdapter->GetAdapterHandle(), m_Buffer, NULL);
         }
@@ -39,21 +54,19 @@ public:
 
 public:
 
-    GPUBuffer& operator=(GPUBuffer&& other) 
+    GPUBuffer& operator=(GPUBuffer&& other) noexcept
     {
         m_pDeviceAdapter = std::move(other.m_pDeviceAdapter);
         m_DeviceMemory = other.m_DeviceMemory;
         m_Buffer = other.m_Buffer;
-        *const_cast<size_t*>(&m_uSizeInBytes) = other.m_uSizeInBytes;
+        m_uSizeInBytes = other.m_uSizeInBytes;
 
         other.m_DeviceMemory = VK_NULL_HANDLE;
         other.m_Buffer = VK_NULL_HANDLE;
+        other.m_uSizeInBytes = 0;
 
         return *this; 
     }
-
-    VkDeviceMemory& operator&() 
-    { return m_DeviceMemory; }
 
 public:
 
@@ -66,12 +79,12 @@ public:
     size_t GetSizeInBytes() const 
     { return m_uSizeInBytes; }
 
-private:
+protected:
 
     ::std::shared_ptr<const RTXDeviceAdapter> m_pDeviceAdapter = nullptr;
     VkDeviceMemory  m_DeviceMemory  = VK_NULL_HANDLE;
     VkBuffer        m_Buffer        = VK_NULL_HANDLE;
-    const size_t    m_uSizeInBytes  = 0;
+    size_t          m_uSizeInBytes  = 0;
 
 };
 

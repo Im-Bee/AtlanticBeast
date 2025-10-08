@@ -1,10 +1,12 @@
 #include "Raycaster/Renderer.hpp"
 
+#include "Core.h"
 #include "Raycaster/Pipeline.hpp"
 #include "Raycaster/VoxelFrameResources.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Vulkan/ErrorHandling.hpp"
 #include "Math/Consts.hpp"
+#include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/MinimalHardware.hpp"
 
 namespace Voxels
