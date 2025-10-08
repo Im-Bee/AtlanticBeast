@@ -1,5 +1,7 @@
 #include "Raycaster/Pipeline.hpp"
 
+#include "Core.h"
+#include "Debug/Logger.hpp"
 #include "Vulkan/ErrorHandling.hpp"
 #include "Vulkan/GPUBuffer.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
@@ -101,7 +103,7 @@ GPUStreamBuffer Pipeline::ReserveGridBuffer(const shared_ptr<const VoxelGrid>& v
     int32_t w = static_cast<int32_t>(m_VoxelGrid->GetGridWidth());
     m_Vpc.GridSize  = iVec4(w, w, w);
 
-    return GPUStreamBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, pData, uBufferSizeInBytes);
+    return GPUStreamBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, nullptr, uBufferSizeInBytes);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -117,7 +119,14 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUStreamBuffer& 
     VkDescriptorBufferInfo  voxelBufferInfo;
     VkWriteDescriptorSet    voxelWrite;
     
-    THROW_IF_FAILED(vkMapMemory(da, outBuffer.GetMemoryHandle(), 0, outBuffer.GetSizeInBytes(), 0, outBuffer.GetDataPointer()));
+    if (*outBuffer.GetDataPointer() == nullptr) {
+        THROW_IF_FAILED(vkMapMemory(da, 
+                                    outBuffer.GetMemoryHandle(),
+                                    0,
+                                    outBuffer.GetSizeInBytes(),
+                                    0,
+                                    outBuffer.GetDataPointer()));
+    }
     memcpy(*outBuffer.GetDataPointer(), &vg->GetGrid()[0], outBuffer.GetSizeInBytes());
 
     voxelBufferInfo.buffer  = outBuffer.GetBufferHandle();
