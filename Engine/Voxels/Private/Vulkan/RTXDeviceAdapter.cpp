@@ -1,6 +1,7 @@
 #include "Vulkan/RTXDeviceAdapter.hpp"
 
 #include "Vulkan/ErrorHandling.hpp"
+#include <cstdint>
 
 namespace Voxels
 {
@@ -9,22 +10,18 @@ using namespace std;
 
 // RTXDeviceAdapter // ----------------------------------------------------------------------------------------------------
 RTXDeviceAdapter::RTXDeviceAdapter(shared_ptr<const WrapperHardware> gpu)
-    : WrapperAdapter(FindQueueFamilyIndex(gpu), 
-                     CreateDeviceAdapter(gpu, FindQueueFamilyIndex(gpu)),
-                     CreateQueue(CreateDeviceAdapter(gpu, FindQueueFamilyIndex(gpu)), FindQueueFamilyIndex(gpu)))
+    : WrapperAdapter()
     , m_pGPU(gpu)
 {
-    AB_LOG(Core::Debug::Info, L"Creating a device adapter!");
+    auto index = FindQueueFamilyIndex(gpu);
+    auto device = CreateDeviceAdapter(gpu, index);
+    RecreateAdapter(index, device, CreateQueue(device, index));
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(const shared_ptr<const WrapperHardware>& gpu)
 {
-    static uint32_t uFamilyIndex = -1;
-    if (uFamilyIndex != -1) {
-        return uFamilyIndex;
-    }
-
+    uint32_t                            uFamilyIndex;
     uint32_t                            uFamilyCount;
     vector<VkQueueFamilyProperties>     vProperties     = { };
     VkPhysicalDevice                    physicalDevice  = gpu->GetPhysicalDevice();
@@ -55,11 +52,7 @@ uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(const shared_ptr<const WrapperHa
 // ---------------------------------------------------------------------------------------------------------------------
 VkDevice RTXDeviceAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHardware>& gpu, uint32_t uQueueIndex)
 { 
-    static VkDevice device = VK_NULL_HANDLE;
-    if (device != VK_NULL_HANDLE) {
-        return device;
-    }
-
+    VkDevice                                            device                              = VK_NULL_HANDLE;
     VkDeviceCreateInfo                                  createInfo;
     VkDeviceQueueCreateInfo                             queueCreateInfo;
     VkPhysicalDeviceTimelineSemaphoreFeatures           semaphoreFeatures;
@@ -69,7 +62,7 @@ VkDevice RTXDeviceAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHar
     VkPhysicalDeviceAccelerationStructureFeaturesKHR    accelerationStructureFeatures;
     VkPhysicalDeviceBufferDeviceAddressFeatures         bufferDeviceAddressFeatures;
     VkPhysicalDeviceFeatures                            deviceFeatures;
-    float                                               queuePriorities[]                       = { 1. };
+    float                                               queuePriorities[]                  = { 1. };
 
     const std::vector<const char*> vpszDeviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -123,7 +116,7 @@ VkDevice RTXDeviceAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHar
     queueCreateInfo.pQueuePriorities    = queuePriorities;
     queueCreateInfo.queueCount          = sizeof(queuePriorities) / sizeof(float);
 
-    memset(&deviceFeatures, VK_FALSE, sizeof(VkPhysicalDeviceFeatures));
+    memset(&deviceFeatures, 0, sizeof(VkPhysicalDeviceFeatures));
     
     deviceFeatures.fragmentStoresAndAtomics         = VK_TRUE;
     deviceFeatures.vertexPipelineStoresAndAtomics   = VK_TRUE;

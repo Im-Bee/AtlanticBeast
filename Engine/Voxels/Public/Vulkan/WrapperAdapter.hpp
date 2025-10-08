@@ -8,7 +8,11 @@ class WrapperAdapter
 {
 public:
 
-    WrapperAdapter() = delete;
+    WrapperAdapter()
+        : m_uQueueFamily(0)
+        , m_Device(VK_NULL_HANDLE)
+        , m_Queue(VK_NULL_HANDLE)
+    { }
 
     WrapperAdapter(uint32_t uQueueIndex,
                    VkDevice device,
@@ -24,6 +28,22 @@ public:
             vkDestroyDevice(m_Device, nullptr);
             m_Device = VK_NULL_HANDLE;
         }
+    }
+
+public:
+
+    void RecreateAdapter(uint32_t uQueueIndex,
+                          VkDevice device,
+                          VkQueue queue)
+    {
+        if (m_Device != VK_NULL_HANDLE) {
+            vkDestroyDevice(m_Device, nullptr);
+            m_Device = VK_NULL_HANDLE;
+        }
+
+        m_uQueueFamily = uQueueIndex;
+        m_Device = device;
+        m_Queue = queue;
     }
 
 public:
