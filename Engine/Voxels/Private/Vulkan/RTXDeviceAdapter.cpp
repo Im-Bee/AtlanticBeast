@@ -1,7 +1,6 @@
 #include "Vulkan/RTXDeviceAdapter.hpp"
 
 #include "Vulkan/ErrorHandling.hpp"
-#include <cstdint>
 
 namespace Voxels
 {
@@ -9,19 +8,28 @@ namespace Voxels
 using namespace std;
 
 // RTXDeviceAdapter // ----------------------------------------------------------------------------------------------------
-RTXDeviceAdapter::RTXDeviceAdapter(shared_ptr<const WrapperHardware> gpu)
-    : WrapperAdapter()
-    , m_pGPU(gpu)
+RTXDeviceAdapter::RTXDeviceAdapter(shared_ptr<const RTXHardware> gpu)
+    : m_pHardware(gpu)
+    , m_uQueueFamily(FindQueueFamilyIndex(m_pHardware))
+    , m_Device(CreateDeviceAdapter(m_pHardware, m_uQueueFamily))
+    , m_Queue(CreateQueue(m_Device, m_uQueueFamily))
 {
-    auto index = FindQueueFamilyIndex(gpu);
-    auto device = CreateDeviceAdapter(gpu, index);
-    RecreateAdapter(index, device, CreateQueue(device, index));
+    AB_LOG(Core::Debug::Info, L"Creating a device adapter!");
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(const shared_ptr<const WrapperHardware>& gpu)
+RTXDeviceAdapter::~RTXDeviceAdapter()
+{ 
+    if (m_Device != VK_NULL_HANDLE) {
+        vkDestroyDevice(m_Device, nullptr);
+        m_Device = VK_NULL_HANDLE;
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(shared_ptr<const RTXHardware>& gpu)
 {
-    uint32_t                            uFamilyIndex;
+    uint32_t                            uFamilyIndex    = 0;
     uint32_t                            uFamilyCount;
     vector<VkQueueFamilyProperties>     vProperties     = { };
     VkPhysicalDevice                    physicalDevice  = gpu->GetPhysicalDevice();
@@ -50,9 +58,9 @@ uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(const shared_ptr<const WrapperHa
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDevice RTXDeviceAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHardware>& gpu, uint32_t uQueueIndex)
+VkDevice RTXDeviceAdapter::CreateDeviceAdapter(shared_ptr<const RTXHardware>& gpu, uint32_t uQueueIndex)
 { 
-    VkDevice                                            device                              = VK_NULL_HANDLE;
+    VkDevice                                            device                                  = VK_NULL_HANDLE;
     VkDeviceCreateInfo                                  createInfo;
     VkDeviceQueueCreateInfo                             queueCreateInfo;
     VkPhysicalDeviceTimelineSemaphoreFeatures           semaphoreFeatures;
@@ -62,7 +70,7 @@ VkDevice RTXDeviceAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHar
     VkPhysicalDeviceAccelerationStructureFeaturesKHR    accelerationStructureFeatures;
     VkPhysicalDeviceBufferDeviceAddressFeatures         bufferDeviceAddressFeatures;
     VkPhysicalDeviceFeatures                            deviceFeatures;
-    float                                               queuePriorities[]                  = { 1. };
+    float                                               queuePriorities[]                       = { 1. };
 
     const std::vector<const char*> vpszDeviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
@@ -116,7 +124,7 @@ VkDevice RTXDeviceAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHar
     queueCreateInfo.pQueuePriorities    = queuePriorities;
     queueCreateInfo.queueCount          = sizeof(queuePriorities) / sizeof(float);
 
-    memset(&deviceFeatures, 0, sizeof(VkPhysicalDeviceFeatures));
+    memset(&deviceFeatures, VK_FALSE, sizeof(VkPhysicalDeviceFeatures));
     
     deviceFeatures.fragmentStoresAndAtomics         = VK_TRUE;
     deviceFeatures.vertexPipelineStoresAndAtomics   = VK_TRUE;
@@ -133,7 +141,7 @@ VkDevice RTXDeviceAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHar
     createInfo.enabledExtensionCount    = static_cast<uint32_t>(vpszDeviceExtensions.size());
     createInfo.pEnabledFeatures         = &deviceFeatures;
 
-    THROW_IF_FAILED(vkCreateDevice(gpu->GetPhysicalDevice(),
+    ThrowIfFailed(vkCreateDevice(gpu->GetPhysicalDevice(),
                                  &createInfo,
                                  NULL,
                                  &device));

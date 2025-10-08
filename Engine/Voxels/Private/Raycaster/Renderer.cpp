@@ -1,14 +1,10 @@
 #include "Raycaster/Renderer.hpp"
 
-#include "Core.h"
+#include "Raycaster/Pipeline.hpp"
 #include "Raycaster/VoxelFrameResources.hpp"
 #include "Raycaster/VoxelGrid.hpp"
-#include "Vulkan/ComputeAdapter.hpp"
 #include "Vulkan/ErrorHandling.hpp"
 #include "Math/Consts.hpp"
-#include "Vulkan/GPUStreamBuffer.hpp"
-#include "Vulkan/MinimalHardware.hpp"
-#include "Vulkan/WrapperAdapter.hpp"
 
 namespace Voxels
 {
@@ -20,11 +16,11 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
                           ::std::shared_ptr<VoxelGrid> vg) 
 {
     m_pInstance         = make_shared<Instance>();
-    m_pHardware         = make_shared<MinimalHardware>(m_pInstance);
-    m_pDeviceAdapter    = make_shared<ComputeAdapter>(m_pHardware);
+    m_pHardware         = make_shared<RTXHardware>(m_pInstance);
+    m_pDeviceAdapter    = make_shared<RTXDeviceAdapter>(m_pHardware);
     m_pWindowDesc       = wd;
     m_pVoxelGrid        = vg;
-    m_pPipeline         = make_shared<VoxelPipeline>(m_pHardware, m_pDeviceAdapter);
+    m_pPipeline         = make_shared<Pipeline>(m_pHardware, m_pDeviceAdapter);
 
     m_CommandPool = CreateCommandPool(m_pDeviceAdapter, m_pDeviceAdapter->GetQueueFamilyIndex());
 
@@ -98,7 +94,7 @@ void Renderer::Render()
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    THROW_IF_FAILED(vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, frame.InFlightFence));
+    ThrowIfFailed(vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, frame.InFlightFence));
 
     VkSwapchainKHR swapchain = m_pSwapChain->GetSwapChainHandle();
 
@@ -160,7 +156,7 @@ void Renderer::Destroy()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkCommandPool Renderer::CreateCommandPool(shared_ptr<const WrapperAdapter> da, uint32_t uQueueFamily)
+VkCommandPool Renderer::CreateCommandPool(shared_ptr<const RTXDeviceAdapter> da, uint32_t uQueueFamily)
 {
     VkCommandPool           cmdPool;
     VkCommandPoolCreateInfo cmdPoolInfo;
@@ -170,13 +166,13 @@ VkCommandPool Renderer::CreateCommandPool(shared_ptr<const WrapperAdapter> da, u
     cmdPoolInfo.flags               = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     cmdPoolInfo.queueFamilyIndex    = uQueueFamily;
 
-    THROW_IF_FAILED(vkCreateCommandPool(da->GetAdapterHandle(), &cmdPoolInfo, NULL, &cmdPool));
+    ThrowIfFailed(vkCreateCommandPool(da->GetAdapterHandle(), &cmdPoolInfo, NULL, &cmdPool));
 
     return cmdPool;
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
-VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const WrapperAdapter> da, VkCommandPool cmdPool)
+VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const RTXDeviceAdapter> da, VkCommandPool cmdPool)
 {
     VkCommandBuffer             cmdBuffer;
     VkCommandBufferAllocateInfo allocInfo;
@@ -187,15 +183,15 @@ VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const WrapperAda
     allocInfo.level                 = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount    = 1;
 
-    THROW_IF_FAILED(vkAllocateCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), &allocInfo, &cmdBuffer));
-    THROW_IF_FAILED(vkResetCommandBuffer(cmdBuffer, 0));
+    ThrowIfFailed(vkAllocateCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), &allocInfo, &cmdBuffer));
+    ThrowIfFailed(vkResetCommandBuffer(cmdBuffer, 0));
 
     return cmdBuffer;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_ptr<const WrapperAdapter>& da,
-                                                           const ::std::shared_ptr<VoxelPipeline>& pipeline,
+vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_ptr<const RTXDeviceAdapter>& da,
+                                                           const ::std::shared_ptr<Pipeline>& pipeline,
                                                            const ::std::shared_ptr<const VoxelGrid>& vg,
                                                            VkCommandPool cmdPool,
                                                            size_t uFrames)
@@ -228,7 +224,7 @@ vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_p
 
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
-                              const shared_ptr<VoxelPipeline>& pipeline,
+                              const shared_ptr<Pipeline>& pipeline,
                               uint32_t uImageIndex)
 {
     vkResetCommandBuffer(cmdBuff, 0);
@@ -239,7 +235,7 @@ void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
     beginInfo.pInheritanceInfo = NULL;
 
-    THROW_IF_FAILED(vkBeginCommandBuffer(cmdBuff, &beginInfo));
+    ThrowIfFailed(vkBeginCommandBuffer(cmdBuff, &beginInfo));
     vkCmdBindPipeline(cmdBuff, VK_PIPELINE_BIND_POINT_COMPUTE, m_pPipeline->GetPipelineHandle());
 
     VkImageMemoryBarrier barrier;
@@ -285,11 +281,11 @@ void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
                          0, NULL,
                          1, &presentBarrier);
 
-    THROW_IF_FAILED(vkEndCommandBuffer(cmdBuff));
+    ThrowIfFailed(vkEndCommandBuffer(cmdBuff));
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::shared_ptr<VoxelPipeline>& pipeline)
+void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::shared_ptr<Pipeline>& pipeline)
 {
 
     vkCmdBindDescriptorSets(cmdBuffer,

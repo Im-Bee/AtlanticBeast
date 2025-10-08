@@ -1,7 +1,7 @@
 #ifndef AB_PIPELINE_H
 #define AB_PIPELINE_H
 
-#include "Vulkan/GPUStreamBuffer.hpp"
+#include "Vulkan/GPUBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Vulkan/RTXDeviceAdapter.hpp"
 #include "Raycaster/PushConstants.hpp"
@@ -11,23 +11,23 @@
 namespace Voxels
 {
 
-class VoxelPipeline
+class Pipeline
 {
 
     friend class Renderer;
 
 public:
 
-    BEAST_VOXEL_API VoxelPipeline(::std::shared_ptr<const WrapperHardware> hw,
-                             ::std::shared_ptr<const WrapperAdapter> da);
+    BEAST_VOXEL_API Pipeline(::std::shared_ptr<const RTXHardware> hw,
+                             ::std::shared_ptr<const RTXDeviceAdapter> da);
 
-    BEAST_VOXEL_API ~VoxelPipeline();
+    BEAST_VOXEL_API ~Pipeline();
 
 public:
 
-    BEAST_VOXEL_API GPUStreamBuffer ReserveGridBuffer(const ::std::shared_ptr<const VoxelGrid>& vg);
+    BEAST_VOXEL_API GPUBuffer ReserveGridBuffer(::std::shared_ptr<const VoxelGrid> vg);
 
-    BEAST_VOXEL_API void LoadGrid(const ::std::shared_ptr<const VoxelGrid>& vg, GPUStreamBuffer& outBuffer);
+    BEAST_VOXEL_API void LoadGrid(const ::std::shared_ptr<const VoxelGrid>& vg, GPUBuffer& outBuffer);
 
     BEAST_VOXEL_API void LoadImage(VkImage image);
 
@@ -60,20 +60,20 @@ public:
 
 private:
 
-    VkDescriptorSetLayout CreateDescriptorLayout(::std::shared_ptr<const WrapperAdapter>& da);
+    VkDescriptorSetLayout CreateDescriptorLayout(::std::shared_ptr<const RTXDeviceAdapter>& da);
 
-    VkDescriptorPool CreateDescriptorPool(::std::shared_ptr<const WrapperAdapter>& da);
+    VkDescriptorPool CreateDescriptorPool(::std::shared_ptr<const RTXDeviceAdapter>& da);
 
-    VkDescriptorSet CreateDescriptorSet(::std::shared_ptr<const WrapperAdapter>& da,
+    VkDescriptorSet CreateDescriptorSet(::std::shared_ptr<const RTXDeviceAdapter>& da,
                                         VkDescriptorPool dp,
                                         VkDescriptorSetLayout dLayout);
 
-    VkPipelineLayout CreatePipelineLayout(::std::shared_ptr<const WrapperAdapter>& da,
+    VkPipelineLayout CreatePipelineLayout(::std::shared_ptr<const RTXDeviceAdapter>& da,
                                           VkDescriptorSetLayout descriptorSetLayout);
 
-    VkShaderModule LoadShader(::std::shared_ptr<const WrapperAdapter>& da, const ::std::string& strPath);
+    VkShaderModule LoadShader(::std::shared_ptr<const RTXDeviceAdapter>& da, const ::std::string& strPath);
 
-    VkPipeline CreateComputePipeline(::std::shared_ptr<const WrapperAdapter>& da, 
+    VkPipeline CreateComputePipeline(::std::shared_ptr<const RTXDeviceAdapter>& da, 
                                      VkPipelineLayout pipelineLayout, 
                                      VkShaderModule shaderModule);
 
@@ -81,8 +81,8 @@ private:
 
 private:
     
-    ::std::shared_ptr<const WrapperHardware>   m_pHardware         = nullptr;
-    ::std::shared_ptr<const WrapperAdapter>    m_pDeviceAdapter    = nullptr;
+    ::std::shared_ptr<const RTXHardware>       m_pHardware         = nullptr;
+    ::std::shared_ptr<const RTXDeviceAdapter>  m_pDeviceAdapter    = nullptr;
     ::std::shared_ptr<const Swapchain>         m_pSwapChain        = nullptr;
 
     ::std::shared_ptr<const VoxelGrid> m_VoxelGrid = nullptr;

@@ -1,7 +1,6 @@
 #include "Vulkan/SwapChain.hpp"
 
 #include "Vulkan/ErrorHandling.hpp"
-#include "Vulkan/WrapperHardware.hpp"
 
 
 namespace Voxels
@@ -11,8 +10,8 @@ using namespace std;
 
 // Swapchain // --------------------------------------------------------------------------------------------------------
 Swapchain::Swapchain(shared_ptr<const Instance> pInst, 
-                     shared_ptr<const WrapperHardware> hw,
-                     shared_ptr<const WrapperAdapter> da,
+                     shared_ptr<const RTXHardware> hw,
+                     shared_ptr<const RTXDeviceAdapter> da,
                      shared_ptr<const WindowDesc> wd)
     : m_pInstance(pInst)
     , m_pHardware(hw)
@@ -75,7 +74,7 @@ VkSurfaceKHR Swapchain::CreateSurface(shared_ptr<const Instance>& pInstance, sha
     createInfo.dpy      = pWindowDesc->DisplayHandle;
     createInfo.window   = pWindowDesc->WindowHandle;
 
-    THROW_IF_FAILED(vkCreateXlibSurfaceKHR(pInstance->GetInstance(),
+    ThrowIfFailed(vkCreateXlibSurfaceKHR(pInstance->GetInstance(),
                                          &createInfo,
                                          NULL,
                                          &surface));
@@ -85,12 +84,11 @@ VkSurfaceKHR Swapchain::CreateSurface(shared_ptr<const Instance>& pInstance, sha
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkSurfaceCapabilitiesKHR Swapchain::GetCapabilitesInternal(shared_ptr<const WrapperHardware> pHardware,
-                                                           VkSurfaceKHR surface)
+VkSurfaceCapabilitiesKHR Swapchain::GetCapabilitesInternal(shared_ptr<const RTXHardware> pHardware, VkSurfaceKHR surface)
 {
     VkSurfaceCapabilitiesKHR capabilities;
 
-    THROW_IF_FAILED(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pHardware->GetPhysicalDevice(), 
+    ThrowIfFailed(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pHardware->GetPhysicalDevice(), 
                                                             surface,
                                                             &capabilities));
 
@@ -130,7 +128,7 @@ VkExtent2D Swapchain::GetExtentInternal(VkSurfaceCapabilitiesKHR& capabilities,
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const WrapperAdapter>& pAdapter,
+VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const RTXDeviceAdapter>& pAdapter,
                                           VkSurfaceKHR surface,
                                           VkSurfaceCapabilitiesKHR& capabilities,
                                           VkExtent2D& extent2D,
@@ -160,7 +158,7 @@ VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const WrapperAdapter>& pAda
     swapchainInfo.clipped               = VK_TRUE;
     swapchainInfo.oldSwapchain          = VK_NULL_HANDLE;
 
-    THROW_IF_FAILED(vkCreateSwapchainKHR(pAdapter->GetAdapterHandle(),
+    ThrowIfFailed(vkCreateSwapchainKHR(pAdapter->GetAdapterHandle(),
                                        &swapchainInfo,
                                        NULL,
                                        &swapChain));
@@ -169,7 +167,7 @@ VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const WrapperAdapter>& pAda
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const WrapperHardware>& pHardware, VkSurfaceKHR surface)
+VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const RTXHardware>& pHardware, VkSurfaceKHR surface)
 {
     VkPhysicalDevice            physicalDeviceHandle    = pHardware->GetPhysicalDevice();
     uint32_t                    uFormatCount            = 0;
@@ -177,14 +175,14 @@ VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const WrapperHardware>& pHar
     bool                        bPicked                 = false;
     size_t                      choosenFormatIndex;
     
-    THROW_IF_FAILED(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDeviceHandle,
+    ThrowIfFailed(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDeviceHandle,
                                                        surface,
                                                        &uFormatCount,
                                                        NULL));
     
 
     vFormats.resize(uFormatCount);
-    THROW_IF_FAILED(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDeviceHandle,
+    ThrowIfFailed(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDeviceHandle,
                                                        surface,
                                                        &uFormatCount,
                                                        &vFormats[0]));
@@ -216,18 +214,18 @@ VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const WrapperHardware>& pHar
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPresentModeKHR Swapchain::PickMode(shared_ptr<const WrapperHardware>& pHardware, VkSurfaceKHR surface)
+VkPresentModeKHR Swapchain::PickMode(shared_ptr<const RTXHardware>& pHardware, VkSurfaceKHR surface)
 { 
     VkPhysicalDevice            physicalDeviceHandle    = pHardware->GetPhysicalDevice();
     uint32_t                    uPresentModeCount       = 0;
     vector<VkPresentModeKHR>    vPresentModes           = { };
 
-    THROW_IF_FAILED(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDeviceHandle,
+    ThrowIfFailed(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDeviceHandle,
                                                             surface,
                                                             &uPresentModeCount,
                                                             NULL));
     vPresentModes.resize(uPresentModeCount);
-    THROW_IF_FAILED(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDeviceHandle,
+    ThrowIfFailed(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDeviceHandle,
                                                             surface,
                                                             &uPresentModeCount,
                                                             &vPresentModes[0]));
@@ -244,24 +242,24 @@ VkPresentModeKHR Swapchain::PickMode(shared_ptr<const WrapperHardware>& pHardwar
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t Swapchain::CreateAmountOfSwapChainImages(::std::shared_ptr<const WrapperAdapter>& pAdapter, 
+uint32_t Swapchain::CreateAmountOfSwapChainImages(::std::shared_ptr<const RTXDeviceAdapter>& pAdapter, 
                                                   VkSwapchainKHR swapchain)
 {
     uint32_t uImageCount = 0;
 
-    THROW_IF_FAILED(vkGetSwapchainImagesKHR(pAdapter->GetAdapterHandle(), swapchain, &uImageCount, nullptr));
+    ThrowIfFailed(vkGetSwapchainImagesKHR(pAdapter->GetAdapterHandle(), swapchain, &uImageCount, nullptr));
 
     return uImageCount;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-::std::vector<VkImage> Swapchain::CreateSwapChainImages(::std::shared_ptr<const WrapperAdapter>& pAdapter,
+::std::vector<VkImage> Swapchain::CreateSwapChainImages(::std::shared_ptr<const RTXDeviceAdapter>& pAdapter,
                                                         VkSwapchainKHR swapchain,
                                                         uint32_t uAmount)
 {
     vector<VkImage> swapChainImages(uAmount);
 
-    THROW_IF_FAILED(vkGetSwapchainImagesKHR(pAdapter->GetAdapterHandle(),
+    ThrowIfFailed(vkGetSwapchainImagesKHR(pAdapter->GetAdapterHandle(),
                                           swapchain,
                                           &uAmount,
                                           &swapChainImages[0]));

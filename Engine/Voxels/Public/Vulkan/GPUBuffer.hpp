@@ -17,7 +17,7 @@ public:
         , m_uSizeInBytes(0)
     { }
 
-    GPUBuffer(::std::shared_ptr<const WrapperAdapter> da,
+    GPUBuffer(::std::shared_ptr<const RTXDeviceAdapter> da,
               VkDeviceMemory deviceMemory,
               VkBuffer buffer,
               size_t sizeInBytes) 
@@ -27,23 +27,8 @@ public:
         , m_uSizeInBytes(sizeInBytes)
     { }
 
-    GPUBuffer(const GPUBuffer& other) = delete;
-
-    GPUBuffer(GPUBuffer&& other) noexcept
-        : m_pDeviceAdapter(std::move(other.m_pDeviceAdapter))
-        , m_DeviceMemory(other.m_DeviceMemory)
-        , m_Buffer(other.m_Buffer)
-        , m_uSizeInBytes(other.m_uSizeInBytes)
-    {
-        other.m_DeviceMemory = VK_NULL_HANDLE;
-        other.m_Buffer = VK_NULL_HANDLE;
-    }
-
     ~GPUBuffer() 
     {
-        if (m_pDeviceAdapter == nullptr) {
-            return;
-        }
         if (m_Buffer != VK_NULL_HANDLE) {
             vkDestroyBuffer(m_pDeviceAdapter->GetAdapterHandle(), m_Buffer, NULL);
         }
@@ -54,19 +39,21 @@ public:
 
 public:
 
-    GPUBuffer& operator=(GPUBuffer&& other) noexcept
+    GPUBuffer& operator=(GPUBuffer&& other) 
     {
         m_pDeviceAdapter = std::move(other.m_pDeviceAdapter);
         m_DeviceMemory = other.m_DeviceMemory;
         m_Buffer = other.m_Buffer;
-        m_uSizeInBytes = other.m_uSizeInBytes;
+        *const_cast<size_t*>(&m_uSizeInBytes) = other.m_uSizeInBytes;
 
         other.m_DeviceMemory = VK_NULL_HANDLE;
         other.m_Buffer = VK_NULL_HANDLE;
-        other.m_uSizeInBytes = 0;
 
         return *this; 
     }
+
+    VkDeviceMemory& operator&() 
+    { return m_DeviceMemory; }
 
 public:
 
@@ -79,12 +66,12 @@ public:
     size_t GetSizeInBytes() const 
     { return m_uSizeInBytes; }
 
-protected:
+private:
 
-    ::std::shared_ptr<const WrapperAdapter> m_pDeviceAdapter = nullptr;
+    ::std::shared_ptr<const RTXDeviceAdapter> m_pDeviceAdapter = nullptr;
     VkDeviceMemory  m_DeviceMemory  = VK_NULL_HANDLE;
     VkBuffer        m_Buffer        = VK_NULL_HANDLE;
-    size_t          m_uSizeInBytes  = 0;
+    const size_t    m_uSizeInBytes  = 0;
 
 };
 

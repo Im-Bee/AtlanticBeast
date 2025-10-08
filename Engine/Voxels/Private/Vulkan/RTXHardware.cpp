@@ -8,26 +8,42 @@ namespace Voxels
 using namespace std;
 
 // RTXHardware // ---------------------------------------------------------------------------------------------------------
-RTXHardware::RTXHardware(shared_ptr<const Instance> pInstance)
-    : WrapperHardware(ChooseGPU(pInstance))
-    , m_pInstance(pInstance)
+RTXHardware::RTXHardware(shared_ptr<const Instance> instance)
+    : m_pInstance(instance)
+    , m_DeviceHandle(ChooseGPU(m_pInstance))
 { 
     AB_LOG(Core::Debug::Info, L"Creating a hardware!");
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPhysicalDevice RTXHardware::ChooseGPU(const shared_ptr<const Instance>& pInstance)
+RTXHardware::~RTXHardware()
+{ }
+
+// ---------------------------------------------------------------------------------------------------------------------
+VkPhysicalDevice RTXHardware::ChooseGPU(shared_ptr<const Instance>& instance)
 { 
     VkPhysicalDevice            chosenPhysicalDevice    = VK_NULL_HANDLE;
-    vector<VkPhysicalDevice>    vPhysicalDevices        = GetPhysicalDevices(pInstance->GetInstance());
+    uint32_t                    uDeviceCount;
+    VkResult                    result                  = VK_SUCCESS;
+    vector<VkPhysicalDevice>    vPhysicalDevices;
+
+
+    ThrowIfFailed(vkEnumeratePhysicalDevices(instance->GetInstance(),
+                                             &uDeviceCount,
+                                             NULL));
+
+    vPhysicalDevices.resize(uDeviceCount);
+
+    ThrowIfFailed(vkEnumeratePhysicalDevices(instance->GetInstance(), 
+                                             &uDeviceCount,
+                                             &vPhysicalDevices[0]));
+
 
     VkPhysicalDeviceProperties                          deviceProperties;
-
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR       rayTracingPipelineFeatures;
     VkPhysicalDeviceAccelerationStructureFeaturesKHR    accelStructFeatures;
     VkPhysicalDeviceBufferDeviceAddressFeatures         bufferAddressFeatures;
-
-    VkPhysicalDeviceFeatures2 deviceFeatures2;
+    VkPhysicalDeviceFeatures2                           deviceFeatures2;
 
     for (const auto& pDevice : vPhysicalDevices) 
     {
@@ -53,7 +69,7 @@ VkPhysicalDevice RTXHardware::ChooseGPU(const shared_ptr<const Instance>& pInsta
 
         deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
         deviceFeatures2.pNext = &bufferAddressFeatures;
-    
+
         vkGetPhysicalDeviceFeatures2(pDevice, &deviceFeatures2);
 
         if (rayTracingPipelineFeatures.rayTracingPipeline &&
@@ -66,7 +82,7 @@ VkPhysicalDevice RTXHardware::ChooseGPU(const shared_ptr<const Instance>& pInsta
     }
 
     if (chosenPhysicalDevice == VK_NULL_HANDLE) {
-        AB_LOG(Core::Debug::Error, L"Ohh nooo... Couldn't choose a valid physical gpu!!!");
+        AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!! Error code is: %d", result);
         throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");
     }
 
