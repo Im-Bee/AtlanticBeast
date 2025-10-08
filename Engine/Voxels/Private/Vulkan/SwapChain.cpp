@@ -63,10 +63,10 @@ VkSurfaceKHR Swapchain::CreateSurface(shared_ptr<const Instance>& pInstance, sha
     createInfo.hinstance = GetModuleHandle(NULL);
     createInfo.hwnd      = pWindowDesc->Hwnd;
 
-    ThrowIfFailed(vkCreateWin32SurfaceKHR(pInstance->GetInstance(),
-                                          &createInfo,
-                                          NULL,
-                                          &surface));
+    THROW_IF_FAILED(vkCreateWin32SurfaceKHR(pInstance->GetInstance(),
+                                            &createInfo,
+                                            NULL,
+                                            &surface));
 #elif __linux__
     VkXlibSurfaceCreateInfoKHR  createInfo;
     createInfo.sType    = VK_STRUCTURE_TYPE_XLIB_SURFACE_CREATE_INFO_KHR;
