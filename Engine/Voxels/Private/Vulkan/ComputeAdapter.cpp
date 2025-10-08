@@ -20,7 +20,6 @@ ComputeAdapter::ComputeAdapter(shared_ptr<const WrapperHardware> gpu)
 // ---------------------------------------------------------------------------------------------------------------------
 uint32_t ComputeAdapter::FindQueueFamilyIndex(const shared_ptr<const WrapperHardware>& gpu)
 {
-    uint32_t                            uFamilyIndex;
     uint32_t                            uFamilyCount;
     vector<VkQueueFamilyProperties>     vProperties     = { };
     VkPhysicalDevice                    physicalDevice  = gpu->GetPhysicalDevice();
@@ -57,9 +56,6 @@ VkDevice ComputeAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHardw
     VkPhysicalDeviceTimelineSemaphoreFeatures           semaphoreFeatures;
     VkPhysicalDevice8BitStorageFeatures                 bitStorageFeatures;
     VkPhysicalDeviceVulkanMemoryModelFeatures           memoryModelFeatures;
-    VkPhysicalDeviceRayTracingPipelineFeaturesKHR       rayTracingPipelineFeatures;
-    VkPhysicalDeviceAccelerationStructureFeaturesKHR    accelerationStructureFeatures;
-    VkPhysicalDeviceBufferDeviceAddressFeatures         bufferDeviceAddressFeatures;
     VkPhysicalDeviceFeatures                            deviceFeatures;
     float                                               queuePriorities[]                  = { 1. };
 

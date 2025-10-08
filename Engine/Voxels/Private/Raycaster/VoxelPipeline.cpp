@@ -70,7 +70,6 @@ GPUStreamBuffer VoxelPipeline::ReserveGridBuffer(const shared_ptr<const VoxelGri
     VkMemoryRequirements    memRequirements;
     VkBuffer                voxelBuffer;
     VkDeviceMemory          voxelBufferMemory;
-    void*                   pData;
 
     bufferInfo.sType        = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.pNext        = NULL;
