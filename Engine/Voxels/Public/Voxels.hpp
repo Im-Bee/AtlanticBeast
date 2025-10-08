@@ -14,13 +14,10 @@
 #include "App.h"
 
 #ifdef __cplusplus
-
-#include <vulkan/vulkan.hpp>
-
-#ifdef _WIN32
-#   undef LoadImage
-#endif // !_WIN32
-
+#   include <vulkan/vulkan.hpp>
+#   ifdef _WIN32
+#      undef LoadImage
+#   endif // !_WIN32
 #endif // !__cplusplus
 
 #ifdef __linux__
@@ -36,5 +33,4 @@
 #           define BEAST_VOXEL_API __declspec(dllimport)
 #   endif // !_BEAST_EXPORTS
 #endif // !__linux__
-
 #endif // !AB_VOXELS_H

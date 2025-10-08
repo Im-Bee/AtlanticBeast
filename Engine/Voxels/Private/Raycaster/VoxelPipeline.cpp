@@ -1,8 +1,11 @@
-#include "Raycaster/Pipeline.hpp"
+#include "Raycaster/VoxelPipeline.hpp"
 
+#include "Core.h"
+#include "Debug/Logger.hpp"
 #include "Vulkan/ErrorHandling.hpp"
-#include "Vulkan/GPUBuffer.hpp"
+#include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
+#include <vulkan/vulkan_core.h>
 
 
 namespace Voxels
@@ -11,8 +14,8 @@ namespace Voxels
 using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
-Pipeline::Pipeline(::std::shared_ptr<const RTXHardware> hw, 
-                   ::std::shared_ptr<const RTXDeviceAdapter> da)
+VoxelPipeline::VoxelPipeline(::std::shared_ptr<const WrapperHardware> hw, 
+                   ::std::shared_ptr<const WrapperAdapter> da)
     : m_pHardware(hw)
     , m_pDeviceAdapter(da)
     , m_VoxelGrid(nullptr)
@@ -28,7 +31,7 @@ Pipeline::Pipeline(::std::shared_ptr<const RTXHardware> hw,
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-Pipeline::~Pipeline()
+VoxelPipeline::~VoxelPipeline()
 {
     if (m_ImageView != VK_NULL_HANDLE) {
         vkDestroyImageView(m_pDeviceAdapter->GetAdapterHandle(), m_ImageView, nullptr);
@@ -58,29 +61,30 @@ Pipeline::~Pipeline()
 }
 
 // Public // -----------------------------------------------------------------------------------------------------------
-GPUBuffer Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
+GPUStreamBuffer VoxelPipeline::ReserveGridBuffer(const shared_ptr<const VoxelGrid>& vg)
 {
+    const VkDeviceSize      uBufferSizeInBytes      = vg->GetAmountOfVoxels() * sizeof(Voxel);
+    const VkDevice          da                      = m_pDeviceAdapter->GetAdapterHandle();
     VkBufferCreateInfo      bufferInfo;
-    VkDeviceSize            bufferSizeInBytes   = vg->GetAmountOfVoxels() * sizeof(Voxel);
-    VkBuffer                voxelBuffer;
-    VkDevice                da                  = m_pDeviceAdapter->GetAdapterHandle();
-    VkDeviceMemory          voxelBufferMemory;
     VkMemoryAllocateInfo    allocInfo;
     VkMemoryRequirements    memRequirements;
+    VkBuffer                voxelBuffer;
+    VkDeviceMemory          voxelBufferMemory;
+    void*                   pData;
 
     bufferInfo.sType        = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.pNext        = NULL;
     bufferInfo.flags        = 0;
-    bufferInfo.size         = bufferSizeInBytes;
+    bufferInfo.size         = uBufferSizeInBytes;
     bufferInfo.usage        = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
     bufferInfo.sharingMode  = VK_SHARING_MODE_EXCLUSIVE;
 	bufferInfo.queueFamilyIndexCount = 0;
 	bufferInfo.pQueueFamilyIndices = NULL;
 
-    ThrowIfFailed(vkCreateBuffer(m_pDeviceAdapter->GetAdapterHandle(), 
-                                 &bufferInfo,
-                                 NULL,
-                                 &voxelBuffer));
+    THROW_IF_FAILED(vkCreateBuffer(m_pDeviceAdapter->GetAdapterHandle(), 
+                                   &bufferInfo,
+                                   NULL,
+                                   &voxelBuffer));
 
     vkGetBufferMemoryRequirements(da, voxelBuffer, &memRequirements);
 
@@ -91,18 +95,18 @@ GPUBuffer Pipeline::ReserveGridBuffer(shared_ptr<const VoxelGrid> vg)
                                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
                                                  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-    ThrowIfFailed(vkAllocateMemory(da, &allocInfo, NULL, &voxelBufferMemory));
-    ThrowIfFailed(vkBindBufferMemory(da, voxelBuffer, voxelBufferMemory, 0));
+    THROW_IF_FAILED(vkAllocateMemory(da, &allocInfo, NULL, &voxelBufferMemory));
+    THROW_IF_FAILED(vkBindBufferMemory(da, voxelBuffer, voxelBufferMemory, 0));
 
-    m_VoxelGrid         = vg;
+    m_VoxelGrid     = vg;
     int32_t w = static_cast<int32_t>(m_VoxelGrid->GetGridWidth());
-    m_Vpc.GridSize      = iVec4(w, w, w);
+    m_Vpc.GridSize  = iVec4(w, w, w);
 
-    return GPUBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, bufferSizeInBytes);
+    return GPUStreamBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, nullptr, uBufferSizeInBytes);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUBuffer& outBuffer)
+void VoxelPipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUStreamBuffer& outBuffer)
 {
     AB_ASSERT((outBuffer.GetMemoryHandle() != VK_NULL_HANDLE));
     AB_ASSERT((outBuffer.GetBufferHandle() != VK_NULL_HANDLE));
@@ -110,15 +114,19 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUBuffer& outBuf
     AB_ASSERT((m_VoxelGrid != nullptr));
     AB_ASSERT((vg->GetAmountOfVoxels() == m_VoxelGrid->GetAmountOfVoxels()));
 
-    VkDevice                da                  = m_pDeviceAdapter->GetAdapterHandle();
+    const VkDevice          da                  = m_pDeviceAdapter->GetAdapterHandle();
     VkDescriptorBufferInfo  voxelBufferInfo;
     VkWriteDescriptorSet    voxelWrite;
-    void*                   pData;
-    size_t                  uBufferSizeInBytes  = vg->GetAmountOfVoxels() * sizeof(Voxel);
-
-    vkMapMemory(da, outBuffer.GetMemoryHandle(), 0, uBufferSizeInBytes, 0, &pData);
-    memcpy(pData, &vg->GetGrid()[0], uBufferSizeInBytes);
-    vkUnmapMemory(da, outBuffer.GetMemoryHandle());
+    
+    if (*outBuffer.GetDataPointer() == nullptr) {
+        THROW_IF_FAILED(vkMapMemory(da, 
+                                    outBuffer.GetMemoryHandle(),
+                                    0,
+                                    outBuffer.GetSizeInBytes(),
+                                    0,
+                                    outBuffer.GetDataPointer()));
+    }
+    memcpy(*outBuffer.GetDataPointer(), &vg->GetGrid()[0], outBuffer.GetSizeInBytes());
 
     voxelBufferInfo.buffer  = outBuffer.GetBufferHandle();
     voxelBufferInfo.offset  = 0;
@@ -140,18 +148,20 @@ void Pipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUBuffer& outBuf
                            &voxelWrite,
                            0,
                            NULL);
-
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void Pipeline::LoadImage(VkImage image)
+void VoxelPipeline::LoadImage(VkImage image)
 {
     if (m_ImageView != VK_NULL_HANDLE) {
         vkDestroyImageView(m_pDeviceAdapter->GetAdapterHandle(), m_ImageView, nullptr);
         m_ImageView = VK_NULL_HANDLE;
     }
 
-    VkImageViewCreateInfo viewInfo{};
+    VkImageViewCreateInfo   viewInfo    = { };
+    VkDescriptorImageInfo   imageInfo   = { };
+    VkWriteDescriptorSet    imageWrite  = { };
+
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     viewInfo.image = image;
     viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D; 
@@ -163,13 +173,14 @@ void Pipeline::LoadImage(VkImage image)
     viewInfo.subresourceRange.baseArrayLayer = 0;
     viewInfo.subresourceRange.layerCount = 1;
 
-    ThrowIfFailed(vkCreateImageView(m_pDeviceAdapter->GetAdapterHandle(), &viewInfo, nullptr, &m_ImageView));
+    THROW_IF_FAILED(vkCreateImageView(m_pDeviceAdapter->GetAdapterHandle(), 
+                                      &viewInfo,
+                                      nullptr,
+                                      &m_ImageView));
 
-    VkDescriptorImageInfo imageInfo{};
     imageInfo.imageView = m_ImageView;
     imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL; 
 
-    VkWriteDescriptorSet imageWrite{};
     imageWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     imageWrite.dstSet = m_DescriptorSet;
     imageWrite.dstBinding = 0; 
@@ -178,12 +189,16 @@ void Pipeline::LoadImage(VkImage image)
     imageWrite.descriptorCount = 1;
     imageWrite.pImageInfo = &imageInfo;
     
-    vkUpdateDescriptorSets(m_pDeviceAdapter->GetAdapterHandle(), 1, &imageWrite, 0, nullptr);
+    vkUpdateDescriptorSets(m_pDeviceAdapter->GetAdapterHandle(), 
+                           1,
+                           &imageWrite,
+                           0,
+                           nullptr);
 }
 
 
 // Private // ----------------------------------------------------------------------------------------------------------
-VkDescriptorSetLayout Pipeline::CreateDescriptorLayout(shared_ptr<const RTXDeviceAdapter>& da)
+VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const WrapperAdapter>& da)
 {
     array<VkDescriptorSetLayoutBinding, 2>  bindings                = { };
     VkDescriptorSetLayoutCreateInfo         layoutCreateInfo;
@@ -207,23 +222,23 @@ VkDescriptorSetLayout Pipeline::CreateDescriptorLayout(shared_ptr<const RTXDevic
     layoutCreateInfo.bindingCount   = static_cast<uint32_t>(bindings.size());
     layoutCreateInfo.pBindings      = &bindings[0];
 
-    ThrowIfFailed(vkCreateDescriptorSetLayout(da->GetAdapterHandle(), 
-                                              &layoutCreateInfo,
-                                              NULL,
-                                              &descriptorSetLayout));
+    THROW_IF_FAILED(vkCreateDescriptorSetLayout(da->GetAdapterHandle(), 
+                                                &layoutCreateInfo,
+                                                NULL,
+                                                &descriptorSetLayout));
 
     return descriptorSetLayout;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDescriptorPool Pipeline::CreateDescriptorPool(shared_ptr<const RTXDeviceAdapter>& da)
+VkDescriptorPool VoxelPipeline::CreateDescriptorPool(shared_ptr<const WrapperAdapter>& da)
 {
-    VkDescriptorPool            descriptorPool;
-    VkDescriptorPoolCreateInfo  poolInfo;
-    VkDescriptorPoolSize        poolSizes[] = {
+    const VkDescriptorPoolSize  poolSizes[] = {
         { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,  1 },
         { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1 },
     };
+    VkDescriptorPool            descriptorPool;
+    VkDescriptorPoolCreateInfo  poolInfo;
 
     poolInfo.sType          = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.pNext          = NULL;
@@ -232,15 +247,15 @@ VkDescriptorPool Pipeline::CreateDescriptorPool(shared_ptr<const RTXDeviceAdapte
     poolInfo.pPoolSizes     = poolSizes;
     poolInfo.maxSets        = 1;
 
-    ThrowIfFailed(vkCreateDescriptorPool(da->GetAdapterHandle(), &poolInfo, NULL, &descriptorPool));
+    THROW_IF_FAILED(vkCreateDescriptorPool(da->GetAdapterHandle(), &poolInfo, NULL, &descriptorPool));
 
     return descriptorPool;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDescriptorSet Pipeline::CreateDescriptorSet(shared_ptr<const RTXDeviceAdapter>& da,
-                                              VkDescriptorPool dp,
-                                              VkDescriptorSetLayout dLayout)
+VkDescriptorSet VoxelPipeline::CreateDescriptorSet(shared_ptr<const WrapperAdapter>& da,
+                                                   VkDescriptorPool dp,
+                                                   VkDescriptorSetLayout dLayout)
 {
     VkDescriptorSet                 descriptorSet;
     VkDescriptorSetAllocateInfo     allocInfo;
@@ -251,14 +266,14 @@ VkDescriptorSet Pipeline::CreateDescriptorSet(shared_ptr<const RTXDeviceAdapter>
     allocInfo.descriptorSetCount    = 1;
     allocInfo.pSetLayouts           = &dLayout;
 
-    ThrowIfFailed(vkAllocateDescriptorSets(da->GetAdapterHandle(), &allocInfo, &descriptorSet));
+    THROW_IF_FAILED(vkAllocateDescriptorSets(da->GetAdapterHandle(), &allocInfo, &descriptorSet));
 
     return descriptorSet;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPipelineLayout Pipeline::CreatePipelineLayout(shared_ptr<const RTXDeviceAdapter>& da,
-                                                VkDescriptorSetLayout descriptorSetLayout)
+VkPipelineLayout VoxelPipeline::CreatePipelineLayout(shared_ptr<const WrapperAdapter>& da,
+                                                     VkDescriptorSetLayout descriptorSetLayout)
 { 
     VkPushConstantRange         pushConstantRange;
     VkPipelineLayoutCreateInfo  layoutInfo;
@@ -276,7 +291,7 @@ VkPipelineLayout Pipeline::CreatePipelineLayout(shared_ptr<const RTXDeviceAdapte
     layoutInfo.pushConstantRangeCount   = 1;
     layoutInfo.pPushConstantRanges      = &pushConstantRange;
 
-    ThrowIfFailed(vkCreatePipelineLayout(da->GetAdapterHandle(), 
+    THROW_IF_FAILED(vkCreatePipelineLayout(da->GetAdapterHandle(), 
                                          &layoutInfo,
                                          NULL,
                                          &pipelineLayout));
@@ -285,7 +300,7 @@ VkPipelineLayout Pipeline::CreatePipelineLayout(shared_ptr<const RTXDeviceAdapte
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkShaderModule Pipeline::LoadShader(shared_ptr<const RTXDeviceAdapter>& da, const string& strPath)
+VkShaderModule VoxelPipeline::LoadShader(shared_ptr<const WrapperAdapter>& da, const string& strPath)
 {
     vector<char>                vBuffer;
     size_t                      uFileSize;
@@ -313,18 +328,18 @@ VkShaderModule Pipeline::LoadShader(shared_ptr<const RTXDeviceAdapter>& da, cons
     shaderCreateInfo.codeSize   = vBuffer.size(); // Size is in bytes, so it's okay
     shaderCreateInfo.pCode      = reinterpret_cast<const uint32_t*>(&vBuffer[0]);
 
-    ThrowIfFailed(vkCreateShaderModule(da->GetAdapterHandle(), &shaderCreateInfo, NULL, &shaderModule));
+    THROW_IF_FAILED(vkCreateShaderModule(da->GetAdapterHandle(), &shaderCreateInfo, NULL, &shaderModule));
 
     return shaderModule;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPipeline Pipeline::CreateComputePipeline(shared_ptr<const RTXDeviceAdapter>& da, 
-                                           VkPipelineLayout pipelineLayout, 
-                                           VkShaderModule shaderModule)
+VkPipeline VoxelPipeline::CreateComputePipeline(shared_ptr<const WrapperAdapter>& da, 
+                                                VkPipelineLayout pipelineLayout, 
+                                                VkShaderModule shaderModule)
 { 
+    const VkDevice                  device          = da->GetAdapterHandle();
     VkPipeline                      pipeline        = VK_NULL_HANDLE;
-    VkDevice                        device          = da->GetAdapterHandle();
     VkComputePipelineCreateInfo     pipelineInfo;
     VkPipelineShaderStageCreateInfo shaderStage;
 
@@ -347,7 +362,7 @@ VkPipeline Pipeline::CreateComputePipeline(shared_ptr<const RTXDeviceAdapter>& d
     pipelineInfo.basePipelineIndex  = 0;
 
 
-    ThrowIfFailed(vkCreateComputePipelines(device,
+    THROW_IF_FAILED(vkCreateComputePipelines(device,
                                            VK_NULL_HANDLE,
                                            1,
                                            &pipelineInfo,
@@ -358,7 +373,7 @@ VkPipeline Pipeline::CreateComputePipeline(shared_ptr<const RTXDeviceAdapter>& d
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t Pipeline::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+uint32_t VoxelPipeline::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
 {
     VkPhysicalDeviceMemoryProperties memProperties;
 

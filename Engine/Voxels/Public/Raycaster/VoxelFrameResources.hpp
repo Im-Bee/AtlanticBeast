@@ -3,13 +3,14 @@
 
 #include "Vulkan/FrameResources.hpp"
 #include "Vulkan/GPUBuffer.hpp"
+#include "Vulkan/GPUStreamBuffer.hpp"
 
 namespace Voxels
 {
     
 struct VoxelFrameResources : public FrameResources
 {
-    GPUBuffer VoxelBuffer;
+    GPUStreamBuffer VoxelBuffer;
 };
 
 } // !Voxels

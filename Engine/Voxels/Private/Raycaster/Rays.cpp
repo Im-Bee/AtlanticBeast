@@ -6,11 +6,10 @@ namespace Voxels
 HitResult MarchTheRay(const VoxelGrid* vg, const Vec3& ro, const Vec3& rd, size_t maxSteps)
 {
     HitResult result;
-    result.bHit = false;
-    result.fDistance = 0.0f;
+    result.bHit         = false;
+    result.fDistance    = 0.0f;
 
-    Vec3 pos(std::floor(ro.x), std::floor(ro.y), std::floor(ro.z));
-    iVec3 voxel(pos.x, pos.y, pos.z);
+    iVec3 voxel(ro.x, ro.y, ro.z);
 
     Vec3 invDir(1.0f / rd.x, 1.0f / rd.y, 1.0f / rd.z);
     Vec3 tDelta(std::fabs(invDir.x), std::fabs(invDir.y), std::fabs(invDir.z));

@@ -1,5 +1,5 @@
-#ifndef AB_DEVICE_ADAPTER_H
-#define AB_DEVICE_ADAPTER_H
+#ifndef AB_COMPUTE_DEVICE_ADAPTER_H
+#define AB_COMPUTE_DEVICE_ADAPTER_H
 
 #include "Vulkan/WrapperHardware.hpp"
 #include "Vulkan/WrapperAdapter.hpp"
@@ -7,13 +7,13 @@
 namespace Voxels
 {
 
-class RTXDeviceAdapter : public WrapperAdapter
+class ComputeAdapter : public WrapperAdapter
 {
 public:
 
-    BEAST_VOXEL_API RTXDeviceAdapter(::std::shared_ptr<const WrapperHardware> gpu);
+    BEAST_VOXEL_API ComputeAdapter(::std::shared_ptr<const WrapperHardware> gpu);
 
-    BEAST_VOXEL_API ~RTXDeviceAdapter() = default;
+    BEAST_VOXEL_API ~ComputeAdapter() = default;
 
 private:
 
@@ -29,5 +29,5 @@ private:
 
 };
 
-} // !Voxels
-#endif // !AB_DEVICE_ADAPTER_H
+} //!Voxels
+#endif // !AB_COMPUTE_DEVICE_ADAPTER_H
