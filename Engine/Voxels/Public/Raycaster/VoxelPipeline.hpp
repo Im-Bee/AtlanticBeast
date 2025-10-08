@@ -1,7 +1,6 @@
 #ifndef AB_PIPELINE_H
 #define AB_PIPELINE_H
 
-#include "Vulkan/GPUBuffer.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Vulkan/RTXDeviceAdapter.hpp"
@@ -12,17 +11,17 @@
 namespace Voxels
 {
 
-class Pipeline
+class VoxelPipeline
 {
 
     friend class Renderer;
 
 public:
 
-    BEAST_VOXEL_API Pipeline(::std::shared_ptr<const WrapperHardware> hw,
+    BEAST_VOXEL_API VoxelPipeline(::std::shared_ptr<const WrapperHardware> hw,
                              ::std::shared_ptr<const RTXDeviceAdapter> da);
 
-    BEAST_VOXEL_API ~Pipeline();
+    BEAST_VOXEL_API ~VoxelPipeline();
 
 public:
 

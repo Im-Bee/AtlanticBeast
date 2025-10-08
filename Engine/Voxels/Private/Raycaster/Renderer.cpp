@@ -1,7 +1,6 @@
 #include "Raycaster/Renderer.hpp"
 
 #include "Core.h"
-#include "Raycaster/Pipeline.hpp"
 #include "Raycaster/VoxelFrameResources.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Vulkan/ErrorHandling.hpp"
@@ -23,7 +22,7 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
     m_pDeviceAdapter    = make_shared<RTXDeviceAdapter>(m_pHardware);
     m_pWindowDesc       = wd;
     m_pVoxelGrid        = vg;
-    m_pPipeline         = make_shared<Pipeline>(m_pHardware, m_pDeviceAdapter);
+    m_pPipeline         = make_shared<VoxelPipeline>(m_pHardware, m_pDeviceAdapter);
 
     m_CommandPool = CreateCommandPool(m_pDeviceAdapter, m_pDeviceAdapter->GetQueueFamilyIndex());
 
@@ -194,7 +193,7 @@ VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const RTXDeviceA
 
 // ---------------------------------------------------------------------------------------------------------------------
 vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_ptr<const RTXDeviceAdapter>& da,
-                                                           const ::std::shared_ptr<Pipeline>& pipeline,
+                                                           const ::std::shared_ptr<VoxelPipeline>& pipeline,
                                                            const ::std::shared_ptr<const VoxelGrid>& vg,
                                                            VkCommandPool cmdPool,
                                                            size_t uFrames)
@@ -227,7 +226,7 @@ vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_p
 
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
-                              const shared_ptr<Pipeline>& pipeline,
+                              const shared_ptr<VoxelPipeline>& pipeline,
                               uint32_t uImageIndex)
 {
     vkResetCommandBuffer(cmdBuff, 0);
@@ -288,7 +287,7 @@ void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::shared_ptr<Pipeline>& pipeline)
+void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::shared_ptr<VoxelPipeline>& pipeline)
 {
 
     vkCmdBindDescriptorSets(cmdBuffer,

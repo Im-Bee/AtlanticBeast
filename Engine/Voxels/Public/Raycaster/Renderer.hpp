@@ -3,10 +3,9 @@
 
 #include "Vulkan/Instance.hpp"
 #include "Vulkan/MinimalHardware.hpp"
-#include "Vulkan/RTXHardware.hpp"
 #include "Vulkan/RTXDeviceAdapter.hpp"
 #include "Vulkan/SwapChain.hpp"
-#include "Raycaster/Pipeline.hpp"
+#include "Raycaster/VoxelPipeline.hpp"
 #include "Raycaster/VoxelFrameResources.hpp"
 
 #include "Primitives/Camera.hpp"
@@ -72,16 +71,16 @@ private:
     VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const RTXDeviceAdapter> da, VkCommandPool cmdPool);
 
     ::std::vector<VoxelFrameResources> CreateFrameResources(const ::std::shared_ptr<const RTXDeviceAdapter>& da,
-                                                            const ::std::shared_ptr<Pipeline>& pipeline,
+                                                            const ::std::shared_ptr<VoxelPipeline>& pipeline,
                                                             const ::std::shared_ptr<const VoxelGrid>& vg,
                                                             VkCommandPool cmdPool,
                                                             size_t uFrames);
 
     void RecordCommands(VkCommandBuffer& cmdBuff,
-                        const ::std::shared_ptr<Pipeline>& pipeline, 
+                        const ::std::shared_ptr<VoxelPipeline>& pipeline, 
                         uint32_t uImageIndex);
 
-    void RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::shared_ptr<Pipeline>& pipeline);
+    void RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::shared_ptr<VoxelPipeline>& pipeline);
 
     void RecreateSwapChain();
 
@@ -92,7 +91,7 @@ private:
     ::std::shared_ptr<RTXDeviceAdapter>     m_pDeviceAdapter    = nullptr;
     ::std::unique_ptr<Swapchain>            m_pSwapChain        = nullptr;
     ::std::shared_ptr<const WindowDesc>     m_pWindowDesc       = nullptr;
-    ::std::shared_ptr<Pipeline>             m_pPipeline         = nullptr;
+    ::std::shared_ptr<VoxelPipeline>             m_pPipeline         = nullptr;
     ::std::shared_ptr<VoxelGrid>            m_pVoxelGrid        = nullptr;
 
 
