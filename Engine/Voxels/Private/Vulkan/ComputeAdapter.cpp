@@ -8,60 +8,36 @@ namespace Voxels
 using namespace std;
 
 // --------------------------------------------------------------------------------------------------------------------
-ComputeAdapter::ComputeAdapter(shared_ptr<const WrapperHardware> gpu)
-    : WrapperAdapter()
+ComputeAdapter::ComputeAdapter(shared_ptr<const Hardware> gpu)
+    : Adapter(gpu->GetPhysicalDevice(), 
+                     VK_QUEUE_COMPUTE_BIT | VK_QUEUE_GRAPHICS_BIT,
+                     GetExtensions(),
+                     GetFeaturesImpl())
     , m_pGPU(gpu)
+{ }
+
+// --------------------------------------------------------------------------------------------------------------------
+const ::std::vector<const char*>& ComputeAdapter::GetExtensionsImpl() const
 {
-    auto index = FindQueueFamilyIndex(gpu);
-    auto device = CreateDeviceAdapter(gpu, index);
-    RecreateAdapter(index, device, CreateQueue(device, index));
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-uint32_t ComputeAdapter::FindQueueFamilyIndex(const shared_ptr<const WrapperHardware>& gpu)
-{
-    uint32_t                            uFamilyCount;
-    vector<VkQueueFamilyProperties>     vProperties     = { };
-    VkPhysicalDevice                    physicalDevice  = gpu->GetPhysicalDevice();
-
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &uFamilyCount, NULL);
-    if (!uFamilyCount) {
-        AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!!");
-        throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");
-    }
-    vProperties.resize(uFamilyCount);
-
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &uFamilyCount, &vProperties[0]);
-    if (!uFamilyCount) {
-        AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!!");
-        throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");
-    }
-
-    uint32_t uFlags = VK_QUEUE_COMPUTE_BIT | VK_QUEUE_GRAPHICS_BIT;
-    for (uint32_t i = 0; i < uFamilyCount; ++i)
-        if (vProperties[i].queueFlags & uFlags)
-            return i;
-
-
-    AB_LOG(Core::Debug::Error, L"Ohh nooo... Vulkan isn't working!!!");
-    throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-VkDevice ComputeAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHardware>& gpu, uint32_t uQueueIndex)
-{ 
-    VkDevice                                            device                              = VK_NULL_HANDLE;
-    VkDeviceCreateInfo                                  createInfo;
-    VkDeviceQueueCreateInfo                             queueCreateInfo;
-    VkPhysicalDeviceTimelineSemaphoreFeatures           semaphoreFeatures;
-    VkPhysicalDevice8BitStorageFeatures                 bitStorageFeatures;
-    VkPhysicalDeviceVulkanMemoryModelFeatures           memoryModelFeatures;
-    VkPhysicalDeviceFeatures                            deviceFeatures;
-    float                                               queuePriorities[]                  = { 1. };
-
-    const std::vector<const char*> vpszDeviceExtensions = {
+    static const std::vector<const char*> vpszDeviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME,
     };
+
+    return vpszDeviceExtensions;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void* ComputeAdapter::GetFeaturesImpl() const
+{
+    static bool bCreated = false;
+
+    static VkPhysicalDeviceTimelineSemaphoreFeatures   semaphoreFeatures;
+    static VkPhysicalDevice8BitStorageFeatures         bitStorageFeatures;
+    static VkPhysicalDeviceVulkanMemoryModelFeatures   memoryModelFeatures;
+
+    if (bCreated) {
+        return &memoryModelFeatures;
+    }
 
     semaphoreFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES;
     semaphoreFeatures.pNext = NULL;
@@ -79,45 +55,9 @@ VkDevice ComputeAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHardw
     memoryModelFeatures.vulkanMemoryModelDeviceScope = VK_TRUE;
     memoryModelFeatures.vulkanMemoryModelAvailabilityVisibilityChains = VK_FALSE;
 
-    queueCreateInfo.sType               = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queueCreateInfo.pNext               = NULL;
-    queueCreateInfo.flags               = 0;
-    queueCreateInfo.queueFamilyIndex    = uQueueIndex;
-    queueCreateInfo.pQueuePriorities    = queuePriorities;
-    queueCreateInfo.queueCount          = sizeof(queuePriorities) / sizeof(float);
+    bCreated = true;
 
-    memset(&deviceFeatures, 0, sizeof(VkPhysicalDeviceFeatures));
-    
-    deviceFeatures.fragmentStoresAndAtomics         = VK_TRUE;
-    deviceFeatures.vertexPipelineStoresAndAtomics   = VK_TRUE;
-    deviceFeatures.shaderInt64                      = VK_TRUE;
-
-    createInfo.sType                    = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    createInfo.pNext                    = &memoryModelFeatures;
-    createInfo.flags                    = 0;
-    createInfo.pQueueCreateInfos        = &queueCreateInfo;
-    createInfo.queueCreateInfoCount     = 1;
-    createInfo.ppEnabledLayerNames      = NULL;
-    createInfo.enabledLayerCount        = 0;
-    createInfo.ppEnabledExtensionNames  = &vpszDeviceExtensions[0];
-    createInfo.enabledExtensionCount    = static_cast<uint32_t>(vpszDeviceExtensions.size());
-    createInfo.pEnabledFeatures         = &deviceFeatures;
-
-    THROW_IF_FAILED(vkCreateDevice(gpu->GetPhysicalDevice(),
-                                   &createInfo,
-                                   NULL,
-                                   &device));
-
-    return device;
+    return &memoryModelFeatures;
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
-VkQueue ComputeAdapter::CreateQueue(VkDevice dv, uint32_t uQueueIndex)
-{
-    VkQueue graphicsQueue;
-
-    vkGetDeviceQueue(dv, uQueueIndex, 0, &graphicsQueue);
-
-    return graphicsQueue;
-}
 };

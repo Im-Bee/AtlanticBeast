@@ -9,7 +9,7 @@ using namespace std;
 
 // RTXHardware // ---------------------------------------------------------------------------------------------------------
 RTXHardware::RTXHardware(shared_ptr<const Instance> pInstance)
-    : WrapperHardware(ChooseGPU(pInstance))
+    : Hardware(ChooseGPU(pInstance))
     , m_pInstance(pInstance)
 { 
     AB_LOG(Core::Debug::Info, L"Creating a hardware!");

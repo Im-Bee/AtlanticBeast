@@ -7,7 +7,8 @@ namespace Voxels
 
 using namespace std;
 
-uint32_t WrapperAdapter::ChooseQueueFamily(VkPhysicalDevice gpu, uint32_t uFlags)
+// --------------------------------------------------------------------------------------------------------------------
+uint32_t Adapter::ChooseQueueFamily(VkPhysicalDevice gpu, uint32_t uFlags)
 {
     uint32_t                            uFamilyCount;
     vector<VkQueueFamilyProperties>     vProperties     = { };
@@ -35,7 +36,8 @@ uint32_t WrapperAdapter::ChooseQueueFamily(VkPhysicalDevice gpu, uint32_t uFlags
     throw AB_EXCEPT("Ohh nooo... Vulkan isn't working!!!");
 }
 
-VkDevice WrapperAdapter::CreateDevice(VkPhysicalDevice gpu,
+// --------------------------------------------------------------------------------------------------------------------
+VkDevice Adapter::CreateDevice(VkPhysicalDevice gpu,
                                       const std::vector<const char*>& vExtensions,
                                       const void* pFeatures,
                                       uint32_t uFamilyIndex)
@@ -78,7 +80,8 @@ VkDevice WrapperAdapter::CreateDevice(VkPhysicalDevice gpu,
     return device;
 }
 
-VkQueue WrapperAdapter::CreateQueue(VkDevice dv, uint32_t uQueueIndex)
+// --------------------------------------------------------------------------------------------------------------------
+VkQueue Adapter::CreateQueue(VkDevice dv, uint32_t uQueueIndex)
 {
     VkQueue graphicsQueue;
 

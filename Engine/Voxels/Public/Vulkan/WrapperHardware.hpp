@@ -6,17 +6,17 @@
 namespace Voxels
 {
 
-class WrapperHardware
+class Hardware
 {
 public:
 
-    WrapperHardware() = delete;
+    Hardware() = delete;
 
-    explicit WrapperHardware(VkPhysicalDevice physicalDevice)
+    explicit Hardware(VkPhysicalDevice physicalDevice)
         : m_PhysicalDevice(physicalDevice)
     { }
 
-    ~WrapperHardware() = default;
+    ~Hardware() = default;
 
 public: 
 

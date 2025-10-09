@@ -7,7 +7,7 @@ namespace Voxels
 using namespace std;
 
 // --------------------------------------------------------------------------------------------------------------------
-vector<VkPhysicalDevice> WrapperHardware::GetPhysicalDevices(VkInstance instance)
+vector<VkPhysicalDevice> Hardware::GetPhysicalDevices(VkInstance instance)
 {
     uint32_t                    uDeviceCount;
     vector<VkPhysicalDevice>    vPhysicalDevices;

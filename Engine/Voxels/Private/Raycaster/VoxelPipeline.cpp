@@ -14,8 +14,8 @@ namespace Voxels
 using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
-VoxelPipeline::VoxelPipeline(::std::shared_ptr<const WrapperHardware> hw, 
-                   ::std::shared_ptr<const WrapperAdapter> da)
+VoxelPipeline::VoxelPipeline(::std::shared_ptr<const Hardware> hw, 
+                   ::std::shared_ptr<const Adapter> da)
     : m_pHardware(hw)
     , m_pDeviceAdapter(da)
     , m_VoxelGrid(nullptr)
@@ -197,7 +197,7 @@ void VoxelPipeline::LoadImage(VkImage image)
 
 
 // Private // ----------------------------------------------------------------------------------------------------------
-VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const WrapperAdapter>& da)
+VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const Adapter>& da)
 {
     array<VkDescriptorSetLayoutBinding, 2>  bindings                = { };
     VkDescriptorSetLayoutCreateInfo         layoutCreateInfo;
@@ -230,7 +230,7 @@ VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const Wra
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDescriptorPool VoxelPipeline::CreateDescriptorPool(shared_ptr<const WrapperAdapter>& da)
+VkDescriptorPool VoxelPipeline::CreateDescriptorPool(shared_ptr<const Adapter>& da)
 {
     const VkDescriptorPoolSize  poolSizes[] = {
         { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,  1 },
@@ -252,7 +252,7 @@ VkDescriptorPool VoxelPipeline::CreateDescriptorPool(shared_ptr<const WrapperAda
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkDescriptorSet VoxelPipeline::CreateDescriptorSet(shared_ptr<const WrapperAdapter>& da,
+VkDescriptorSet VoxelPipeline::CreateDescriptorSet(shared_ptr<const Adapter>& da,
                                                    VkDescriptorPool dp,
                                                    VkDescriptorSetLayout dLayout)
 {
@@ -271,7 +271,7 @@ VkDescriptorSet VoxelPipeline::CreateDescriptorSet(shared_ptr<const WrapperAdapt
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPipelineLayout VoxelPipeline::CreatePipelineLayout(shared_ptr<const WrapperAdapter>& da,
+VkPipelineLayout VoxelPipeline::CreatePipelineLayout(shared_ptr<const Adapter>& da,
                                                      VkDescriptorSetLayout descriptorSetLayout)
 { 
     VkPushConstantRange         pushConstantRange;
@@ -299,7 +299,7 @@ VkPipelineLayout VoxelPipeline::CreatePipelineLayout(shared_ptr<const WrapperAda
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkShaderModule VoxelPipeline::LoadShader(shared_ptr<const WrapperAdapter>& da, const string& strPath)
+VkShaderModule VoxelPipeline::LoadShader(shared_ptr<const Adapter>& da, const string& strPath)
 {
     vector<char>                vBuffer;
     size_t                      uFileSize;
@@ -333,7 +333,7 @@ VkShaderModule VoxelPipeline::LoadShader(shared_ptr<const WrapperAdapter>& da, c
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPipeline VoxelPipeline::CreateComputePipeline(shared_ptr<const WrapperAdapter>& da, 
+VkPipeline VoxelPipeline::CreateComputePipeline(shared_ptr<const Adapter>& da, 
                                                 VkPipelineLayout pipelineLayout, 
                                                 VkShaderModule shaderModule)
 { 

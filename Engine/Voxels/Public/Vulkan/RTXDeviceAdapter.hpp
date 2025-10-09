@@ -1,31 +1,31 @@
 #ifndef AB_DEVICE_ADAPTER_H
 #define AB_DEVICE_ADAPTER_H
 
+#include "Vulkan/Wrapper.hpp"
 #include "Vulkan/WrapperHardware.hpp"
 #include "Vulkan/WrapperAdapter.hpp"
 
 namespace Voxels
 {
 
-class RTXDeviceAdapter : public WrapperAdapter
+class RTXDeviceAdapter : public Adapter
+                       , public IAdapter<RTXDeviceAdapter>
 {
 public:
 
-    BEAST_VOXEL_API RTXDeviceAdapter(::std::shared_ptr<const WrapperHardware> gpu);
+    BEAST_VOXEL_API RTXDeviceAdapter(::std::shared_ptr<const Hardware> gpu);
 
     BEAST_VOXEL_API ~RTXDeviceAdapter() = default;
 
-private:
+public:
 
-    uint32_t FindQueueFamilyIndex(const ::std::shared_ptr<const WrapperHardware>& gpu);
+    const ::std::vector<const char*> GetExtensionsImpl() const;
 
-    VkDevice CreateDeviceAdapter(const ::std::shared_ptr<const WrapperHardware>& gpu, uint32_t uQueueIndex);
-
-    VkQueue CreateQueue(VkDevice dv, uint32_t uQueueIndex);
+    void* GetFeaturesImpl() const;
 
 private:
 
-    ::std::shared_ptr<const WrapperHardware> m_pGPU = nullptr;
+    ::std::shared_ptr<const Hardware> m_pGPU = nullptr;
 
 };
 

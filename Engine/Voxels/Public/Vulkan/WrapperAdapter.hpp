@@ -6,17 +6,17 @@
 namespace Voxels
 {
 
-class WrapperAdapter
+class Adapter
 {
 public:
 
-    WrapperAdapter()
+    Adapter()
         : m_uQueueFamily(0)
         , m_Device(VK_NULL_HANDLE)
         , m_Queue(VK_NULL_HANDLE)
     { }
 
-    WrapperAdapter(uint32_t uQueueIndex,
+    Adapter(uint32_t uQueueIndex,
                    VkDevice device,
                    VkQueue queue)
         : m_uQueueFamily(uQueueIndex)
@@ -24,7 +24,7 @@ public:
         , m_Queue(queue)
     { }
 
-    WrapperAdapter(VkPhysicalDevice gpu, 
+    Adapter(VkPhysicalDevice gpu, 
                    uint32_t uFlags,
                    const std::vector<const char*>& vExtensions,
                    const void* pFeatures)
@@ -34,19 +34,13 @@ public:
     { }
                    
 
-    ~WrapperAdapter()
+    ~Adapter()
     {
         if (m_Device != VK_NULL_HANDLE) {
             vkDestroyDevice(m_Device, nullptr);
             m_Device = VK_NULL_HANDLE;
         }
     }
-
-public:
-
-    BEAST_VOXEL_API void RecreateAdapter(uint32_t uQueueIndex,
-                                         VkDevice device,
-                                         VkQueue queue);
 
 public:
 
