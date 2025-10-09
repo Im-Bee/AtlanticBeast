@@ -21,7 +21,6 @@ RTXDeviceAdapter::RTXDeviceAdapter(shared_ptr<const WrapperHardware> gpu)
 // ---------------------------------------------------------------------------------------------------------------------
 uint32_t RTXDeviceAdapter::FindQueueFamilyIndex(const shared_ptr<const WrapperHardware>& gpu)
 {
-    uint32_t                            uFamilyIndex;
     uint32_t                            uFamilyCount;
     vector<VkQueueFamilyProperties>     vProperties     = { };
     VkPhysicalDevice                    physicalDevice  = gpu->GetPhysicalDevice();
@@ -134,9 +133,9 @@ VkDevice RTXDeviceAdapter::CreateDeviceAdapter(const shared_ptr<const WrapperHar
     createInfo.pEnabledFeatures         = &deviceFeatures;
 
     THROW_IF_FAILED(vkCreateDevice(gpu->GetPhysicalDevice(),
-                                 &createInfo,
-                                 NULL,
-                                 &device));
+                                   &createInfo,
+                                   NULL,
+                                   &device));
 
     return device;
 }

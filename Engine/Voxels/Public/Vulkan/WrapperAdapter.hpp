@@ -1,7 +1,8 @@
 #ifndef AB_WRAPPER_ADAPTER_H
 #define AB_WRAPPER_ADAPTER_H
 
-#include <cstdint>
+#include "Voxels.hpp"
+
 namespace Voxels
 {
 
@@ -43,19 +44,9 @@ public:
 
 public:
 
-    void RecreateAdapter(uint32_t uQueueIndex,
-                          VkDevice device,
-                          VkQueue queue)
-    {
-        if (m_Device != VK_NULL_HANDLE) {
-            vkDestroyDevice(m_Device, nullptr);
-            m_Device = VK_NULL_HANDLE;
-        }
-
-        m_uQueueFamily = uQueueIndex;
-        m_Device = device;
-        m_Queue = queue;
-    }
+    BEAST_VOXEL_API void RecreateAdapter(uint32_t uQueueIndex,
+                                         VkDevice device,
+                                         VkQueue queue);
 
 public:
 

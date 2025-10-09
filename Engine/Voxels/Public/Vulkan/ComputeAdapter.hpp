@@ -13,7 +13,7 @@ public:
 
     BEAST_VOXEL_API ComputeAdapter(::std::shared_ptr<const WrapperHardware> gpu);
 
-    BEAST_VOXEL_API ~ComputeAdapter() = default;
+    ~ComputeAdapter() = default;
 
 private:
 
