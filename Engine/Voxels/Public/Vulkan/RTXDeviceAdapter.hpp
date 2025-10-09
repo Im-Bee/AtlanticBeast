@@ -1,7 +1,7 @@
 #ifndef AB_DEVICE_ADAPTER_H
 #define AB_DEVICE_ADAPTER_H
 
-#include "Vulkan/Wrapper.hpp"
+#include "Vulkan/IAdapter.hpp"
 #include "Vulkan/WrapperHardware.hpp"
 #include "Vulkan/WrapperAdapter.hpp"
 

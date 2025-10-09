@@ -16,6 +16,9 @@ public:
         : m_PhysicalDevice(physicalDevice)
     { }
 
+    Hardware(Hardware&&) noexcept = default;
+    Hardware(const Hardware&) = delete;
+
     ~Hardware() = default;
 
 public: 

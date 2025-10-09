@@ -8,7 +8,7 @@ namespace Voxels
 using namespace std;
 
 // --------------------------------------------------------------------------------------------------------------------
-uint32_t Adapter::ChooseQueueFamily(VkPhysicalDevice gpu, uint32_t uFlags)
+uint32_t Adapter::ChooseQueueFamily(VkPhysicalDevice gpu, const uint32_t uFlags) const
 {
     uint32_t                            uFamilyCount;
     vector<VkQueueFamilyProperties>     vProperties     = { };
@@ -38,9 +38,9 @@ uint32_t Adapter::ChooseQueueFamily(VkPhysicalDevice gpu, uint32_t uFlags)
 
 // --------------------------------------------------------------------------------------------------------------------
 VkDevice Adapter::CreateDevice(VkPhysicalDevice gpu,
-                                      const std::vector<const char*>& vExtensions,
-                                      const void* pFeatures,
-                                      uint32_t uFamilyIndex)
+                               const std::vector<const char*>& vExtensions,
+                               const void* pFeatures,
+                               const uint32_t uFamilyIndex) const
 {
     VkDevice                                            device                              = VK_NULL_HANDLE;
     VkDeviceCreateInfo                                  createInfo;
@@ -81,7 +81,7 @@ VkDevice Adapter::CreateDevice(VkPhysicalDevice gpu,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-VkQueue Adapter::CreateQueue(VkDevice dv, uint32_t uQueueIndex)
+VkQueue Adapter::CreateQueue(VkDevice dv, const uint32_t uQueueIndex) const
 {
     VkQueue graphicsQueue;
 

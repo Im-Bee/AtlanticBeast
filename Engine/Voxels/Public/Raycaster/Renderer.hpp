@@ -32,8 +32,8 @@ public:
         , m_vFrames()
     { }
 
-    BEAST_VOXEL_API ~Renderer()
-    { this->Destroy(); }
+    ~Renderer()
+    {  }
 
 public:
 

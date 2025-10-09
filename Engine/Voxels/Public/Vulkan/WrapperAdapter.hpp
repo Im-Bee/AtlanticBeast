@@ -13,15 +13,17 @@ public:
     Adapter() = delete;
 
     Adapter(VkPhysicalDevice gpu, 
-            uint32_t uFlags,
+            const uint32_t uFlags,
             const std::vector<const char*>& vExtensions,
             const void* pFeatures)
         : m_uQueueFamily(ChooseQueueFamily(gpu, uFlags))
         , m_Device(CreateDevice(gpu, vExtensions, pFeatures, m_uQueueFamily))
         , m_Queue(CreateQueue(m_Device, m_uQueueFamily))
     { }
-                   
 
+    Adapter(Adapter&&) noexcept = default;
+    Adapter(const Adapter&) = delete;
+                   
     ~Adapter()
     {
         if (m_Device != VK_NULL_HANDLE) {
@@ -43,14 +45,14 @@ public:
 
 private:
 
-    uint32_t ChooseQueueFamily(VkPhysicalDevice gpu, uint32_t uFlags);
+    uint32_t ChooseQueueFamily(VkPhysicalDevice gpu, const uint32_t uFlags) const;
 
     VkDevice CreateDevice(VkPhysicalDevice gpu, 
                           const std::vector<const char*>& vExtensions,
                           const void* pFeatures,
-                          uint32_t uFamilyIndex);
+                          const uint32_t uFamilyIndex) const;
     
-    VkQueue CreateQueue(VkDevice dv, uint32_t uQueueIndex);
+    VkQueue CreateQueue(VkDevice dv, uint32_t uQueueIndex) const;
 
 private:
 

@@ -21,7 +21,7 @@ VkPhysicalDevice RTXHardware::ChooseGPU(const shared_ptr<const Instance>& pInsta
     VkPhysicalDevice            chosenPhysicalDevice    = VK_NULL_HANDLE;
     vector<VkPhysicalDevice>    vPhysicalDevices        = GetPhysicalDevices(pInstance->GetInstance());
 
-    VkPhysicalDeviceProperties                          deviceProperties;
+    VkPhysicalDeviceProperties deviceProperties;
 
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR       rayTracingPipelineFeatures;
     VkPhysicalDeviceAccelerationStructureFeaturesKHR    accelStructFeatures;

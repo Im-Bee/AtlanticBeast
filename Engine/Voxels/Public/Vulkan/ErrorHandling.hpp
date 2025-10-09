@@ -1,8 +1,6 @@
 #ifndef AB_ERROR_HANDLING_H
 #define AB_ERROR_HANDLING_H
 
-#include "Voxels.hpp"
-
 #define THROW_IF_FAILED(result)                                                 \
 {                                                                               \
     if (result != VK_SUCCESS) {                                                 \

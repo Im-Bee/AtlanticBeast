@@ -1,7 +1,6 @@
 #ifndef AB_GPU_STREAM_BUFFER_H
 #define AB_GPU_STREAM_BUFFER_H
 
-#include "Core.h"
 #include "Vulkan/GPUBuffer.hpp"
 
 namespace Voxels 

@@ -3,8 +3,8 @@
 
 #include "Voxels.hpp"
 #include "Instance.hpp"
-#include "RTXHardware.hpp"
-#include "RTXDeviceAdapter.hpp"
+#include "WrapperHardware.hpp"
+#include "WrapperAdapter.hpp"
 #include "Window/WindowDesc.hpp"
 
 namespace Voxels
