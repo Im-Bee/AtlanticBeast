@@ -1,6 +1,7 @@
 #ifndef AB_WRAPPER_ADAPTER_H
 #define AB_WRAPPER_ADAPTER_H
 
+#include <cstdint>
 namespace Voxels
 {
 
@@ -21,6 +22,16 @@ public:
         , m_Device(device)
         , m_Queue(queue)
     { }
+
+    WrapperAdapter(VkPhysicalDevice gpu, 
+                   uint32_t uFlags,
+                   const std::vector<const char*>& vExtensions,
+                   const void* pFeatures)
+        : m_uQueueFamily(ChooseQueueFamily(gpu, uFlags))
+        , m_Device(CreateDevice(gpu, vExtensions, pFeatures, m_uQueueFamily))
+        , m_Queue(CreateQueue(m_Device, m_uQueueFamily))
+    { }
+                   
 
     ~WrapperAdapter()
     {
@@ -56,6 +67,17 @@ public:
 
     VkQueue GetQueueHandle() const
     { return m_Queue; }
+
+private:
+
+    uint32_t ChooseQueueFamily(VkPhysicalDevice gpu, uint32_t uFlags);
+
+    VkDevice CreateDevice(VkPhysicalDevice gpu, 
+                          const std::vector<const char*>& vExtensions,
+                          const void* pFeatures,
+                          uint32_t uFamilyIndex);
+    
+    VkQueue CreateQueue(VkDevice dv, uint32_t uQueueIndex);
 
 private:
 

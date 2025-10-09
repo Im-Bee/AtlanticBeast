@@ -124,5 +124,4 @@ VkQueue ComputeAdapter::CreateQueue(VkDevice dv, uint32_t uQueueIndex)
 
     return graphicsQueue;
 }
-
 };
