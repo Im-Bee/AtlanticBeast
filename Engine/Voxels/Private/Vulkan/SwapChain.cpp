@@ -11,8 +11,8 @@ using namespace std;
 
 // Swapchain // --------------------------------------------------------------------------------------------------------
 Swapchain::Swapchain(shared_ptr<const Instance> pInst, 
-                     shared_ptr<const WrapperHardware> hw,
-                     shared_ptr<const WrapperAdapter> da,
+                     shared_ptr<const Hardware> hw,
+                     shared_ptr<const Adapter> da,
                      shared_ptr<const WindowDesc> wd)
     : m_pInstance(pInst)
     , m_pHardware(hw)
@@ -85,7 +85,7 @@ VkSurfaceKHR Swapchain::CreateSurface(shared_ptr<const Instance>& pInstance, sha
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkSurfaceCapabilitiesKHR Swapchain::GetCapabilitesInternal(shared_ptr<const WrapperHardware> pHardware,
+VkSurfaceCapabilitiesKHR Swapchain::GetCapabilitesInternal(shared_ptr<const Hardware> pHardware,
                                                            VkSurfaceKHR surface)
 {
     VkSurfaceCapabilitiesKHR capabilities;
@@ -130,7 +130,7 @@ VkExtent2D Swapchain::GetExtentInternal(VkSurfaceCapabilitiesKHR& capabilities,
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const WrapperAdapter>& pAdapter,
+VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const Adapter>& pAdapter,
                                           VkSurfaceKHR surface,
                                           VkSurfaceCapabilitiesKHR& capabilities,
                                           VkExtent2D& extent2D,
@@ -169,7 +169,7 @@ VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const WrapperAdapter>& pAda
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const WrapperHardware>& pHardware, VkSurfaceKHR surface)
+VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const Hardware>& pHardware, VkSurfaceKHR surface)
 {
     VkPhysicalDevice            physicalDeviceHandle    = pHardware->GetPhysicalDevice();
     uint32_t                    uFormatCount            = 0;
@@ -216,7 +216,7 @@ VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const WrapperHardware>& pHar
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPresentModeKHR Swapchain::PickMode(shared_ptr<const WrapperHardware>& pHardware, VkSurfaceKHR surface)
+VkPresentModeKHR Swapchain::PickMode(shared_ptr<const Hardware>& pHardware, VkSurfaceKHR surface)
 { 
     VkPhysicalDevice            physicalDeviceHandle    = pHardware->GetPhysicalDevice();
     uint32_t                    uPresentModeCount       = 0;
@@ -244,7 +244,7 @@ VkPresentModeKHR Swapchain::PickMode(shared_ptr<const WrapperHardware>& pHardwar
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t Swapchain::CreateAmountOfSwapChainImages(::std::shared_ptr<const WrapperAdapter>& pAdapter, 
+uint32_t Swapchain::CreateAmountOfSwapChainImages(::std::shared_ptr<const Adapter>& pAdapter, 
                                                   VkSwapchainKHR swapchain)
 {
     uint32_t uImageCount = 0;
@@ -255,7 +255,7 @@ uint32_t Swapchain::CreateAmountOfSwapChainImages(::std::shared_ptr<const Wrappe
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-::std::vector<VkImage> Swapchain::CreateSwapChainImages(::std::shared_ptr<const WrapperAdapter>& pAdapter,
+::std::vector<VkImage> Swapchain::CreateSwapChainImages(::std::shared_ptr<const Adapter>& pAdapter,
                                                         VkSwapchainKHR swapchain,
                                                         uint32_t uAmount)
 {

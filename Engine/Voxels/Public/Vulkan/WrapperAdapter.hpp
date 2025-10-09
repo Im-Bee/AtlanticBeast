@@ -4,46 +4,30 @@
 namespace Voxels
 {
 
-class WrapperAdapter
+class Adapter
 {
 public:
 
-    WrapperAdapter()
-        : m_uQueueFamily(0)
-        , m_Device(VK_NULL_HANDLE)
-        , m_Queue(VK_NULL_HANDLE)
+    Adapter() = delete;
+
+    Adapter(VkPhysicalDevice gpu, 
+            const uint32_t uFlags,
+            const std::vector<const char*>& vExtensions,
+            const void* pFeatures)
+        : m_uQueueFamily(ChooseQueueFamily(gpu, uFlags))
+        , m_Device(CreateDevice(gpu, vExtensions, pFeatures, m_uQueueFamily))
+        , m_Queue(CreateQueue(m_Device, m_uQueueFamily))
     { }
 
-    WrapperAdapter(uint32_t uQueueIndex,
-                   VkDevice device,
-                   VkQueue queue)
-        : m_uQueueFamily(uQueueIndex)
-        , m_Device(device)
-        , m_Queue(queue)
-    { }
-
-    ~WrapperAdapter()
+    Adapter(Adapter&&) noexcept = default;
+    Adapter(const Adapter&) = delete;
+                   
+    ~Adapter()
     {
         if (m_Device != VK_NULL_HANDLE) {
             vkDestroyDevice(m_Device, nullptr);
             m_Device = VK_NULL_HANDLE;
         }
-    }
-
-public:
-
-    void RecreateAdapter(uint32_t uQueueIndex,
-                          VkDevice device,
-                          VkQueue queue)
-    {
-        if (m_Device != VK_NULL_HANDLE) {
-            vkDestroyDevice(m_Device, nullptr);
-            m_Device = VK_NULL_HANDLE;
-        }
-
-        m_uQueueFamily = uQueueIndex;
-        m_Device = device;
-        m_Queue = queue;
     }
 
 public:
@@ -56,6 +40,17 @@ public:
 
     VkQueue GetQueueHandle() const
     { return m_Queue; }
+
+private:
+
+    uint32_t ChooseQueueFamily(VkPhysicalDevice gpu, const uint32_t uFlags) const;
+
+    VkDevice CreateDevice(VkPhysicalDevice gpu, 
+                          const std::vector<const char*>& vExtensions,
+                          const void* pFeatures,
+                          const uint32_t uFamilyIndex) const;
+    
+    VkQueue CreateQueue(VkDevice dv, uint32_t uQueueIndex) const;
 
 private:
 

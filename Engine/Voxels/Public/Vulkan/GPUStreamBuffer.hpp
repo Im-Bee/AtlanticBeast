@@ -1,7 +1,7 @@
 #ifndef AB_GPU_STREAM_BUFFER_H
 #define AB_GPU_STREAM_BUFFER_H
 
-#include "Core.h"
+#include "Voxels.hpp"
 #include "Vulkan/GPUBuffer.hpp"
 
 namespace Voxels 
@@ -15,7 +15,7 @@ public:
         : GPUBuffer() 
     { }
 
-    GPUStreamBuffer(::std::shared_ptr<const WrapperAdapter> da,
+    GPUStreamBuffer(::std::shared_ptr<const Adapter> da,
                     VkDeviceMemory deviceMemory,
                     VkBuffer buffer,
                     void* pData,

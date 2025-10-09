@@ -1,10 +1,9 @@
 #ifndef AB_RENDERER_H
 #define AB_RENDERER_H
 
-#include "Vulkan/ComputeAdapter.hpp"
 #include "Vulkan/Instance.hpp"
 #include "Vulkan/MinimalHardware.hpp"
-#include "Vulkan/RTXDeviceAdapter.hpp"
+#include "Vulkan/ComputeAdapter.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Raycaster/VoxelPipeline.hpp"
 #include "Raycaster/VoxelFrameResources.hpp"
@@ -32,8 +31,8 @@ public:
         , m_vFrames()
     { }
 
-    BEAST_VOXEL_API ~Renderer()
-    { this->Destroy(); }
+    ~Renderer()
+    {  }
 
 public:
 
@@ -68,11 +67,11 @@ public:
 
 private:
 
-    VkCommandPool CreateCommandPool(::std::shared_ptr<const WrapperAdapter> da, uint32_t uQueueFamily);
+    VkCommandPool CreateCommandPool(::std::shared_ptr<const Adapter> da, uint32_t uQueueFamily);
 
-    VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const WrapperAdapter> da, VkCommandPool cmdPool);
+    VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const Adapter> da, VkCommandPool cmdPool);
 
-    ::std::vector<VoxelFrameResources> CreateFrameResources(const ::std::shared_ptr<const WrapperAdapter>& da,
+    ::std::vector<VoxelFrameResources> CreateFrameResources(const ::std::shared_ptr<const Adapter>& da,
                                                             const ::std::shared_ptr<VoxelPipeline>& pipeline,
                                                             const ::std::shared_ptr<const VoxelGrid>& vg,
                                                             VkCommandPool cmdPool,

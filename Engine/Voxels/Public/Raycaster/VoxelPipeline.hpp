@@ -3,7 +3,6 @@
 
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
-#include "Vulkan/RTXDeviceAdapter.hpp"
 #include "Raycaster/PushConstants.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Voxels.hpp"
@@ -18,8 +17,8 @@ class VoxelPipeline
 
 public:
 
-    BEAST_VOXEL_API VoxelPipeline(::std::shared_ptr<const WrapperHardware> hw,
-                             ::std::shared_ptr<const WrapperAdapter> da);
+    BEAST_VOXEL_API VoxelPipeline(::std::shared_ptr<const Hardware> hw,
+                             ::std::shared_ptr<const Adapter> da);
 
     BEAST_VOXEL_API ~VoxelPipeline();
 
@@ -60,20 +59,20 @@ public:
 
 private:
 
-    VkDescriptorSetLayout CreateDescriptorLayout(::std::shared_ptr<const WrapperAdapter>& da);
+    VkDescriptorSetLayout CreateDescriptorLayout(::std::shared_ptr<const Adapter>& da);
 
-    VkDescriptorPool CreateDescriptorPool(::std::shared_ptr<const WrapperAdapter>& da);
+    VkDescriptorPool CreateDescriptorPool(::std::shared_ptr<const Adapter>& da);
 
-    VkDescriptorSet CreateDescriptorSet(::std::shared_ptr<const WrapperAdapter>& da,
+    VkDescriptorSet CreateDescriptorSet(::std::shared_ptr<const Adapter>& da,
                                         VkDescriptorPool dp,
                                         VkDescriptorSetLayout dLayout);
 
-    VkPipelineLayout CreatePipelineLayout(::std::shared_ptr<const WrapperAdapter>& da,
+    VkPipelineLayout CreatePipelineLayout(::std::shared_ptr<const Adapter>& da,
                                           VkDescriptorSetLayout descriptorSetLayout);
 
-    VkShaderModule LoadShader(::std::shared_ptr<const WrapperAdapter>& da, const ::std::string& strPath);
+    VkShaderModule LoadShader(::std::shared_ptr<const Adapter>& da, const ::std::string& strPath);
 
-    VkPipeline CreateComputePipeline(::std::shared_ptr<const WrapperAdapter>& da, 
+    VkPipeline CreateComputePipeline(::std::shared_ptr<const Adapter>& da, 
                                      VkPipelineLayout pipelineLayout, 
                                      VkShaderModule shaderModule);
 
@@ -81,8 +80,8 @@ private:
 
 private:
     
-    ::std::shared_ptr<const WrapperHardware>   m_pHardware         = nullptr;
-    ::std::shared_ptr<const WrapperAdapter>    m_pDeviceAdapter    = nullptr;
+    ::std::shared_ptr<const Hardware>   m_pHardware         = nullptr;
+    ::std::shared_ptr<const Adapter>    m_pDeviceAdapter    = nullptr;
     ::std::shared_ptr<const Swapchain>         m_pSwapChain        = nullptr;
 
     ::std::shared_ptr<const VoxelGrid> m_VoxelGrid = nullptr;

@@ -1,7 +1,8 @@
 #ifndef AB_GPU_BUFFER_H
 #define AB_GPU_BUFFER_H
 
-#include "Vulkan/RTXDeviceAdapter.hpp"
+#include "Voxels.hpp"
+#include "WrapperAdapter.hpp"
 
 namespace Voxels 
 {
@@ -17,7 +18,7 @@ public:
         , m_uSizeInBytes(0)
     { }
 
-    GPUBuffer(::std::shared_ptr<const WrapperAdapter> da,
+    GPUBuffer(::std::shared_ptr<const Adapter> da,
               VkDeviceMemory deviceMemory,
               VkBuffer buffer,
               size_t sizeInBytes) 
@@ -50,6 +51,7 @@ public:
         if (m_DeviceMemory != VK_NULL_HANDLE) {
             vkFreeMemory(m_pDeviceAdapter->GetAdapterHandle(), m_DeviceMemory, NULL);
         }
+		m_pDeviceAdapter = nullptr;
     }
 
 public:
@@ -81,7 +83,7 @@ public:
 
 protected:
 
-    ::std::shared_ptr<const WrapperAdapter> m_pDeviceAdapter = nullptr;
+    ::std::shared_ptr<const Adapter> m_pDeviceAdapter = nullptr;
     VkDeviceMemory  m_DeviceMemory  = VK_NULL_HANDLE;
     VkBuffer        m_Buffer        = VK_NULL_HANDLE;
     size_t          m_uSizeInBytes  = 0;

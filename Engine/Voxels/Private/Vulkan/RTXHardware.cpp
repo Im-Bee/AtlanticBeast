@@ -1,7 +1,5 @@
 #include "Vulkan/RTXHardware.hpp"
 
-#include "Vulkan/ErrorHandling.hpp"
-
 namespace Voxels
 {
 
@@ -9,7 +7,7 @@ using namespace std;
 
 // RTXHardware // ---------------------------------------------------------------------------------------------------------
 RTXHardware::RTXHardware(shared_ptr<const Instance> pInstance)
-    : WrapperHardware(ChooseGPU(pInstance))
+    : Hardware(ChooseGPU(pInstance))
     , m_pInstance(pInstance)
 { 
     AB_LOG(Core::Debug::Info, L"Creating a hardware!");
@@ -21,7 +19,7 @@ VkPhysicalDevice RTXHardware::ChooseGPU(const shared_ptr<const Instance>& pInsta
     VkPhysicalDevice            chosenPhysicalDevice    = VK_NULL_HANDLE;
     vector<VkPhysicalDevice>    vPhysicalDevices        = GetPhysicalDevices(pInstance->GetInstance());
 
-    VkPhysicalDeviceProperties                          deviceProperties;
+    VkPhysicalDeviceProperties deviceProperties;
 
     VkPhysicalDeviceRayTracingPipelineFeaturesKHR       rayTracingPipelineFeatures;
     VkPhysicalDeviceAccelerationStructureFeaturesKHR    accelStructFeatures;

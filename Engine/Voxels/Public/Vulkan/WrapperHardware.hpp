@@ -1,22 +1,23 @@
 #ifndef AB_WRAPPER_HARDWARE_H
 #define AB_WRAPPER_HARDWARE_H
 
-#include "Voxels.hpp"
-
 namespace Voxels
 {
 
-class WrapperHardware
+class Hardware
 {
 public:
 
-    WrapperHardware() = delete;
+    Hardware() = delete;
 
-    explicit WrapperHardware(VkPhysicalDevice physicalDevice)
+    explicit Hardware(VkPhysicalDevice physicalDevice)
         : m_PhysicalDevice(physicalDevice)
     { }
 
-    ~WrapperHardware() = default;
+    Hardware(Hardware&&) noexcept = default;
+    Hardware(const Hardware&) = delete;
+
+    ~Hardware() = default;
 
 public: 
 
