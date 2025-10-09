@@ -1,8 +1,5 @@
 #include "Vulkan/RTXDeviceAdapter.hpp"
 
-#include "Vulkan/ErrorHandling.hpp"
-#include <cstdint>
-
 namespace Voxels
 {
 

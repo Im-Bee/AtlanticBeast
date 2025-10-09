@@ -3,7 +3,6 @@
 
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
-#include "Vulkan/RTXDeviceAdapter.hpp"
 #include "Raycaster/PushConstants.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Voxels.hpp"

@@ -1,8 +1,6 @@
 #ifndef AB_WRAPPER_HARDWARE_H
 #define AB_WRAPPER_HARDWARE_H
 
-#include "Voxels.hpp"
-
 namespace Voxels
 {
 

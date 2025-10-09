@@ -1,10 +1,9 @@
 #ifndef AB_RENDERER_H
 #define AB_RENDERER_H
 
-#include "Vulkan/ComputeAdapter.hpp"
 #include "Vulkan/Instance.hpp"
 #include "Vulkan/MinimalHardware.hpp"
-#include "Vulkan/RTXDeviceAdapter.hpp"
+#include "Vulkan/ComputeAdapter.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Raycaster/VoxelPipeline.hpp"
 #include "Raycaster/VoxelFrameResources.hpp"

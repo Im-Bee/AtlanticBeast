@@ -1,7 +1,5 @@
 #include "Vulkan/RTXHardware.hpp"
 
-#include "Vulkan/ErrorHandling.hpp"
-
 namespace Voxels
 {
 

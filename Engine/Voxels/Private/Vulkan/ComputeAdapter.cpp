@@ -1,7 +1,5 @@
 #include "Vulkan/ComputeAdapter.hpp"
 
-#include "Vulkan/ErrorHandling.hpp"
-
 namespace Voxels
 {
 

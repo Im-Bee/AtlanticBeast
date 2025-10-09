@@ -1,8 +1,6 @@
 #ifndef AB_WRAPPER_ADAPTER_H
 #define AB_WRAPPER_ADAPTER_H
 
-#include "Voxels.hpp"
-
 namespace Voxels
 {
 
