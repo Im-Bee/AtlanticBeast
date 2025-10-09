@@ -136,6 +136,7 @@ void Renderer::Destroy()
             vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].ImageAvailable, nullptr);
             vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].InFlightFence, nullptr);
             vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &m_vFrames[i].CommandBuffer);
+            m_vFrames[i].VoxelBuffer.~GPUStreamBuffer();
         }
     }
 

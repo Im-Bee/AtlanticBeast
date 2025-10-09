@@ -51,6 +51,7 @@ public:
         if (m_DeviceMemory != VK_NULL_HANDLE) {
             vkFreeMemory(m_pDeviceAdapter->GetAdapterHandle(), m_DeviceMemory, NULL);
         }
+		m_pDeviceAdapter = nullptr;
     }
 
 public:
