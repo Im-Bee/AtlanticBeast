@@ -153,9 +153,9 @@ float Random(in vec2 uv)
 
 vec3 RandomPointOnHemisphere(vec3 normal)
 {
-    vec3 randPoint = vec3(Random(gl_GlobalInvocationID.xy - normal.yx),
-                          Random(gl_GlobalInvocationID.xy), 
-                          Random(gl_GlobalInvocationID.yx + normal.xy));
+    vec3 randPoint = vec3(Random(gl_GlobalInvocationID.xy - normal.yx) - .5,
+                          Random(gl_GlobalInvocationID.xy) - .5, 
+                          Random(gl_GlobalInvocationID.yx + normal.xy) - .5);
 
     randPoint = normalize(randPoint);
 
