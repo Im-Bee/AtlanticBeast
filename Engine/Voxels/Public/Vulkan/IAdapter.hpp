@@ -19,7 +19,7 @@ public:
 
 public:
 
-    const ::std::vector<const char*> GetExtensions() const
+    const ::std::vector<const char*>& GetExtensions() const
     { return static_cast<const Derived*>(this)->GetExtensionsImpl(); }
 
     void* GetFeatures() const

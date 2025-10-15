@@ -378,12 +378,12 @@ uint32_t VoxelPipeline::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlag
 
     vkGetPhysicalDeviceMemoryProperties(m_pHardware->GetPhysicalDevice(), &memProperties); 
 
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) 
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i) 
     {
-        bool typeMatch          = (typeFilter & (1 << i)) != 0;
-        bool propertiesMatch    = (memProperties.memoryTypes[i].propertyFlags & properties) == properties;
+        bool bTypeMatch          = (typeFilter & (1 << i)) != 0;
+        bool bPropertiesMatch    = (memProperties.memoryTypes[i].propertyFlags & properties) == properties;
 
-        if (typeMatch && propertiesMatch) {
+        if (bTypeMatch && bPropertiesMatch) {
             return i;
         }
     }

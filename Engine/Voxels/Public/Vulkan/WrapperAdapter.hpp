@@ -25,7 +25,7 @@ public:
     ~Adapter()
     {
         if (m_Device != VK_NULL_HANDLE) {
-            vkDestroyDevice(m_Device, nullptr);
+            vkDestroyDevice(m_Device, NULL);
             m_Device = VK_NULL_HANDLE;
         }
     }
