@@ -6,6 +6,7 @@
 #include "Vulkan/ComputeAdapter.hpp"
 #include "Vulkan/ErrorHandling.hpp"
 #include "Math/Consts.hpp"
+#include "Math/Vec3Operators.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/MinimalHardware.hpp"
 #include "Vulkan/WrapperAdapter.hpp"
@@ -213,7 +214,7 @@ vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_p
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    for (size_t i = 0; i < result.size(); i++) 
+    for (size_t i = 0; i < result.size(); ++i) 
     {
         if (vkCreateSemaphore(device, &semaphoreInfo, NULL, &result[i].ImageAvailable) != VK_SUCCESS ||
             vkCreateSemaphore(device, &semaphoreInfo, NULL, &result[i].RenderFinished) != VK_SUCCESS ||

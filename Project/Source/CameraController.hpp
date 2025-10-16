@@ -7,8 +7,7 @@
 #include "Primitives/Camera.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Raycaster/Rays.hpp"
-#include "Math/Vec3.hpp"
-#include "Math/Consts.hpp"
+#include "Math/Math.hpp"
 
 class PaperCharacter : public Voxels::Camera
 {

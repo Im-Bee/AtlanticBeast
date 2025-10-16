@@ -82,7 +82,7 @@ private:
     
     ::std::shared_ptr<const Hardware>   m_pHardware         = nullptr;
     ::std::shared_ptr<const Adapter>    m_pDeviceAdapter    = nullptr;
-    ::std::shared_ptr<const Swapchain>         m_pSwapChain        = nullptr;
+    ::std::shared_ptr<const Swapchain>  m_pSwapChain        = nullptr;
 
     ::std::shared_ptr<const VoxelGrid> m_VoxelGrid = nullptr;
 

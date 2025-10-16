@@ -1,4 +1,5 @@
 #include "Raycaster/Rays.hpp"
+#include "Math/Vec3Operators.hpp"
 
 namespace Voxels
 {

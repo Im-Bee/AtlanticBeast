@@ -1,8 +1,8 @@
 #ifndef AB_OPERATIONS_H
 #define AB_OPERATIONS_H
 
-#include "CSystem.hpp"
 #include "Debug/Assert.h"
+#include "Math/Vec3.hpp"
 
 namespace Voxels
 {
@@ -34,101 +34,150 @@ Vector Normalize(const Vector& v)
 template<class Vector>
 constexpr inline Vector Cross(const Vector& vA, const Vector& vB)
 {
-    if constexpr (Vector::Size == 3) {
-        Vector result;
-        result.x = vA.y * vB.z - vB.y * vA.z;
-        result.y = vA.z * vB.x - vB.z * vA.x;
-        result.z = vA.x * vB.y - vB.x * vA.y;
-        return result;
-    }
+    static_assert(Core::TypeIsAlwaysFalse<Vector>, 
+                  "This size of a vector doesn't have impementation of addition product yet");
+}
 
-    static_assert(true, "This size of a vector doesn't have impementation of cross product yet");
+// ---------------------------------------------------------------------------------------------------------------------
+template<>
+inline Vec3 Cross(const Vec3& vA, const Vec3& vB)
+{
+    Vec3 result;
+    result.x = vA.y * vB.z - vB.y * vA.z;
+    result.y = vA.z * vB.x - vB.z * vA.x;
+    result.z = vA.x * vB.y - vB.x * vA.y;
+    return result;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>
 constexpr inline Vector RotateX(const Vector& v, float angleRad)
 {
-    if constexpr (Vector::Size == 3) {
-        Vector result;
-        float c = std::cos(angleRad);
-        float s = std::sin(angleRad);
+    static_assert(Core::TypeIsAlwaysFalse<Vector>, 
+                  "This size of a vector doesn't have impementation of addition product yet");
+}
 
-        result.x = v.x;
-        result.y = v.y * c - v.z * s;
-        result.z = v.y * s + v.z * c;
+// ---------------------------------------------------------------------------------------------------------------------
+template<>
+inline Vec3 RotateX(const Vec3& v, float angleRad)
+{
+    Vec3 result;
+    float c = std::cos(angleRad);
+    float s = std::sin(angleRad);
 
-        return result;
-    }
+    result.x = v.x;
+    result.y = v.y * c - v.z * s;
+    result.z = v.y * s + v.z * c;
 
-    static_assert(true, "This size of a vector doesn't have impementation of rotate X yet");
+    return result;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>
 constexpr inline Vector RotateY(const Vector& v, float angleRad)
 {
-    if constexpr (Vector::Size == 3) {
-        Vector result;
-        float c = std::cos(angleRad);
-        float s = std::sin(angleRad);
+    static_assert(Core::TypeIsAlwaysFalse<Vector>, 
+                  "This size of a vector doesn't have impementation of addition product yet");
+}
 
-        result.x = v.x * c + v.z * s;
-        result.y = v.y;
-        result.z = -v.x * s + v.z * c;
+// ---------------------------------------------------------------------------------------------------------------------
+template<>
+inline Vec3 RotateY(const Vec3& v, float angleRad)
+{
+    Vec3 result;
+    float c = std::cos(angleRad);
+    float s = std::sin(angleRad);
 
-        return result;
-    }
+    result.x = v.x * c + v.z * s;
+    result.y = v.y;
+    result.z = -v.x * s + v.z * c;
 
-    static_assert(true, "This size of a vector doesn't have impementation of rotate Y yet");
+    return result;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>
-constexpr inline Vector& AddAssign(Vector& vA, const Vector& vB)
+inline Vector& AddAssign(Vector& vA, const Vector& vB)
 {
-    if constexpr (Vector::Size == 3) {
-        vA.x += vB.x;
-        vA.y += vB.y;
-        vA.z += vB.z;
-        return vA;
-    }
+    static_assert(Core::TypeIsAlwaysFalse<Vector>, 
+                  "This size of a vector doesn't have impementation of addition product yet");
+}
 
-    static_assert(true, "This size of a vector doesn't have impementation of addition product yet");
+// ---------------------------------------------------------------------------------------------------------------------
+template<>
+inline Vec3& AddAssign(Vec3& vA, const Vec3& vB)
+{
+    vA.x += vB.x;
+    vA.y += vB.y;
+    vA.z += vB.z;
+    return vA;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>
-constexpr inline Vector Multiply(const Vector& vA, const Vector& vB)
+inline Vector Multiply(const Vector& vA, const Vector& vB)
 {
-    if constexpr (Vector::Size == 3) {
-        Vector r;
+    static_assert(Core::TypeIsAlwaysFalse<Vector>, 
+                  "This size of a vector doesn't have impementation of addition product yet");
+}
 
-        r.x = vA.x * vB.x;
-        r.y = vA.y * vB.y;
-        r.z = vA.z * vB.z;
+// ---------------------------------------------------------------------------------------------------------------------
+template<>
+inline Vec3 Multiply(const Vec3& vA, const Vec3& vB)
+{
+    Vec3 r;
+    
+    r.x = vA.x * vB.x;
+    r.y = vA.y * vB.y;
+    r.z = vA.z * vB.z;
+    
+    return r;
+}
 
-        return r;
-    }
-
-    static_assert(true, "This size of a vector doesn't have impementation of addition product yet");
+// ---------------------------------------------------------------------------------------------------------------------
+template<>
+inline iVec3 Multiply(const iVec3& vA, const iVec3& vB)
+{
+    iVec3 r;
+    
+    r.x = vA.x * vB.x;
+    r.y = vA.y * vB.y;
+    r.z = vA.z * vB.z;
+    
+    return r;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>
-constexpr inline Vector MultiplySingle(const Vector& vA, const float vB)
+constexpr inline Vector MultiplyScalar(const Vector& vA, const float vB)
 {
-    if constexpr (Vector::Size == 3) {
-        Vector r;
+    static_assert(Core::TypeIsAlwaysFalse<Vector>, 
+                  "This size of a vector doesn't have impementation of addition product yet");
+}
 
-        r.x = vA.x * vB;
-        r.y = vA.y * vB;
-        r.z = vA.z * vB;
+// --------------------------------------------------------------------------------------------------------------------
+template<>
+inline Vec3 MultiplyScalar(const Vec3& vA, const float vB)
+{
+    Vec3 r;
 
-        return r;
-    }
+    r.x = vA.x * vB;
+    r.y = vA.y * vB;
+    r.z = vA.z * vB;
 
-    static_assert(true, "This size of a vector doesn't have impementation of addition product yet");
+    return r;
+}
+// --------------------------------------------------------------------------------------------------------------------
+template<>
+inline iVec3 MultiplyScalar(const iVec3& vA, const float vB)
+{
+    iVec3 r;
+
+    r.x = vA.x * vB;
+    r.y = vA.y * vB;
+    r.z = vA.z * vB;
+
+    return r;
 }
 
 } // !Voxels

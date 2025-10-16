@@ -32,7 +32,7 @@ public:
     { }
 
     ~Renderer()
-    {  }
+    { }
 
 public:
 

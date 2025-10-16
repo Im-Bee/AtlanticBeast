@@ -2,7 +2,6 @@
 #define AB_VEC3_H
 
 #include "CSystem.hpp"
-#include "Operations.hpp"
 
 namespace Voxels
 {
@@ -29,46 +28,15 @@ struct alignas(16) Vec3
 
     static constexpr size_t Size = 3;
     
-    constexpr float operator[](size_t uIndex) const
-    {
-        AB_ASSERT(uIndex < Size);
+    constexpr float& operator[](size_t uIndex);
 
-        if (uIndex == 0) {
-            return x;
-        }
-        if (uIndex == 1) {
-            return y;
-        }
-        return z;
-    } 
+    constexpr float operator[](size_t uIndex) const;
 
-    constexpr float& operator[](size_t uIndex)
-    {
-        AB_ASSERT(uIndex < Size);
+    inline Vec3& operator+=(const Vec3& vB);
 
-        if (uIndex == 0) {
-            return x;
-        }
-        if (uIndex == 1) {
-            return y;
-        }
-        return z;
-    }
+    inline Vec3 operator*(const Vec3& vB) const;
 
-    constexpr inline Vec3& operator+=(const Vec3& vB)
-    {
-        return AddAssign(*this, vB);
-    }
-
-    inline Vec3 operator*(const Vec3& vB)
-    {
-        return Multiply(*this, vB);
-    }
-
-    inline Vec3 operator*(const float vB)
-    {
-        return MultiplySingle(*this, vB);
-    }
+    inline Vec3 operator*(const float vB) const;
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
