@@ -1,8 +1,8 @@
 #ifndef AB_OPERATIONS_H
 #define AB_OPERATIONS_H
 
-#include "CSystem.hpp"
 #include "Debug/Assert.h"
+#include "Math/Vec3.hpp"
 
 namespace Voxels
 {
@@ -116,19 +116,23 @@ constexpr inline Vector Multiply(const Vector& vA, const Vector& vB)
 
 // ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>
-constexpr inline Vector MultiplySingle(const Vector& vA, const float vB)
+constexpr inline Vector MultiplyScalar(const Vector& vA, const float vB)
 {
-    if constexpr (Vector::Size == 3) {
-        Vector r;
+    static_assert(Core::TypeIsAlwaysFalse<Vector>, 
+                  "This size of a vector doesn't have impementation of addition product yet");
+}
 
-        r.x = vA.x * vB;
-        r.y = vA.y * vB;
-        r.z = vA.z * vB;
+// --------------------------------------------------------------------------------------------------------------------
+template<>
+inline Vec3 MultiplyScalar(const Vec3& vA, const float vB)
+{
+    Vec3 r;
 
-        return r;
-    }
+    r.x = vA.x * vB;
+    r.y = vA.y * vB;
+    r.z = vA.z * vB;
 
-    static_assert(true, "This size of a vector doesn't have impementation of addition product yet");
+    return r;
 }
 
 } // !Voxels

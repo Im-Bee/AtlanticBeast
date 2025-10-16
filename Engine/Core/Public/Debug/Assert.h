@@ -18,4 +18,12 @@
 #   define AB_ASSERT_MSG(expr, msg)
 #endif
 
+namespace Core
+{
+
+template<typename T>
+constexpr bool TypeIsAlwaysFalse = false;
+
+} //!Core
+
 #endif // !AB_DEBUG_ASSERT_H

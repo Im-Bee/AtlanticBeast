@@ -6,6 +6,7 @@
 #include "Vulkan/ComputeAdapter.hpp"
 #include "Vulkan/ErrorHandling.hpp"
 #include "Math/Consts.hpp"
+#include "Math/Vec3Operators.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/MinimalHardware.hpp"
 #include "Vulkan/WrapperAdapter.hpp"
