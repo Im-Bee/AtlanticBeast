@@ -16,6 +16,7 @@ void UserInput::StartCapturing()
         m_bIsCapturing = true;
 }
 
+// --------------------------------------------------------------------------------------------------------------------
 void UserInput::StopCapturing()
 {
     if (!m_bIsCapturing)

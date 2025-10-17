@@ -18,7 +18,7 @@ VkPhysicalDevice MinimalHardware::ChooseGPU(const ::std::shared_ptr<const Instan
     VkPhysicalDevice            chosenPhysicalDevice    = VK_NULL_HANDLE;
     vector<VkPhysicalDevice>    vPhysicalDevices        = GetPhysicalDevices(pInstance->GetInstance());
 
-    VkPhysicalDeviceProperties  deviceProperties;
+    VkPhysicalDeviceProperties deviceProperties;
 
     for (const auto& pDevice : vPhysicalDevices) 
     {

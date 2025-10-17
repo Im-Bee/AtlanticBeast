@@ -48,10 +48,10 @@ private:
 
     VkSurfaceCapabilitiesKHR GetCapabilitesInternal(::std::shared_ptr<const Hardware> pHardware, VkSurfaceKHR surface);
 
-    VkExtent2D GetExtentInternal(VkSurfaceCapabilitiesKHR& capabilities, 
+    VkExtent2D GetExtentInternal(const VkSurfaceCapabilitiesKHR& capabilities, 
                                  ::std::shared_ptr<const WindowDesc> pWindowDesc);
     
-    uint32_t GetImageCountInternal(VkSurfaceCapabilitiesKHR& capabilities);
+    uint32_t GetImageCountInternal(const VkSurfaceCapabilitiesKHR& capabilities);
 
     VkSurfaceFormatKHR PickFormat(::std::shared_ptr<const Hardware>& pHardware, VkSurfaceKHR surface);
 

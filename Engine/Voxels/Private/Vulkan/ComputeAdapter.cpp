@@ -8,9 +8,9 @@ using namespace std;
 // --------------------------------------------------------------------------------------------------------------------
 ComputeAdapter::ComputeAdapter(shared_ptr<const Hardware> gpu)
     : Adapter(gpu->GetPhysicalDevice(), 
-                     VK_QUEUE_COMPUTE_BIT | VK_QUEUE_GRAPHICS_BIT,
-                     GetExtensions(),
-                     GetFeaturesImpl())
+              VK_QUEUE_COMPUTE_BIT | VK_QUEUE_GRAPHICS_BIT,
+              GetExtensions(),
+              GetFeaturesImpl())
     , m_pGPU(gpu)
 { }
 
@@ -27,33 +27,25 @@ const ::std::vector<const char*>& ComputeAdapter::GetExtensionsImpl() const
 // --------------------------------------------------------------------------------------------------------------------
 void* ComputeAdapter::GetFeaturesImpl() const
 {
-    static bool bCreated = false;
-
-    static VkPhysicalDeviceTimelineSemaphoreFeatures   semaphoreFeatures;
-    static VkPhysicalDevice8BitStorageFeatures         bitStorageFeatures;
-    static VkPhysicalDeviceVulkanMemoryModelFeatures   memoryModelFeatures;
-
-    if (bCreated) {
-        return &memoryModelFeatures;
-    }
-
-    semaphoreFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES;
-    semaphoreFeatures.pNext = NULL;
-    semaphoreFeatures.timelineSemaphore = VK_TRUE;
-
-    bitStorageFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR;
-    bitStorageFeatures.pNext = &semaphoreFeatures;
-    bitStorageFeatures.storageBuffer8BitAccess  = VK_TRUE;
-    bitStorageFeatures.storagePushConstant8     = VK_FALSE;
-    bitStorageFeatures.uniformAndStorageBuffer8BitAccess = VK_FALSE;
-
-    memoryModelFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES;
-    memoryModelFeatures.pNext = &bitStorageFeatures;
-    memoryModelFeatures.vulkanMemoryModel = VK_TRUE;
-    memoryModelFeatures.vulkanMemoryModelDeviceScope = VK_TRUE;
-    memoryModelFeatures.vulkanMemoryModelAvailabilityVisibilityChains = VK_FALSE;
-
-    bCreated = true;
+    static VkPhysicalDeviceTimelineSemaphoreFeatures semaphoreFeatures = {
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES,
+        NULL,
+        VK_TRUE
+    };
+    static VkPhysicalDevice8BitStorageFeatures bitStorageFeatures = {
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR,
+        &semaphoreFeatures,
+        VK_TRUE,
+        VK_FALSE,
+        VK_FALSE
+    };
+    static VkPhysicalDeviceVulkanMemoryModelFeatures memoryModelFeatures = {
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES,
+        &bitStorageFeatures,
+        VK_TRUE,
+        VK_TRUE,
+        VK_FALSE,
+    };
 
     return &memoryModelFeatures;
 }
