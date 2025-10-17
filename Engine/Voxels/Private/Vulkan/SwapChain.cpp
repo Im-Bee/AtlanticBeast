@@ -76,9 +76,9 @@ VkSurfaceKHR Swapchain::CreateSurface(shared_ptr<const Instance>& pInstance, sha
     createInfo.window   = pWindowDesc->WindowHandle;
 
     THROW_IF_FAILED(vkCreateXlibSurfaceKHR(pInstance->GetInstance(),
-                                         &createInfo,
-                                         NULL,
-                                         &surface));
+                                           &createInfo,
+                                           NULL,
+                                           &surface));
 #endif // !_WIN32
        
     return surface;
@@ -103,7 +103,7 @@ VkSurfaceCapabilitiesKHR Swapchain::GetCapabilitesInternal(shared_ptr<const Hard
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t Swapchain::GetImageCountInternal(VkSurfaceCapabilitiesKHR& capabilities)
+uint32_t Swapchain::GetImageCountInternal(const VkSurfaceCapabilitiesKHR& capabilities)
 {
     uint32_t uImageCount;
 
@@ -116,7 +116,7 @@ uint32_t Swapchain::GetImageCountInternal(VkSurfaceCapabilitiesKHR& capabilities
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkExtent2D Swapchain::GetExtentInternal(VkSurfaceCapabilitiesKHR& capabilities,
+VkExtent2D Swapchain::GetExtentInternal(const VkSurfaceCapabilitiesKHR& capabilities,
                                         ::std::shared_ptr<const WindowDesc> pWindowDesc )
 {
     VkExtent2D extent = capabilities.currentExtent;
@@ -138,12 +138,10 @@ VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const Adapter>& pAdapter,
                                           VkSurfaceFormatKHR& surfaceFormat,
                                           VkPresentModeKHR presentMode)
 {
-    VkSwapchainKHR              swapChain               = VK_NULL_HANDLE;
-    VkSwapchainCreateInfoKHR    swapchainInfo;
+    VkSwapchainKHR swapChain = VK_NULL_HANDLE;
 
+    VkSwapchainCreateInfoKHR swapchainInfo = { };
     swapchainInfo.sType                 = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    swapchainInfo.pNext                 = NULL;
-    swapchainInfo.flags                 = 0;
     swapchainInfo.surface               = surface;
     swapchainInfo.minImageCount         = uImageCount;
     swapchainInfo.imageFormat           = surfaceFormat.format;
@@ -154,11 +152,8 @@ VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const Adapter>& pAdapter,
     swapchainInfo.imageSharingMode      = VK_SHARING_MODE_EXCLUSIVE;
     swapchainInfo.preTransform          = capabilities.currentTransform;
     swapchainInfo.compositeAlpha        = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    swapchainInfo.queueFamilyIndexCount = 0;
-    swapchainInfo.pQueueFamilyIndices   = NULL;
     swapchainInfo.presentMode           = presentMode;
     swapchainInfo.clipped               = VK_TRUE;
-    swapchainInfo.oldSwapchain          = VK_NULL_HANDLE;
 
     THROW_IF_FAILED(vkCreateSwapchainKHR(pAdapter->GetAdapterHandle(),
                                        &swapchainInfo,
@@ -262,9 +257,9 @@ uint32_t Swapchain::CreateAmountOfSwapChainImages(::std::shared_ptr<const Adapte
     vector<VkImage> swapChainImages(uAmount);
 
     THROW_IF_FAILED(vkGetSwapchainImagesKHR(pAdapter->GetAdapterHandle(),
-                                          swapchain,
-                                          &uAmount,
-                                          &swapChainImages[0]));
+                                            swapchain,
+                                            &uAmount,
+                                            &swapChainImages[0]));
     
     return swapChainImages;
 }

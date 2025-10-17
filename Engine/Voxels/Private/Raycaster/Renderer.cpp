@@ -5,11 +5,10 @@
 #include "Raycaster/VoxelGrid.hpp"
 #include "Vulkan/ComputeAdapter.hpp"
 #include "Vulkan/ErrorHandling.hpp"
-#include "Math/Consts.hpp"
-#include "Math/Vec3Operators.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/MinimalHardware.hpp"
 #include "Vulkan/WrapperAdapter.hpp"
+#include "Math/Math.hpp"
 
 namespace Voxels
 {
@@ -66,8 +65,8 @@ void Renderer::Render()
     uint32_t uImageIndex;
     FrameResources& frame = m_vFrames[m_uCurrentFrame];
 
-    vkWaitForFences(device, 1, &frame.InFlightFence, VK_TRUE, UINT64_MAX);
-    vkResetFences(device, 1, &frame.InFlightFence);
+    THROW_IF_FAILED(vkWaitForFences(device, 1, &frame.InFlightFence, VK_TRUE, UINT64_MAX));
+    THROW_IF_FAILED(vkResetFences(device, 1, &frame.InFlightFence));
 
     result = vkAcquireNextImageKHR(device, 
                                    m_pSwapChain->GetSwapChainHandle(), 
@@ -87,31 +86,28 @@ void Renderer::Render()
                    m_pPipeline,
                    uImageIndex);
 
-    VkSemaphore waitSemaphores[] = { frame.ImageAvailable };
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-    VkSemaphore signalSemaphores[] = { frame.RenderFinished };
 
     VkSubmitInfo submitInfo = { };
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores = waitSemaphores;
-    submitInfo.pWaitDstStageMask = waitStages;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &frame.CommandBuffer;
+    submitInfo.sType                = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.waitSemaphoreCount   = 1;
+    submitInfo.pWaitSemaphores      = &frame.ImageAvailable;
+    submitInfo.pWaitDstStageMask    = waitStages;
+    submitInfo.commandBufferCount   = 1;
+    submitInfo.pCommandBuffers      = &frame.CommandBuffer;
     submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores = signalSemaphores;
+    submitInfo.pSignalSemaphores    = &frame.RenderFinished;
 
     THROW_IF_FAILED(vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, frame.InFlightFence));
 
     VkSwapchainKHR swapchain = m_pSwapChain->GetSwapChainHandle();
-
-    VkPresentInfoKHR presentInfo{};
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores = signalSemaphores;
-    presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = &swapchain;
-    presentInfo.pImageIndices = &uImageIndex;
+    VkPresentInfoKHR presentInfo = { };
+    presentInfo.sType                   = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount      = 1;
+    presentInfo.pWaitSemaphores         = &frame.RenderFinished;
+    presentInfo.swapchainCount          = 1;
+    presentInfo.pSwapchains             = &swapchain;
+    presentInfo.pImageIndices           = &uImageIndex;
 
     result = vkQueuePresentKHR(m_pDeviceAdapter->GetQueueHandle(), &presentInfo);
     if (result == VK_SUBOPTIMAL_KHR || result == VK_ERROR_OUT_OF_DATE_KHR) {
@@ -119,7 +115,7 @@ void Renderer::Render()
         return;
     }
 
-    m_uCurrentFrame = (m_uCurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+    m_uCurrentFrame = (++m_uCurrentFrame) % MAX_FRAMES_IN_FLIGHT;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -128,7 +124,6 @@ void Renderer::Destroy()
     if (m_pDeviceAdapter != nullptr) {
         vkDeviceWaitIdle(m_pDeviceAdapter->GetAdapterHandle());
     }
-
     if (m_pDeviceAdapter != nullptr)
     {
         for (size_t i = 0; i < m_vFrames.size(); ++i)
@@ -140,12 +135,10 @@ void Renderer::Destroy()
             m_vFrames[i].VoxelBuffer.~GPUStreamBuffer();
         }
     }
-
     if (m_CommandPool != VK_NULL_HANDLE) {
         vkDestroyCommandPool(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, nullptr);
         m_CommandPool = VK_NULL_HANDLE;
     }
-
     if (m_pPipeline != nullptr) {
         m_pPipeline = nullptr;
     }
@@ -166,11 +159,10 @@ void Renderer::Destroy()
 // ---------------------------------------------------------------------------------------------------------------------
 VkCommandPool Renderer::CreateCommandPool(shared_ptr<const Adapter> da, uint32_t uQueueFamily)
 {
-    VkCommandPool           cmdPool;
-    VkCommandPoolCreateInfo cmdPoolInfo;
+    VkCommandPool cmdPool;
 
+    VkCommandPoolCreateInfo cmdPoolInfo = { };
     cmdPoolInfo.sType               = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    cmdPoolInfo.pNext               = NULL;
     cmdPoolInfo.flags               = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     cmdPoolInfo.queueFamilyIndex    = uQueueFamily;
 
@@ -206,11 +198,11 @@ vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_p
 {
     VkDevice device = da->GetAdapterHandle();
     vector<VoxelFrameResources> result(uFrames);
-    VkSemaphoreCreateInfo semaphoreInfo = { };
-    VkFenceCreateInfo fenceInfo = { };
 
+    VkSemaphoreCreateInfo semaphoreInfo = { };
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
+    VkFenceCreateInfo fenceInfo = { };
     fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
     fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
@@ -224,7 +216,7 @@ vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_p
         }
 
         result[i].CommandBuffer = CreateCommandBuffer(da, cmdPool);
-        result[i].VoxelBuffer = std::move(pipeline->ReserveGridBuffer(vg));
+        result[i].VoxelBuffer   = std::move(pipeline->ReserveGridBuffer(vg));
     }
 
     return result;
@@ -266,12 +258,10 @@ void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
                          0, NULL,
                          1, &barrier);
 
-
     RecordVoxelesCommands(cmdBuff, pipeline);
 
-    VkImageMemoryBarrier presentBarrier;
+    VkImageMemoryBarrier presentBarrier = { };
     presentBarrier.sType            = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    presentBarrier.pNext            = NULL;
     presentBarrier.dstQueueFamilyIndex = 0;
     presentBarrier.srcQueueFamilyIndex = 0;
     presentBarrier.oldLayout        = VK_IMAGE_LAYOUT_GENERAL;
@@ -279,7 +269,7 @@ void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
     presentBarrier.srcAccessMask    = VK_ACCESS_SHADER_WRITE_BIT;
     presentBarrier.dstAccessMask    = 0;
     presentBarrier.image            = m_pSwapChain->GetImage(uImageIndex);
-    presentBarrier.subresourceRange = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+    presentBarrier.subresourceRange = VkImageSubresourceRange { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
     vkCmdPipelineBarrier(cmdBuff,
                          VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
@@ -295,13 +285,12 @@ void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::shared_ptr<VoxelPipeline>& pipeline)
 {
-
     vkCmdBindDescriptorSets(cmdBuffer,
                             VK_PIPELINE_BIND_POINT_COMPUTE,
                             pipeline->GetLayoutHandle(),
                             0, 1,
                             &pipeline->GetDescrpitorSet(),
-                            0, nullptr);
+                            0, NULL);
 
     vkCmdPushConstants(cmdBuffer,
                        pipeline->GetLayoutHandle(),
@@ -310,9 +299,8 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::sh
                        sizeof(VoxelPushConstants),
                        &pipeline->GetPushConstants());
 
-    VkBufferMemoryBarrier voxelBufferBarrier;
+    VkBufferMemoryBarrier voxelBufferBarrier = { };
     voxelBufferBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
-    voxelBufferBarrier.pNext = NULL;
     voxelBufferBarrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
     voxelBufferBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
     voxelBufferBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
@@ -329,9 +317,8 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::sh
                          1, &voxelBufferBarrier,
                          0, NULL);
 
-
-    uint32_t groupCountX = (m_pWindowDesc->Width + 15) / 16;
-    uint32_t groupCountY = (m_pWindowDesc->Height + 15) / 16;
+    const uint32_t groupCountX = (m_pWindowDesc->Width + 15) / 16;
+    const uint32_t groupCountY = (m_pWindowDesc->Height + 15) / 16;
     vkCmdDispatch(cmdBuffer, groupCountX, groupCountY, 1);
 }
 
@@ -342,6 +329,7 @@ void Renderer::RecreateSwapChain()
     if (m_pWindowDesc->IsAlive == false) {
         return;
     }
+
     for (size_t i = 0; i < m_vFrames.size(); ++i)
     {
         vkWaitForFences(m_pDeviceAdapter->GetAdapterHandle(), 1, &m_vFrames[i].InFlightFence, VK_TRUE, UINT64_MAX);

@@ -41,10 +41,8 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
 // Private // ----------------------------------------------------------------------------------------------------------
 VkInstance Instance::CreateInstance()
 { 
-    VkInstance                          instance;
-    VkApplicationInfo                   appInfo;
-    VkInstanceCreateInfo                createInfo;
-    VkResult                            result;
+    VkInstance instance;
+    VkResult   result;
 
 #ifdef _DEBUG
     vector<VkValidationFeatureEnableEXT> enabledVaditationFeatures = {
@@ -57,48 +55,25 @@ VkInstance Instance::CreateInstance()
     vector<VkValidationFeatureDisableEXT> disabledVaditationFeatures = {
         VK_VALIDATION_FEATURE_DISABLE_CORE_CHECKS_EXT,
     };
-    VkValidationFeaturesEXT validationFeatures;
 
+    VkValidationFeaturesEXT validationFeatures = { };
     validationFeatures.sType = VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT;
-    validationFeatures.pNext = NULL;
     validationFeatures.enabledValidationFeatureCount    = static_cast<uint32_t>(enabledVaditationFeatures.size());
     validationFeatures.pEnabledValidationFeatures       = &enabledVaditationFeatures[0];
     validationFeatures.disabledValidationFeatureCount   = static_cast<uint32_t>(disabledVaditationFeatures.size());
     validationFeatures.pDisabledValidationFeatures      = &disabledVaditationFeatures[0];
 
-
-
-    VkDebugUtilsMessengerCreateInfoEXT  debugCreateInfo;
-
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = { };
     debugCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
     debugCreateInfo.pNext = &validationFeatures;
-    debugCreateInfo.flags = 0;
     debugCreateInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-
     debugCreateInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    debugCreateInfo.pfnUserCallback     = debugCallback;
-    debugCreateInfo.pUserData           = NULL;
-
-    vector<const char*> layerEnables = {
-        "VK_VALIDATION_FEATURE_ENABLE_DEBUG_PRINTF_EXT",
-    };
-    VkLayerSettingEXT layerSetting;
-	layerSetting.pLayerName   = "VK_LAYER_KHRONOS_validation";
-	layerSetting.pSettingName = "enables";
-	layerSetting.type         = VK_LAYER_SETTING_TYPE_STRING_EXT;
-	layerSetting.valueCount   = static_cast<uint32_t>(layerEnables.size());
-	layerSetting.pValues      = &layerEnables;
-
-    VkLayerSettingsCreateInfoEXT settingsCreateInfo;
-    settingsCreateInfo.sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT;
-    settingsCreateInfo.pNext = &debugCreateInfo;
-    settingsCreateInfo.pSettings = &layerSetting;
-    settingsCreateInfo.settingCount = 1;
+    debugCreateInfo.pfnUserCallback = debugCallback;
 #endif // !_DEBUG
 
 
@@ -121,22 +96,22 @@ VkInstance Instance::CreateInstance()
 #endif
     };
 
+    VkApplicationInfo appInfo = { };
     appInfo.sType               = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pNext               = NULL;
     appInfo.pApplicationName    = "Voxels";
     appInfo.applicationVersion  = VK_MAKE_VERSION(0, 1, 5);
     appInfo.pEngineName         = "AtlanticBeast";
     appInfo.engineVersion       = VK_MAKE_VERSION(0, 1, 5);
     appInfo.apiVersion          = VK_API_VERSION_1_1;
 
-    createInfo.sType                    = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    createInfo.pNext                    = 
+    VkInstanceCreateInfo createInfo = { };
+    createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    createInfo.pNext = 
 #ifdef _DEBUG
         &debugCreateInfo;
 #else
         NULL;
 #endif
-    createInfo.flags                    = 0;
     createInfo.pApplicationInfo         = &appInfo;
     createInfo.ppEnabledLayerNames      = !vpszValidationLayers.empty() ? &vpszValidationLayers[0] : nullptr;
     createInfo.enabledLayerCount        = static_cast<uint32_t>(vpszValidationLayers.size());

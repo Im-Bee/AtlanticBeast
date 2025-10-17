@@ -49,6 +49,7 @@ bool MarchTheRay(vec3 ro,
 {
     vec3 pos = floor(ro);
     ivec3 voxel = ivec3(pos);
+    ivec3 step = ivec3(sign(rd));
 
     vec3 invDir = 1.0 / rd;
     vec3 tDelta = abs(invDir);
@@ -59,10 +60,8 @@ bool MarchTheRay(vec3 ro,
         tMax[i] = tDelta[i] * offset;
     }
 
-    ivec3 step = ivec3(sign(rd));
     int lastStepAxis = -1;
     distance = 0.;
-
     normal = vec3(0.);
 
     for (int stepCount = 0; stepCount < maxSteps; ++stepCount)

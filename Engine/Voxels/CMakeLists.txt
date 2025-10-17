@@ -1,5 +1,4 @@
 SET(VOXELS_SOURCE 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Math/Vec3.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Primitives/Object.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/Instance.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/WrapperHardware.cpp"
