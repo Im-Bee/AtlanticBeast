@@ -248,7 +248,7 @@ void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
     barrier.srcAccessMask       = 0;
     barrier.dstAccessMask       = VK_ACCESS_SHADER_WRITE_BIT;
     barrier.image               = m_pSwapChain->GetImage(uImageIndex);
-    barrier.subresourceRange    = { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
+    barrier.subresourceRange    = VkImageSubresourceRange { VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
 
     vkCmdPipelineBarrier(cmdBuff,
                          VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,

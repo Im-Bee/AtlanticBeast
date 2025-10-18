@@ -10,7 +10,7 @@ struct alignas(16) Voxel
 {
     uint32_t Type;
     uint32_t RGBA;
-	float MaterialReflect;
+	float    MaterialReflectPower;
     uint32_t _Padding2;
 };
 

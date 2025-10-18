@@ -49,7 +49,7 @@ VkDevice Adapter::CreateDevice(VkPhysicalDevice gpu,
     queueCreateInfo.sType               = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     queueCreateInfo.queueFamilyIndex    = uFamilyIndex;
     queueCreateInfo.pQueuePriorities    = queuePriorities;
-    queueCreateInfo.queueCount          = sizeof(queuePriorities) / sizeof(float);
+    queueCreateInfo.queueCount          = std::size(queuePriorities);
 
     VkPhysicalDeviceFeatures deviceFeatures = { };
     deviceFeatures.fragmentStoresAndAtomics         = VK_TRUE;

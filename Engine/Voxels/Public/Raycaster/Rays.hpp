@@ -9,11 +9,11 @@ namespace Voxels
 
 struct HitResult 
 {
-    bool bHit;
-    iVec3 HitCoords;
-    size_t HitIndex;
-    float fDistance;
-    Vec3 Normal;
+    bool    bHit;
+    iVec3   iHitCoords;
+    size_t  uHitIndex;
+    float   fDistance;
+    Vec3    Normal;
 };
 
 BEAST_VOXEL_API HitResult MarchTheRay(const VoxelGrid* vg, const Vec3& ro, const Vec3& rd, size_t maxSteps);

@@ -18,7 +18,7 @@ class VoxelPipeline
 public:
 
     BEAST_VOXEL_API VoxelPipeline(::std::shared_ptr<const Hardware> hw,
-                             ::std::shared_ptr<const Adapter> da);
+                                  ::std::shared_ptr<const Adapter> da);
 
     BEAST_VOXEL_API ~VoxelPipeline();
 

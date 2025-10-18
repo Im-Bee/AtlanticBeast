@@ -1,9 +1,7 @@
 #ifndef AB_PUSH_CONSTANTS_H
 #define AB_PUSH_CONSTANTS_H
 
-#include "Math/Mat4.hpp"
-#include "Math/Vec3.hpp"
-#include "Math/Vec4.hpp"
+#include "Math/Math.hpp"
 #include "Voxels.hpp"
 
 namespace Voxels

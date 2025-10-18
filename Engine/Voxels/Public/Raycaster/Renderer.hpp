@@ -90,15 +90,14 @@ private:
     ::std::shared_ptr<Instance>             m_pInstance         = nullptr;
     ::std::shared_ptr<MinimalHardware>      m_pHardware         = nullptr;
     ::std::shared_ptr<ComputeAdapter>       m_pDeviceAdapter    = nullptr;
-    ::std::unique_ptr<Swapchain>            m_pSwapChain        = nullptr;
     ::std::shared_ptr<const WindowDesc>     m_pWindowDesc       = nullptr;
     ::std::shared_ptr<VoxelPipeline>        m_pPipeline         = nullptr;
     ::std::shared_ptr<VoxelGrid>            m_pVoxelGrid        = nullptr;
+    ::std::shared_ptr<Camera> m_pCamera = nullptr;
 
+    ::std::unique_ptr<Swapchain>            m_pSwapChain        = nullptr;
 
     VkCommandPool m_CommandPool = VK_NULL_HANDLE;
-
-    ::std::shared_ptr<Camera> m_pCamera = nullptr;
 
     size_t m_uCurrentFrame;
     ::std::vector<VoxelFrameResources> m_vFrames;

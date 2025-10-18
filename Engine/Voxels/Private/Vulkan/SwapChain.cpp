@@ -91,8 +91,8 @@ VkSurfaceCapabilitiesKHR Swapchain::GetCapabilitesInternal(shared_ptr<const Hard
     VkSurfaceCapabilitiesKHR capabilities;
 
     THROW_IF_FAILED(vkGetPhysicalDeviceSurfaceCapabilitiesKHR(pHardware->GetPhysicalDevice(), 
-                                                            surface,
-                                                            &capabilities));
+                                                              surface,
+                                                              &capabilities));
 
     if ((capabilities.supportedUsageFlags & VK_IMAGE_USAGE_STORAGE_BIT) == 0) {
         AB_LOG(Core::Debug::Error, L"VK_IMAGE_USAGE_STORAGE_BIT not supported for swapchain images.");
@@ -156,9 +156,9 @@ VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const Adapter>& pAdapter,
     swapchainInfo.clipped               = VK_TRUE;
 
     THROW_IF_FAILED(vkCreateSwapchainKHR(pAdapter->GetAdapterHandle(),
-                                       &swapchainInfo,
-                                       NULL,
-                                       &swapChain));
+                                         &swapchainInfo,
+                                         NULL,
+                                         &swapChain));
 
     return swapChain;
 }
@@ -205,6 +205,8 @@ VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const Hardware>& pHardware, 
     if (!bPicked) {
         AB_LOG(Core::Debug::Warning, L"Chosen random surface format");
         return vFormats[0];
+    } else {
+        AB_LOG(Core::Debug::Warning, L"Picked random color space");
     }
 
     return vFormats[choosenFormatIndex];

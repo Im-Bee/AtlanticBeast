@@ -5,5 +5,6 @@
 #include "Operations.hpp"
 #include "Vec3.hpp"
 #include "Vec3Operators.hpp"
+#include "Vec4.hpp"
 
 #endif //!AB_ATLANTIC_MATH_H
