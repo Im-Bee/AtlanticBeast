@@ -47,7 +47,7 @@ int main()
             v.RGBA = (static_cast<uint32_t>(r++) << 24) |
                      (static_cast<uint32_t>(g++) << 16) |
                      (static_cast<uint32_t>(b++) << 8) | + 0x000000FF;
-			v.MaterialReflect = 0.1f;
+			v.MaterialReflectPower = 0.1f;
         
             vg->ModifyVoxel(index++, std::move(v));
         }

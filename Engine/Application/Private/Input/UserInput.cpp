@@ -96,7 +96,8 @@ void UserInput::Update()
 void UserInput::Bind(void* pThis, ControllerObject* pCo, AbAction action, AbMouseAction mouseAction, AbInputBind bind)
 { 
     if (pCo->m_pUserInput.lock().get() != this) {
-        AB_LOG(Core::Debug::Info, L"Object must be signed by the UserInput, before binding");
+        AB_LOG(Core::Debug::Warning, L"Object must be signed by the UserInput, before binding.");
+        AB_LOG(Core::Debug::Warning, L"Cannot bind the object.");
         return;
     }
 

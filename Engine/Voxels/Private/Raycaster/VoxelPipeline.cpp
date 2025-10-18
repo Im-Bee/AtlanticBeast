@@ -22,7 +22,7 @@ VoxelPipeline::VoxelPipeline(::std::shared_ptr<const Hardware> hw,
     , m_DescriptorSet(CreateDescriptorSet(m_pDeviceAdapter, m_DescriptorPool, m_DescriptorLayout))
     , m_PipelineLayout(CreatePipelineLayout(m_pDeviceAdapter, m_DescriptorLayout))
     , m_ShaderModule(LoadShader(m_pDeviceAdapter, 
-                                App::AppResources::Get().GetExecutablePathA() + "/Assets/Raycast.comp.spv"))
+                                App::AppResources::Get().GetExecutablePathA() + "/Assets/Shaders/Raycast.comp.spv"))
     , m_ComputePipeline(CreateComputePipeline(m_pDeviceAdapter, m_PipelineLayout, m_ShaderModule))
 {
     AB_LOG(Core::Debug::Info, L"Creating a pipeline!");

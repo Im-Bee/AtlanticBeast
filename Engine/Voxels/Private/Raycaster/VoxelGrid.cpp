@@ -33,7 +33,7 @@ vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
 
                 voxelGrid[uIndex].Type  = 1;
                 voxelGrid[uIndex].RGBA  = 0xFF0000FF;
-				voxelGrid[uIndex].MaterialReflect = 0.28f;
+				voxelGrid[uIndex].MaterialReflectPower = 0.28f;
             }
         }
     }
@@ -47,7 +47,7 @@ vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
 
                 voxelGrid[uIndex].Type = 1;
                 voxelGrid[uIndex].RGBA = 0x42DD42FF;
-                voxelGrid[uIndex].MaterialReflect = 0.05f;
+                voxelGrid[uIndex].MaterialReflectPower = 0.05f;
             }
         }
     }

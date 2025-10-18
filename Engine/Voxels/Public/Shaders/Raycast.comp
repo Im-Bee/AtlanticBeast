@@ -5,7 +5,7 @@ layout(local_size_x = 16, local_size_y = 16) in;
 struct Voxel {
     uint    Type;
     uint    Color;
-    float   MaterialReflect;
+    float   MaterialReflectPower;
     uint    Padding2;
 };
 
@@ -30,14 +30,17 @@ layout(push_constant) uniform PushConstants
 const float PI      = 3.141592;
 const float TWO_PI  = 6.283185;
 const float EPSILON = 0.0001;
-const vec4 baseSkyColor = vec4(.4078, .4725, 1., 1.);
-const float maxRenderDist = 50.f;
-const int maxSteps = int(maxRenderDist * 2.6);
-float materialReflect = 0.2f;
-const bool coloredBySky = false;
+const vec4  baseSkyColor    = vec4(.4078, .4725, 1., 1.);
+const float maxRenderDist   = 50.f;
+const int   maxSteps        = int(maxRenderDist * 2.6);
 
 const vec3  lightPos    = vec3(20.0, 24.0, 10.0);
 const vec3  lightColor  = vec3(1., 1., 1.);
+
+#define LAST_UNKNOWN_AXIS -1
+#define LAST_X_AXIS 0
+#define LAST_Y_AXIS 1
+#define LAST_Z_AXIS 2
 
 bool MarchTheRay(vec3 ro,
                  vec3 rd,
@@ -47,20 +50,22 @@ bool MarchTheRay(vec3 ro,
                  out float distance,
                  out vec3 normal)
 {
-    vec3 pos = floor(ro);
-    ivec3 voxel = ivec3(pos);
-    ivec3 step = ivec3(sign(rd));
+    ivec3 voxel = ivec3(ro);
+    ivec3 step  = ivec3(sign(rd));
 
     vec3 invDir = 1.0 / rd;
     vec3 tDelta = abs(invDir);
     vec3 tMax;
 
     for (int i = 0; i < 3; ++i) {
-        float offset = (rd[i] > 0.0) ? (1.0 - fract(ro[i])) : fract(ro[i]);
+        float offset = rd[i] > 0.0 ?
+                       1.0 - fract(ro[i]) : 
+                       fract(ro[i]);
+
         tMax[i] = tDelta[i] * offset;
     }
 
-    int lastStepAxis = -1;
+    int lastStepAxis = LAST_UNKNOWN_AXIS;
     distance = 0.;
     normal = vec3(0.);
 
@@ -79,9 +84,20 @@ bool MarchTheRay(vec3 ro,
 
         if (VoxelData[index].Type == 1)
         {
-            hitCoords = voxel;
-            hitIndex = index;
+            hitCoords   = voxel;
+            hitIndex    = index;
             normal[lastStepAxis] = -float(step[lastStepAxis]);
+
+            if (lastStepAxis == LAST_X_AXIS) {
+                distance = tMax.x - tDelta.x;
+            }
+            else if (lastStepAxis == LAST_Y_AXIS) {
+                distance = tMax.y - tDelta.y;
+            }
+            else {
+                distance = tMax.z - tDelta.z;
+            }
+
             return true;
         }
 
@@ -89,28 +105,24 @@ bool MarchTheRay(vec3 ro,
         {
             if (tMax.x < tMax.z) {
                 voxel.x += step.x;
-                distance = tMax.x;
                 tMax.x  += tDelta.x;
-                lastStepAxis = 0;
+                lastStepAxis = LAST_X_AXIS;
             } else {
                 voxel.z += step.z;
-                distance = tMax.z;
                 tMax.z  += tDelta.z;
-                lastStepAxis = 2;
+                lastStepAxis = LAST_Z_AXIS;
             }
         } 
         else 
         {
             if (tMax.y < tMax.z) {
                 voxel.y += step.y;
-                distance = tMax.y;
                 tMax.y  += tDelta.y;
-                lastStepAxis = 1;
+                lastStepAxis = LAST_Y_AXIS;
             } else {
                 voxel.z += step.z;
-                distance = tMax.z;
                 tMax.z  += tDelta.z;
-                lastStepAxis = 2;
+                lastStepAxis = LAST_Z_AXIS;
             }
         }
     }
@@ -120,10 +132,10 @@ bool MarchTheRay(vec3 ro,
 
 vec4 ExtractColorInt(uint packedColor)
 {        
-    float b = float((packedColor >> 24) & 0xFFu) / 255.;
+    float r = float((packedColor >> 24) & 0xFFu) / 255.;
     float g = float((packedColor >> 16) & 0xFFu) / 255.;
-    float r = float((packedColor >>  8) & 0xFFu) / 255.;
-    float a = float(packedColor & 0xFFu) / 255.;
+    float b = float((packedColor >>  8) & 0xFFu) / 255.;
+    float a = float(packedColor         & 0xFFu) / 255.;
     
     return vec4(r, g, b, a);
 }
@@ -210,9 +222,9 @@ vec3 PhongShadows(in vec3 camPos,
                   in int maxDistance)
 {
     const float ambientStrength     = 0.1;
-    const float diffuseStrength     = 0.8;
-    const float specularStrength    = 0.7;
-    const float shininess           = 64.0;
+    const float diffuseStrength     = 0.9;
+    const float specularStrength    = 0.4;
+    const float shininess           = 256.0;
 
     vec3 lightDir   = normalize(lightPos - coord);
     vec3 viewDir    = normalize(camPos   - coord);
@@ -236,9 +248,9 @@ vec3 Reflection(vec3 from,
                 uint bounces,
                 vec3 normal,
                 vec3 baseColor,
-                float MaterialReflect)
+                float MaterialReflectPower)
 {
-    float localReflect = MaterialReflect;
+    float localReflect = MaterialReflectPower;
 
     vec3 incident;
     vec3 dir;
@@ -281,7 +293,7 @@ vec3 Reflection(vec3 from,
                              PhongShadows(CameraPos.xyz, to, hit, normal, maxSteps) * hitBaseColor,
                              localReflect);
 
-        localReflect *= VoxelData[index].MaterialReflect * 2;
+        localReflect *= VoxelData[index].MaterialReflectPower * 2;
     }
 
     return reflectedColor;
@@ -316,20 +328,22 @@ void main()
         vec3 hitPos = rayOrigin + rayDir * distance;
         finalColor = ExtractColorInt(VoxelData[index].Color);
 
-        vec3 shading;
-        vec3 reflections;
 
         if (distance <= maxSteps) {
-            shading = PhongShadows(CameraPos.xyz, hitPos, hitCoords, normal, int(length(hitPos - lightPos) * 1.5));
-            reflections = Reflection(rayOrigin, 
-                                     hitPos, 
-                                     96, 
-                                     4, 
-                                     normal,
-                                     shading * ExtractColorInt(VoxelData[index].Color).xyz, 
-                                     VoxelData[index].MaterialReflect);
-        
-            finalColor = vec4(reflections, finalColor.w);
+            vec3 shading = PhongShadows(CameraPos.xyz, 
+                                        hitPos,
+                                        hitCoords,
+                                        normal,
+                                        int(length(hitPos - lightPos) * 1.5));
+
+            finalColor = vec4(Reflection(rayOrigin, 
+                                         hitPos, 
+                                         96, 
+                                         4, 
+                                         normal,
+                                         shading * ExtractColorInt(VoxelData[index].Color).xyz, 
+                                         VoxelData[index].MaterialReflectPower),
+                              finalColor.w);
         }
     }
 

@@ -43,11 +43,11 @@ public:
             Voxels::Voxel v;
             v.Type = 1;
             v.RGBA = (m_uColor += 12739871) | 0x999999FF;
-            v.MaterialReflect = 0.5f;
+            v.MaterialReflectPower = 0.5f;
             v._Padding2 = 0;
-            m_vg->ModifyVoxel(static_cast<size_t>((hr.HitCoords.x + hr.Normal.x) +
-                (hr.HitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() +
-                (hr.HitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth()),
+            m_vg->ModifyVoxel(static_cast<size_t>((hr.iHitCoords.x + hr.Normal.x) +
+                (hr.iHitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() +
+                (hr.iHitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth()),
                 v);
         }
     }
@@ -63,9 +63,9 @@ public:
         {
             Voxels::Voxel v;
             v.Type = 0;
-            m_vg->ModifyVoxel(hr.HitCoords.x +
-                              hr.HitCoords.y * m_vg->GetGridWidth() +
-                              hr.HitCoords.z * m_vg->GetGridWidth() * m_vg->GetGridWidth(), v);
+            m_vg->ModifyVoxel(hr.iHitCoords.x +
+                              hr.iHitCoords.y * m_vg->GetGridWidth() +
+                              hr.iHitCoords.z * m_vg->GetGridWidth() * m_vg->GetGridWidth(), v);
         }
     }
 

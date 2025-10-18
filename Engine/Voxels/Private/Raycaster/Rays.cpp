@@ -22,9 +22,9 @@ HitResult MarchTheRay(const VoxelGrid* vg, const Vec3& ro, const Vec3& rd, size_
 
     for (size_t i = 0; i < 3; ++i)
     {
-        float offset = (rd[i] > 0.0f) ?
-                       (1.0f - ro[i] + static_cast<uint32_t>(ro[i])) : 
-                       (ro[i] - static_cast<uint32_t>(ro[i]));
+        float offset = rd[i] > 0.0f ?
+                       1.0f - ro[i] + static_cast<uint32_t>(ro[i]) : 
+                       ro[i] - static_cast<uint32_t>(ro[i]);
 
         tMax[i] = tDelta[i] * offset;
     }
@@ -54,21 +54,21 @@ HitResult MarchTheRay(const VoxelGrid* vg, const Vec3& ro, const Vec3& rd, size_
         if (vg->GetGrid()[index].Type == 1)
         {
             result.bHit         = true;
-            result.HitCoords    = voxel;
-            result.HitIndex     = index;
+            result.iHitCoords   = voxel;
+            result.uHitIndex    = index;
 
             switch (lastStepAxis) {
                 case X:
                     result.Normal       = Vec3(-float(step.x), 0.0f, 0.0f);
-                    result.fDistance    = tMax.x;
+                    result.fDistance    = tMax.x - tDelta.x;
                     break;
                 case Y:
                     result.Normal       = Vec3(0.0f, -float(step.y), 0.0f);
-                    result.fDistance    = tMax.y;
+                    result.fDistance    = tMax.y - tDelta.y;
                     break;
                 case Z:
                     result.Normal       = Vec3(0.0f, 0.0f, -float(step.z));
-                    result.fDistance    = tMax.z;
+                    result.fDistance    = tMax.z - tDelta.z;
                     break;
                 default:
                     result.Normal = Vec3(0.f, 0.f, 0.f);
