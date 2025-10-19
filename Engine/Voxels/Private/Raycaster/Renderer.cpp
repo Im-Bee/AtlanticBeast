@@ -238,11 +238,10 @@ void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
     THROW_IF_FAILED(vkBeginCommandBuffer(cmdBuff, &beginInfo));
     vkCmdBindPipeline(cmdBuff, VK_PIPELINE_BIND_POINT_COMPUTE, m_pPipeline->GetPipelineHandle());
 
-    VkImageMemoryBarrier barrier;
+    VkImageMemoryBarrier barrier = { };
     barrier.sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    barrier.pNext               = NULL;
-    barrier.srcQueueFamilyIndex = 0;
-    barrier.dstQueueFamilyIndex = 0;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     barrier.oldLayout           = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     barrier.newLayout           = VK_IMAGE_LAYOUT_GENERAL;
     barrier.srcAccessMask       = 0;
@@ -262,8 +261,8 @@ void Renderer::RecordCommands(VkCommandBuffer& cmdBuff,
 
     VkImageMemoryBarrier presentBarrier = { };
     presentBarrier.sType            = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    presentBarrier.dstQueueFamilyIndex = 0;
-    presentBarrier.srcQueueFamilyIndex = 0;
+    presentBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    presentBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     presentBarrier.oldLayout        = VK_IMAGE_LAYOUT_GENERAL;
     presentBarrier.newLayout        = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
     presentBarrier.srcAccessMask    = VK_ACCESS_SHADER_WRITE_BIT;
