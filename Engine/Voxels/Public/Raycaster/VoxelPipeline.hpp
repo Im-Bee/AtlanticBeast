@@ -1,6 +1,7 @@
 #ifndef AB_PIPELINE_H
 #define AB_PIPELINE_H
 
+#include "Math/Math.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Raycaster/PushConstants.hpp"
@@ -14,12 +15,12 @@ class VoxelPipeline
 {
 
     friend class Renderer;
-
 public:
 
     enum ShaderResource
     {
         VoxelGrid = 1,
+        Cubes = VoxelGrid << 1,
     };
 
 public:
@@ -44,14 +45,14 @@ public:
                            Vec3 cameraLookDir,
                            Vec3 cameraRight,
                            Vec3 cameraUp,
-                           uint32_t gridWidth)
+                           int32_t gridWidth)
     {
         m_Vpc.CameraPos     = cameraPos;
         m_Vpc.CameraLookDir = cameraLookDir;
         m_Vpc.CameraRight   = cameraRight;
         m_Vpc.CameraUp      = cameraUp;
         m_Vpc.fFov          = fFov;
-        m_Vpc.GridSize      = iVec4(gridWidth, gridWidth, gridWidth);
+        m_Vpc.GridSize      = iVec3(gridWidth, gridWidth, gridWidth);
     }
 
 public:

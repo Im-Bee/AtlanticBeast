@@ -1,24 +1,25 @@
 #ifndef AB_VOXEL_GRID_H
 #define AB_VOXEL_GRID_H
 
-#include "Math/Vec3.hpp"
 #include "Voxels.hpp"
+#include "Math/Vec3.hpp"
+#include "Primitives/Cube.hpp"
 
 #include "Raycaster/SingleVoxel.hpp"
 
 namespace Voxels
 {
 
-class VoxelGrid
+class WorldGrid
 {
 
     static constexpr size_t VoxelGridDim = 256;
 
 public:
 
-    BEAST_VOXEL_API explicit VoxelGrid(size_t uGridWidth = VoxelGridDim);
+    BEAST_VOXEL_API explicit WorldGrid(size_t uGridWidth = VoxelGridDim);
     
-    BEAST_VOXEL_API ~VoxelGrid() = default;
+    BEAST_VOXEL_API ~WorldGrid() = default;
 
 public:
 
@@ -51,13 +52,14 @@ public:
 
 private:
 
-    ::std::vector<Voxel> GenerateGrid(size_t uGridWidth);
+    ::std::vector<Voxel> GenerateGrid(size_t uGridWidth, ::std::vector<Cube>& vCubes);
 
 private:
 
     size_t m_uGridDim;
 
     ::std::vector<Voxel> m_VoxelGrid;
+    ::std::vector<Cube> m_Cubes;
 
 };
 

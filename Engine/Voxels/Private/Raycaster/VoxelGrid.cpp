@@ -6,13 +6,14 @@ namespace Voxels
 using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
-VoxelGrid::VoxelGrid(size_t uGridWidth)
+WorldGrid::WorldGrid(size_t uGridWidth)
     : m_uGridDim(uGridWidth)
-    , m_VoxelGrid(GenerateGrid(m_uGridDim))
+    , m_Cubes()
+    , m_VoxelGrid(GenerateGrid(m_uGridDim, m_Cubes))
 { }
 
 // ---------------------------------------------------------------------------------------------------------------------
-vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
+vector<Voxel> WorldGrid::GenerateGrid(size_t uGridWidth, vector<Cube>& vCubes)
 {
     vector<Voxel>   voxelGrid(uGridWidth * uGridWidth * uGridWidth);
     size_t          uDim = VoxelGridDim;
@@ -33,7 +34,7 @@ vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
 
                 voxelGrid[uIndex] = Voxel { };
                 voxelGrid[uIndex].Type  = 1;
-                voxelGrid[uIndex].Id1   = 0xFF0000FF;
+                voxelGrid[uIndex].Id[0]   = 0xFF0000FF;
             }
         }
     }
@@ -46,8 +47,8 @@ vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
                     z * uDim * uDim;
 
                 voxelGrid[uIndex] = Voxel { };
-                voxelGrid[uIndex].Type = 1;
-                voxelGrid[uIndex].Id1 = 0x42DD42FF;
+                voxelGrid[uIndex].Type  = 1;
+                voxelGrid[uIndex].Id[0]   = 0x42DD42FF;
             }
         }
     }

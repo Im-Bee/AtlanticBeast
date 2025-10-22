@@ -51,13 +51,13 @@ public:
         return m_pCamera;
     }
 
-    ::std::shared_ptr<VoxelGrid>& GetGrid()
+    ::std::shared_ptr<WorldGrid>& GetGrid()
     { return m_pVoxelGrid; }
 
 public:
 
     BEAST_VOXEL_API void Initialize(::std::shared_ptr<const WindowDesc> wd,
-                                    ::std::shared_ptr<VoxelGrid> vg = ::std::make_shared<VoxelGrid>());
+                                    ::std::shared_ptr<WorldGrid> vg = ::std::make_shared<WorldGrid>());
 
     BEAST_VOXEL_API void Update();
 
@@ -73,7 +73,7 @@ private:
 
     ::std::vector<VoxelFrameResources> CreateFrameResources(const ::std::shared_ptr<const Adapter>& da,
                                                             const ::std::shared_ptr<VoxelPipeline>& pipeline,
-                                                            const ::std::shared_ptr<const VoxelGrid>& vg,
+                                                            const ::std::shared_ptr<const WorldGrid>& vg,
                                                             VkCommandPool cmdPool,
                                                             size_t uFrames);
 
@@ -92,9 +92,8 @@ private:
     ::std::shared_ptr<ComputeAdapter>       m_pDeviceAdapter    = nullptr;
     ::std::shared_ptr<const WindowDesc>     m_pWindowDesc       = nullptr;
     ::std::shared_ptr<VoxelPipeline>        m_pPipeline         = nullptr;
-    ::std::shared_ptr<VoxelGrid>            m_pVoxelGrid        = nullptr;
-    ::std::shared_ptr<Camera> m_pCamera = nullptr;
-
+    ::std::shared_ptr<WorldGrid>            m_pVoxelGrid        = nullptr;
+    ::std::shared_ptr<Camera>               m_pCamera           = nullptr;
     ::std::unique_ptr<Swapchain>            m_pSwapChain        = nullptr;
 
     VkCommandPool m_CommandPool = VK_NULL_HANDLE;

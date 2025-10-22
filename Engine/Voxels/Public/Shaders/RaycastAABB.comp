@@ -4,14 +4,17 @@ layout(local_size_x = 16, local_size_y = 16) in;
 
 struct Voxel {
     uint    Type;
-    uint    Color;
-    float   MaterialReflectPower;
-    uint    Padding2;
+    uint    id1;
+    uint    id2;
+    uint    id3;
 };
 
 layout(binding = 0, rgba8) uniform image2D outputImage;
 layout(std430, binding = 1) readonly buffer Voxels {
     Voxel VoxelData[]; 
+};
+layout(std430, binding = 2) readonly buffer Cubes {
+    Voxel CubeData[]; 
 };
 
 layout(push_constant) uniform PushConstants 
@@ -82,8 +85,11 @@ bool MarchTheRay(vec3 ro,
                     voxel.y * GridSize.x +
                     voxel.z * GridSize.x * GridSize.y;
 
-        if (VoxelData[index].Type == 1)
+        if (VoxelData[index].Type > 0)
         {
+            // for (uint i = 0; i < VoxelData[index].Type; ++i) 
+            //      TestHit(VoxelData[index].Id[i]);
+
             hitCoords   = voxel;
             hitIndex    = index;
             normal[lastStepAxis] = -float(step[lastStepAxis]);
@@ -287,13 +293,13 @@ vec3 Reflection(vec3 from,
         to      = to + dir * distance;
         normal  = normalRef;
 
-        hitBaseColor = ExtractColorInt(VoxelData[index].Color).xyz;
+        hitBaseColor = ExtractColorInt(0xFF00FFFF).xyz;
         
         reflectedColor = mix(reflectedColor, 
                              PhongShadows(CameraPos.xyz, to, hit, normal, maxSteps) * hitBaseColor,
                              localReflect);
 
-        localReflect *= VoxelData[index].MaterialReflectPower * 2;
+        localReflect *= 0.23 * 2;
     }
 
     return reflectedColor;
@@ -326,7 +332,7 @@ void main()
     if (MarchTheRay(rayOrigin, rayDir, maxSteps, hitCoords, index, distance, normal)) 
     {
         vec3 hitPos = rayOrigin + rayDir * distance;
-        finalColor = ExtractColorInt(VoxelData[index].Color);
+        finalColor = ExtractColorInt(0x3300FFFF);
 
 
         if (distance <= maxSteps) {
@@ -341,8 +347,8 @@ void main()
                                          96, 
                                          6, 
                                          normal,
-                                         shading * ExtractColorInt(VoxelData[index].Color).xyz, 
-                                         VoxelData[index].MaterialReflectPower),
+                                         shading * ExtractColorInt(0x3300FFFF).xyz, 
+                                         0.25),
                               finalColor.w);
         }
     }

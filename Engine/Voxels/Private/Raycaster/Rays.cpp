@@ -7,7 +7,7 @@ namespace Voxels
 
 using namespace std;
 
-HitResult MarchTheRay(const VoxelGrid* vg, const Vec3& ro, const Vec3& rd, size_t maxSteps)
+HitResult MarchTheRay(const WorldGrid* vg, const Vec3& ro, const Vec3& rd, size_t maxSteps)
 {
     HitResult result;
     result.bHit         = false;
@@ -51,7 +51,7 @@ HitResult MarchTheRay(const VoxelGrid* vg, const Vec3& ro, const Vec3& rd, size_
                              voxel.y * gridWidth +
                              voxel.z * gridWidth * gridWidth;
 
-        if (vg->GetGrid()[index].Type == 1)
+        if (vg->GetGrid()[index].Type > 0)
         {
             result.bHit         = true;
             result.iHitCoords   = voxel;

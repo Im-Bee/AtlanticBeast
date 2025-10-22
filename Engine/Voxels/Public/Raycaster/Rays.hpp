@@ -1,7 +1,7 @@
 #ifndef AB_RAYS_H
 #define AB_RAYS_H
 
-#include "Math/Vec3.hpp"
+#include "Math/Math.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 
 namespace Voxels
@@ -16,8 +16,7 @@ struct HitResult
     Vec3    Normal;
 };
 
-BEAST_VOXEL_API HitResult MarchTheRay(const VoxelGrid* vg, const Vec3& ro, const Vec3& rd, size_t maxSteps);
+BEAST_VOXEL_API HitResult MarchTheRay(const WorldGrid* vg, const Vec3& ro, const Vec3& rd, size_t maxSteps);
      
 } //!Voxels
-
 #endif //!AB_RAYS_H

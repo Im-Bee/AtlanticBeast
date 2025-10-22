@@ -13,7 +13,7 @@ struct alignas(16) CubeData
     Rot3 Rotation;  
 };
 
-class Cube 
+class alignas(16) Cube 
 {
 public:
 

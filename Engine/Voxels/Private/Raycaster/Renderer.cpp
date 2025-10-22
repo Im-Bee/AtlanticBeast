@@ -17,7 +17,7 @@ using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
-                          ::std::shared_ptr<VoxelGrid> vg) 
+                          ::std::shared_ptr<WorldGrid> vg) 
 {
     m_pInstance         = make_shared<Instance>();
     m_pHardware         = make_shared<MinimalHardware>(m_pInstance);
@@ -33,9 +33,8 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
     // Recreating swap chain also creates frame resources and initializes swap chain
     RecreateSwapChain();
 
-    if (m_pCamera == nullptr) {
+    if (m_pCamera == nullptr)
         m_pCamera = make_shared<Camera>();
-    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -193,7 +192,7 @@ VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const Adapter> d
 // ---------------------------------------------------------------------------------------------------------------------
 vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_ptr<const Adapter>& da,
                                                            const ::std::shared_ptr<VoxelPipeline>& pipeline,
-                                                           const ::std::shared_ptr<const VoxelGrid>& vg,
+                                                           const ::std::shared_ptr<const WorldGrid>& vg,
                                                            VkCommandPool cmdPool,
                                                            size_t uFrames)
 {

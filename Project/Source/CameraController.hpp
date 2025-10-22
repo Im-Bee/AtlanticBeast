@@ -24,7 +24,7 @@ public:
 
 public:
 
-    void SetGrid(::std::shared_ptr<Voxels::VoxelGrid> vg)
+    void SetGrid(::std::shared_ptr<Voxels::WorldGrid> vg)
     {
         m_vg = vg;
     }
@@ -42,9 +42,9 @@ public:
         {
             Voxels::Voxel v;
             v.Type = 1;
-            v.Id1 = (m_uColor += 12739871) | 0x999999FF;
+            v.Id[0] = (m_uColor += 12739871) | 0x999999FF;
             static const float f = .5f;
-            memcpy(&v.Id2, &f, sizeof(uint32_t));
+            memcpy(&v.Id[1], &f, sizeof(uint32_t));
             m_vg->ModifyVoxel(static_cast<size_t>((hr.iHitCoords.x + hr.Normal.x) +
                                                   (hr.iHitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() +
                                                   (hr.iHitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth()),
@@ -92,7 +92,7 @@ public:
 
 private:
 
-    ::std::shared_ptr<Voxels::VoxelGrid> m_vg;
+    ::std::shared_ptr<Voxels::WorldGrid> m_vg;
 
     uint32_t m_uColor;
 

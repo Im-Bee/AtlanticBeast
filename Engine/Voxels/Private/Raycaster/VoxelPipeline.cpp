@@ -186,12 +186,12 @@ VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const Ada
     bindings[0].descriptorCount     = 1;
     bindings[0].stageFlags          = VK_SHADER_STAGE_COMPUTE_BIT;
 
-    bindings[1].binding             = 1;
+    bindings[1].binding             = VoxelPipeline::ShaderResource::VoxelGrid;
     bindings[1].descriptorType      = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     bindings[1].descriptorCount     = 1;
     bindings[1].stageFlags          = VK_SHADER_STAGE_COMPUTE_BIT;
 
-    bindings[2].binding             = 2;
+    bindings[2].binding             = VoxelPipeline::ShaderResource::Cubes;
     bindings[2].descriptorType      = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     bindings[2].descriptorCount     = 1;
     bindings[2].stageFlags          = VK_SHADER_STAGE_COMPUTE_BIT;

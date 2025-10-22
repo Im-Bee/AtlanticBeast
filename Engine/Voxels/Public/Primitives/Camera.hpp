@@ -40,5 +40,4 @@ private:
 };
 
 } // !Voxels
-
 #endif // !AB_CAMERA_H
