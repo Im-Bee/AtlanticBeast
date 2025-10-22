@@ -22,5 +22,4 @@ struct alignas(16) VoxelPushConstants
 
 } // !Voxels
 
-
 #endif // !AB_PUSH_CONSTANTS_H

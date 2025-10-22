@@ -17,6 +17,13 @@ class VoxelPipeline
 
 public:
 
+    enum ShaderResource
+    {
+        VoxelGrid = 1,
+    };
+
+public:
+
     BEAST_VOXEL_API VoxelPipeline(::std::shared_ptr<const Hardware> hw,
                                   ::std::shared_ptr<const Adapter> da);
 
@@ -24,9 +31,11 @@ public:
 
 public:
 
-    BEAST_VOXEL_API GPUStreamBuffer ReserveGridBuffer(const ::std::shared_ptr<const VoxelGrid>& vg);
+    BEAST_VOXEL_API GPUStreamBuffer ReserveBuffer(const size_t uSizeInBytes);
 
-    BEAST_VOXEL_API void LoadGrid(const ::std::shared_ptr<const VoxelGrid>& vg, GPUStreamBuffer& outBuffer);
+    BEAST_VOXEL_API void UploadOnStreamBuffer(const void* pUpload, 
+                                              GPUStreamBuffer& outBuffer,
+                                              const ShaderResource& sr);
 
     BEAST_VOXEL_API void LoadImage(VkImage image);
 
@@ -34,13 +43,15 @@ public:
                            Vec3 cameraPos, 
                            Vec3 cameraLookDir,
                            Vec3 cameraRight,
-                           Vec3 cameraUp)
+                           Vec3 cameraUp,
+                           uint32_t gridWidth)
     {
-        m_Vpc.CameraPos = cameraPos;
+        m_Vpc.CameraPos     = cameraPos;
         m_Vpc.CameraLookDir = cameraLookDir;
-        m_Vpc.CameraRight = cameraRight;
-        m_Vpc.CameraUp = cameraUp;
-        m_Vpc.fFov = fFov;
+        m_Vpc.CameraRight   = cameraRight;
+        m_Vpc.CameraUp      = cameraUp;
+        m_Vpc.fFov          = fFov;
+        m_Vpc.GridSize      = iVec4(gridWidth, gridWidth, gridWidth);
     }
 
 public:
@@ -83,8 +94,6 @@ private:
     ::std::shared_ptr<const Hardware>   m_pHardware         = nullptr;
     ::std::shared_ptr<const Adapter>    m_pDeviceAdapter    = nullptr;
     ::std::shared_ptr<const Swapchain>  m_pSwapChain        = nullptr;
-
-    ::std::shared_ptr<const VoxelGrid> m_VoxelGrid = nullptr;
 
     VoxelPushConstants m_Vpc;
 

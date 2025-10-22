@@ -8,10 +8,12 @@ namespace Voxels
 
 struct alignas(16) Voxel
 {
+    constexpr const static uint32_t MaxPerInstance = 3;
+
     uint32_t Type;
-    uint32_t RGBA;
-	float    MaterialReflectPower;
-    uint32_t _Padding2;
+    uint32_t Id1;
+    uint32_t Id2;
+    uint32_t Id3;
 };
 
 } // !Voxels

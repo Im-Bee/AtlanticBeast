@@ -13,16 +13,15 @@ using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
 VoxelPipeline::VoxelPipeline(::std::shared_ptr<const Hardware> hw, 
-                   ::std::shared_ptr<const Adapter> da)
+                             ::std::shared_ptr<const Adapter> da)
     : m_pHardware(hw)
     , m_pDeviceAdapter(da)
-    , m_VoxelGrid(nullptr)
     , m_DescriptorLayout(CreateDescriptorLayout(m_pDeviceAdapter))
     , m_DescriptorPool(CreateDescriptorPool(m_pDeviceAdapter))
     , m_DescriptorSet(CreateDescriptorSet(m_pDeviceAdapter, m_DescriptorPool, m_DescriptorLayout))
     , m_PipelineLayout(CreatePipelineLayout(m_pDeviceAdapter, m_DescriptorLayout))
     , m_ShaderModule(LoadShader(m_pDeviceAdapter, 
-                                App::AppResources::Get().GetExecutablePathA() + "/Assets/Shaders/Raycast.comp.spv"))
+                                App::AppResources::Get().GetExecutablePathA() + "/Assets/Shaders/RaycastAABB.comp.spv"))
     , m_ComputePipeline(CreateComputePipeline(m_pDeviceAdapter, m_PipelineLayout, m_ShaderModule))
 {
     AB_LOG(Core::Debug::Info, L"Creating a pipeline!");
@@ -58,17 +57,16 @@ VoxelPipeline::~VoxelPipeline()
 }
 
 // Public // -----------------------------------------------------------------------------------------------------------
-GPUStreamBuffer VoxelPipeline::ReserveGridBuffer(const shared_ptr<const VoxelGrid>& vg)
+GPUStreamBuffer VoxelPipeline::ReserveBuffer(const size_t uSizeInBytes)
 {
-    const VkDeviceSize      uBufferSizeInBytes      = vg->GetAmountOfVoxels() * sizeof(Voxel);
-    const VkDevice          da                      = m_pDeviceAdapter->GetAdapterHandle();
+    const VkDevice da = m_pDeviceAdapter->GetAdapterHandle();
     VkMemoryRequirements    memRequirements;
     VkBuffer                voxelBuffer;
     VkDeviceMemory          voxelBufferMemory;
 
     VkBufferCreateInfo bufferInfo = { };
     bufferInfo.sType        = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size         = uBufferSizeInBytes;
+    bufferInfo.size         = uSizeInBytes;
     bufferInfo.usage        = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
     bufferInfo.sharingMode  = VK_SHARING_MODE_EXCLUSIVE;
 
@@ -89,21 +87,16 @@ GPUStreamBuffer VoxelPipeline::ReserveGridBuffer(const shared_ptr<const VoxelGri
     THROW_IF_FAILED(vkAllocateMemory(da, &allocInfo, NULL, &voxelBufferMemory));
     THROW_IF_FAILED(vkBindBufferMemory(da, voxelBuffer, voxelBufferMemory, 0));
 
-    m_VoxelGrid = vg;
-    int32_t w = static_cast<int32_t>(m_VoxelGrid->GetGridWidth());
-    m_Vpc.GridSize = iVec4(w, w, w);
-
-    return GPUStreamBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, nullptr, uBufferSizeInBytes);
+    return GPUStreamBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, nullptr, uSizeInBytes);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void VoxelPipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUStreamBuffer& outBuffer)
+void VoxelPipeline::UploadOnStreamBuffer(const void* pUpload, 
+                                         GPUStreamBuffer& outBuffer,
+                                         const ShaderResource& sr)
 {
     AB_ASSERT((outBuffer.GetMemoryHandle() != VK_NULL_HANDLE));
     AB_ASSERT((outBuffer.GetBufferHandle() != VK_NULL_HANDLE));
-    AB_ASSERT((outBuffer.GetSizeInBytes() == vg->GetAmountOfVoxels() * sizeof(Voxel)));
-    AB_ASSERT((m_VoxelGrid != nullptr));
-    AB_ASSERT((vg->GetAmountOfVoxels() == m_VoxelGrid->GetAmountOfVoxels()));
 
     const VkDevice da = m_pDeviceAdapter->GetAdapterHandle();
     
@@ -115,7 +108,7 @@ void VoxelPipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUStreamBuf
                                     0,
                                     outBuffer.GetDataPointer()));
     }
-    memcpy(*outBuffer.GetDataPointer(), &vg->GetGrid()[0], outBuffer.GetSizeInBytes());
+    memcpy(*outBuffer.GetDataPointer(), pUpload, outBuffer.GetSizeInBytes());
 
     VkDescriptorBufferInfo voxelBufferInfo = { };
     voxelBufferInfo.buffer  = outBuffer.GetBufferHandle();
@@ -125,7 +118,7 @@ void VoxelPipeline::LoadGrid(const shared_ptr<const VoxelGrid>& vg, GPUStreamBuf
     VkWriteDescriptorSet voxelWrite = { };
     voxelWrite.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
     voxelWrite.dstSet           = m_DescriptorSet;
-    voxelWrite.dstBinding       = 1;
+    voxelWrite.dstBinding       = sr;
     voxelWrite.descriptorType   = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     voxelWrite.descriptorCount  = 1;
     voxelWrite.pBufferInfo      = &voxelBufferInfo;
@@ -185,7 +178,7 @@ void VoxelPipeline::LoadImage(VkImage image)
 // Private // ----------------------------------------------------------------------------------------------------------
 VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const Adapter>& da)
 {
-    array<VkDescriptorSetLayoutBinding, 2>  bindings    = { };
+    array<VkDescriptorSetLayoutBinding, 3>  bindings    = { };
     VkDescriptorSetLayout                   descriptorSetLayout;
 
     bindings[0].binding             = 0;
@@ -197,6 +190,11 @@ VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const Ada
     bindings[1].descriptorType      = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     bindings[1].descriptorCount     = 1;
     bindings[1].stageFlags          = VK_SHADER_STAGE_COMPUTE_BIT;
+
+    bindings[2].binding             = 2;
+    bindings[2].descriptorType      = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    bindings[2].descriptorCount     = 1;
+    bindings[2].stageFlags          = VK_SHADER_STAGE_COMPUTE_BIT;
 
     VkDescriptorSetLayoutCreateInfo layoutCreateInfo = { };
     layoutCreateInfo.sType          = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -214,17 +212,17 @@ VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const Ada
 // ---------------------------------------------------------------------------------------------------------------------
 VkDescriptorPool VoxelPipeline::CreateDescriptorPool(shared_ptr<const Adapter>& da)
 {
-    const VkDescriptorPoolSize  poolSizes[] = {
+    const vector<VkDescriptorPoolSize> poolSizes = {
         { VK_DESCRIPTOR_TYPE_STORAGE_IMAGE,  1 },
-        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1 },
+        { VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 2 },
     };
 
     VkDescriptorPool descriptorPool;
 
     VkDescriptorPoolCreateInfo poolInfo = { };
     poolInfo.sType          = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount  = 2;
-    poolInfo.pPoolSizes     = poolSizes;
+    poolInfo.poolSizeCount  = poolSizes.size();
+    poolInfo.pPoolSizes     = &poolSizes[0];
     poolInfo.maxSets        = 1;
 
     THROW_IF_FAILED(vkCreateDescriptorPool(da->GetAdapterHandle(), &poolInfo, NULL, &descriptorPool));

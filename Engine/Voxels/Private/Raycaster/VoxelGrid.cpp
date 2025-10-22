@@ -22,8 +22,8 @@ vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
     }
 
     size_t uIndex;
-    size_t uCubeStart   = 33;
-    size_t uCubeEnd     = 44;
+    size_t uCubeStart = 33;
+    size_t uCubeEnd   = 44;
     for (size_t z = uCubeStart; z < uCubeEnd; ++z) {
         for (size_t y = uCubeStart; y < uCubeEnd; ++y) {
             for (size_t x = uCubeStart; x < uCubeEnd; ++x) {
@@ -31,9 +31,9 @@ vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
                          y * uDim +
                          z * uDim * uDim;
 
+                voxelGrid[uIndex] = Voxel { };
                 voxelGrid[uIndex].Type  = 1;
-                voxelGrid[uIndex].RGBA  = 0xFF0000FF;
-				voxelGrid[uIndex].MaterialReflectPower = 0.28f;
+                voxelGrid[uIndex].Id1   = 0xFF0000FF;
             }
         }
     }
@@ -45,9 +45,9 @@ vector<Voxel> VoxelGrid::GenerateGrid(size_t uGridWidth)
                     y * uDim +
                     z * uDim * uDim;
 
+                voxelGrid[uIndex] = Voxel { };
                 voxelGrid[uIndex].Type = 1;
-                voxelGrid[uIndex].RGBA = 0x42DD42FF;
-                voxelGrid[uIndex].MaterialReflectPower = 0.05f;
+                voxelGrid[uIndex].Id1 = 0x42DD42FF;
             }
         }
     }

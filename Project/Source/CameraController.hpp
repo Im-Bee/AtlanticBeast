@@ -42,13 +42,13 @@ public:
         {
             Voxels::Voxel v;
             v.Type = 1;
-            v.RGBA = (m_uColor += 12739871) | 0x999999FF;
-            v.MaterialReflectPower = 0.5f;
-            v._Padding2 = 0;
+            v.Id1 = (m_uColor += 12739871) | 0x999999FF;
+            static const float f = .5f;
+            memcpy(&v.Id2, &f, sizeof(uint32_t));
             m_vg->ModifyVoxel(static_cast<size_t>((hr.iHitCoords.x + hr.Normal.x) +
-                (hr.iHitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() +
-                (hr.iHitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth()),
-                v);
+                                                  (hr.iHitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() +
+                                                  (hr.iHitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth()),
+                              v);
         }
     }
 

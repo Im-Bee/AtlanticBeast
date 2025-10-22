@@ -35,23 +35,6 @@ int main()
     while (AppStatus::GetAppCurrentStatus()) 
     {
         renderWindow.Update();
-        
-        static uint8_t r = 0;
-        static uint8_t g = 111;
-        static uint8_t b = 52;
-        static int32_t index = 0; 
-                               
-        if (index < vg->GetAmountOfVoxels()) {
-            Voxels::Voxel v;
-            v.Type = 1;
-            v.RGBA = (static_cast<uint32_t>(r++) << 24) |
-                     (static_cast<uint32_t>(g++) << 16) |
-                     (static_cast<uint32_t>(b++) << 8) | + 0x000000FF;
-			v.MaterialReflectPower = 0.1f;
-        
-            vg->ModifyVoxel(index++, std::move(v));
-        }
-        
         render.Update();
         render.Render();
     }

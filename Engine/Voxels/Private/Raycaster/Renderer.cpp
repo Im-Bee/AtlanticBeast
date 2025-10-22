@@ -30,8 +30,6 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
     m_CommandPool = CreateCommandPool(dynamic_pointer_cast<Adapter>(m_pDeviceAdapter), 
                                       m_pDeviceAdapter->GetQueueFamilyIndex());
 
-    m_pPipeline->ReserveGridBuffer(m_pVoxelGrid);
-    
     // Recreating swap chain also creates frame resources and initializes swap chain
     RecreateSwapChain();
 
@@ -43,7 +41,9 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Update()
 {
-    m_pPipeline->LoadGrid(m_pVoxelGrid, m_vFrames[m_uCurrentFrame].VoxelBuffer);
+    m_pPipeline->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], 
+                                      m_vFrames[m_uCurrentFrame].VoxelBuffer,
+                                      VoxelPipeline::ShaderResource::VoxelGrid);
 
     Vec3 rot = m_pCamera->GetRotation();
     Vec3 rotVec = Normalize(RotateY(RotateX(Vec3 { 0.f, 0.f, 1.f }, rot.x), rot.y));
@@ -54,7 +54,8 @@ void Renderer::Update()
                                    m_pCamera->GetPosition(), 
                                    rotVec, 
                                    cameraRight,
-                                   cameraUp);
+                                   cameraUp,
+                                   m_pVoxelGrid->GetGridWidth());
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -216,7 +217,7 @@ vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_p
         }
 
         result[i].CommandBuffer = CreateCommandBuffer(da, cmdPool);
-        result[i].VoxelBuffer   = std::move(pipeline->ReserveGridBuffer(vg));
+        result[i].VoxelBuffer   = std::move(pipeline->ReserveBuffer(vg->GetAmountOfVoxels() * sizeof(Voxel)));
     }
 
     return result;
