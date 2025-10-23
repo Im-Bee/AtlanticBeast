@@ -37,7 +37,7 @@ vector<Voxel> WorldGrid::GenerateGrid(size_t uGridWidth, vector<Cube>& vCubes)
                          z * uDim * uDim;
 
                 voxelGrid[uIndex] = Voxel { };
-                m_Cubes[m_uCubesCount] = GenerateCube(Vec3(x, y, z));
+                m_Cubes[m_uCubesCount] = GenerateCube(Vec3(x + 0.5f, y + 0.5f, z + 0.5f));
                 voxelGrid[uIndex].Type  = 1;
                 voxelGrid[uIndex].Id[0] = m_uCubesCount;
                 ++m_uCubesCount;

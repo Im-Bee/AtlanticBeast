@@ -54,8 +54,11 @@ const vec3  lightColor  = vec3(1., 1., 1.);
 #define LAST_Y_AXIS 1
 #define LAST_Z_AXIS 2
 
-bool TestHit(in uint uIndex, inout vec3 rayOriginLocal, in vec3 rayDirLocal, out vec3 normal) 
+bool TestHit(in uint uIndex, inout vec3 ro, in vec3 rd, out vec3 normal) 
 {
+    vec3 cubePos = CubeData[uIndex].Pos.xyz;
+    
+
     return true;
 }
 
@@ -99,15 +102,14 @@ bool MarchTheRay(vec3 ro,
 
         if (VoxelData[index].Type > 0)
         {
-            return false;
-            hitCoords = voxel;
             if (TestHit(VoxelData[index].id[0], hitCoords, rd, normal)) 
             {
                 hitIndex = index;
                 return true;
             }
         }
-
+        
+        hitCoords = voxel;
         if (tMax.x < tMax.y) 
         {
             if (tMax.x < tMax.z) {

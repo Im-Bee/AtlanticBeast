@@ -368,13 +368,18 @@ void Renderer::RecreateSwapChain()
     }
 
     for (size_t i = 0; i < m_vFrames.size(); ++i)
-    {
         vkWaitForFences(m_pDeviceAdapter->GetAdapterHandle(), 1, &m_vFrames[i].InFlightFence, VK_TRUE, UINT64_MAX);
 
+    for (size_t i = 0; i < m_vFrames.size(); ++i) 
+    {
         vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].RenderFinished, nullptr);
         vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].ImageAvailable, nullptr);
         vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].InFlightFence, nullptr);
         vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &m_vFrames[i].CommandBuffer);
+        m_vFrames[i].StageVoxelBuffer.~GPUStreamBuffer();
+        m_vFrames[i].StageCubeBuffer.~GPUStreamBuffer();
+        m_vFrames[i].VoxelBuffer.~GPUBuffer();
+        m_vFrames[i].CubeBuffer.~GPUBuffer();
     }
 
     m_pSwapChain = nullptr;
