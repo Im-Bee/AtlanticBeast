@@ -5,9 +5,7 @@ layout(local_size_x = 16, local_size_y = 16) in;
 struct Voxel 
 {
     uint    Type;
-    uint    id1;
-    uint    id2;
-    uint    id3;
+    uint    id[3];
 };
 
 struct Cube 
@@ -56,12 +54,17 @@ const vec3  lightColor  = vec3(1., 1., 1.);
 #define LAST_Y_AXIS 1
 #define LAST_Z_AXIS 2
 
+bool TestHit(in uint uIndex, inout vec3 rayOriginLocal, in vec3 rayDirLocal, out vec3 normal) 
+{
+    return true;
+}
+
+
 bool MarchTheRay(vec3 ro,
                  vec3 rd,
                  int maxSteps,
-                 out ivec3 hitCoords,
+                 out vec3 hitCoords,
                  out int hitIndex,
-                 out float distance,
                  out vec3 normal)
 {
     ivec3 voxel = ivec3(ro);
@@ -79,8 +82,6 @@ bool MarchTheRay(vec3 ro,
         tMax[i] = tDelta[i] * offset;
     }
 
-    int lastStepAxis = LAST_UNKNOWN_AXIS;
-    distance = 0.;
     normal = vec3(0.);
 
     for (int stepCount = 0; stepCount < maxSteps; ++stepCount)
@@ -98,24 +99,13 @@ bool MarchTheRay(vec3 ro,
 
         if (VoxelData[index].Type > 0)
         {
-            // for (uint i = 0; i < VoxelData[index].Type; ++i) 
-            //      TestHit(VoxelData[index].Id[i]);
-
-            hitCoords   = voxel;
-            hitIndex    = index;
-            normal[lastStepAxis] = -float(step[lastStepAxis]);
-
-            if (lastStepAxis == LAST_X_AXIS) {
-                distance = tMax.x - tDelta.x;
+            return false;
+            hitCoords = voxel;
+            if (TestHit(VoxelData[index].id[0], hitCoords, rd, normal)) 
+            {
+                hitIndex = index;
+                return true;
             }
-            else if (lastStepAxis == LAST_Y_AXIS) {
-                distance = tMax.y - tDelta.y;
-            }
-            else {
-                distance = tMax.z - tDelta.z;
-            }
-
-            return true;
         }
 
         if (tMax.x < tMax.y) 
@@ -123,11 +113,9 @@ bool MarchTheRay(vec3 ro,
             if (tMax.x < tMax.z) {
                 voxel.x += step.x;
                 tMax.x  += tDelta.x;
-                lastStepAxis = LAST_X_AXIS;
             } else {
                 voxel.z += step.z;
                 tMax.z  += tDelta.z;
-                lastStepAxis = LAST_Z_AXIS;
             }
         } 
         else 
@@ -135,11 +123,9 @@ bool MarchTheRay(vec3 ro,
             if (tMax.y < tMax.z) {
                 voxel.y += step.y;
                 tMax.y  += tDelta.y;
-                lastStepAxis = LAST_Y_AXIS;
             } else {
                 voxel.z += step.z;
                 tMax.z  += tDelta.z;
-                lastStepAxis = LAST_Z_AXIS;
             }
         }
     }
@@ -160,9 +146,8 @@ vec4 ExtractColorInt(uint packedColor)
 bool ShadowRay(vec3 from, vec3 to, int maxDistance)
 {
     vec3    dir = normalize(to - from);
-    ivec3   dummyHit;
+    vec3    dummyHit;
     int     dummyIndex;
-    float   dummyDistance;
     vec3    dummyNormal;
 
     return MarchTheRay(from + dir * EPSILON,
@@ -170,7 +155,6 @@ bool ShadowRay(vec3 from, vec3 to, int maxDistance)
                        maxDistance,
                        dummyHit,
                        dummyIndex,
-                       dummyDistance,
                        dummyNormal);
 }
 
@@ -199,9 +183,8 @@ float SoftShadowRay(vec3 from, vec3 to, in vec3 normal, int maxDistance)
     const float samples = 18;
 
     vec3    dir = normalize(to - from);
-    ivec3   dummyHit;
+    vec3    dummyHit;
     int     dummyIndex;
-    float   dummyDistance;
     vec3    dummyNormal;
     float   shadow = 1.;
     
@@ -222,7 +205,6 @@ float SoftShadowRay(vec3 from, vec3 to, in vec3 normal, int maxDistance)
                         maxDistance,
                         dummyHit,
                         dummyIndex,
-                        dummyDistance,
                         dummyNormal)) 
         {
             shadow -= (1. / samples);
@@ -234,7 +216,6 @@ float SoftShadowRay(vec3 from, vec3 to, in vec3 normal, int maxDistance)
 
 vec3 PhongShadows(in vec3 camPos,
                   in vec3 pos,
-                  in vec3 coord,
                   in vec3 normal,
                   in int maxDistance)
 {
@@ -243,8 +224,8 @@ vec3 PhongShadows(in vec3 camPos,
     const float specularStrength    = 0.4;
     const float shininess           = 256.0;
 
-    vec3 lightDir   = normalize(lightPos - coord);
-    vec3 viewDir    = normalize(camPos   - coord);
+    vec3 lightDir   = normalize(lightPos - pos);
+    vec3 viewDir    = normalize(camPos   - pos);
     vec3 reflectDir = normalize(lightDir + viewDir);
 
     float diff = max(dot(normal, lightDir), 0.0);
@@ -271,9 +252,8 @@ vec3 Reflection(vec3 from,
 
     vec3 incident;
     vec3 dir;
-    ivec3 hit;
+    vec3 hit;
     int index;
-    float distance;
     vec3 normalRef;
 
     vec3 reflectedColor = baseColor;
@@ -293,7 +273,6 @@ vec3 Reflection(vec3 from,
                         maxSteps,
                         hit,
                         index,
-                        distance,
                         normalRef)) 
         {
             reflectedColor = mix(reflectedColor, baseSkyColor.xyz, localReflect);
@@ -301,13 +280,13 @@ vec3 Reflection(vec3 from,
         }
 
         from    = to;
-        to      = to + dir * distance;
+        to      = hit;
         normal  = normalRef;
 
         hitBaseColor = ExtractColorInt(0xFF00FFFF).xyz;
         
         reflectedColor = mix(reflectedColor, 
-                             PhongShadows(CameraPos.xyz, to, hit, normal, maxSteps) * hitBaseColor,
+                             PhongShadows(CameraPos.xyz, hit, normal, maxSteps) * hitBaseColor,
                              localReflect);
 
         localReflect *= 0.23 * 2;
@@ -335,21 +314,18 @@ void main()
 
     vec4 finalColor = baseSkyColor;
 
-    ivec3   hitCoords;
+    vec3    hitPos;
     int     index = 0;
     vec3    normal;
-    float   distance;
 
-    if (MarchTheRay(rayOrigin, rayDir, maxSteps, hitCoords, index, distance, normal)) 
+    if (MarchTheRay(rayOrigin, rayDir, maxSteps, hitPos, index, normal)) 
     {
-        vec3 hitPos = rayOrigin + rayDir * distance;
         finalColor = ExtractColorInt(0x3300FFFF);
 
 
-        if (distance <= maxSteps) {
+        // if (distance <= maxSteps) {
             vec3 shading = PhongShadows(CameraPos.xyz, 
                                         hitPos,
-                                        hitCoords,
                                         normal,
                                         int(length(hitPos - lightPos) * 1.5));
 
@@ -361,13 +337,13 @@ void main()
                                          shading * ExtractColorInt(0x3300FFFF).xyz, 
                                          0.25),
                               finalColor.w);
-        }
+        // }
     }
 
-    if (distance > maxRenderDist)
-        finalColor = mix(finalColor, 
-                         baseSkyColor,
-                         clamp(distance - maxRenderDist, 0.f, maxRenderDist * .5f) / (maxRenderDist * .5f));
+    // if (distance > maxRenderDist)
+    //     finalColor = mix(finalColor, 
+    //                      baseSkyColor,
+    //                      clamp(distance - maxRenderDist, 0.f, maxRenderDist * .5f) / (maxRenderDist * .5f));
 
     vec2 d = abs(uv);
 

@@ -40,13 +40,15 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Update()
 {
-    m_pPipeline->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], 
-                                      m_vFrames[m_uCurrentFrame].StageVoxelBuffer,
-                                      VoxelPipeline::ShaderResource::VoxelGrid);
+    if (m_pVoxelGrid->ShouldReupload() & WorldGrid::EReupload::ON_STAGE) {
+        m_pPipeline->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], 
+                                          m_vFrames[m_uCurrentFrame].StageVoxelBuffer,
+                                          VoxelPipeline::ShaderResource::VoxelGrid);
 
-    m_pPipeline->UploadOnStreamBuffer(&m_pVoxelGrid->GetCubes()[0], 
-                                      m_vFrames[m_uCurrentFrame].StageCubeBuffer,
-                                      VoxelPipeline::ShaderResource::Cubes);
+        m_pPipeline->UploadOnStreamBuffer(&m_pVoxelGrid->GetCubes()[0], 
+                                          m_vFrames[m_uCurrentFrame].StageCubeBuffer,
+                                          VoxelPipeline::ShaderResource::Cubes);
+    }
 
     Vec3 rot = m_pCamera->GetRotation();
     Vec3 rotVec = Normalize(RotateY(RotateX(Vec3 { 0.f, 0.f, 1.f }, rot.x), rot.y));
@@ -70,6 +72,7 @@ void Renderer::Render()
     FrameResources& frame = m_vFrames[m_uCurrentFrame];
 
     THROW_IF_FAILED(vkWaitForFences(device, 1, &frame.InFlightFence, VK_TRUE, UINT64_MAX));
+    THROW_IF_FAILED(vkResetFences(device, 1, &frame.InFlightFence));
 
     result = vkAcquireNextImageKHR(device, 
                                    m_pSwapChain->GetSwapChainHandle(), 
@@ -101,7 +104,6 @@ void Renderer::Render()
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores    = &frame.RenderFinished;
 
-    THROW_IF_FAILED(vkResetFences(device, 1, &frame.InFlightFence));
     THROW_IF_FAILED(vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, frame.InFlightFence));
 
     VkSwapchainKHR swapchain = m_pSwapChain->GetSwapChainHandle();
@@ -312,24 +314,24 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::sh
                        sizeof(VoxelPushConstants),
                        &pipeline->GetPushConstants());
 
-    VkBufferCopy copyRegion = { };
-    copyRegion.srcOffset = 0;
-    copyRegion.dstOffset = 0;
-    copyRegion.size      = m_vFrames[m_uCurrentFrame].StageVoxelBuffer.GetSizeInBytes();
-    vkCmdCopyBuffer(cmdBuffer, 
-                    m_vFrames[m_uCurrentFrame].StageVoxelBuffer.GetBufferHandle(), 
-                    m_vFrames[m_uCurrentFrame].VoxelBuffer.GetBufferHandle(), 
-                    1,
-                    &copyRegion);
+    if (m_pVoxelGrid->ShouldReupload() & WorldGrid::EReupload::ON_GPU) {
+        VkBufferCopy copyRegion = { };
+        copyRegion.srcOffset = 0;
+        copyRegion.dstOffset = 0;
+        copyRegion.size      = m_vFrames[m_uCurrentFrame].StageVoxelBuffer.GetSizeInBytes();
+        vkCmdCopyBuffer(cmdBuffer, 
+                        m_vFrames[m_uCurrentFrame].StageVoxelBuffer.GetBufferHandle(), 
+                        m_vFrames[m_uCurrentFrame].VoxelBuffer.GetBufferHandle(), 
+                        1,
+                        &copyRegion);
 
-    copyRegion.srcOffset = 0;
-    copyRegion.dstOffset = 0;
-    copyRegion.size      = m_vFrames[m_uCurrentFrame].StageCubeBuffer.GetSizeInBytes();
-    vkCmdCopyBuffer(cmdBuffer, 
-                    m_vFrames[m_uCurrentFrame].StageCubeBuffer.GetBufferHandle(), 
-                    m_vFrames[m_uCurrentFrame].CubeBuffer.GetBufferHandle(), 
-                    1,
-                    &copyRegion);
+        copyRegion.size = m_vFrames[m_uCurrentFrame].StageCubeBuffer.GetSizeInBytes();
+        vkCmdCopyBuffer(cmdBuffer, 
+                        m_vFrames[m_uCurrentFrame].StageCubeBuffer.GetBufferHandle(), 
+                        m_vFrames[m_uCurrentFrame].CubeBuffer.GetBufferHandle(), 
+                        1,
+                        &copyRegion);
+    }
 
     VkBufferMemoryBarrier bufferBarriers[2] = { };
     bufferBarriers[0].sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
@@ -368,8 +370,6 @@ void Renderer::RecreateSwapChain()
     for (size_t i = 0; i < m_vFrames.size(); ++i)
     {
         vkWaitForFences(m_pDeviceAdapter->GetAdapterHandle(), 1, &m_vFrames[i].InFlightFence, VK_TRUE, UINT64_MAX);
-        vkResetFences(m_pDeviceAdapter->GetAdapterHandle(), 1, &m_vFrames[i].InFlightFence);
-        vkResetCommandBuffer(m_vFrames[i].CommandBuffer, 0);
 
         vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].RenderFinished, nullptr);
         vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].ImageAvailable, nullptr);

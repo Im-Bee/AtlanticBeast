@@ -10,9 +10,10 @@ using namespace std;
 // ---------------------------------------------------------------------------------------------------------------------
 WorldGrid::WorldGrid(size_t uGridWidth)
     : m_uGridDim(uGridWidth)
-    , m_Cubes(uGridWidth * uGridWidth * uGridWidth * 0.7f)
+    , m_Cubes(uGridWidth * uGridWidth * uGridWidth)
     , m_uCubesCount(0)
     , m_VoxelGrid(GenerateGrid(m_uGridDim, m_Cubes))
+    , m_Reupload(ON_STAGE)
 { }
 
 // ---------------------------------------------------------------------------------------------------------------------

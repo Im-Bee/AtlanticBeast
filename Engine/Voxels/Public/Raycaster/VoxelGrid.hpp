@@ -17,6 +17,15 @@ class WorldGrid
 
 public:
 
+    enum EReupload
+    {
+        CLEAR = 1,
+        ON_STAGE = CLEAR << 1,
+        ON_GPU = ON_STAGE << 1,
+    };
+
+public:
+
     BEAST_VOXEL_API explicit WorldGrid(size_t uGridWidth = VoxelGridDim);
     
     BEAST_VOXEL_API ~WorldGrid() = default;
@@ -38,6 +47,18 @@ public:
     size_t GetGridWidth() const
     { return m_uGridDim; }
 
+    /**
+     * @brief Returns status that the upload is on, shifts the value to next stage
+     *
+     * @return EReupload enumerator that descirbes the stage
+     */
+    EReupload ShouldReupload()
+    {
+        EReupload r = m_Reupload;
+        m_Reupload = static_cast<EReupload>((static_cast<uint32_t>(m_Reupload) + 1) % EReupload::ON_GPU);
+        return r; 
+    }
+
 public:
 
     template<typename U>
@@ -48,12 +69,14 @@ public:
                         pos.z * m_uGridDim * m_uGridDim;
 
         m_VoxelGrid[uIndex] = ::std::forward<U>(voxel);
+        m_Reupload = ON_STAGE;
     }
 
     template<typename U>
     void ModifyVoxel(size_t uIndex, U&& voxel)
     {
         m_VoxelGrid[uIndex] = ::std::forward<U>(voxel);
+        m_Reupload = ON_STAGE;
     }
 
 private:
@@ -70,6 +93,8 @@ private:
     size_t m_uCubesCount = -1;
 
     ::std::vector<Voxel> m_VoxelGrid;
+
+    EReupload m_Reupload = CLEAR;
 
 
 };
