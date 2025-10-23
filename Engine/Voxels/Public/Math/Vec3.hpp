@@ -34,6 +34,8 @@ struct alignas(16) Vec3
 
     inline Vec3& operator+=(const Vec3& vB);
 
+    inline Vec3 operator+(const Vec3& vB) const;
+
     inline Vec3 operator*(const Vec3& vB) const;
 
     inline Vec3 operator*(const float vB) const;

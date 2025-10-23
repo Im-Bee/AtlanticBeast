@@ -13,7 +13,7 @@ namespace Voxels
 class WorldGrid
 {
 
-    static constexpr size_t VoxelGridDim = 256;
+    static constexpr size_t VoxelGridDim = 96;
 
 public:
 
@@ -23,13 +23,19 @@ public:
 
 public:
 
-    BEAST_VOXEL_API const ::std::vector<Voxel>& GetGrid() const
+    const ::std::vector<Cube>& GetCubes() const
+    { return m_Cubes; }
+
+    const ::std::vector<Voxel>& GetGrid() const
     { return m_VoxelGrid; }
 
-    BEAST_VOXEL_API size_t GetAmountOfVoxels() const
+    size_t GetAmountOfVoxels() const
     { return m_VoxelGrid.size(); }
 
-    BEAST_VOXEL_API size_t GetGridWidth() const
+    size_t GetAmountOfCubes() const
+    { return m_Cubes.size(); }
+
+    size_t GetGridWidth() const
     { return m_uGridDim; }
 
 public:
@@ -54,12 +60,17 @@ private:
 
     ::std::vector<Voxel> GenerateGrid(size_t uGridWidth, ::std::vector<Cube>& vCubes);
 
+    Cube GenerateCube(const Vec3& offsetPos);
+
 private:
 
-    size_t m_uGridDim;
+    size_t m_uGridDim = -1;
+
+    ::std::vector<Cube> m_Cubes;
+    size_t m_uCubesCount = -1;
 
     ::std::vector<Voxel> m_VoxelGrid;
-    ::std::vector<Cube> m_Cubes;
+
 
 };
 

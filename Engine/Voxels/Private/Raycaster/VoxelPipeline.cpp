@@ -57,8 +57,10 @@ VoxelPipeline::~VoxelPipeline()
 }
 
 // Public // -----------------------------------------------------------------------------------------------------------
-GPUStreamBuffer VoxelPipeline::ReserveBuffer(const size_t uSizeInBytes)
+GPUStreamBuffer VoxelPipeline::ReserveStagingBuffer(const size_t uSizeInBytes)
 {
+    AB_LOG(Core::Debug::Info, L"Reserving staging buffer of %llu bytes", uSizeInBytes);
+
     const VkDevice da = m_pDeviceAdapter->GetAdapterHandle();
     VkMemoryRequirements    memRequirements;
     VkBuffer                voxelBuffer;
@@ -67,7 +69,7 @@ GPUStreamBuffer VoxelPipeline::ReserveBuffer(const size_t uSizeInBytes)
     VkBufferCreateInfo bufferInfo = { };
     bufferInfo.sType        = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size         = uSizeInBytes;
-    bufferInfo.usage        = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+    bufferInfo.usage        = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
     bufferInfo.sharingMode  = VK_SHARING_MODE_EXCLUSIVE;
 
     THROW_IF_FAILED(vkCreateBuffer(m_pDeviceAdapter->GetAdapterHandle(), 
@@ -80,7 +82,7 @@ GPUStreamBuffer VoxelPipeline::ReserveBuffer(const size_t uSizeInBytes)
     VkMemoryAllocateInfo allocInfo = { };
     allocInfo.sType             = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize    = memRequirements.size;
-    allocInfo.memoryTypeIndex   = FindMemoryType(memRequirements.memoryTypeBits, 
+    allocInfo.memoryTypeIndex   = FindMemoryType(memRequirements.memoryTypeBits,         
                                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
                                                  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
@@ -88,6 +90,40 @@ GPUStreamBuffer VoxelPipeline::ReserveBuffer(const size_t uSizeInBytes)
     THROW_IF_FAILED(vkBindBufferMemory(da, voxelBuffer, voxelBufferMemory, 0));
 
     return GPUStreamBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, nullptr, uSizeInBytes);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+GPUBuffer VoxelPipeline::ReserveGPUBuffer(const size_t uSizeInBytes)
+{
+    AB_LOG(Core::Debug::Info, L"Reserving gpu buffer of %llu bytes", uSizeInBytes);
+
+    const VkDevice da = m_pDeviceAdapter->GetAdapterHandle();
+    VkMemoryRequirements    memRequirements;
+    VkBuffer                voxelBuffer;
+    VkDeviceMemory          voxelBufferMemory;
+
+    VkBufferCreateInfo bufferInfo = { };
+    bufferInfo.sType        = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size         = uSizeInBytes;
+    bufferInfo.usage        = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+    bufferInfo.sharingMode  = VK_SHARING_MODE_EXCLUSIVE;
+
+    THROW_IF_FAILED(vkCreateBuffer(m_pDeviceAdapter->GetAdapterHandle(), 
+                                   &bufferInfo,
+                                   NULL,
+                                   &voxelBuffer));
+
+    vkGetBufferMemoryRequirements(da, voxelBuffer, &memRequirements);
+
+    VkMemoryAllocateInfo allocInfo = { };
+    allocInfo.sType             = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize    = memRequirements.size;
+    allocInfo.memoryTypeIndex   = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+
+    THROW_IF_FAILED(vkAllocateMemory(da, &allocInfo, NULL, &voxelBufferMemory));
+    THROW_IF_FAILED(vkBindBufferMemory(da, voxelBuffer, voxelBufferMemory, 0));
+
+    return GPUBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, uSizeInBytes);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -110,22 +146,22 @@ void VoxelPipeline::UploadOnStreamBuffer(const void* pUpload,
     }
     memcpy(*outBuffer.GetDataPointer(), pUpload, outBuffer.GetSizeInBytes());
 
-    VkDescriptorBufferInfo voxelBufferInfo = { };
-    voxelBufferInfo.buffer  = outBuffer.GetBufferHandle();
-    voxelBufferInfo.offset  = 0;
-    voxelBufferInfo.range   = VK_WHOLE_SIZE;
+    VkDescriptorBufferInfo bufferInfo = { };
+    bufferInfo.buffer  = outBuffer.GetBufferHandle();
+    bufferInfo.offset  = 0;
+    bufferInfo.range   = VK_WHOLE_SIZE;
 
-    VkWriteDescriptorSet voxelWrite = { };
-    voxelWrite.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    voxelWrite.dstSet           = m_DescriptorSet;
-    voxelWrite.dstBinding       = sr;
-    voxelWrite.descriptorType   = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    voxelWrite.descriptorCount  = 1;
-    voxelWrite.pBufferInfo      = &voxelBufferInfo;
+    VkWriteDescriptorSet write = { };
+    write.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    write.dstSet           = m_DescriptorSet;
+    write.dstBinding       = sr;
+    write.descriptorType   = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    write.descriptorCount  = 1;
+    write.pBufferInfo      = &bufferInfo;
 
     vkUpdateDescriptorSets(da,
                            1,
-                           &voxelWrite,
+                           &write,
                            0,
                            NULL);
 }

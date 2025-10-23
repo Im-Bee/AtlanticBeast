@@ -41,8 +41,12 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
 void Renderer::Update()
 {
     m_pPipeline->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], 
-                                      m_vFrames[m_uCurrentFrame].VoxelBuffer,
+                                      m_vFrames[m_uCurrentFrame].StageVoxelBuffer,
                                       VoxelPipeline::ShaderResource::VoxelGrid);
+
+    m_pPipeline->UploadOnStreamBuffer(&m_pVoxelGrid->GetCubes()[0], 
+                                      m_vFrames[m_uCurrentFrame].StageCubeBuffer,
+                                      VoxelPipeline::ShaderResource::Cubes);
 
     Vec3 rot = m_pCamera->GetRotation();
     Vec3 rotVec = Normalize(RotateY(RotateX(Vec3 { 0.f, 0.f, 1.f }, rot.x), rot.y));
@@ -66,7 +70,6 @@ void Renderer::Render()
     FrameResources& frame = m_vFrames[m_uCurrentFrame];
 
     THROW_IF_FAILED(vkWaitForFences(device, 1, &frame.InFlightFence, VK_TRUE, UINT64_MAX));
-    THROW_IF_FAILED(vkResetFences(device, 1, &frame.InFlightFence));
 
     result = vkAcquireNextImageKHR(device, 
                                    m_pSwapChain->GetSwapChainHandle(), 
@@ -98,6 +101,7 @@ void Renderer::Render()
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores    = &frame.RenderFinished;
 
+    THROW_IF_FAILED(vkResetFences(device, 1, &frame.InFlightFence));
     THROW_IF_FAILED(vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, frame.InFlightFence));
 
     VkSwapchainKHR swapchain = m_pSwapChain->GetSwapChainHandle();
@@ -132,7 +136,10 @@ void Renderer::Destroy()
             vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].ImageAvailable, nullptr);
             vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].InFlightFence, nullptr);
             vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &m_vFrames[i].CommandBuffer);
-            m_vFrames[i].VoxelBuffer.~GPUStreamBuffer();
+            m_vFrames[i].StageVoxelBuffer.~GPUStreamBuffer();
+            m_vFrames[i].StageCubeBuffer.~GPUStreamBuffer();
+            m_vFrames[i].VoxelBuffer.~GPUBuffer();
+            m_vFrames[i].CubeBuffer.~GPUBuffer();
         }
     }
     if (m_CommandPool != VK_NULL_HANDLE) {
@@ -216,7 +223,14 @@ vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_p
         }
 
         result[i].CommandBuffer = CreateCommandBuffer(da, cmdPool);
-        result[i].VoxelBuffer   = std::move(pipeline->ReserveBuffer(vg->GetAmountOfVoxels() * sizeof(Voxel)));
+
+        result[i].StageVoxelBuffer   = std::move(pipeline->ReserveStagingBuffer(
+            vg->GetAmountOfVoxels() * sizeof(Voxel)));
+        result[i].StageCubeBuffer    = std::move(pipeline->ReserveStagingBuffer(
+            vg->GetAmountOfCubes() * sizeof(Cube)));
+
+        result[i].VoxelBuffer   = std::move(pipeline->ReserveGPUBuffer(vg->GetAmountOfVoxels() * sizeof(Voxel)));
+        result[i].CubeBuffer    = std::move(pipeline->ReserveGPUBuffer(vg->GetAmountOfCubes() * sizeof(Cube)));
     }
 
     return result;
@@ -298,22 +312,44 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::sh
                        sizeof(VoxelPushConstants),
                        &pipeline->GetPushConstants());
 
-    VkBufferMemoryBarrier voxelBufferBarrier = { };
-    voxelBufferBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
-    voxelBufferBarrier.srcAccessMask = VK_ACCESS_HOST_WRITE_BIT;
-    voxelBufferBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-    voxelBufferBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    voxelBufferBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    voxelBufferBarrier.buffer = m_vFrames[m_uCurrentFrame].VoxelBuffer.GetBufferHandle();
-    voxelBufferBarrier.offset = 0;
-    voxelBufferBarrier.size = VK_WHOLE_SIZE;
+    VkBufferCopy copyRegion = { };
+    copyRegion.srcOffset = 0;
+    copyRegion.dstOffset = 0;
+    copyRegion.size      = m_vFrames[m_uCurrentFrame].StageVoxelBuffer.GetSizeInBytes();
+    vkCmdCopyBuffer(cmdBuffer, 
+                    m_vFrames[m_uCurrentFrame].StageVoxelBuffer.GetBufferHandle(), 
+                    m_vFrames[m_uCurrentFrame].VoxelBuffer.GetBufferHandle(), 
+                    1,
+                    &copyRegion);
+
+    copyRegion.srcOffset = 0;
+    copyRegion.dstOffset = 0;
+    copyRegion.size      = m_vFrames[m_uCurrentFrame].StageCubeBuffer.GetSizeInBytes();
+    vkCmdCopyBuffer(cmdBuffer, 
+                    m_vFrames[m_uCurrentFrame].StageCubeBuffer.GetBufferHandle(), 
+                    m_vFrames[m_uCurrentFrame].CubeBuffer.GetBufferHandle(), 
+                    1,
+                    &copyRegion);
+
+    VkBufferMemoryBarrier bufferBarriers[2] = { };
+    bufferBarriers[0].sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
+    bufferBarriers[0].srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    bufferBarriers[0].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+    bufferBarriers[0].srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    bufferBarriers[0].dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    bufferBarriers[0].buffer = m_vFrames[m_uCurrentFrame].VoxelBuffer.GetBufferHandle();
+    bufferBarriers[0].offset = 0;
+    bufferBarriers[0].size = VK_WHOLE_SIZE;
+    
+    bufferBarriers[1] = bufferBarriers[0];
+    bufferBarriers[1].buffer = m_vFrames[m_uCurrentFrame].CubeBuffer.GetBufferHandle();
 
     vkCmdPipelineBarrier(cmdBuffer,
-                         VK_PIPELINE_STAGE_HOST_BIT,
+                         VK_PIPELINE_STAGE_TRANSFER_BIT,
                          VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                          0,
                          0, NULL,
-                         1, &voxelBufferBarrier,
+                         2, bufferBarriers,
                          0, NULL);
 
     const uint32_t groupCountX = (m_pWindowDesc->Width + 15) / 16;

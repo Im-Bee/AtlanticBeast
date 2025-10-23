@@ -10,7 +10,10 @@ namespace Voxels
     
 struct VoxelFrameResources : public FrameResources
 {
-    GPUStreamBuffer VoxelBuffer;
+    GPUBuffer VoxelBuffer;
+    GPUBuffer CubeBuffer;    
+    GPUStreamBuffer StageVoxelBuffer;
+    GPUStreamBuffer StageCubeBuffer;
 };
 
 } // !Voxels

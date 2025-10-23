@@ -2,19 +2,30 @@
 
 layout(local_size_x = 16, local_size_y = 16) in;
 
-struct Voxel {
+struct Voxel 
+{
     uint    Type;
     uint    id1;
     uint    id2;
     uint    id3;
 };
 
+struct Cube 
+{
+    vec4    Pos;
+    vec4    Rot;
+    vec4    HalfSize;
+    vec4    Color;
+};
+
 layout(binding = 0, rgba8) uniform image2D outputImage;
-layout(std430, binding = 1) readonly buffer Voxels {
+layout(std430, binding = 1) readonly buffer Voxels 
+{
     Voxel VoxelData[]; 
 };
-layout(std430, binding = 2) readonly buffer Cubes {
-    Voxel CubeData[]; 
+layout(std430, binding = 2) readonly buffer Cubes 
+{
+    Cube CubeData[]; 
 };
 
 layout(push_constant) uniform PushConstants 

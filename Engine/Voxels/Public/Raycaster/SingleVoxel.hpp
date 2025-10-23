@@ -15,6 +15,5 @@ struct alignas(16) Voxel
 };
 
 } // !Voxels
-
 #endif // !AB_VOXEL_H
 

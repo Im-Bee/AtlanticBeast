@@ -32,7 +32,9 @@ public:
 
 public:
 
-    BEAST_VOXEL_API GPUStreamBuffer ReserveBuffer(const size_t uSizeInBytes);
+    BEAST_VOXEL_API GPUStreamBuffer ReserveStagingBuffer(const size_t uSizeInBytes);
+
+    BEAST_VOXEL_API GPUBuffer ReserveGPUBuffer(const size_t uSizeInBytes);
 
     BEAST_VOXEL_API void UploadOnStreamBuffer(const void* pUpload, 
                                               GPUStreamBuffer& outBuffer,

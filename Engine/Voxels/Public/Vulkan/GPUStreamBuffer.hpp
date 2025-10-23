@@ -39,6 +39,8 @@ public:
             vkUnmapMemory(m_pDeviceAdapter->GetAdapterHandle(), m_DeviceMemory);
             m_pData = nullptr;
         }
+
+        GPUBuffer::~GPUBuffer();
     }
 
 public:

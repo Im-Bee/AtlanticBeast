@@ -7,9 +7,7 @@
 #include "Vulkan/SwapChain.hpp"
 #include "Raycaster/VoxelPipeline.hpp"
 #include "Raycaster/VoxelFrameResources.hpp"
-
 #include "Primitives/Camera.hpp"
-#include <vulkan/vulkan_enums.hpp>
 
 namespace Voxels
 {

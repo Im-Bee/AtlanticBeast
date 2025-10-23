@@ -42,6 +42,13 @@ inline Vec3& Vec3::operator+=(const Vec3& vB)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+inline Vec3 Vec3::operator+(const Vec3& vB) const
+{
+    Vec3 n(*this);
+    return AddAssign(n, vB);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 inline Vec3 Vec3::operator*(const Vec3& vB) const
 {
     return Multiply(*this, vB);
