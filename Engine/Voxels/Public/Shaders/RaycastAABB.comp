@@ -168,6 +168,7 @@ bool MarchTheRay(vec3 ro,
 
     float   hit;
     int     lastStepAxis = LAST_UNKNOWN_AXIS;
+    distance = 1.f / 0.f;
     for (int stepCount = 0; stepCount < maxSteps; ++stepCount)
     {
         if (voxel.x < 0 || voxel.x >= GridSize.x ||
@@ -213,12 +214,16 @@ bool MarchTheRay(vec3 ro,
                                   hit,
                                   normal)) 
                 {
-                    distance    = hit;
-                    hitIndex    = id;
-                    hitCoords   = ro + rd * hit;
-                    hitType     = HIT_TYPE_OBJECT;
-                    return true;
+                    if (distance > hit) {
+                        distance    = hit;
+                        hitIndex    = id;
+                        hitCoords   = ro + rd * hit;
+                        hitType     = HIT_TYPE_OBJECT;
+                    }
                 }
+            }
+            if (distance < (1.f / 0.f)) {
+                return true;
             }
         }
 
