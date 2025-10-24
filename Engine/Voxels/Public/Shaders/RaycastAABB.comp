@@ -144,6 +144,7 @@ bool MarchTheRay(vec3 ro,
                  int maxSteps,
                  out vec3 hitCoords,
                  out uint hitIndex,
+                 out float distance,
                  out vec3 normal)
 {
     ivec3 voxel = ivec3(ro);
@@ -185,14 +186,15 @@ bool MarchTheRay(vec3 ro,
                 normal[lastStepAxis] = -float(step[lastStepAxis]);
 
                 if (lastStepAxis == LAST_X_AXIS) {
-                    hitCoords = ro + rd * (tMax.x - tDelta.x);
+                    distance = tMax.x - tDelta.x;
                 }
                 else if (lastStepAxis == LAST_Y_AXIS) {
-                    hitCoords = ro + rd * (tMax.y - tDelta.y);
+                    distance = tMax.y - tDelta.y;
                 }
                 else {
-                    hitCoords = ro + rd * (tMax.z - tDelta.z);
+                    distance = tMax.z - tDelta.z;
                 }
+                hitCoords = ro + rd * distance;
 
                 return true;
             }
@@ -207,6 +209,7 @@ bool MarchTheRay(vec3 ro,
                                   hit,
                                   normal)) 
                 {
+                    distance    = hit;
                     hitIndex    = id;
                     hitCoords   = ro + rd * hit;
                     return true;
@@ -261,12 +264,14 @@ bool ShadowRay(vec3 from, vec3 to, int maxDistance)
     vec3    dummyHit;
     uint    dummyIndex;
     vec3    dummyNormal;
+    float   dummyDistance;
 
     return MarchTheRay(from + dir * EPSILON,
                        dir,
                        maxDistance,
                        dummyHit,
                        dummyIndex,
+                       dummyDistance,
                        dummyNormal);
 }
 
@@ -295,12 +300,13 @@ vec3 RandomPointOnHemisphere(vec3 normal)
 float SoftShadowRay(vec3 from, vec3 to, in vec3 normal, int maxDistance)
 {
     const float r = 4.;
-    const float samples = 9;
+    const float samples = 12;
 
     vec3    dir = normalize(to - from);
     vec3    dummyHit;
     uint    dummyIndex;
     vec3    dummyNormal;
+    float   dummyDistance;
     float   shadow = 1.;
     
     const float sampleStep = TWO_PI / samples;
@@ -320,6 +326,7 @@ float SoftShadowRay(vec3 from, vec3 to, in vec3 normal, int maxDistance)
                         maxDistance,
                         dummyHit,
                         dummyIndex,
+                        dummyDistance,
                         dummyNormal)) 
         {
             shadow -= (1. / samples);
@@ -371,6 +378,7 @@ vec3 Reflection(vec3 from,
     vec3 dir;
     vec3 hit;
     uint index;
+    float dummyDistance;
     vec3 normalRef;
 
     vec3 reflectedColor = baseColor;
@@ -390,6 +398,7 @@ vec3 Reflection(vec3 from,
                         maxSteps,
                         hit,
                         index,
+                        dummyDistance,
                         normalRef)) 
         {
             reflectedColor = mix(reflectedColor, baseSkyColor.xyz, localReflect);
@@ -432,33 +441,34 @@ void main()
 
     vec3 hitPos;
     uint index;
+    float distance;
     vec3 normal;
-    if (MarchTheRay(ro, rd, maxSteps, hitPos, index, normal)) 
+    if (MarchTheRay(ro, rd, maxSteps, hitPos, index, distance, normal)) 
     {
         finalColor = ExtractColorInt(CubeData[index].Color);
 
-        // if (distance <= maxSteps) {
-        vec3 shaded = PhongShadows(CameraPos.xyz, 
-                                   hitPos,
-                                   normal,
-                                   int(length(hitPos - lightPos) * 1.5)) * finalColor.xyz;
-        // finalColor = vec4(shaded, finalColor.w);
+        if (distance <= maxSteps) {
+            vec3 shaded = PhongShadows(CameraPos.xyz, 
+                                       hitPos,
+                                       normal,
+                                       int(length(hitPos - lightPos) * 1.5)) * finalColor.xyz;
+            // finalColor = vec4(shaded, finalColor.w);
 
-        finalColor = vec4(Reflection(ro, 
-                                     hitPos, 
-                                     maxSteps, 
-                                     4, 
-                                     shaded, 
-                                     normal,
-                                     0.25),
-                          finalColor.w);
-        // }
+            finalColor = vec4(Reflection(ro, 
+                                         hitPos, 
+                                         maxSteps, 
+                                         2, 
+                                         shaded, 
+                                         normal,
+                                         0.25),
+                              finalColor.w);
+        }
     }
 
-    // if (distance > maxRenderDist)
-    //     finalColor = mix(finalColor, 
-    //                      baseSkyColor,
-    //                      clamp(distance - maxRenderDist, 0.f, maxRenderDist * .5f) / (maxRenderDist * .5f));
+    if (distance > maxRenderDist)
+        finalColor = mix(finalColor, 
+                         baseSkyColor,
+                         clamp(distance - maxRenderDist, 0.f, maxRenderDist * .5f) / (maxRenderDist * .5f));
 
     imageStore(outputImage, pixelCoord, finalColor);
 }
