@@ -161,7 +161,6 @@ bool MarchTheRay(vec3 ro,
         tMax[i] = tDelta[i] * offset;
     }
 
-    normal = vec3(0.);
     int lastStepAxis = LAST_UNKNOWN_AXIS;
     for (int stepCount = 0; stepCount < maxSteps; ++stepCount)
     {
@@ -182,6 +181,7 @@ bool MarchTheRay(vec3 ro,
             {
                 hitCoords   = voxel;
                 hitIndex    = index;
+                normal = vec3(0.);
                 normal[lastStepAxis] = -float(step[lastStepAxis]);
 
                 if (lastStepAxis == LAST_X_AXIS) {
@@ -295,7 +295,7 @@ vec3 RandomPointOnHemisphere(vec3 normal)
 float SoftShadowRay(vec3 from, vec3 to, in vec3 normal, int maxDistance)
 {
     const float r = 4.;
-    const float samples = 18;
+    const float samples = 9;
 
     vec3    dir = normalize(to - from);
     vec3    dummyHit;
@@ -346,8 +346,8 @@ vec3 PhongShadows(in vec3 camPos,
 
     float diff = max(dot(normal, lightDir), 0.0);
     float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
-    float shadow = ShadowRay(pos, lightPos, int(maxDistance * 0.5)) ? 0.05 : 1.0;
-    // float shadow = SoftShadowRay(pos, lightPos, normal, int(maxDistance));
+    // float shadow = ShadowRay(pos, lightPos, int(maxDistance * 0.5)) ? 0.05 : 1.0;
+    float shadow = SoftShadowRay(pos, lightPos, normal, int(maxDistance));
 
     vec3 ambient    = ambientStrength * lightColor;
     vec3 diffuse    = diffuseStrength * diff * lightColor * shadow;
@@ -403,7 +403,7 @@ vec3 Reflection(vec3 from,
         hitBaseColor = ExtractColorInt(0xFF00FFFF).xyz;
         
         reflectedColor = mix(reflectedColor, 
-                             PhongShadows(CameraPos.xyz, hit, normal, maxSteps) * hitBaseColor,
+                             PhongShadows(CameraPos.xyz, hit, normal, int(maxSteps * 0.25)) * hitBaseColor,
                              localReflect);
 
         localReflect *= 0.23 * 2;
@@ -442,16 +442,16 @@ void main()
                                    hitPos,
                                    normal,
                                    int(length(hitPos - lightPos) * 1.5)) * finalColor.xyz;
+        // finalColor = vec4(shaded, finalColor.w);
 
-        finalColor = vec4(shaded, finalColor.w);
-        //  finalColor = vec4(Reflection(ro, 
-        //                               hitPos, 
-        //                               maxSteps, 
-        //                               4, 
-        //                               shaded, 
-        //                               normal,
-        //                               0.25),
-        //                    finalColor.w);
+        finalColor = vec4(Reflection(ro, 
+                                     hitPos, 
+                                     maxSteps, 
+                                     4, 
+                                     shaded, 
+                                     normal,
+                                     0.25),
+                          finalColor.w);
         // }
     }
 
