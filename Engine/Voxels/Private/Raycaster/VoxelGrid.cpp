@@ -50,6 +50,7 @@ vector<Voxel> WorldGrid::GenerateGrid(size_t uGridWidth, vector<Cube>& vCubes)
                     m_VoxelGrid[uIndex] = Voxel { };
                 }
                 m_VoxelGrid[uIndex].Type = -1;
+                m_VoxelGrid[uIndex].Color = 0xFFFF00FF;
             }
         }
     }
@@ -73,25 +74,30 @@ void WorldGrid::GenerateCube(const Vec3& offsetPos)
     m_VoxelGrid[uIndex].Id[m_VoxelGrid[uIndex].Type++] = m_uCubesCount;
 
     Cube c;
-    c.SetPositon(offsetPos + Vec3(0.5f, 0.5f, 0.5f));
+    c.SetPositon(offsetPos + Vec3(0.9f, 0.5f, 0.5f));
     auto cubePos = c.GetPosition();
     auto cubeSizes = c.GetHalfSize();
 
-    Vec3 corners[8];
-    corners[0] = cubePos + Vec3(-1.f, 0.f, 0.f);
-    corners[1] = cubePos + Vec3( 1.f, 0.f, 0.f);
-    corners[2] = cubePos + Vec3( 0.f,-1.f, 0.f);
-    corners[3] = cubePos + Vec3( 0.f, 1.f, 0.f);
-    corners[4] = cubePos + Vec3( 0.f, 0.f,-1.f);
-    corners[5] = cubePos + Vec3( 1.f, 0.f, 1.f);
+    Vec3 corners[26];
+    int i = 0;
+    for (int x = -1; x <= 1; ++x) {
+        for (int y = -1; y <= 1; ++y) {
+            for (int z = -1; z <= 1; ++z) {
+                if (x == 0 && y == 0 && z == 0)
+                    continue;
+                corners[i++] = cubePos + Vec3((float)x, (float)y, (float)z);
+            }
+        }
+    }
 
-    for (int i = 0; i < 8; ++i)
+
+    for (int i = 0; i < 26; ++i)
     {
         const size_t uCornerIndex = corners[i].x + 
                                     corners[i].y * uDim + 
                                     corners[i].z * uDim * uDim;
 
-        if (uCornerIndex < m_VoxelGrid.size()) {
+        if (uCornerIndex < m_VoxelGrid.size() && m_VoxelGrid[uCornerIndex].Type != -1) {
             m_VoxelGrid[uCornerIndex].Id[m_VoxelGrid[uCornerIndex].Type++] = m_uCubesCount;
         }
     }

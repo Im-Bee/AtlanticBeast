@@ -19,7 +19,7 @@ public:
         , m_uColor(0x4422DDFF)
         , WorldObject()
     { 
-        this->SetRotation(Rot3(.4));
+        this->SetRotation(Rot3(.9));
     }
 
     Cube& operator=(const Cube&) noexcept = default;

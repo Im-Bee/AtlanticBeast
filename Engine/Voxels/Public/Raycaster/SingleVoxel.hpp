@@ -8,9 +8,10 @@ namespace Voxels
 
 struct alignas(16) Voxel
 {
-    constexpr const static uint32_t MaxPerInstance = 3;
+    constexpr const static uint32_t MaxPerInstance = 26;
 
     uint32_t Type;
+    uint32_t Color;
     uint32_t Id[MaxPerInstance];
 };
 
