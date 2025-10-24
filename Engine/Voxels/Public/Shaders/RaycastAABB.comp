@@ -200,7 +200,6 @@ bool MarchTheRay(vec3 ro,
                     distance = tMax.z - tDelta.z;
                 }
                 hitCoords = ro + rd * distance;
-                
                 hitType = HIT_TYPE_VOXEL;
                 return true;
             }
