@@ -14,13 +14,19 @@ class WorldObject
 {
 public:
 
-	BEAST_VOXEL_API explicit WorldObject(Vec3 positon = Vec3 { 0.f, 0.f, 0.f },
+	explicit WorldObject(Vec3 positon = Vec3 { 0.f, 0.f, 0.f },
 										 Rot3 rotation = Vec3 { 0.f, 0.f, 0.f })
 		: m_vPosition(Vec3())
 		, m_vRotation(Rot3())
 	{ }
 
-	~WorldObject() = default;
+    WorldObject(WorldObject&&) = default;
+    WorldObject(const WorldObject&) = default;
+
+    WorldObject& operator=(const WorldObject&) noexcept = default;
+    WorldObject& operator=(WorldObject&&) noexcept = default;
+
+    ~WorldObject() = default;
 
 public:
 
@@ -34,10 +40,10 @@ public:
 
 public:
 
-	BEAST_VOXEL_API const Vec3& GetPosition() const
+	const Vec3& GetPosition() const
 	{ return m_vPosition; }
 
-	BEAST_VOXEL_API const Rot3& GetRotation() const
+	const Rot3& GetRotation() const
 	{ return m_vRotation; }
 
 private:

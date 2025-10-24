@@ -114,6 +114,16 @@ inline Vec3& AddAssign(Vec3& vA, const Vec3& vB)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+template<>
+inline iVec3& AddAssign(iVec3& vA, const iVec3& vB)
+{
+    vA.x += vB.x;
+    vA.y += vB.y;
+    vA.z += vB.z;
+    return vA;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>
 inline Vector Multiply(const Vector& vA, const Vector& vB)
 {

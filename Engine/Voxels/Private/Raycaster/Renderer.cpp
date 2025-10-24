@@ -1,6 +1,7 @@
 #include "Raycaster/Renderer.hpp"
 
 #include "Core.h"
+#include "Debug/Logger.hpp"
 #include "Raycaster/VoxelFrameResources.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Vulkan/ComputeAdapter.hpp"
@@ -40,7 +41,8 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Update()
 {
-    if (m_pVoxelGrid->ShouldReupload() & WorldGrid::EReupload::ON_STAGE) {
+    if (m_pVoxelGrid->ReuploadStatus() & WorldGrid::EReupload::RequestStaging) {
+        AB_LOG(Core::Debug::Info, L"Staging the buffers");
         m_pPipeline->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], 
                                           m_vFrames[m_uCurrentFrame].StageVoxelBuffer,
                                           VoxelPipeline::ShaderResource::VoxelGrid);
@@ -183,9 +185,9 @@ VkCommandPool Renderer::CreateCommandPool(shared_ptr<const Adapter> da, uint32_t
 // ---------------------------------------------------------------------------------------------------------------------
 VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const Adapter> da, VkCommandPool cmdPool)
 {
-    VkCommandBuffer             cmdBuffer;
-    VkCommandBufferAllocateInfo allocInfo;
+    VkCommandBuffer cmdBuffer;
 
+    VkCommandBufferAllocateInfo allocInfo = { };
     allocInfo.sType                 = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.pNext                 = NULL;
     allocInfo.commandPool           = cmdPool;
@@ -234,6 +236,8 @@ vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_p
         result[i].VoxelBuffer   = std::move(pipeline->ReserveGPUBuffer(vg->GetAmountOfVoxels() * sizeof(Voxel)));
         result[i].CubeBuffer    = std::move(pipeline->ReserveGPUBuffer(vg->GetAmountOfCubes() * sizeof(Cube)));
     }
+
+    m_pVoxelGrid->ForceUpload();
 
     return result;
 }
@@ -314,7 +318,8 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::sh
                        sizeof(VoxelPushConstants),
                        &pipeline->GetPushConstants());
 
-    if (m_pVoxelGrid->ShouldReupload() & WorldGrid::EReupload::ON_GPU) {
+    if (m_pVoxelGrid->ReuploadStatus() & WorldGrid::EReupload::RequestGpuUpload) {
+        AB_LOG(Core::Debug::Info, L"Uploading the buffers");
         VkBufferCopy copyRegion = { };
         copyRegion.srcOffset = 0;
         copyRegion.dstOffset = 0;
@@ -331,6 +336,20 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::sh
                         m_vFrames[m_uCurrentFrame].CubeBuffer.GetBufferHandle(), 
                         1,
                         &copyRegion);
+
+        VkMappedMemoryRange mmr = { };
+        mmr.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+        mmr.memory = m_vFrames[m_uCurrentFrame].VoxelBuffer.GetMemoryHandle();
+        mmr.offset = 0;
+        mmr.size = VK_WHOLE_SIZE;
+        VkMappedMemoryRange mmr2 = { };
+        mmr2.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+        mmr2.memory = m_vFrames[m_uCurrentFrame].CubeBuffer.GetMemoryHandle();
+        mmr2.offset = 0;
+        mmr2.size = VK_WHOLE_SIZE;
+
+        VkMappedMemoryRange mmrs[2] = { mmr, mmr2 };
+        vkFlushMappedMemoryRanges(m_pDeviceAdapter->GetAdapterHandle(), 2, mmrs);
     }
 
     VkBufferMemoryBarrier bufferBarriers[2] = { };

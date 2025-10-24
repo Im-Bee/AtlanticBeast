@@ -38,17 +38,8 @@ public:
 
         Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
 
-        if (hr.bHit)
-        {
-            Voxels::Voxel v;
-            v.Type = 1;
-            v.Id[0] = (m_uColor += 12739871) | 0x999999FF;
-            static const float f = .5f;
-            memcpy(&v.Id[1], &f, sizeof(uint32_t));
-            m_vg->ModifyVoxel(static_cast<size_t>((hr.iHitCoords.x + hr.Normal.x) +
-                                                  (hr.iHitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() +
-                                                  (hr.iHitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth()),
-                              v);
+        if (hr.bHit) {
+            m_vg->ModifyVoxel(Voxels::iVec3(hr.iHitCoords + hr.Normal), Voxels::Cube());
         }
     }
 
@@ -61,11 +52,6 @@ public:
 
         if (hr.bHit)
         {
-            Voxels::Voxel v;
-            v.Type = 0;
-            m_vg->ModifyVoxel(hr.iHitCoords.x +
-                              hr.iHitCoords.y * m_vg->GetGridWidth() +
-                              hr.iHitCoords.z * m_vg->GetGridWidth() * m_vg->GetGridWidth(), v);
         }
     }
 

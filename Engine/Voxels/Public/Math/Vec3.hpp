@@ -13,13 +13,19 @@ struct alignas(16) Vec3
         : x(0.f), y(0.f), z(0.f)
     { } 
 
-    explicit Vec3(float x, float y = 0, float z = 0)
+    explicit Vec3(double x, double y = 0., double z = 0.f)
         : x(x), y(y), z(z)
     { }
 
-    explicit Vec3(uint32_t x, uint32_t y = 0, uint32_t z = 0)
-        : x(static_cast<float>(x)), y(static_cast<float>(y)), z(static_cast<float>(z))
-    { }
+    template<typename Vector>
+    static Vec3 ToVec3(Vector v)
+    { return Vec3(v.x, v.y, v.z); }
+
+    Vec3(Vec3&&) noexcept = default;
+    Vec3(const Vec3&) = default;
+
+    Vec3& operator=(const Vec3&) noexcept = default;
+    Vec3& operator=(Vec3&&) noexcept = default;
 
     float x;
     float y;
@@ -35,6 +41,8 @@ struct alignas(16) Vec3
     inline Vec3& operator+=(const Vec3& vB);
 
     inline Vec3 operator+(const Vec3& vB) const;
+
+    inline Vec3 operator+(const class iVec3& vB) const;
 
     inline Vec3 operator*(const Vec3& vB) const;
 
@@ -52,9 +60,15 @@ struct alignas(16) iVec3
         : x(x), y(y), z(z)
     { }
 
-    explicit iVec3(float x, float y = 0.f, float z = 0.f)
-        : x(static_cast<uint32_t>(x)), y(static_cast<uint32_t>(y)), z(static_cast<uint32_t>(z))
+    explicit iVec3(Vec3 v)
+        : x(v.x), y(v.y), z(v.z)
     { }
+
+    iVec3(iVec3&&) noexcept = default;
+    iVec3(const iVec3&) = default;
+
+    iVec3& operator=(const iVec3&) noexcept = default;
+    iVec3& operator=(iVec3&&) noexcept = default;
 
     int32_t x;
     int32_t y;
@@ -88,6 +102,8 @@ struct alignas(16) iVec3
         }
         return z;
     }
+
+    inline iVec3 operator+(const Vec3& vB) const;
 };
 
 } // !Voxels

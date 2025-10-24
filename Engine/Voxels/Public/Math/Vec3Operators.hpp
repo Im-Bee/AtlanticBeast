@@ -45,7 +45,16 @@ inline Vec3& Vec3::operator+=(const Vec3& vB)
 inline Vec3 Vec3::operator+(const Vec3& vB) const
 {
     Vec3 n(*this);
-    return AddAssign(n, vB);
+    n = AddAssign(n, vB);
+    return n;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+inline Vec3 Vec3::operator+(const iVec3& vB) const
+{
+    Vec3 n(*this);
+    n = AddAssign(n, Vec3::ToVec3(vB));
+    return n;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -58,6 +67,14 @@ inline Vec3 Vec3::operator*(const Vec3& vB) const
 inline Vec3 Vec3::operator*(const float vB) const
 {
     return MultiplyScalar(*this, vB);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+inline iVec3 iVec3::operator+(const Vec3& vB) const
+{
+    iVec3 n(this->x, this->y, this->z);
+    n = AddAssign(n, iVec3(vB));
+    return n;
 }
 
 } //!Volxes

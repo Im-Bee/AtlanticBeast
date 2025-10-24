@@ -17,6 +17,12 @@ struct alignas(16) Vec4
         : x(vec3.x), y(vec3.y), z(vec3.z), w(w)
     { }
 
+    Vec4(Vec4&&) noexcept = default;
+    Vec4(const Vec4&) = default;
+
+    Vec4& operator=(const Vec4&) noexcept = default;
+    Vec4& operator=(Vec4&&) noexcept = default;
+
     float x;
     float y;
     float z;
@@ -63,6 +69,12 @@ struct alignas(16) iVec4
     explicit iVec4(int32_t x = 0, int32_t y = 0, int32_t z = 0, int32_t w = 0)
         : x(x), y(y), z(z), w(w)
     { }
+
+    iVec4(iVec4&&) noexcept = default;
+    iVec4(const iVec4&) = default;
+
+    iVec4& operator=(const iVec4&) noexcept = default;
+    iVec4& operator=(iVec4&&) noexcept = default;
 
     int32_t x;
     int32_t y;

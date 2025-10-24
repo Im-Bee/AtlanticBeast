@@ -1,6 +1,8 @@
 #ifndef AB_VOXEL_GRID_H
 #define AB_VOXEL_GRID_H
 
+#include "Core.h"
+#include "Debug/Logger.hpp"
 #include "Voxels.hpp"
 #include "Math/Vec3.hpp"
 #include "Primitives/Cube.hpp"
@@ -19,9 +21,9 @@ public:
 
     enum EReupload
     {
-        CLEAR = 1,
-        ON_STAGE = CLEAR << 1,
-        ON_GPU = ON_STAGE << 1,
+        NoAction = 1,
+        RequestStaging = NoAction << 1,
+        RequestGpuUpload = RequestStaging << 1,
     };
 
 public:
@@ -52,38 +54,39 @@ public:
      *
      * @return EReupload enumerator that descirbes the stage
      */
-    EReupload ShouldReupload()
+    EReupload ReuploadStatus()
     {
-        EReupload r = m_Reupload;
-        m_Reupload = static_cast<EReupload>((static_cast<uint32_t>(m_Reupload) + 1) % EReupload::ON_GPU);
-        return r; 
+        switch (m_Reupload) {
+            case EReupload::NoAction:
+                return EReupload::NoAction;
+            case EReupload::RequestStaging:
+                m_Reupload = EReupload::RequestGpuUpload;
+                return EReupload::RequestStaging;
+            case EReupload::RequestGpuUpload:
+                m_Reupload = EReupload::NoAction;
+                return EReupload::RequestGpuUpload;
+            default:
+                return EReupload::NoAction;
+        }
     }
+
+    void ForceUpload()
+    { m_Reupload = EReupload::RequestStaging; }
 
 public:
 
     template<typename U>
-    void ModifyVoxel(iVec3 pos, U&& voxel)
+    void ModifyVoxel(iVec3 pos, U&& cube)
     {
-        size_t uIndex = pos.x +
-                        pos.y * m_uGridDim +
-                        pos.z * m_uGridDim * m_uGridDim;
-
-        m_VoxelGrid[uIndex] = ::std::forward<U>(voxel);
-        m_Reupload = ON_STAGE;
-    }
-
-    template<typename U>
-    void ModifyVoxel(size_t uIndex, U&& voxel)
-    {
-        m_VoxelGrid[uIndex] = ::std::forward<U>(voxel);
-        m_Reupload = ON_STAGE;
+        GenerateCube(Vec3::ToVec3(pos));
+        m_Reupload = RequestStaging;
     }
 
 private:
 
     ::std::vector<Voxel> GenerateGrid(size_t uGridWidth, ::std::vector<Cube>& vCubes);
 
-    Cube GenerateCube(const Vec3& offsetPos);
+    void GenerateCube(const Vec3& offsetPos);
 
 private:
 
@@ -94,7 +97,7 @@ private:
 
     ::std::vector<Voxel> m_VoxelGrid;
 
-    EReupload m_Reupload = CLEAR;
+    EReupload m_Reupload = NoAction;
 
 
 };
