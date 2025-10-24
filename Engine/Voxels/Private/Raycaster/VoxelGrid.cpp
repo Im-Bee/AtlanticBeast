@@ -1,8 +1,6 @@
 #include "Raycaster/VoxelGrid.hpp"
 #include "Core.h"
 #include "Debug/Logger.hpp"
-#include <cstdint>
-#include <vulkan/vulkan.hpp>
 
 namespace Voxels
 {
@@ -49,8 +47,8 @@ vector<Voxel> WorldGrid::GenerateGrid(size_t uGridWidth, vector<Cube>& vCubes)
                 if (m_VoxelGrid[uIndex].Type == 0) {
                     m_VoxelGrid[uIndex] = Voxel { };
                 }
-                m_VoxelGrid[uIndex].Type = -1;
-                m_VoxelGrid[uIndex].Color = 0xFFFF00FF;
+                m_VoxelGrid[uIndex].Type    = -1;
+                m_VoxelGrid[uIndex].Color   = 0xFFFF00FF;
             }
         }
     }
@@ -78,30 +76,22 @@ void WorldGrid::GenerateCube(const Vec3& offsetPos)
     auto cubePos = c.GetPosition();
     auto cubeSizes = c.GetHalfSize();
 
-    Vec3 corners[26];
-    int i = 0;
     for (int x = -1; x <= 1; ++x) {
         for (int y = -1; y <= 1; ++y) {
             for (int z = -1; z <= 1; ++z) {
                 if (x == 0 && y == 0 && z == 0)
                     continue;
-                corners[i++] = cubePos + Vec3((float)x, (float)y, (float)z);
+
+                size_t uCornerIndex = (offsetPos.x + x) + 
+                                      (offsetPos.y + y) * uDim + 
+                                      (offsetPos.z + z) * uDim * uDim;
+
+                if (uCornerIndex < m_VoxelGrid.size() && m_VoxelGrid[uCornerIndex].Type != -1) {
+                    m_VoxelGrid[uCornerIndex].Id[m_VoxelGrid[uCornerIndex].Type++] = m_uCubesCount;
+                }
             }
         }
     }
-
-
-    for (int i = 0; i < 26; ++i)
-    {
-        const size_t uCornerIndex = corners[i].x + 
-                                    corners[i].y * uDim + 
-                                    corners[i].z * uDim * uDim;
-
-        if (uCornerIndex < m_VoxelGrid.size() && m_VoxelGrid[uCornerIndex].Type != -1) {
-            m_VoxelGrid[uCornerIndex].Id[m_VoxelGrid[uCornerIndex].Type++] = m_uCubesCount;
-        }
-    }
-    
     if (kc == 0) {
         c.SetColor(0xFF000000);
         ++kc;

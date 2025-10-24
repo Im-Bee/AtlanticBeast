@@ -121,7 +121,7 @@ bool RayIntersects(vec3 rayOrigin,
                    out vec3 normal)
 {
     mat3 cubeRotation   = RotationMatrix(cube.Rot.xyz);
-    mat3 invRotation    = inverse(cubeRotation);
+    mat3 invRotation    = transpose(cubeRotation);
 
     vec3 localRayOrigin = invRotation * (rayOrigin - cube.Pos.xyz);
     vec3 localRayDir    = invRotation * rayDir;
