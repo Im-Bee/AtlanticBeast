@@ -12,9 +12,7 @@ struct Cube
     vec4    Pos;
     vec4    Rot;
     uint    Color;  
-    float   HalfSizeX;  
-    float   HalfSizeY;  
-    float   HalfSizeZ;  
+    vec4    HalfSize;  
 };
 
 layout(local_size_x = 16, local_size_y = 16) in;
@@ -41,11 +39,12 @@ layout(push_constant) uniform PushConstants
     uint    Padding3;
 };
 
+const float INF     = 1.f / 0.f;
 const float PI      = 3.141592;
 const float TWO_PI  = 6.283185;
 const float EPSILON = 0.0001;
 const vec4  baseSkyColor    = vec4(.4078, .4725, 1., 1.);
-const float maxRenderDist   = 10.f;
+const float maxRenderDist   = 20.f;
 const int   maxSteps        = int(maxRenderDist * 2.6);
 const vec3  lightPos    = vec3(20.0, 24.0, 10.0);
 const vec3  lightColor  = vec3(1., 1., 1.);
@@ -125,17 +124,16 @@ bool RayIntersects(vec3 rayOrigin,
 
     vec3 localRayOrigin = invRotation * (rayOrigin - cube.Pos.xyz);
     vec3 localRayDir    = invRotation * rayDir;
-    vec3 halfSize       = vec3(cube.HalfSizeX, cube.HalfSizeY, cube.HalfSizeZ);
 
     float tMin, tMaxDummy;
 
-    if (!IntersectRayAABB(localRayOrigin, localRayDir, halfSize, tMin, tMaxDummy)) 
+    if (!IntersectRayAABB(localRayOrigin, localRayDir, cube.HalfSize.xyz, tMin, tMaxDummy)) 
         return false;
 
     tHit = tMin;
 
-    vec3 localHitPoint = localRayOrigin + localRayDir * tHit;
-    vec3 localNormal = CubeNormal(localHitPoint, halfSize);
+    vec3 localHitPoint  = localRayOrigin + localRayDir * tHit;
+    vec3 localNormal    = CubeNormal(localHitPoint, cube.HalfSize.xyz);
     normal = normalize(cubeRotation * localNormal);
 
     return true;
@@ -168,7 +166,7 @@ bool MarchTheRay(vec3 ro,
 
     float   hit;
     int     lastStepAxis = LAST_UNKNOWN_AXIS;
-    distance = 1.f / 0.f;
+    distance = INF;
     for (int stepCount = 0; stepCount < maxSteps; ++stepCount)
     {
         if (voxel.x < 0 || voxel.x >= GridSize.x ||
@@ -186,11 +184,6 @@ bool MarchTheRay(vec3 ro,
         {
             if (VoxelData[index].Type == uint(-1))
             {
-                hitCoords   = voxel;
-                hitIndex    = index;
-                normal      = vec3(0.);
-                normal[lastStepAxis] = -float(step[lastStepAxis]);
-
                 if (lastStepAxis == LAST_X_AXIS) {
                     distance = tMax.x - tDelta.x;
                 }
@@ -200,31 +193,52 @@ bool MarchTheRay(vec3 ro,
                 else {
                     distance = tMax.z - tDelta.z;
                 }
-                hitCoords = ro + rd * distance;
-                hitType = HIT_TYPE_VOXEL;
-                return true;
-            }
 
-            for (uint k = 0; k < VoxelData[index].Type; ++k) 
+                normal               = vec3(0.);
+                normal[lastStepAxis] = -float(step[lastStepAxis]);
+
+                hitIndex    = index;
+                hitCoords   = ro + rd * distance;
+                hitType     = HIT_TYPE_VOXEL;
+
+                if (distance > EPSILON && distance < INF) {
+                    return true;
+                }
+            } 
+            else 
             {
-                uint id = VoxelData[index].id[k];
-                if (RayIntersects(ro, 
-                                  rd,
-                                  CubeData[id],
-                                  hit,
-                                  normal)) 
+                uint id;
+                vec3 centPos = vec3(INF, INF, INF);
+                for (uint k = 0; k < VoxelData[index].Type; ++k) 
                 {
-                    if (distance > hit) {
+                    id = VoxelData[index].id[k];
+
+                    if (!RayIntersects(ro, 
+                                       rd,
+                                       CubeData[id],
+                                       hit,
+                                       normal)) 
+                    {
+                        continue;
+                    }
+
+
+                    if (centPos.x > CubeData[id].Pos.x &&
+                        centPos.y > CubeData[id].Pos.y &&
+                        centPos.z > CubeData[id].Pos.z)
+                    {
+                        centPos     = CubeData[id].Pos.xyz;
                         distance    = hit;
                         hitIndex    = id;
                         hitCoords   = ro + rd * hit;
                         hitType     = HIT_TYPE_OBJECT;
                     }
                 }
+                if (distance > EPSILON && distance < INF) {
+                    return true;
+                }
             }
-            if (distance < (1.f / 0.f)) {
-                return true;
-            }
+            distance = INF;
         }
 
         if (tMax.x < tMax.y) 
@@ -392,7 +406,7 @@ vec3 Reflection(vec3 from,
     vec3 dir;
     vec3 hit;
     uint index;
-    float dummyDistance;
+    float distance;
     vec3 normalRef;
     int hitType;
 
@@ -405,17 +419,17 @@ vec3 Reflection(vec3 from,
         if (localReflect <= 0.0)
             break;
 
-        dir = reflect(normalize(to - from), -normal);
+        dir = reflect(normalize(to - from), normal);
         dir = mix(dir, RandomPointOnHemisphere(normal), roughness);
 
         if (!MarchTheRay(to + dir * EPSILON,
-                        dir,
-                        maxSteps,
-                        hit,
-                        index,
-                        dummyDistance,
-                        normalRef,
-                        hitType)) 
+                         dir,
+                         maxSteps,
+                         hit,
+                         index,
+                         distance,
+                         normalRef,
+                         hitType)) 
         {
             reflectedColor = mix(reflectedColor, baseSkyColor.xyz, localReflect);
             break;
@@ -426,10 +440,10 @@ vec3 Reflection(vec3 from,
         normal  = normalRef;
 
         if (hitType == HIT_TYPE_VOXEL) {
-            hitBaseColor = ExtractColorInt(CubeData[index].Color);
+            hitBaseColor = ExtractColorInt(VoxelData[index].Color);
         }
         if (hitType == HIT_TYPE_OBJECT) {
-            hitBaseColor = ExtractColorInt(VoxelData[index].Color);
+            hitBaseColor = ExtractColorInt(CubeData[index].Color);
         }
         
         reflectedColor = mix(reflectedColor, 
@@ -480,7 +494,7 @@ void main()
                                        hitPos,
                                        normal,
                                        int(length(hitPos - lightPos) * 1.5)) * finalColor.xyz;
-            // finalColor = vec4(shaded, finalColor.w);
+            finalColor = vec4(shaded, finalColor.w);
 
             finalColor = vec4(Reflection(ro, 
                                          hitPos, 

@@ -2,8 +2,8 @@
 #define AB_CUBE_H
 
 #include "Math/Math.hpp"
+#include "Math/Vec3.hpp"
 #include "Primitives/Object.hpp"
-#include <cstdint>
 
 namespace Voxels
 {
@@ -13,13 +13,11 @@ class alignas(16) Cube : public WorldObject
 public:
 
     Cube() 
-        : m_fHalfSizeX(.5f)
-        , m_fHalfSizeY(.5f)
-        , m_fHalfSizeZ(.5f)
+        : m_fHalfSize(.33f, .33f, .33f)
         , m_uColor(0x4422DDFF)
         , WorldObject()
     { 
-        this->SetRotation(Rot3(.9));
+        this->SetRotation(Rot3(2.9, 1., 0.1));
     }
 
     Cube& operator=(const Cube&) noexcept = default;
@@ -33,7 +31,7 @@ public:
 public:
 
     Vec3 GetHalfSize() const
-    { return Vec3(m_fHalfSizeX, m_fHalfSizeY, m_fHalfSizeZ); }
+    { return m_fHalfSize; }
 
 public:
 
@@ -43,10 +41,7 @@ public:
 private:
 
     uint32_t m_uColor;  
-    float    m_fHalfSizeX;  
-    float    m_fHalfSizeY;  
-    float    m_fHalfSizeZ;  
-
+    Vec3     m_fHalfSize;
 };
 
 } // !Voxels

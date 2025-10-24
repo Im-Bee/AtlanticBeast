@@ -28,7 +28,7 @@ vector<Voxel> WorldGrid::GenerateGrid(size_t uGridWidth, vector<Cube>& vCubes)
 
     size_t uIndex;
     size_t uCubeStart = 11;
-    size_t uCubeEnd   = 22;
+    size_t uCubeEnd   = 14;
     for (uint32_t z = uCubeStart; z < uCubeEnd; ++z) {
         for (uint32_t y = uCubeStart; y < uCubeEnd; ++y) {
             for (uint32_t x = uCubeStart; x < uCubeEnd; ++x) {

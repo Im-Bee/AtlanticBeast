@@ -1,6 +1,7 @@
 #include "Raycaster/Rays.hpp"
 
 #include "Math/Math.hpp"
+#include <cstdint>
 
 namespace Voxels
 {
@@ -51,6 +52,31 @@ HitResult MarchTheRay(const WorldGrid* vg, const Vec3& ro, const Vec3& rd, size_
                              voxel.y * gridWidth +
                              voxel.z * gridWidth * gridWidth;
 
+        if (vg->GetGrid()[index].Type == uint32_t(-1))
+        {
+            result.bHit         = true;
+            result.iHitCoords   = voxel;
+            result.uHitIndex    = index;
+
+            switch (lastStepAxis) {
+                case X:
+                    result.Normal       = Vec3(-float(step.x), 0.0f, 0.0f);
+                    result.fDistance    = tMax.x - tDelta.x;
+                    break;
+                case Y:
+                    result.Normal       = Vec3(0.0f, -float(step.y), 0.0f);
+                    result.fDistance    = tMax.y - tDelta.y;
+                    break;
+                case Z:
+                    result.Normal       = Vec3(0.0f, 0.0f, -float(step.z));
+                    result.fDistance    = tMax.z - tDelta.z;
+                    break;
+                default:
+                    result.Normal = Vec3(0.f, 0.f, 0.f);
+            }
+
+            return result;
+        }
         if (vg->GetGrid()[index].Type > 0)
         {
             result.bHit         = true;
