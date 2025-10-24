@@ -1,7 +1,7 @@
 #ifndef AB_INPUT_EVENTS_H
 #define AB_INPUT_EVENTS_H
 
-#include "CSystem.h"
+#include "Core.h"
 #include "Bind.h"
 
 typedef enum EAbInputEvents {

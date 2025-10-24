@@ -1,7 +1,7 @@
 #ifndef AB_MOUSE_MAP_H
 #define AB_MOUSE_MAP_H
 
-#include "CSystem.hpp"
+#include "Core.h"
 
 #include "Bind.h"
 #include "Input/IBindMap.hpp"

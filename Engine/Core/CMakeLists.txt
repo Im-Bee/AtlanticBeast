@@ -5,8 +5,8 @@ SET(CORE_SOURCE
 )
 SET(CORE_HEADRES 
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/AbLimits.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/CSystem.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/CSystem.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/CStandard.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/CPlusPlusStandard.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Core.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Exception.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/ExportImport.h"

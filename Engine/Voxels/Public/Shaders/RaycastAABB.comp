@@ -145,7 +145,7 @@ bool MarchTheRay(vec3 ro,
                  int maxSteps,
                  out vec3 hitCoords,
                  out uint hitIndex,
-                 out float distance,
+                 out float fDistance,
                  out vec3 normal,
                  out int hitType)
 {
@@ -166,7 +166,7 @@ bool MarchTheRay(vec3 ro,
 
     float   hit;
     int     lastStepAxis = LAST_UNKNOWN_AXIS;
-    distance = INF;
+    fDistance = INF;
     for (int stepCount = 0; stepCount < maxSteps; ++stepCount)
     {
         if (voxel.x < 0 || voxel.x >= GridSize.x ||
@@ -185,30 +185,30 @@ bool MarchTheRay(vec3 ro,
             if (VoxelData[index].Type == uint(-1))
             {
                 if (lastStepAxis == LAST_X_AXIS) {
-                    distance = tMax.x - tDelta.x;
+                    fDistance = tMax.x - tDelta.x;
                 }
                 else if (lastStepAxis == LAST_Y_AXIS) {
-                    distance = tMax.y - tDelta.y;
+                    fDistance = tMax.y - tDelta.y;
                 }
                 else {
-                    distance = tMax.z - tDelta.z;
+                    fDistance = tMax.z - tDelta.z;
                 }
 
                 normal               = vec3(0.);
                 normal[lastStepAxis] = -float(step[lastStepAxis]);
 
                 hitIndex    = index;
-                hitCoords   = ro + rd * distance;
+                hitCoords   = ro + rd * fDistance;
                 hitType     = HIT_TYPE_VOXEL;
 
-                if (distance > EPSILON && distance < INF) {
+                if (fDistance > EPSILON && fDistance < INF) {
                     return true;
                 }
             } 
             else 
             {
                 uint id;
-                vec3 centPos = vec3(INF, INF, INF);
+                float centDist = INF;
                 for (uint k = 0; k < VoxelData[index].Type; ++k) 
                 {
                     id = VoxelData[index].id[k];
@@ -222,23 +222,21 @@ bool MarchTheRay(vec3 ro,
                         continue;
                     }
 
-
-                    if (centPos.x > CubeData[id].Pos.x &&
-                        centPos.y > CubeData[id].Pos.y &&
-                        centPos.z > CubeData[id].Pos.z)
+                    float kCentDist = distance(ro, CubeData[id].Pos.xyz);
+                    if (centDist > kCentDist)
                     {
-                        centPos     = CubeData[id].Pos.xyz;
-                        distance    = hit;
+                        centDist    = kCentDist;
+                        fDistance   = hit;
                         hitIndex    = id;
                         hitCoords   = ro + rd * hit;
                         hitType     = HIT_TYPE_OBJECT;
                     }
                 }
-                if (distance > EPSILON && distance < INF) {
+                if (fDistance > EPSILON && fDistance < INF) {
                     return true;
                 }
             }
-            distance = INF;
+            fDistance = INF;
         }
 
         if (tMax.x < tMax.y) 
@@ -476,11 +474,11 @@ void main()
 
     vec3 hitPos;
     uint index;
-    float distance;
+    float fDistance;
     vec3 normal;
     int hitType;
 
-    if (MarchTheRay(ro, rd, maxSteps, hitPos, index, distance, normal, hitType)) 
+    if (MarchTheRay(ro, rd, maxSteps, hitPos, index, fDistance, normal, hitType)) 
     {
         if (hitType == HIT_TYPE_VOXEL) {
             finalColor = ExtractColorInt(VoxelData[index].Color);
@@ -489,17 +487,18 @@ void main()
             finalColor = ExtractColorInt(CubeData[index].Color);
         }
 
-        if (distance <= maxSteps) {
+        if (fDistance <= maxSteps) 
+        {
             vec3 shaded = PhongShadows(CameraPos.xyz, 
                                        hitPos,
                                        normal,
-                                       int(length(hitPos - lightPos) * 1.5)) * finalColor.xyz;
-            finalColor = vec4(shaded, finalColor.w);
+                                       int(distance(hitPos, lightPos) * 1.5)) * finalColor.xyz;
+            // finalColor = vec4(shaded, finalColor.w);
 
             finalColor = vec4(Reflection(ro, 
                                          hitPos, 
-                                         maxSteps, 
-                                         2, 
+                                         int(maxSteps * 0.5f), 
+                                         4, 
                                          shaded, 
                                          normal,
                                          0.25),
@@ -507,10 +506,10 @@ void main()
         }
     }
 
-    if (distance > maxRenderDist)
+    if (fDistance > maxRenderDist)
         finalColor = mix(finalColor, 
                          baseSkyColor,
-                         clamp(distance - maxRenderDist, 0.f, maxRenderDist * .5f) / (maxRenderDist * .5f));
+                         clamp(fDistance - maxRenderDist, 0.f, maxRenderDist * .5f) / (maxRenderDist * .5f));
 
     imageStore(outputImage, pixelCoord, finalColor);
 }

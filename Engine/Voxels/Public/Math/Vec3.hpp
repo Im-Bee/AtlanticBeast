@@ -1,7 +1,7 @@
 #ifndef AB_VEC3_H
 #define AB_VEC3_H
 
-#include "CSystem.hpp"
+#include "Core.h"
 
 namespace Voxels
 {
@@ -9,17 +9,22 @@ namespace Voxels
 // ---------------------------------------------------------------------------------------------------------------------
 struct alignas(16) Vec3
 {
+
+    static constexpr size_t Size = 3;
+    
+public:
+
     Vec3()
         : x(0.f), y(0.f), z(0.f)
     { } 
 
-    explicit Vec3(double x, double y = 0., double z = 0.f)
+    explicit Vec3(float x, float y = 0., float z = 0.f)
         : x(x), y(y), z(z)
     { }
 
-    template<typename Vector>
-    static Vec3 ToVec3(Vector v)
-    { return Vec3(v.x, v.y, v.z); }
+    ~Vec3() = default;
+
+public:
 
     Vec3(Vec3&&) noexcept = default;
     Vec3(const Vec3&) = default;
@@ -27,13 +32,21 @@ struct alignas(16) Vec3
     Vec3& operator=(const Vec3&) noexcept = default;
     Vec3& operator=(Vec3&&) noexcept = default;
 
+public:
+
     float x;
     float y;
     float z;
     float _Padding;
 
-    static constexpr size_t Size = 3;
-    
+public:
+
+    template<typename Vector>
+    static Vec3 ToVec3(Vector v)
+    { return Vec3(v.x, v.y, v.z); }
+
+public:
+
     constexpr float& operator[](size_t uIndex);
 
     constexpr float operator[](size_t uIndex) const;
@@ -52,6 +65,11 @@ struct alignas(16) Vec3
 // ---------------------------------------------------------------------------------------------------------------------
 struct alignas(16) iVec3
 {
+
+    static constexpr size_t Size = 3;
+
+public:
+
     iVec3()
         : x(0), y(0), z(0)
     { }
@@ -64,19 +82,31 @@ struct alignas(16) iVec3
         : x(v.x), y(v.y), z(v.z)
     { }
 
+    ~iVec3() = default;
+
+public:
+
     iVec3(iVec3&&) noexcept = default;
     iVec3(const iVec3&) = default;
 
     iVec3& operator=(const iVec3&) noexcept = default;
     iVec3& operator=(iVec3&&) noexcept = default;
 
+public:
+
     int32_t x;
     int32_t y;
     int32_t z;
     int32_t _Padding;
 
-    static constexpr size_t Size = 3;
+public:
+
+    template<typename Vector>
+    static iVec3 ToVec3(Vector v)
+    { return iVec3(v.x, v.y, v.z); }
     
+public:
+
     constexpr int32_t operator[](size_t uIndex) const
     {
         AB_ASSERT(uIndex < Size);

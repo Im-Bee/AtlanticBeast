@@ -1,7 +1,7 @@
 #ifndef AB_KEY_BIND_H
 #define AB_KEY_BIND_H
 
-#include "CSystem.h"
+#include "Core.h"
 
 /**
  * Empty struct to force binding type safety. Like a rock for your shoe.

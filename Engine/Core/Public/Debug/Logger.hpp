@@ -2,7 +2,7 @@
 #define AB_LOGGER_H
 
 #include "ExportImport.h"
-#include "CSystem.hpp"
+#include "CPlusPlusStandard.hpp"
 
 namespace Core::Debug
 {

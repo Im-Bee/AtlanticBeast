@@ -13,18 +13,22 @@ class alignas(16) Cube : public WorldObject
 public:
 
     Cube() 
-        : m_fHalfSize(.33f, .33f, .33f)
+        : m_fHalfSize(.25f, .25f, .25f)
         , m_uColor(0x4422DDFF)
         , WorldObject()
     { 
         this->SetRotation(Rot3(2.9, 1., 0.1));
     }
 
+public:
+
     Cube& operator=(const Cube&) noexcept = default;
     Cube& operator=(Cube&&) noexcept = default;
 
     Cube(const Cube&) = default;
     Cube(Cube&&) = default;
+
+public:
 
     ~Cube() = default;
 
