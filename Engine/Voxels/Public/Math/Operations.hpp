@@ -35,7 +35,7 @@ template<class Vector>
 constexpr inline Vector Cross(const Vector& vA, const Vector& vB)
 {
     static_assert(Core::TypeIsAlwaysFalse<Vector>, 
-                  "This size of a vector doesn't have impementation of addition product yet");
+                  "This size of a vector doesn't have impementation of cross product yet");
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ template<class Vector>
 constexpr inline Vector RotateX(const Vector& v, float angleRad)
 {
     static_assert(Core::TypeIsAlwaysFalse<Vector>, 
-                  "This size of a vector doesn't have impementation of addition product yet");
+                  "This size of a vector doesn't have impementation of rotate x yet");
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ template<class Vector>
 constexpr inline Vector RotateY(const Vector& v, float angleRad)
 {
     static_assert(Core::TypeIsAlwaysFalse<Vector>, 
-                  "This size of a vector doesn't have impementation of addition product yet");
+                  "This size of a vector doesn't have impementation of rotate y yet");
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -100,7 +100,7 @@ template<class Vector>
 inline Vector& AddAssign(Vector& vA, const Vector& vB)
 {
     static_assert(Core::TypeIsAlwaysFalse<Vector>, 
-                  "This size of a vector doesn't have impementation of addition product yet");
+                  "This size of a vector doesn't have impementation of add assign yet");
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -128,7 +128,7 @@ template<class Vector>
 inline Vector Multiply(const Vector& vA, const Vector& vB)
 {
     static_assert(Core::TypeIsAlwaysFalse<Vector>, 
-                  "This size of a vector doesn't have impementation of addition product yet");
+                  "This size of a vector doesn't have impementation of multiply yet");
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -162,7 +162,7 @@ template<class Vector>
 constexpr inline Vector MultiplyScalar(const Vector& vA, const float vB)
 {
     static_assert(Core::TypeIsAlwaysFalse<Vector>, 
-                  "This size of a vector doesn't have impementation of addition product yet");
+                  "This size of a vector doesn't have impementation of multiply by scalar yet");
 }
 
 // --------------------------------------------------------------------------------------------------------------------
