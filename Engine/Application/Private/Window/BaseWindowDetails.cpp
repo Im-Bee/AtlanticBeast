@@ -2,9 +2,6 @@
 #include "App.h"
 #include "Window/IBaseWindow.hpp"
 
-#include <cstring>
-#include <unordered_map>
-
 using namespace std;
 
 #ifdef __linux__
