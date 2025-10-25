@@ -86,7 +86,7 @@ private:
 
     ::std::vector<Voxel> GenerateGrid(size_t uGridWidth, ::std::vector<Cube>& vCubes);
 
-    void GenerateCube(const Vec3& offsetPos);
+    BEAST_VOXEL_API void GenerateCube(const Vec3& offsetPos);
 
 private:
 
