@@ -72,7 +72,7 @@ inline Vec3 Vec3::operator*(const float vB) const
 // --------------------------------------------------------------------------------------------------------------------
 inline iVec3 iVec3::operator+(const Vec3& vB) const
 {
-    iVec3 n(this->x, this->y, this->z);
+    iVec3 n(*this);
     n = AddAssign(n, iVec3(vB));
     return n;
 }
