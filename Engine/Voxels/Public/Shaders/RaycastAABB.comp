@@ -34,9 +34,9 @@ layout(push_constant) uniform PushConstants
     vec4    CameraRight;
     vec4    CameraUp;
     float   Fov;
-    uint    Padding1;
-    uint    Padding2;
-    uint    Padding3;
+    uint    _Padding1;
+    uint    _Padding2;
+    uint    _Padding3;
 };
 
 const float INF     = 1.f / 0.f;
@@ -59,7 +59,7 @@ const vec3  lightColor  = vec3(1., 1., 1.);
 #define HIT_TYPE_OBJECT 1
 
 // --------------------------------------------------------------------------------------------------------------------
-mat3 RotationMatrix(vec3 angles) 
+mat3 RotationMatrix(in vec3 angles) 
 {
     float sx = sin(angles.x);
     float sy = sin(angles.y);
@@ -84,7 +84,11 @@ mat3 RotationMatrix(vec3 angles)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-bool IntersectRayAABB(vec3 ro, vec3 rd, vec3 halfSize, out float tMin, out float tMax)
+bool IntersectRayAABB(in vec3 ro,
+                      in vec3 rd,
+                      in vec3 halfSize,
+                      out float tMin, 
+                      out float tMax)
 {
     vec3 invDir = 1.0 / rd;
     vec3 t0s = (-halfSize - ro) * invDir;
@@ -100,7 +104,7 @@ bool IntersectRayAABB(vec3 ro, vec3 rd, vec3 halfSize, out float tMin, out float
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-vec3 CubeNormal(vec3 lP, vec3 halfSize) 
+vec3 CubeNormal(in vec3 lP, in vec3 halfSize) 
 {
     vec3 bias = abs(abs(lP) - halfSize);
 
@@ -113,11 +117,11 @@ vec3 CubeNormal(vec3 lP, vec3 halfSize)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-bool RayIntersects(vec3 rayOrigin, 
-                   vec3 rayDir,
-                   Cube cube, 
-                   out float tHit,
-                   out vec3 normal)
+bool RayIntersects(in vec3 rayOrigin, 
+                   in vec3 rayDir,
+                   in Cube cube, 
+                   out float    tHit,
+                   out vec3     normal)
 {
     mat3 cubeRotation   = RotationMatrix(cube.Rot.xyz);
     mat3 invRotation    = transpose(cubeRotation);
@@ -140,14 +144,14 @@ bool RayIntersects(vec3 rayOrigin,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-bool MarchTheRay(vec3 ro,
-                 vec3 rd,
-                 int maxSteps,
-                 out vec3 hitCoords,
-                 out uint hitIndex,
-                 out float fDistance,
-                 out vec3 normal,
-                 out int hitType)
+bool MarchTheRay(in vec3    ro,
+                 in vec3    rd,
+                 in int     maxSteps,
+                 out vec3   hitCoords,
+                 out uint   hitIndex,
+                 out float  fDistance,
+                 out vec3   normal,
+                 out int    hitType)
 {
     ivec3 voxel = ivec3(ro);
     ivec3 step  = ivec3(sign(rd));
@@ -169,9 +173,9 @@ bool MarchTheRay(vec3 ro,
     fDistance = INF;
     for (int stepCount = 0; stepCount < maxSteps; ++stepCount)
     {
-        if (voxel.x < 0 || voxel.x >= GridSize.x ||
-            voxel.y < 0 || voxel.y >= GridSize.y ||
-            voxel.z < 0 || voxel.z >= GridSize.z)
+        if (voxel.x <= 0 || voxel.x >= GridSize.x ||
+            voxel.y <= 0 || voxel.y >= GridSize.y ||
+            voxel.z <= 0 || voxel.z >= GridSize.z)
         {
             break;
         }
@@ -269,18 +273,18 @@ bool MarchTheRay(vec3 ro,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-vec4 ExtractColorInt(uint packedColor)
+vec4 ExtractColorInt(in uint uPackedColor)
 {        
-    float r = float((packedColor >> 24) & 0xFFu) / 255.;
-    float g = float((packedColor >> 16) & 0xFFu) / 255.;
-    float b = float((packedColor >>  8) & 0xFFu) / 255.;
-    float a = float(packedColor         & 0xFFu) / 255.;
+    float r = float((uPackedColor >> 24) & 0xFFu) / 255.;
+    float g = float((uPackedColor >> 16) & 0xFFu) / 255.;
+    float b = float((uPackedColor >>  8) & 0xFFu) / 255.;
+    float a = float(uPackedColor         & 0xFFu) / 255.;
     
     return vec4(r, g, b, a);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-bool ShadowRay(vec3 from, vec3 to, int maxDistance)
+bool ShadowRay(in vec3 from, in vec3 to, in int maxDistance)
 {
     vec3    dir = normalize(to - from);
     vec3    dummyHit;
@@ -306,7 +310,7 @@ float Random(in vec2 uv)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-vec3 RandomPointOnHemisphere(vec3 normal)
+vec3 RandomPointOnHemisphere(in vec3 normal)
 {
     vec3 randPoint = vec3(Random(gl_GlobalInvocationID.xy - normal.yx) - .5,
                           Random(gl_GlobalInvocationID.xy) - .5, 
@@ -321,7 +325,7 @@ vec3 RandomPointOnHemisphere(vec3 normal)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-float SoftShadowRay(vec3 from, vec3 to, in vec3 normal, int maxDistance)
+float SoftShadowRay(in vec3 from, in vec3 to, in vec3 normal, in int maxDistance)
 {
     const float r = 4.;
     const float samples = 16;
@@ -334,16 +338,17 @@ float SoftShadowRay(vec3 from, vec3 to, in vec3 normal, int maxDistance)
     int     dummyHitType;
     float   shadow = 1.;
     
-    const float sampleStep = TWO_PI / samples;
-    const float mixFactor = 0.015;
+    const float sampleStep  = TWO_PI / samples;
+    const float mixFactor   = 0.015;
 
+    float angle;
+    vec3 offset;
     for (int i = 0; i < samples; ++i)
     {
-        float angle = float(i) * sampleStep;
-        vec3 offset = vec3(cos(angle), sin(angle), 0.0) * r; 
-        vec3 point  = to + offset;
+        angle   = float(i) * sampleStep;
+        offset  = vec3(cos(angle), sin(angle), 0.0) * r; 
 
-        dir = normalize(point - from);
+        dir = normalize(to + offset - from);
         dir = mix(dir, RandomPointOnHemisphere(normal), mixFactor);
 
         if (MarchTheRay(from + dir * EPSILON,
@@ -363,10 +368,10 @@ float SoftShadowRay(vec3 from, vec3 to, in vec3 normal, int maxDistance)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-vec3 PhongShadows(in vec3 camPos,
-                  in vec3 pos,
-                  in vec3 normal,
-                  in int maxDistance)
+vec3 PhongShadows(in vec3   camPos,
+                  in vec3   pos,
+                  in vec3   normal,
+                  in int    maxDistance)
 {
     const float ambientStrength     = 0.1;
     const float diffuseStrength     = 0.9;
@@ -379,7 +384,32 @@ vec3 PhongShadows(in vec3 camPos,
 
     float diff = max(dot(normal, lightDir), 0.0);
     float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
-    // float shadow = ShadowRay(pos, lightPos, int(maxDistance * 0.5)) ? 0.05 : 1.0;
+    float shadow = ShadowRay(pos, lightPos, int(maxDistance )) ? 0.05 : 1.0;
+
+    vec3 ambient    = ambientStrength * lightColor;
+    vec3 diffuse    = diffuseStrength * diff * lightColor * shadow;
+    vec3 specular   = specularStrength * spec * lightColor * shadow;
+
+    return ambient + diffuse + specular;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+vec3 PhongSoftShadows(in vec3   camPos,
+                      in vec3   pos,
+                      in vec3   normal,
+                      in int    maxDistance)
+{
+    const float ambientStrength     = 0.1;
+    const float diffuseStrength     = 0.9;
+    const float specularStrength    = 0.4;
+    const float shininess           = 256.0;
+
+    vec3 lightDir   = normalize(lightPos - pos);
+    vec3 viewDir    = normalize(camPos   - pos);
+    vec3 reflectDir = normalize(lightDir + viewDir);
+
+    float diff = max(dot(normal, lightDir), 0.0);
+    float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
     float shadow = SoftShadowRay(pos, lightPos, normal, int(maxDistance));
 
     vec3 ambient    = ambientStrength * lightColor;
@@ -390,16 +420,15 @@ vec3 PhongShadows(in vec3 camPos,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-vec3 Reflection(vec3 from,
-                vec3 to,
-                int maxSteps,
-                uint bounces,
-                vec3 baseColor,
-                vec3 normal,
-                float MaterialReflectPower)
+vec3 Reflection(in vec3     from,
+                in vec3     to,
+                in int      maxSteps,
+                in uint     bounces,
+                in vec3     baseColor,
+                in vec3     normal,
+                in float    MaterialReflectPower)
 {
-    float localReflect = MaterialReflectPower;
-
+    float localReflect;
     vec3 incident;
     vec3 dir;
     vec3 hit;
@@ -414,7 +443,7 @@ vec3 Reflection(vec3 from,
 
     for (uint i = 0; i < bounces; ++i)
     {
-        if (localReflect <= 0.0)
+        if (MaterialReflectPower <= 0.0)
             break;
 
         dir = reflect(normalize(to - from), normal);
@@ -429,7 +458,7 @@ vec3 Reflection(vec3 from,
                          normalRef,
                          hitType)) 
         {
-            reflectedColor = mix(reflectedColor, baseSkyColor.xyz, localReflect);
+            reflectedColor = mix(reflectedColor, baseSkyColor.xyz, MaterialReflectPower);
             break;
         }
 
@@ -439,19 +468,36 @@ vec3 Reflection(vec3 from,
 
         if (hitType == HIT_TYPE_VOXEL) {
             hitBaseColor = ExtractColorInt(VoxelData[index].Color);
+            localReflect = 0.23;
         }
         if (hitType == HIT_TYPE_OBJECT) {
             hitBaseColor = ExtractColorInt(CubeData[index].Color);
+            localReflect = 0.23;
+        } 
+        else {
+            hitBaseColor = baseSkyColor;
+            localReflect = 0;
         }
         
         reflectedColor = mix(reflectedColor, 
                              PhongShadows(CameraPos.xyz, hit, normal, int(maxSteps * 0.25)) * hitBaseColor.xyz,
-                             localReflect);
+                             MaterialReflectPower);
 
-        localReflect *= 0.23 * 2;
+        MaterialReflectPower *= localReflect * 2;
     }
 
     return reflectedColor;
+}
+
+bool IsCrossHair(in const vec2 uv, in const float aspectRatio) 
+{
+    const float fCrossHairWidth = 0.0026;
+    float fCrossHairWidthX = fCrossHairWidth;
+    float fCrossHairWidthY = fCrossHairWidth;
+    if (aspectRatio > 1.f) {
+        fCrossHairWidthX /= aspectRatio;
+    } 
+    return abs(uv).x < fCrossHairWidthX && abs(uv).y < fCrossHairWidthY;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -470,6 +516,11 @@ void main()
                          uv.x * aspectRatio * scale * CameraRight.xyz +
                          uv.y * scale * CameraUp.xyz);
 
+    if (IsCrossHair(uv, aspectRatio)) 
+    {
+        imageStore(outputImage, pixelCoord, vec4(1., 1., 1., 1.));
+        return;
+    }
     vec4 finalColor = baseSkyColor;
 
     vec3 hitPos;
@@ -489,10 +540,10 @@ void main()
 
         if (fDistance <= maxSteps) 
         {
-            vec3 shaded = PhongShadows(CameraPos.xyz, 
-                                       hitPos,
-                                       normal,
-                                       int(distance(hitPos, lightPos) * 1.5)) * finalColor.xyz;
+            vec3 shaded = PhongSoftShadows(CameraPos.xyz, 
+                                           hitPos,
+                                           normal,
+                                           int(distance(hitPos, lightPos) * 1.5)) * finalColor.xyz;
             // finalColor = vec4(shaded, finalColor.w);
 
             finalColor = vec4(Reflection(ro, 

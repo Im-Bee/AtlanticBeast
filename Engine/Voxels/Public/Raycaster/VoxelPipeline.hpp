@@ -15,6 +15,7 @@ class VoxelPipeline
 {
 
     friend class Renderer;
+
 public:
 
     enum ShaderResource
