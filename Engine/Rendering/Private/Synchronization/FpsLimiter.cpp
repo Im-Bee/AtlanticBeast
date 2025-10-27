@@ -1,5 +1,3 @@
-#include "Core.h"
-#include "Debug/Logger.hpp"
 #include "Voxels.hpp"
 
 #include "Synchronization/FpsLimiter.hpp"
@@ -22,7 +20,7 @@ void FpsLimiter::Block(const float fDelta)
     using Duration = duration<float, milli>;
 
     m_fBalance += m_fTarget - fDelta;
-    this_thread::sleep_for(Duration(m_fTarget + m_fBalance));
+    this_thread::sleep_for(Duration(max(0.f, m_fTarget + m_fBalance)));
 }
 
 } //!Voxels
