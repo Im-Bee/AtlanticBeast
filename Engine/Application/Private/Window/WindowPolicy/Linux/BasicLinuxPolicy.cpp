@@ -1,6 +1,7 @@
 #ifdef __linux__
 
-#include "AbLimits.h"
+#include "Core.h"
+
 #include "Window/BaseWindowDetails.h"
 #include "Window/WindowPolicy/Linux/BasicLinuxPolicy.hpp"
 

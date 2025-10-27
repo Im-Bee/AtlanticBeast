@@ -2,8 +2,9 @@
 #define AB_USER_INPUT_H
 
 #include "Window/WindowDesc.hpp"
-#include "Input/Bind.h"
 #include "Window/WindowListener.hpp"
+#include "Input/Bind.h"
+#include "Input/KeyList.hpp"
 
 namespace App
 {

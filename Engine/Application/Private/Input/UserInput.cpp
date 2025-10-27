@@ -2,11 +2,10 @@
 
 #include "Input/UserInput.hpp"
 
-#include "Debug/Logger.hpp"
+#include "MouseMap.hpp"
+#include "KeysMap.hpp"
 #include "Input/InputEvents.h"
 #include "Input/ControllerObject.hpp"
-#include "Input/KeysMap.hpp"
-#include "Input/MouseMap.hpp"
 
 namespace App
 {

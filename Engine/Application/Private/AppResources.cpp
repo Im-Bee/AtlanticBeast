@@ -1,7 +1,6 @@
-#include "AppResources.hpp"
-
 #include "App.h"
-#include <cwchar>
+
+#include "AppResources.hpp"
 
 namespace App
 {

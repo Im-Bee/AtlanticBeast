@@ -1,6 +1,8 @@
 #ifndef AB_BIND_MAP_H
 #define AB_BIND_MAP_H
 
+#include "Input/Bind.h"
+
 namespace App
 {
 

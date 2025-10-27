@@ -1,5 +1,6 @@
-#include "Input/KeysMap.hpp"
-#include "Debug/Assert.h"
+#include "Core.h"
+
+#include "KeysMap.hpp"
 
 namespace App
 {

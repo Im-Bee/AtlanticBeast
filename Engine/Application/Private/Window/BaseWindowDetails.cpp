@@ -1,5 +1,5 @@
-#include "Core.h"
 #include "App.h"
+
 #include "Window/IBaseWindow.hpp"
 
 using namespace std;

@@ -1,9 +1,8 @@
 #ifndef AB_KEYS_MAP_H
 #define AB_KEYS_MAP_H
 
-#include "Bind.h"
-#include "KeyList.hpp"
 #include "IBindMap.hpp"
+#include "Input/KeyList.hpp"
 
 namespace App
 {

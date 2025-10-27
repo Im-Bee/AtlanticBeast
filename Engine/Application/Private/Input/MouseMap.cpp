@@ -1,7 +1,6 @@
-#include "Input/MouseMap.hpp"
 #include "Core.h"
-#include "Debug/Assert.h"
-#include "Debug/Logger.hpp"
+
+#include "MouseMap.hpp"
 
 namespace App
 {
