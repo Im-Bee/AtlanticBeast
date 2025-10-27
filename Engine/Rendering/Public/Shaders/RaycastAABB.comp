@@ -235,7 +235,7 @@ bool MarchTheRay(in vec3    ro,
                         hitType     = HIT_TYPE_OBJECT;
                     }
                 }
-                if (fDistance > EPSILON && fDistance < INF) {
+                if (fDistance >= EPSILON && fDistance < INF) {
                     return true;
                 }
             }
