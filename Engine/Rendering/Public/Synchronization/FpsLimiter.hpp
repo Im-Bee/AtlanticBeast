@@ -14,7 +14,8 @@ public:
 
 public:
 
-    void Block(float fDelta);
+    void Block(float fDelta)
+    { }
 
 };
 
