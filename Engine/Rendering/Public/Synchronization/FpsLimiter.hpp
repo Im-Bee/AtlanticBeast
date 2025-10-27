@@ -16,6 +16,7 @@ public:
 
     FpsLimiter(const FpsLimiter&) noexcept = default;
     FpsLimiter& operator=(const FpsLimiter&) noexcept = default;
+
     FpsLimiter(FpsLimiter&&) noexcept = default;
     FpsLimiter& operator=(FpsLimiter&&) noexcept = default;
 
