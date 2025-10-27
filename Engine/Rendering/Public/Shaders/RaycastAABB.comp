@@ -432,13 +432,13 @@ vec3 Reflection(in vec3     from,
     vec3 dir;
     vec3 hit;
     uint index;
-    float distance;
+    float distance = 1.;
     vec3 normalRef;
     int hitType;
 
     vec3 reflectedColor = baseColor;
     vec4 hitBaseColor;
-    const float roughness = 0.02;
+    const float roughness = 0.08;
 
     for (uint i = 0; i < bounces; ++i)
     {
@@ -446,7 +446,7 @@ vec3 Reflection(in vec3     from,
             break;
 
         dir = reflect(normalize(to - from), normal);
-        dir = mix(dir, RandomPointOnHemisphere(normal), roughness);
+        dir = mix(dir, RandomPointOnHemisphere(normal), roughness * distance);
 
         if (!MarchTheRay(to + dir * EPSILON,
                          dir,

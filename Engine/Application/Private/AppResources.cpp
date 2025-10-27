@@ -10,13 +10,14 @@ using namespace Core;
 
 // ---------------------------------------------------------------------------------------------------------------------
 AppResources::AppResources()
-    : m_wstrExePath(InternalGetExecutablePath())
+    : m_wstrExePathW(InternalGetExecutablePathW())
+    , m_strExePathA(InternalGetExecutablePathA())
 { }
 
 #ifdef __linux__
 
 // ---------------------------------------------------------------------------------------------------------------------
-::std::wstring AppResources::InternalGetExecutablePath() const
+::std::wstring AppResources::InternalGetExecutablePathW() const
 {
     char sPath[AB_LONG_STRING];
     ssize_t uLen = readlink("/proc/self/exe", sPath, sizeof(sPath) - 1);
@@ -45,5 +46,18 @@ AppResources::AppResources()
 }
 
 #endif // !__linux__
+
+::std::string AppResources::InternalGetExecutablePathA() const
+{
+    size_t len = std::wcstombs(nullptr, m_wstrExePathW.c_str(), 0);
+    
+    if (len != static_cast<size_t>(-1)) {
+        std::string str(len, '\0');
+        std::wcstombs(&str[0], m_wstrExePathW.c_str(), len);
+        return str; 
+    }
+    
+    return "./";
+}
 
 } // !App

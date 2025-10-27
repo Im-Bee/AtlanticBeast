@@ -26,29 +26,22 @@ public:
 
 public:
 
-    BEAST_API const ::std::wstring& GetExecutablePathW() const
-    { return m_wstrExePath; }
+    const ::std::wstring& GetExecutablePathW() const
+    { return m_wstrExePathW; }
 
     BEAST_API ::std::string GetExecutablePathA() const
-    { 
-        size_t len = std::wcstombs(nullptr, m_wstrExePath.c_str(), 0);
-
-        if (len != static_cast<size_t>(-1)) {
-            std::string str(len, '\0');
-            std::wcstombs(&str[0], m_wstrExePath.c_str(), len);
-            return str; 
-        }
-
-        return "./";
-    }
+    { return m_strExePathA; }
 
 private:
 
-    ::std::wstring InternalGetExecutablePath() const;
+    ::std::wstring InternalGetExecutablePathW() const;
+
+    ::std::string InternalGetExecutablePathA() const;
 
 private:
 
-    ::std::wstring m_wstrExePath;
+    ::std::wstring m_wstrExePathW;
+    ::std::string m_strExePathA;
 
 };
 

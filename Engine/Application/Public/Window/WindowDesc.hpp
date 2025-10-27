@@ -48,9 +48,9 @@ WindowDesc CreateWindowDesc(U&& wstrName,
 #ifdef _WIN32
     wd.Hwnd = NULL;
 #elif __linux__
-    wd.DisplayHandle = NULL;
-    wd.WindowHandle = 0;
-    wd.Screen = 0;
+    wd.DisplayHandle    = NULL;
+    wd.WindowHandle     = 0;
+    wd.Screen           = 0;
 #endif // !_WIN32
     return wd;
 }
