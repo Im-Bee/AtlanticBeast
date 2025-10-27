@@ -44,6 +44,5 @@ private:
 
 };
 
-}
-
+} // !Voxels
 #endif //!AB_DELTA_TIME_H

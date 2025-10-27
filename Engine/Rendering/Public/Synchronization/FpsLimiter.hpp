@@ -32,5 +32,4 @@ private:
 };
 
 } //!Voxels
-
 #endif //!AB_FPS_LIMITER_H
