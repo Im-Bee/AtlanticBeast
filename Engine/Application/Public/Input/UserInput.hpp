@@ -2,9 +2,7 @@
 #define AB_USER_INPUT_H
 
 #include "Window/WindowDesc.hpp"
-#include "Input/KeysMap.hpp"
 #include "Input/Bind.h"
-#include "Input/MouseMap.hpp"
 #include "Window/WindowListener.hpp"
 
 namespace App
@@ -17,19 +15,9 @@ class UserInput : public WindowListener
 
 public:
 
-    BEAST_API explicit UserInput(::std::shared_ptr<WindowDesc> pWd = nullptr)
-        : WindowListener(pWd)
-        , m_bIsCapturing(false)
-        , m_KeyReleaseMap()
-        , m_KeyPressMap()
-        , m_KeyContinuous()
-        , m_ButtonReleaseMap()
-        , m_ButtonPressMap()
-        , m_vCurrentlyPressedKeys()
-        , m_MouseMap()
-    { }
+    BEAST_API explicit UserInput(::std::shared_ptr<WindowDesc> pWd = nullptr);
 
-    BEAST_API ~UserInput() = default;
+    BEAST_API ~UserInput();
 
 public:
 
@@ -72,13 +60,8 @@ private:
 
     ::std::bitset<AB_KEY_COUNT> m_vCurrentlyPressedKeys;
 
-    KeysMap m_KeyReleaseMap;
-    KeysMap m_KeyPressMap;
-    KeysMap m_KeyContinuous;
-    KeysMap m_ButtonReleaseMap;
-    KeysMap m_ButtonPressMap;
-
-    MouseMap m_MouseMap;
+    struct Impl;
+    Impl* m_pImpl = nullptr;
 
 };
 
