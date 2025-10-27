@@ -40,7 +40,7 @@ AppResources::AppResources()
 
 #elif _WIN32
 
-::std::wstring AppResources::InternalGetExecutablePath() const
+::std::wstring AppResources::InternalGetExecutablePathW() const
 {
     return wstring(L"./");
 }
