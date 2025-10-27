@@ -16,7 +16,7 @@ class Renderer
 {
 public:
 
-    BEAST_API Renderer()
+    Renderer()
         : m_pInstance(nullptr)
         , m_pHardware(nullptr)
         , m_pDeviceAdapter(nullptr)

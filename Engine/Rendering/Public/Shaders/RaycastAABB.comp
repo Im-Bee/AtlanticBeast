@@ -324,6 +324,15 @@ vec3 RandomPointOnHemisphere(in vec3 normal)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+vec3 RandomColor()
+{
+    return normalize(vec3(Random(gl_GlobalInvocationID.xy) - 123.5,
+                          Random(gl_GlobalInvocationID.xy) - .52234, 
+                          Random(gl_GlobalInvocationID.yx) - 239809.5));
+}
+
+
+// --------------------------------------------------------------------------------------------------------------------
 float SoftShadowRay(in vec3 from, in vec3 to, in vec3 normal, in int maxDistance)
 {
     const float r = 4.;
@@ -427,14 +436,14 @@ vec3 Reflection(in vec3     from,
                 in vec3     normal,
                 in float    MaterialReflectPower)
 {
-    float localReflect;
-    vec3 incident;
-    vec3 dir;
-    vec3 hit;
-    uint index;
-    float distance = 1.;
-    vec3 normalRef;
-    int hitType;
+    float   localReflect;
+    vec3    incident;
+    vec3    dir;
+    vec3    hit;
+    uint    index;
+    float   fDistance = 1.;
+    vec3    normalRef;
+    int     hitType;
 
     vec3 reflectedColor = baseColor;
     vec4 hitBaseColor;
@@ -446,14 +455,14 @@ vec3 Reflection(in vec3     from,
             break;
 
         dir = reflect(normalize(to - from), normal);
-        dir = mix(dir, RandomPointOnHemisphere(normal), roughness * distance);
+        dir = mix(dir, RandomPointOnHemisphere(normal), roughness * fDistance * 0.5);
 
         if (!MarchTheRay(to + dir * EPSILON,
                          dir,
                          maxSteps,
                          hit,
                          index,
-                         distance,
+                         fDistance,
                          normalRef,
                          hitType)) 
         {

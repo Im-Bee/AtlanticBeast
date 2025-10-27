@@ -30,7 +30,7 @@ public:
 
     BEAST_API explicit WorldGrid(size_t uGridWidth = VoxelGridDim);
     
-    BEAST_API ~WorldGrid() = default;
+    ~WorldGrid() = default;
 
 public:
 

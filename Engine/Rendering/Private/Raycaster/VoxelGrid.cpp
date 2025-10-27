@@ -1,6 +1,7 @@
 #include "Raycaster/VoxelGrid.hpp"
 #include "Core.h"
 #include "Debug/Logger.hpp"
+#include "Raycaster/SingleVoxel.hpp"
 
 namespace Voxels
 {
@@ -86,7 +87,10 @@ void WorldGrid::GenerateCube(const Vec3& offsetPos)
                                       (offsetPos.y + y) * uDim + 
                                       (offsetPos.z + z) * uDim * uDim;
 
-                if (uCornerIndex < m_VoxelGrid.size() && m_VoxelGrid[uCornerIndex].Type != -1) {
+                if (uCornerIndex < m_VoxelGrid.size() && 
+                    m_VoxelGrid[uCornerIndex].Type != -1 && 
+                    m_VoxelGrid[uCornerIndex].Type < Voxel::MaxPerInstance) 
+                {
                     m_VoxelGrid[uCornerIndex].Id[m_VoxelGrid[uCornerIndex].Type++] = m_uCubesCount;
                 }
             }
