@@ -49,10 +49,10 @@ private:
     /**
     * @brief It's called on every update 
     */
-    void HandleMessageImpl(EAbWindowEventsFlags events)
+    void HandleMessageImpl(const float fDelta, EAbWindowEventsFlags events)
     { 
         if constexpr (!bManualInputUpdate) {
-            m_pInput->Update();
+            m_pInput->Update(fDelta);
         }
     }
 

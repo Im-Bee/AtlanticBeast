@@ -111,7 +111,7 @@ public:
         m_pWindowDesc->IsAlive = false;
     }
 
-    void Update()
+    void Update(const float fDelta)
     { 
         AB_ASSERT(m_pWindowDesc != nullptr);
         AB_ASSERT(m_Policy != nullptr);
@@ -128,7 +128,7 @@ public:
             this->Destroy();
         }
         
-        static_cast<Derived*>(this)->HandleMessageImpl(m_pWindowDesc->LastEvent);
+        static_cast<Derived*>(this)->HandleMessageImpl(fDelta, m_pWindowDesc->LastEvent);
     }
 
 public:
@@ -138,9 +138,9 @@ public:
 
 private:
 
-    void HandleMessage(EAbWindowEventsFlags events)
+    void HandleMessage(const float fDelta, EAbWindowEventsFlags events)
     {
-        static_cast<Derived*>(this)->HandleMessageImpl(events);
+        static_cast<Derived*>(this)->HandleMessageImpl(fDelta, events);
     }
 
 private:

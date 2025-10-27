@@ -33,12 +33,12 @@ void MouseMap::UnbindActionImpl(const AbInputBind& ib, void* pThis)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void MouseMap::PlayAction(int32_t fX, int32_t fY)
+void MouseMap::PlayAction(const float fDelta, int32_t fX, int32_t fY)
 {
 	for (const auto& bind : m_vMouseBinds) {
 		AB_ASSERT(bind.pThis);
 
-		bind.action(bind.pThis, fX, fY);
+		bind.action(fDelta, bind.pThis, fX, fY);
     }
 }
 

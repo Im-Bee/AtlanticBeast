@@ -1,5 +1,4 @@
 #include "Core.h"
-#include "Debug/Logger.hpp"
 #include "EmptyCanvas.hpp"
 #include "Raycaster/Renderer.hpp"
 #include "Synchronization/DeltaTime.hpp"
@@ -16,7 +15,7 @@ int main()
     const auto& input = renderWindow.GetInput();
     Voxels::Renderer render = { };
     Voxels::DeltaTime dt = { };
-    Voxels::FpsLimiter fl(1000.f / 120.f);
+    Voxels::FpsLimiter fl(1000.f / 60.f);
 
     ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
 	const auto& pc = pwc->GetCharacter();
@@ -44,7 +43,7 @@ int main()
         fl.Block(fDelta);
         ::Core::Debug::Logger::Get()->Log(Core::Debug::Info, L"Fps: %f Frame duration: %fms", 1000.f / fDelta, fDelta);
 
-        renderWindow.Update();
+        renderWindow.Update(fDelta);
         render.Update();
         render.Render();
     }

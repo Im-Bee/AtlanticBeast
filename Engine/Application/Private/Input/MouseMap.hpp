@@ -29,7 +29,7 @@ public:
 
 public:
 
-    void PlayAction(int32_t fX, int32_t fY);
+    void PlayAction(const float fDelta, int32_t fX, int32_t fY);
 
 private:
 

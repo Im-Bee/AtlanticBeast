@@ -43,7 +43,7 @@ public:
      * Reads and consumes the input queue from WindowDesc.
      * Plays continues binds.
      */
-    BEAST_API void Update();
+    BEAST_API void Update(const float fDelta);
 
 private:
 

@@ -33,7 +33,7 @@ public:
 
 public:
 
-    void PlayAction(AbKeyId keyCode);
+    void PlayAction(const float fDelta, AbKeyId keyCode);
 
 private:
 

@@ -55,7 +55,7 @@ void UserInput::StopCapturing()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void UserInput::Update()
+void UserInput::Update(const float fDelta)
 { 
     // Always replay the continuos keybinds that are currently pressed
     if (m_vCurrentlyPressedKeys.any()) {
@@ -64,7 +64,7 @@ void UserInput::Update()
                 continue;
             }
 
-            m_pImpl->KeyContinuous.PlayAction(i);
+            m_pImpl->KeyContinuous.PlayAction(fDelta, i);
         }
     }
     
@@ -84,8 +84,8 @@ void UserInput::Update()
 
                 m_vCurrentlyPressedKeys.set(key);
 
-                m_pImpl->KeyPressMap.PlayAction(key);
-                m_pImpl->KeyContinuous.PlayAction(key);
+                m_pImpl->KeyPressMap.PlayAction(fDelta, key);
+                m_pImpl->KeyContinuous.PlayAction(fDelta, key);
                 continue;
             }
 
@@ -100,7 +100,7 @@ void UserInput::Update()
 
                 m_vCurrentlyPressedKeys.flip(key);
 
-                m_pImpl->KeyReleaseMap.PlayAction(key);
+                m_pImpl->KeyReleaseMap.PlayAction(fDelta, key);
                 continue;
             }
 
@@ -110,7 +110,7 @@ void UserInput::Update()
                 continue;
 
             case EAbInputEvents::AbMotion:
-                m_pImpl->MotionMouseMap.PlayAction(is.Mouse.MouseX, is.Mouse.MouseY);
+                m_pImpl->MotionMouseMap.PlayAction(fDelta, is.Mouse.MouseX, is.Mouse.MouseY);
                 is.Mouse.MouseX = 0;
                 is.Mouse.MouseY = 0;
                 continue;

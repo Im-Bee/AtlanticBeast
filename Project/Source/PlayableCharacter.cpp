@@ -25,24 +25,6 @@ void PlayablePaper::BindToInput(const ::std::shared_ptr<App::UserInput>& pInput)
     ib.Keyboard.KeyCode = App::AB_KEY_E;
     pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionMoveDown, nullptr, ib);
 
-    ib.Keyboard.KeyCode = App::AB_KEY_1;
-    pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionLeftYaw, nullptr, ib);
-
-    ib.Keyboard.KeyCode = App::AB_KEY_2;
-    pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionRightYaw, nullptr, ib);
-
-    ib.Keyboard.KeyCode = App::AB_KEY_3;
-    pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionUpPitch, nullptr, ib);
-
-    ib.Keyboard.KeyCode = App::AB_KEY_4;
-    pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionDownPitch, nullptr, ib);
-
-    ib.Keyboard.KeyCode = App::AB_KEY_5;
-    pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionFovUp, nullptr, ib);
-
-    ib.Keyboard.KeyCode = App::AB_KEY_6;
-    pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionFovDown, nullptr, ib);
-
     ib.Keyboard.KeyCode = App::AB_KEY_SPACE;
     ib.Keyboard.KeyState = Press;
     pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionPlaceBlock, nullptr, ib);
