@@ -28,9 +28,9 @@ public:
 
 public:
 
-    BEAST_VOXEL_API explicit WorldGrid(size_t uGridWidth = VoxelGridDim);
+    BEAST_API explicit WorldGrid(size_t uGridWidth = VoxelGridDim);
     
-    BEAST_VOXEL_API ~WorldGrid() = default;
+    BEAST_API ~WorldGrid() = default;
 
 public:
 
@@ -86,7 +86,7 @@ private:
 
     ::std::vector<Voxel> GenerateGrid(size_t uGridWidth, ::std::vector<Cube>& vCubes);
 
-    BEAST_VOXEL_API void GenerateCube(const Vec3& offsetPos);
+    BEAST_API void GenerateCube(const Vec3& offsetPos);
 
 private:
 

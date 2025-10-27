@@ -6,13 +6,13 @@
 namespace Voxels
 {
 
-class BEAST_VOXEL_API Instance
+class Instance
 {
 public:
 
-    Instance();
+    BEAST_API Instance();
 
-    ~Instance();
+    BEAST_API ~Instance();
 
 public:
 

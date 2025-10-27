@@ -101,7 +101,7 @@ VkInstance Instance::CreateInstance()
     appInfo.pApplicationName    = "Voxels";
     appInfo.applicationVersion  = VK_MAKE_VERSION(0, 1, 5);
     appInfo.pEngineName         = "AtlanticBeast";
-    appInfo.engineVersion       = VK_MAKE_VERSION(0, 1, 5);
+    appInfo.engineVersion       = VK_MAKE_VERSION(0, 2, 0);
     appInfo.apiVersion          = VK_API_VERSION_1_1;
 
     VkInstanceCreateInfo createInfo = { };

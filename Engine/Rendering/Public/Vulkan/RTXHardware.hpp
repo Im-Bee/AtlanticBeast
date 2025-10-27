@@ -17,9 +17,9 @@ class RTXHardware : public Hardware
 {
 public:
 
-    BEAST_VOXEL_API RTXHardware(::std::shared_ptr<const Instance> pInstance);
+    BEAST_API RTXHardware(::std::shared_ptr<const Instance> pInstance);
 
-    BEAST_VOXEL_API ~RTXHardware() = default;
+    BEAST_API ~RTXHardware() = default;
 
 private:
     

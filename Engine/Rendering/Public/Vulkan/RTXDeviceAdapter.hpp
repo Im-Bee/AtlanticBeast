@@ -13,9 +13,9 @@ class RTXDeviceAdapter : public Adapter
 {
 public:
 
-    BEAST_VOXEL_API RTXDeviceAdapter(::std::shared_ptr<const Hardware> gpu);
+    BEAST_API RTXDeviceAdapter(::std::shared_ptr<const Hardware> gpu);
 
-    BEAST_VOXEL_API ~RTXDeviceAdapter() = default;
+    BEAST_API ~RTXDeviceAdapter() = default;
 
 public:
 

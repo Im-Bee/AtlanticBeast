@@ -21,14 +21,14 @@ public:
 
 public:
 
-    BEAST_VOXEL_API Swapchain() = default;
+    BEAST_API Swapchain() = default;
 
-    BEAST_VOXEL_API Swapchain(::std::shared_ptr<const Instance> inst,
-                              ::std::shared_ptr<const Hardware> hw,
-                              ::std::shared_ptr<const Adapter> da,
-                              ::std::shared_ptr<const WindowDesc> wd);
+    BEAST_API Swapchain(::std::shared_ptr<const Instance> inst,
+                        ::std::shared_ptr<const Hardware> hw,
+                        ::std::shared_ptr<const Adapter> da,
+                        ::std::shared_ptr<const WindowDesc> wd);
 
-    BEAST_VOXEL_API ~Swapchain();
+    BEAST_API ~Swapchain();
 
 public:
 

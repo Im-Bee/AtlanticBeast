@@ -11,7 +11,7 @@ class MinimalHardware : public Hardware
 {
 public: 
 
-    BEAST_VOXEL_API MinimalHardware(::std::shared_ptr<const Instance> pInstance);
+    BEAST_API MinimalHardware(::std::shared_ptr<const Instance> pInstance);
 
     ~MinimalHardware() = default; 
 

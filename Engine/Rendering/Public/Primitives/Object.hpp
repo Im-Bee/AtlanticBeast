@@ -30,13 +30,13 @@ public:
 
 public:
 
-	BEAST_VOXEL_API void SetPositon(Vec3 pos);
+	BEAST_API void SetPositon(Vec3 pos);
 
-	BEAST_VOXEL_API void SetRotation(Rot3 rot);
+	BEAST_API void SetRotation(Rot3 rot);
 
-	BEAST_VOXEL_API void AddPositon(const Vec3& pos);
+	BEAST_API void AddPositon(const Vec3& pos);
 
-	BEAST_VOXEL_API void AddRotation(const Rot3& rot);
+	BEAST_API void AddRotation(const Rot3& rot);
 
 public:
 

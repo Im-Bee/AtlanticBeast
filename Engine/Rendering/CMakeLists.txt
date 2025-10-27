@@ -1,4 +1,4 @@
-SET(VOXELS_SOURCE 
+SET(RENDERING_SOURCE 
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Primitives/Object.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/Instance.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/WrapperHardware.cpp"
@@ -14,7 +14,7 @@ SET(VOXELS_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/Renderer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
-SET(VOXELS_HEADRES 
+SET(RENDERING_HEADRES 
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Consts.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Mat4.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Vec3.hpp"
@@ -41,28 +41,28 @@ SET(VOXELS_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp"
 )
 
-ADD_LIBRARY(VoxelsLib SHARED 
-    "${VOXELS_SOURCE}"
-    "${VOXELS_HEADRES}"
- "Private/Raycaster/Rays.cpp")
+ADD_LIBRARY(RenderingLib SHARED 
+    "${RENDERING_SOURCE}"
+    "${RENDERING_HEADRES}"
+)
 
 FIND_PACKAGE(Vulkan REQUIRED)
 
-TARGET_INCLUDE_DIRECTORIES(VoxelsLib PUBLIC 
+TARGET_INCLUDE_DIRECTORIES(RenderingLib PUBLIC 
     "${Vulkan_INCLUDE_DIRS}"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/"
 )
 
-TARGET_LINK_LIBRARIES(VoxelsLib PUBLIC 
+TARGET_LINK_LIBRARIES(RenderingLib PUBLIC 
     "${Vulkan_LIBRARIES}"
     CoreLib
     AppLib
 )
 
-TARGET_PRECOMPILE_HEADERS(VoxelsLib PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp")
+TARGET_PRECOMPILE_HEADERS(RenderingLib PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp")
 
-TARGET_COMPILE_DEFINITIONS(VoxelsLib PRIVATE _BEAST_VOXELS_EXPORTS)
+TARGET_COMPILE_DEFINITIONS(RenderingLib PRIVATE _BEAST_EXPORTS)
 
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/shaders.cmake)
 compileShaders("${CMAKE_CURRENT_SOURCE_DIR}/Public/Shaders" CompileShadersForVoxels)
-ADD_DEPENDENCIES(VoxelsLib CompileShadersForVoxels)
+ADD_DEPENDENCIES(RenderingLib CompileShadersForVoxels)

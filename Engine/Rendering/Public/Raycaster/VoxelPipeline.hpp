@@ -26,22 +26,22 @@ public:
 
 public:
 
-    BEAST_VOXEL_API VoxelPipeline(::std::shared_ptr<const Hardware> hw,
-                                  ::std::shared_ptr<const Adapter> da);
+    BEAST_API VoxelPipeline(::std::shared_ptr<const Hardware> hw,
+                            ::std::shared_ptr<const Adapter> da);
 
-    BEAST_VOXEL_API ~VoxelPipeline();
+    BEAST_API ~VoxelPipeline();
 
 public:
 
-    BEAST_VOXEL_API GPUStreamBuffer ReserveStagingBuffer(const size_t uSizeInBytes);
+    BEAST_API GPUStreamBuffer ReserveStagingBuffer(const size_t uSizeInBytes);
 
-    BEAST_VOXEL_API GPUBuffer ReserveGPUBuffer(const size_t uSizeInBytes);
+    BEAST_API GPUBuffer ReserveGPUBuffer(const size_t uSizeInBytes);
 
-    BEAST_VOXEL_API void UploadOnStreamBuffer(const void* pUpload, 
-                                              GPUStreamBuffer& outBuffer,
-                                              const ShaderResource& sr);
+    BEAST_API void UploadOnStreamBuffer(const void* pUpload, 
+                                        GPUStreamBuffer& outBuffer,
+                                        const ShaderResource& sr);
 
-    BEAST_VOXEL_API void LoadImage(VkImage image);
+    BEAST_API void LoadImage(VkImage image);
 
     void LoadPushConstants(float fFov,
                            Vec3 cameraPos, 

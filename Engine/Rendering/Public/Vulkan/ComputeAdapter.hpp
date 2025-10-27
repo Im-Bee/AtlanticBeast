@@ -13,7 +13,7 @@ class ComputeAdapter : public Adapter
 {
 public:
 
-    BEAST_VOXEL_API ComputeAdapter(::std::shared_ptr<const Hardware> gpu);
+    BEAST_API ComputeAdapter(::std::shared_ptr<const Hardware> gpu);
 
     ~ComputeAdapter() = default;
 

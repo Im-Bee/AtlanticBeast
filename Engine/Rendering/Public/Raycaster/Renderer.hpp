@@ -16,7 +16,7 @@ class Renderer
 {
 public:
 
-    BEAST_VOXEL_API Renderer()
+    BEAST_API Renderer()
         : m_pInstance(nullptr)
         , m_pHardware(nullptr)
         , m_pDeviceAdapter(nullptr)
@@ -54,14 +54,14 @@ public:
 
 public:
 
-    BEAST_VOXEL_API void Initialize(::std::shared_ptr<const WindowDesc> wd,
-                                    ::std::shared_ptr<WorldGrid> vg = ::std::make_shared<WorldGrid>());
+    BEAST_API void Initialize(::std::shared_ptr<const WindowDesc> wd,
+                              ::std::shared_ptr<WorldGrid> vg = ::std::make_shared<WorldGrid>());
 
-    BEAST_VOXEL_API void Update();
+    BEAST_API void Update();
 
-    BEAST_VOXEL_API void Render();
+    BEAST_API void Render();
 
-    BEAST_VOXEL_API void Destroy();
+    BEAST_API void Destroy();
 
 private:
 
