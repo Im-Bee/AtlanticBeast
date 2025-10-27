@@ -16,7 +16,7 @@ int main()
     const auto& input = renderWindow.GetInput();
     Voxels::Renderer render = { };
     Voxels::DeltaTime dt = { };
-    Voxels::FpsLimiter fl(16.8);
+    Voxels::FpsLimiter fl(1000.f / 120.f);
 
     ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
 	const auto& pc = pwc->GetCharacter();
@@ -42,6 +42,8 @@ int main()
     {   
         const float fDelta = dt.FetchMs();
         fl.Block(fDelta);
+        ::Core::Debug::Logger::Get()->Log(Core::Debug::Info, L"Fps: %f Frame duration: %fms", 1000.f / fDelta, fDelta);
+
         renderWindow.Update();
         render.Update();
         render.Render();
