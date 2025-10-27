@@ -39,7 +39,7 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void Renderer::Update()
+void Renderer::Update(const float)
 {
     if (m_pVoxelGrid->ReuploadStatus() & WorldGrid::EReupload::RequestStaging) {
         AB_LOG(Core::Debug::Info, L"Staging the buffers");

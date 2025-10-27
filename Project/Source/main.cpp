@@ -44,7 +44,7 @@ int main()
         ::Core::Debug::Logger::Get()->Log(Core::Debug::Info, L"Fps: %f Frame duration: %fms", 1000.f / fDelta, fDelta);
 
         renderWindow.Update(fDelta);
-        render.Update();
+        render.Update(fDelta);
         render.Render();
     }
 

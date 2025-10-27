@@ -57,7 +57,7 @@ public:
     BEAST_API void Initialize(::std::shared_ptr<const WindowDesc> wd,
                               ::std::shared_ptr<WorldGrid> vg = ::std::make_shared<WorldGrid>());
 
-    BEAST_API void Update();
+    BEAST_API void Update(const float);
 
     BEAST_API void Render();
 
