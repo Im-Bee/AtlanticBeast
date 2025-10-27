@@ -19,7 +19,7 @@ public:
 
     BEAST_API RTXHardware(::std::shared_ptr<const Instance> pInstance);
 
-    BEAST_API ~RTXHardware() = default;
+    ~RTXHardware() = default;
 
 private:
     

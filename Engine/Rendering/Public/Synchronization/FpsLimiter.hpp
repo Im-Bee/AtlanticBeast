@@ -14,6 +14,8 @@ public:
 
 public:
 
+    void Block(float fDelta);
+
 };
 
 } //!Voxels

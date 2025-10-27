@@ -39,7 +39,6 @@ public:
 public:
 
     GPUStreamBuffer(const GPUStreamBuffer& other) = delete;
-
     GPUStreamBuffer(GPUStreamBuffer&& other) noexcept
         : GPUBuffer(std::move(other))
         , m_pData(other.m_pData)

@@ -45,7 +45,6 @@ public:
 public:
 
     GPUBuffer(const GPUBuffer& other) = delete;
-
     GPUBuffer(GPUBuffer&& other) noexcept
         : m_pDeviceAdapter(std::move(other.m_pDeviceAdapter))
         , m_DeviceMemory(other.m_DeviceMemory)
