@@ -226,7 +226,7 @@ bool MarchTheRay(in vec3    ro,
                     }
 
                     float kCentDist = distance(ro, CubeData[id].Pos.xyz);
-                    if (centDist > kCentDist)
+                    if (kCentDist < centDist)
                     {
                         centDist    = kCentDist;
                         fDistance   = hit;
