@@ -1,8 +1,11 @@
 #include "Core.h"
+#include "Debug/Logger.hpp"
 #include "EmptyCanvas.hpp"
 #include "Raycaster/Renderer.hpp"
+#include "Synchronization/DeltaTime.hpp"
 
 #include "CameraController.hpp"
+#include "Synchronization/FpsLimiter.hpp"
 
 using namespace Core;
 using namespace App;
@@ -12,6 +15,8 @@ int main()
     EmptyCanvas renderWindow;
     const auto& input = renderWindow.GetInput();
     Voxels::Renderer render = { };
+    Voxels::DeltaTime dt = { };
+    Voxels::FpsLimiter fl(16.8);
 
     ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
 	const auto& pc = pwc->GetCharacter();
@@ -32,8 +37,11 @@ int main()
     pc->SetGrid(vg); 
 
 	// Main loop
+    dt.SetReferenceFrame();
     while (AppStatus::GetAppCurrentStatus()) 
-    {
+    {   
+        const float fDelta = dt.FetchMs();
+        fl.Block(fDelta);
         renderWindow.Update();
         render.Update();
         render.Render();

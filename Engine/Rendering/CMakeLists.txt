@@ -12,6 +12,8 @@ SET(RENDERING_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/VoxelPipeline.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/VoxelGrid.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/Renderer.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Synchronization/DeltaTime.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Synchronization/FpsLimiter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
 SET(RENDERING_HEADRES 
@@ -39,6 +41,7 @@ SET(RENDERING_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/Renderer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/Rays.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Synchronization/FpsLimiter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Synchronization/DeltaTime.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp"
 )
 

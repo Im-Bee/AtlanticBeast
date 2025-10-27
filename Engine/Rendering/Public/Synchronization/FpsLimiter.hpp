@@ -8,14 +8,18 @@ class FpsLimiter
 {
 public:
 
-    FpsLimiter() = default;
+    FpsLimiter(const float fTargetMs);
 
     ~FpsLimiter() = default;
 
 public:
 
-    void Block(float fDelta)
-    { }
+    void Block(const float fDelta);
+
+private:
+
+    float m_fTarget = -1.f;
+    float m_fBalance = -1.f;
 
 };
 
