@@ -8,7 +8,7 @@ using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
 MinimalHardware::MinimalHardware(shared_ptr<const Instance> pInstance)
-    : Hardware(ChooseGPU(pInstance))
+    : HardwareWrapper(ChooseGPU(pInstance))
     , m_pInstance(pInstance)
 { }
 

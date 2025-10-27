@@ -13,7 +13,7 @@ namespace Voxels
 * - accelerationStructure
 * - bufferDeviceAddress
 **/
-class RTXHardware : public Hardware
+class RTXHardware : public HardwareWrapper
 {
 public:
 

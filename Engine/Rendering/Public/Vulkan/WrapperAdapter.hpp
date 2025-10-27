@@ -4,13 +4,13 @@
 namespace Voxels
 {
 
-class Adapter
+class AdapterWrapper
 {
 public:
 
-    Adapter() = delete;
+    AdapterWrapper() = delete;
 
-    Adapter(VkPhysicalDevice gpu, 
+    AdapterWrapper(VkPhysicalDevice gpu, 
             const uint32_t uFlags,
             const std::vector<const char*>& vExtensions,
             const void* pFeatures)
@@ -18,17 +18,22 @@ public:
         , m_Device(CreateDevice(gpu, vExtensions, pFeatures, m_uQueueFamily))
         , m_Queue(CreateQueue(m_Device, m_uQueueFamily))
     { }
-
-    Adapter(Adapter&&) noexcept = default;
-    Adapter(const Adapter&) = delete;
                    
-    ~Adapter()
+    ~AdapterWrapper()
     {
         if (m_Device != VK_NULL_HANDLE) {
             vkDestroyDevice(m_Device, NULL);
             m_Device = VK_NULL_HANDLE;
         }
     }
+
+public:
+
+    AdapterWrapper(AdapterWrapper&&) noexcept = default;
+    AdapterWrapper(const AdapterWrapper&) = delete;
+
+    AdapterWrapper& operator=(AdapterWrapper&&) noexcept = default;
+    AdapterWrapper& operator=(const AdapterWrapper&) noexcept = delete;
 
 public:
 

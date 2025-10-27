@@ -22,13 +22,13 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
 {
     m_pInstance         = make_shared<Instance>();
     m_pHardware         = make_shared<MinimalHardware>(m_pInstance);
-    m_pDeviceAdapter    = make_shared<ComputeAdapter>(dynamic_pointer_cast<Hardware>(m_pHardware));
+    m_pDeviceAdapter    = make_shared<ComputeAdapter>(dynamic_pointer_cast<HardwareWrapper>(m_pHardware));
     m_pWindowDesc       = wd;
     m_pVoxelGrid        = vg;
-    m_pPipeline         = make_shared<VoxelPipeline>(dynamic_pointer_cast<Hardware>(m_pHardware), 
-                                                     dynamic_pointer_cast<Adapter>(m_pDeviceAdapter));
+    m_pPipeline         = make_shared<VoxelPipeline>(dynamic_pointer_cast<HardwareWrapper>(m_pHardware), 
+                                                     dynamic_pointer_cast<AdapterWrapper>(m_pDeviceAdapter));
 
-    m_CommandPool = CreateCommandPool(dynamic_pointer_cast<Adapter>(m_pDeviceAdapter), 
+    m_CommandPool = CreateCommandPool(dynamic_pointer_cast<AdapterWrapper>(m_pDeviceAdapter), 
                                       m_pDeviceAdapter->GetQueueFamilyIndex());
 
     // Recreating swap chain also creates frame resources and initializes swap chain
@@ -168,7 +168,7 @@ void Renderer::Destroy()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkCommandPool Renderer::CreateCommandPool(shared_ptr<const Adapter> da, uint32_t uQueueFamily)
+VkCommandPool Renderer::CreateCommandPool(shared_ptr<const AdapterWrapper> da, uint32_t uQueueFamily)
 {
     VkCommandPool cmdPool;
 
@@ -183,7 +183,7 @@ VkCommandPool Renderer::CreateCommandPool(shared_ptr<const Adapter> da, uint32_t
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
-VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const Adapter> da, VkCommandPool cmdPool)
+VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const AdapterWrapper> da, VkCommandPool cmdPool)
 {
     VkCommandBuffer cmdBuffer;
 
@@ -201,7 +201,7 @@ VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const Adapter> d
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_ptr<const Adapter>& da,
+vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_ptr<const AdapterWrapper>& da,
                                                            const ::std::shared_ptr<VoxelPipeline>& pipeline,
                                                            const ::std::shared_ptr<const WorldGrid>& vg,
                                                            VkCommandPool cmdPool,
@@ -403,8 +403,8 @@ void Renderer::RecreateSwapChain()
 
     m_pSwapChain = nullptr;
     m_pSwapChain = make_unique<Swapchain>(m_pInstance, 
-                                          dynamic_pointer_cast<Hardware>(m_pHardware), 
-                                          dynamic_pointer_cast<Adapter>(m_pDeviceAdapter),
+                                          dynamic_pointer_cast<HardwareWrapper>(m_pHardware), 
+                                          dynamic_pointer_cast<AdapterWrapper>(m_pDeviceAdapter),
                                           m_pWindowDesc);
 
     m_vFrames = std::move(CreateFrameResources(m_pDeviceAdapter,

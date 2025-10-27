@@ -376,6 +376,31 @@ float SoftShadowRay(in vec3 from, in vec3 to, in vec3 normal, in int maxDistance
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+vec3 Phong(in vec3   camPos,
+           in vec3   pos,
+           in vec3   normal,
+           in int    maxDistance)
+{
+    const float ambientStrength     = 0.1;
+    const float diffuseStrength     = 0.9;
+    const float specularStrength    = 0.4;
+    const float shininess           = 256.0;
+
+    vec3 lightDir   = normalize(lightPos - pos);
+    vec3 viewDir    = normalize(camPos   - pos);
+    vec3 reflectDir = normalize(lightDir + viewDir);
+
+    float diff = max(dot(normal, lightDir), 0.0);
+    float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
+
+    vec3 ambient    = ambientStrength * lightColor;
+    vec3 diffuse    = diffuseStrength * diff * lightColor;
+    vec3 specular   = specularStrength * spec * lightColor;
+
+    return ambient + diffuse + specular;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 vec3 PhongShadows(in vec3   camPos,
                   in vec3   pos,
                   in vec3   normal,
@@ -478,7 +503,7 @@ vec3 Reflection(in vec3     from,
             hitBaseColor = ExtractColorInt(VoxelData[index].Color);
             localReflect = 0.23;
         }
-        if (hitType == HIT_TYPE_OBJECT) {
+        else if (hitType == HIT_TYPE_OBJECT) {
             hitBaseColor = ExtractColorInt(CubeData[index].Color);
             localReflect = 0.23;
         } 
@@ -550,11 +575,19 @@ void main()
         }
 
         if (fDistance <= maxSteps) 
-        {
-            vec3 shaded = PhongSoftShadows(CameraPos.xyz, 
-                                           hitPos,
-                                           normal,
-                                           int(distance(hitPos, lightPos) * 1.5)) * finalColor.xyz;
+        {   
+            vec3 shaded = finalColor.xyz;
+            if (hitType != HIT_TYPE_VOXEL) {
+                shaded = PhongSoftShadows(CameraPos.xyz, 
+                                          hitPos,
+                                          normal,
+                                          int(distance(hitPos, lightPos) * 1.5)) * finalColor.xyz;
+            } else {
+                shaded = Phong(CameraPos.xyz, 
+                               hitPos,
+                               normal,
+                               int(distance(hitPos, lightPos) * 1.5)) * finalColor.xyz;
+            }
             // finalColor = vec4(shaded, finalColor.w);
 
             finalColor = vec4(Reflection(ro, 

@@ -38,6 +38,7 @@ SET(RENDERING_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/VoxelGrid.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/Renderer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Raycaster/Rays.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Synchronization/FpsLimiter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp"
 )
 

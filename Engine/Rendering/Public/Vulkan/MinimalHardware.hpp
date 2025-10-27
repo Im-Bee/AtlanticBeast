@@ -7,7 +7,7 @@
 namespace Voxels
 {
 
-class MinimalHardware : public Hardware
+class MinimalHardware : public HardwareWrapper
 {
 public: 
 

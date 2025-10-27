@@ -15,19 +15,12 @@ public:
         : GPUBuffer() 
     { }
 
-    GPUStreamBuffer(::std::shared_ptr<const Adapter> da,
+    GPUStreamBuffer(::std::shared_ptr<const AdapterWrapper> da,
                     VkDeviceMemory deviceMemory,
                     VkBuffer buffer,
                     void* pData,
                     size_t sizeInBytes) 
         : GPUBuffer(da, deviceMemory, buffer, sizeInBytes) 
-    { }
-
-    GPUStreamBuffer(const GPUStreamBuffer& other) = delete;
-
-    GPUStreamBuffer(GPUStreamBuffer&& other) noexcept
-        : GPUBuffer(std::move(other))
-        , m_pData(other.m_pData)
     { }
 
     ~GPUStreamBuffer() 
@@ -45,6 +38,14 @@ public:
 
 public:
 
+    GPUStreamBuffer(const GPUStreamBuffer& other) = delete;
+
+    GPUStreamBuffer(GPUStreamBuffer&& other) noexcept
+        : GPUBuffer(std::move(other))
+        , m_pData(other.m_pData)
+    { }
+
+    GPUStreamBuffer& operator=(const GPUStreamBuffer& other) noexcept = delete;
     GPUStreamBuffer& operator=(GPUStreamBuffer&& other) noexcept
     {
         this->GPUBuffer::operator=(std::move(other));

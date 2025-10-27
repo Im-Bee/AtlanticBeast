@@ -6,8 +6,8 @@ namespace Voxels
 using namespace std;
 
 // --------------------------------------------------------------------------------------------------------------------
-ComputeAdapter::ComputeAdapter(shared_ptr<const Hardware> gpu)
-    : Adapter(gpu->GetPhysicalDevice(), 
+ComputeAdapter::ComputeAdapter(shared_ptr<const HardwareWrapper> gpu)
+    : AdapterWrapper(gpu->GetPhysicalDevice(), 
               VK_QUEUE_COMPUTE_BIT | VK_QUEUE_GRAPHICS_BIT,
               GetExtensions(),
               GetFeaturesImpl())

@@ -21,11 +21,11 @@ public:
 
 public:
 
-    BEAST_API Swapchain() = default;
+    Swapchain() = default;
 
     BEAST_API Swapchain(::std::shared_ptr<const Instance> inst,
-                        ::std::shared_ptr<const Hardware> hw,
-                        ::std::shared_ptr<const Adapter> da,
+                        ::std::shared_ptr<const HardwareWrapper> hw,
+                        ::std::shared_ptr<const AdapterWrapper> da,
                         ::std::shared_ptr<const WindowDesc> wd);
 
     BEAST_API ~Swapchain();
@@ -46,18 +46,19 @@ private:
     VkSurfaceKHR CreateSurface(::std::shared_ptr<const Instance>& pInstance,
                                ::std::shared_ptr<const WindowDesc>& pWindowDesc);
 
-    VkSurfaceCapabilitiesKHR GetCapabilitesInternal(::std::shared_ptr<const Hardware> pHardware, VkSurfaceKHR surface);
+    VkSurfaceCapabilitiesKHR GetCapabilitesInternal(::std::shared_ptr<const HardwareWrapper> pHardware, 
+                                                    VkSurfaceKHR surface);
 
     VkExtent2D GetExtentInternal(const VkSurfaceCapabilitiesKHR& capabilities, 
                                  ::std::shared_ptr<const WindowDesc> pWindowDesc);
     
     uint32_t GetImageCountInternal(const VkSurfaceCapabilitiesKHR& capabilities);
 
-    VkSurfaceFormatKHR PickFormat(::std::shared_ptr<const Hardware>& pHardware, VkSurfaceKHR surface);
+    VkSurfaceFormatKHR PickFormat(::std::shared_ptr<const HardwareWrapper>& pHardware, VkSurfaceKHR surface);
 
-    VkPresentModeKHR PickMode(::std::shared_ptr<const Hardware>& pHardware, VkSurfaceKHR surface);
+    VkPresentModeKHR PickMode(::std::shared_ptr<const HardwareWrapper>& pHardware, VkSurfaceKHR surface);
 
-    VkSwapchainKHR CreateSwapChain(::std::shared_ptr<const Adapter>& pAdapter,
+    VkSwapchainKHR CreateSwapChain(::std::shared_ptr<const AdapterWrapper>& pAdapter,
                                    VkSurfaceKHR surface,
                                    VkSurfaceCapabilitiesKHR& capabilities,
                                    VkExtent2D& extent2D,
@@ -65,17 +66,17 @@ private:
                                    VkSurfaceFormatKHR& surfaceFormat,
                                    VkPresentModeKHR presentMode);
 
-    uint32_t CreateAmountOfSwapChainImages(::std::shared_ptr<const Adapter>& pAdapter, VkSwapchainKHR swapchain);
+    uint32_t CreateAmountOfSwapChainImages(::std::shared_ptr<const AdapterWrapper>& pAdapter, VkSwapchainKHR swapchain);
 
-    ::std::vector<VkImage> CreateSwapChainImages(::std::shared_ptr<const Adapter>& pAdapter,
+    ::std::vector<VkImage> CreateSwapChainImages(::std::shared_ptr<const AdapterWrapper>& pAdapter,
                                                  VkSwapchainKHR swapchain,
                                                  uint32_t uAmount);
 
 private:
 
     ::std::shared_ptr<const Instance>           m_pInstance         = nullptr;
-    ::std::shared_ptr<const Hardware>    m_pHardware         = nullptr;
-    ::std::shared_ptr<const Adapter>     m_pDeviceAdapter    = nullptr;
+    ::std::shared_ptr<const HardwareWrapper>    m_pHardware         = nullptr;
+    ::std::shared_ptr<const AdapterWrapper>     m_pDeviceAdapter    = nullptr;
     ::std::shared_ptr<const WindowDesc>         m_pWindowDesc       = nullptr;
 
     VkSurfaceKHR                m_Surface       = VK_NULL_HANDLE;

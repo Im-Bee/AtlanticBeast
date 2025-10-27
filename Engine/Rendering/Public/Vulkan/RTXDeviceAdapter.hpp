@@ -8,14 +8,14 @@
 namespace Voxels
 {
 
-class RTXDeviceAdapter : public Adapter
+class RTXDeviceAdapter : public AdapterWrapper
                        , public IAdapter<RTXDeviceAdapter>
 {
 public:
 
-    BEAST_API RTXDeviceAdapter(::std::shared_ptr<const Hardware> gpu);
+    BEAST_API RTXDeviceAdapter(::std::shared_ptr<const HardwareWrapper> gpu);
 
-    BEAST_API ~RTXDeviceAdapter() = default;
+    ~RTXDeviceAdapter() = default;
 
 public:
 
@@ -25,7 +25,7 @@ public:
 
 private:
 
-    ::std::shared_ptr<const Hardware> m_pGPU = nullptr;
+    ::std::shared_ptr<const HardwareWrapper> m_pGPU = nullptr;
 
 };
 

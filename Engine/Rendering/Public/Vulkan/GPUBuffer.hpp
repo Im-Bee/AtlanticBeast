@@ -18,7 +18,7 @@ public:
         , m_uSizeInBytes(0)
     { }
 
-    GPUBuffer(::std::shared_ptr<const Adapter> da,
+    GPUBuffer(::std::shared_ptr<const AdapterWrapper> da,
               VkDeviceMemory deviceMemory,
               VkBuffer buffer,
               size_t sizeInBytes) 
@@ -27,18 +27,6 @@ public:
         , m_Buffer(buffer)
         , m_uSizeInBytes(sizeInBytes)
     { }
-
-    GPUBuffer(const GPUBuffer& other) = delete;
-
-    GPUBuffer(GPUBuffer&& other) noexcept
-        : m_pDeviceAdapter(std::move(other.m_pDeviceAdapter))
-        , m_DeviceMemory(other.m_DeviceMemory)
-        , m_Buffer(other.m_Buffer)
-        , m_uSizeInBytes(other.m_uSizeInBytes)
-    {
-        other.m_DeviceMemory = VK_NULL_HANDLE;
-        other.m_Buffer = VK_NULL_HANDLE;
-    }
 
     ~GPUBuffer() 
     {
@@ -56,18 +44,30 @@ public:
 
 public:
 
-    GPUBuffer& operator=(GPUBuffer&& other) noexcept
-    {
-        m_pDeviceAdapter = std::move(other.m_pDeviceAdapter);
-        m_DeviceMemory = other.m_DeviceMemory;
-        m_Buffer = other.m_Buffer;
-        m_uSizeInBytes = other.m_uSizeInBytes;
+    GPUBuffer(const GPUBuffer& other) = delete;
 
+    GPUBuffer(GPUBuffer&& other) noexcept
+        : m_pDeviceAdapter(std::move(other.m_pDeviceAdapter))
+        , m_DeviceMemory(other.m_DeviceMemory)
+        , m_Buffer(other.m_Buffer)
+        , m_uSizeInBytes(other.m_uSizeInBytes)
+    {
         other.m_DeviceMemory = VK_NULL_HANDLE;
         other.m_Buffer = VK_NULL_HANDLE;
-        other.m_uSizeInBytes = 0;
+    }
 
-        return *this; 
+    GPUBuffer& operator=(const GPUBuffer& other) noexcept = delete;
+    GPUBuffer& operator=(GPUBuffer&& other) noexcept
+    {
+        this->m_pDeviceAdapter  = std::move(other.m_pDeviceAdapter);
+        this->m_DeviceMemory    = other.m_DeviceMemory;
+        this->m_Buffer          = other.m_Buffer;
+        this->m_uSizeInBytes    = other.m_uSizeInBytes;
+
+        other.m_DeviceMemory    = VK_NULL_HANDLE;
+        other.m_Buffer          = VK_NULL_HANDLE;
+
+        return *this;
     }
 
 public:
@@ -83,7 +83,7 @@ public:
 
 protected:
 
-    ::std::shared_ptr<const Adapter> m_pDeviceAdapter = nullptr;
+    ::std::shared_ptr<const AdapterWrapper> m_pDeviceAdapter = nullptr;
     VkDeviceMemory  m_DeviceMemory  = VK_NULL_HANDLE;
     VkBuffer        m_Buffer        = VK_NULL_HANDLE;
     size_t          m_uSizeInBytes  = 0;

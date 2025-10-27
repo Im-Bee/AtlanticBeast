@@ -65,11 +65,11 @@ public:
 
 private:
 
-    VkCommandPool CreateCommandPool(::std::shared_ptr<const Adapter> da, uint32_t uQueueFamily);
+    VkCommandPool CreateCommandPool(::std::shared_ptr<const AdapterWrapper> da, uint32_t uQueueFamily);
 
-    VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const Adapter> da, VkCommandPool cmdPool);
+    VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const AdapterWrapper> da, VkCommandPool cmdPool);
 
-    ::std::vector<VoxelFrameResources> CreateFrameResources(const ::std::shared_ptr<const Adapter>& da,
+    ::std::vector<VoxelFrameResources> CreateFrameResources(const ::std::shared_ptr<const AdapterWrapper>& da,
                                                             const ::std::shared_ptr<VoxelPipeline>& pipeline,
                                                             const ::std::shared_ptr<const WorldGrid>& vg,
                                                             VkCommandPool cmdPool,

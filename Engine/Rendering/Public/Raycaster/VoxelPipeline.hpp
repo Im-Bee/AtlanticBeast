@@ -26,8 +26,8 @@ public:
 
 public:
 
-    BEAST_API VoxelPipeline(::std::shared_ptr<const Hardware> hw,
-                            ::std::shared_ptr<const Adapter> da);
+    BEAST_API VoxelPipeline(::std::shared_ptr<const HardwareWrapper> hw,
+                            ::std::shared_ptr<const AdapterWrapper> da);
 
     BEAST_API ~VoxelPipeline();
 
@@ -74,20 +74,20 @@ public:
 
 private:
 
-    VkDescriptorSetLayout CreateDescriptorLayout(::std::shared_ptr<const Adapter>& da);
+    VkDescriptorSetLayout CreateDescriptorLayout(::std::shared_ptr<const AdapterWrapper>& da);
 
-    VkDescriptorPool CreateDescriptorPool(::std::shared_ptr<const Adapter>& da);
+    VkDescriptorPool CreateDescriptorPool(::std::shared_ptr<const AdapterWrapper>& da);
 
-    VkDescriptorSet CreateDescriptorSet(::std::shared_ptr<const Adapter>& da,
+    VkDescriptorSet CreateDescriptorSet(::std::shared_ptr<const AdapterWrapper>& da,
                                         VkDescriptorPool dp,
                                         VkDescriptorSetLayout dLayout);
 
-    VkPipelineLayout CreatePipelineLayout(::std::shared_ptr<const Adapter>& da,
+    VkPipelineLayout CreatePipelineLayout(::std::shared_ptr<const AdapterWrapper>& da,
                                           VkDescriptorSetLayout descriptorSetLayout);
 
-    VkShaderModule LoadShader(::std::shared_ptr<const Adapter>& da, const ::std::string& strPath);
+    VkShaderModule LoadShader(::std::shared_ptr<const AdapterWrapper>& da, const ::std::string& strPath);
 
-    VkPipeline CreateComputePipeline(::std::shared_ptr<const Adapter>& da, 
+    VkPipeline CreateComputePipeline(::std::shared_ptr<const AdapterWrapper>& da, 
                                      VkPipelineLayout pipelineLayout, 
                                      VkShaderModule shaderModule);
 
@@ -95,8 +95,8 @@ private:
 
 private:
     
-    ::std::shared_ptr<const Hardware>   m_pHardware         = nullptr;
-    ::std::shared_ptr<const Adapter>    m_pDeviceAdapter    = nullptr;
+    ::std::shared_ptr<const HardwareWrapper>   m_pHardware         = nullptr;
+    ::std::shared_ptr<const AdapterWrapper>    m_pDeviceAdapter    = nullptr;
     ::std::shared_ptr<const Swapchain>  m_pSwapChain        = nullptr;
 
     VoxelPushConstants m_Vpc;

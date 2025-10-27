@@ -13,9 +13,13 @@ public:
 
     ~IAdapter() = default;
 
-    IAdapter(IAdapter&&) = default;
+public:
 
+    IAdapter(IAdapter&&) = default;
     IAdapter(const IAdapter&) = default;
+
+    IAdapter& operator=(IAdapter&&) noexcept = default;
+    IAdapter& operator=(const IAdapter&) noexcept = default;
 
 public:
 
