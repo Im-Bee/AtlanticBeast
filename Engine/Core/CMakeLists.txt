@@ -2,6 +2,8 @@ SET(CORE_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Core.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Exception.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Debug/Logger.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Synchronization/DeltaTime.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Synchronization/FpsLimiter.cpp"
 )
 SET(CORE_HEADRES 
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/AbLimits.h"
@@ -13,6 +15,8 @@ SET(CORE_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/SystemIncludes.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Debug/Assert.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Debug/Logger.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Synchronization/FpsLimiter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Synchronization/DeltaTime.hpp"
 )
 
 ADD_LIBRARY(CoreLib SHARED

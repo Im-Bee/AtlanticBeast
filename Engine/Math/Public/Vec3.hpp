@@ -1,8 +1,6 @@
 #ifndef AB_VEC3_H
 #define AB_VEC3_H
 
-#include "Core.h"
-
 namespace Voxels
 {
 
