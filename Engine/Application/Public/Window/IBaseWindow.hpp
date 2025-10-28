@@ -2,9 +2,8 @@
 #define AB_IBASEWINDOW_H
 
 #include "Core.h"
-#include "Debug/Assert.h"
-#include "Window/WindowDesc.hpp"
 #include "Input/UserInput.hpp"
+#include "Window/WindowDesc.hpp"
 #include "Window/WindowPolicy/BasicSystemPolicy.hpp"
 #include "AppStatus.hpp"
 

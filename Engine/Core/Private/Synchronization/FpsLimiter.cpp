@@ -2,7 +2,7 @@
 
 #include "Synchronization/FpsLimiter.hpp"
 
-namespace Voxels
+namespace Core
 {
 
 using namespace ::std;
@@ -15,12 +15,12 @@ FpsLimiter::FpsLimiter(const float fTargetMs)
 { }
 
 // --------------------------------------------------------------------------------------------------------------------
-void FpsLimiter::Block(const float fDelta)
+void FpsLimiter::Block(const float fDeltaMs)
 {
     using Duration = duration<float, milli>;
 
-    m_fBalance += m_fTarget - fDelta;
+    m_fBalance += m_fTarget - fDeltaMs;
     this_thread::sleep_for(Duration(max(0.f, m_fTarget + m_fBalance)));
 }
 
-} //!Voxels
+} //!Core

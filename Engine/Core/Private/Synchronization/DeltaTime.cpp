@@ -2,7 +2,7 @@
 
 #include "Synchronization/DeltaTime.hpp"
 
-namespace Voxels 
+namespace Core
 {
 
 using namespace ::std;
@@ -26,4 +26,4 @@ float DeltaTime::FetchMs()
     return diff; 
 }
 
-} //!Voxels
+} //!Core

@@ -1,14 +1,18 @@
 #ifndef AB_FPS_LIMITER_H
 #define AB_FPS_LIMITER_H
 
-namespace Voxels
+#include "CoreMinimal.h"
+
+namespace Core
 {
 
 class FpsLimiter
 {
 public:
 
-    BEAST_API FpsLimiter(const float fTargetMs);
+    BEAST_API FpsLimiter() = delete;
+
+    explicit BEAST_API FpsLimiter(const float fTargetMs);
 
     ~FpsLimiter() = default;
 
@@ -22,7 +26,13 @@ public:
 
 public:
 
-    BEAST_API void Block(const float fDelta);
+    /**
+     * @brief Blocks current thread for the amount of time needed to achive target interval (stored in ms)
+     * between current and next call.
+     *
+     * @param fDelta Amount of time that passed since last block in ms
+     */
+    BEAST_API void Block(const float fDeltaMs);
 
 private:
 
@@ -31,5 +41,5 @@ private:
 
 };
 
-} //!Voxels
+} //!Core
 #endif //!AB_FPS_LIMITER_H

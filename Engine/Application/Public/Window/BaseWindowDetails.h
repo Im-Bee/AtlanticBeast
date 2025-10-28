@@ -1,8 +1,7 @@
 #ifndef AB_BASE_WINDOW_DETAILS_H
 #define AB_BASE_WINDOW_DETAILS_H
 
-#include "ExportImport.h"
-#include "SystemIncludes.h"
+#include "Core.h"
 
 #ifdef __cplusplus
 #ifdef __linux__

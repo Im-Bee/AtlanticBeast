@@ -1,9 +1,9 @@
 #ifndef AB_DELTA_TIME_H
 #define AB_DELTA_TIME_H
 
-#include "CPlusPlusStandard.hpp"
+#include "CoreMinimal.h"
 
-namespace Voxels
+namespace Core
 {
 
 class DeltaTime
@@ -29,7 +29,7 @@ public:
 public:
 
     /**
-     * @brief Sets the first timestamp on the timer
+     * @brief Sets the first timestamp on the timer, will be used for `FetchMs` as the next reference.
      */
     BEAST_API void SetReferenceFrame();
 
@@ -44,5 +44,5 @@ private:
 
 };
 
-} // !Voxels
+} // !Core
 #endif //!AB_DELTA_TIME_H

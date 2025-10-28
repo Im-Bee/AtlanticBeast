@@ -14,8 +14,8 @@ int main()
     EmptyCanvas renderWindow;
     const auto& input = renderWindow.GetInput();
     Voxels::Renderer render = { };
-    Voxels::DeltaTime dt = { };
-    Voxels::FpsLimiter fl(1000.f / 60.f);
+    DeltaTime dt = { };
+    FpsLimiter fl(1000.f / 60.f);
 
     ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
 	const auto& pc = pwc->GetCharacter();

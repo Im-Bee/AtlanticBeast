@@ -1,8 +1,7 @@
 #ifndef AB_LOGGER_H
 #define AB_LOGGER_H
 
-#include "ExportImport.h"
-#include "CPlusPlusStandard.hpp"
+#include "CoreMinimal.h"
 
 namespace Core::Debug
 {
@@ -32,6 +31,13 @@ public:
 
 public:
 
+    /**
+     * @brief Logs message to the file.
+     *
+     * @param sev Severity tag of the log message
+     * @param pwszFmt Format for the message or message itself, written with `vswprintf` standard
+     * @param ... Variables to be used in the format
+     */
     BEAST_API void Log(const ESeverity sev, const wchar_t pwszFmt[], ...);
 
 private:
