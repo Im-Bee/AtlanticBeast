@@ -10,7 +10,7 @@ class FpsLimiter
 {
 public:
 
-    BEAST_API FpsLimiter() = delete;
+    FpsLimiter() = delete;
 
     explicit BEAST_API FpsLimiter(const float fTargetMs);
 

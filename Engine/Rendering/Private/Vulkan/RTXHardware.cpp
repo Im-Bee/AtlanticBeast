@@ -7,7 +7,7 @@ namespace Voxels
 
 using namespace std;
 
-// RTXHardware // ---------------------------------------------------------------------------------------------------------
+// RTXHardware // ------------------------------------------------------------------------------------------------------
 RTXHardware::RTXHardware(shared_ptr<const Instance> pInstance)
     : HardwareWrapper(ChooseGPU(pInstance))
     , m_pInstance(pInstance)
