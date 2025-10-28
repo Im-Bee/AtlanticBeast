@@ -1,7 +1,6 @@
 #ifndef AB_OPERATIONS_H
 #define AB_OPERATIONS_H
 
-#include "Core.h"
 #include "Vec3.hpp"
 
 namespace Voxels

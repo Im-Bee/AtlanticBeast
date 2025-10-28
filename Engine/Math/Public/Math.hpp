@@ -1,6 +1,7 @@
 #ifndef AB_ATLANTIC_MATH_H
 #define AB_ATLANTIC_MATH_H
 
+#include "Core.h"
 #include "Consts.hpp"
 #include "Operations.hpp"
 #include "Vec3.hpp"
