@@ -1,7 +1,6 @@
+#include "Voxels.hpp"
+
 #include "Primitives/Object.hpp"
-
-#include "Math/Math.hpp"
-
 
 namespace Voxels
 {

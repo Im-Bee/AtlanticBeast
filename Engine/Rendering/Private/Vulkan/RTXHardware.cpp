@@ -1,3 +1,5 @@
+#include "Voxels.hpp"
+
 #include "Vulkan/RTXHardware.hpp"
 
 namespace Voxels

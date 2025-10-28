@@ -1,7 +1,7 @@
 #ifndef AB_RAYS_H
 #define AB_RAYS_H
 
-#include "Math/Math.hpp"
+#include "Math.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 
 namespace Voxels

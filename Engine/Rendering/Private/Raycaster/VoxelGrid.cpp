@@ -1,6 +1,7 @@
+#include "Voxels.hpp"
+
 #include "Raycaster/VoxelGrid.hpp"
-#include "Core.h"
-#include "Debug/Logger.hpp"
+
 #include "Raycaster/SingleVoxel.hpp"
 
 namespace Voxels

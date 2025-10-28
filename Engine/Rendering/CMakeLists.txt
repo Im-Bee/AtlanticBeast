@@ -17,12 +17,6 @@ SET(RENDERING_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
 SET(RENDERING_HEADRES 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Consts.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Mat4.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Vec3.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Vec4.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Rot.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Math/Operations.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Object.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Camera.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/ErrorHandling.hpp"
@@ -60,6 +54,7 @@ TARGET_INCLUDE_DIRECTORIES(RenderingLib PUBLIC
 TARGET_LINK_LIBRARIES(RenderingLib PUBLIC 
     "${Vulkan_LIBRARIES}"
     CoreLib
+    MathLib
     AppLib
 )
 

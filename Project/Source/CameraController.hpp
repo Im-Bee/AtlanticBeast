@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Math/Vec3.hpp"
 #include "Voxels.hpp"
 #include "Input/ControllerObject.hpp"
 #include "Input/UserInput.hpp"
@@ -8,7 +7,7 @@
 #include "Primitives/Camera.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Raycaster/Rays.hpp"
-#include "Math/Math.hpp"
+#include "Math.hpp"
 
 class PaperCharacter : public Voxels::Camera
 {
@@ -52,8 +51,7 @@ public:
 
         Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
 
-        if (hr.bHit)
-        {
+        if (hr.bHit) {
         }
     }
 

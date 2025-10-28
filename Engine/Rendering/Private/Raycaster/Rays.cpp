@@ -1,6 +1,6 @@
-#include "Raycaster/Rays.hpp"
+#include "Voxels.hpp"
 
-#include "Math/Math.hpp"
+#include "Raycaster/Rays.hpp"
 
 namespace Voxels
 {

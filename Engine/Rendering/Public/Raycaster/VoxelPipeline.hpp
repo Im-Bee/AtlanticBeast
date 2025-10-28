@@ -1,7 +1,7 @@
 #ifndef AB_PIPELINE_H
 #define AB_PIPELINE_H
 
-#include "Math/Math.hpp"
+#include "Math.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Raycaster/PushConstants.hpp"

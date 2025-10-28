@@ -1,5 +1,6 @@
+#include "Voxels.hpp"
+
 #include "Vulkan/MinimalHardware.hpp"
-#include "Core.h"
 
 namespace Voxels
 {

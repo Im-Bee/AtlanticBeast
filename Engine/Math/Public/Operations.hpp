@@ -1,8 +1,8 @@
 #ifndef AB_OPERATIONS_H
 #define AB_OPERATIONS_H
 
-#include "Debug/Assert.h"
-#include "Math/Vec3.hpp"
+#include "Core.h"
+#include "Vec3.hpp"
 
 namespace Voxels
 {

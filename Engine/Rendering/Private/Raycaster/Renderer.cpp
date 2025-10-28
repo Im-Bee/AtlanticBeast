@@ -1,7 +1,7 @@
+#include "Voxels.hpp"
+
 #include "Raycaster/Renderer.hpp"
 
-#include "Core.h"
-#include "Debug/Logger.hpp"
 #include "Raycaster/VoxelFrameResources.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Vulkan/ComputeAdapter.hpp"
@@ -9,7 +9,6 @@
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/MinimalHardware.hpp"
 #include "Vulkan/WrapperAdapter.hpp"
-#include "Math/Math.hpp"
 
 namespace Voxels
 {
@@ -342,11 +341,8 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const ::std::sh
         mmr.memory = m_vFrames[m_uCurrentFrame].VoxelBuffer.GetMemoryHandle();
         mmr.offset = 0;
         mmr.size = VK_WHOLE_SIZE;
-        VkMappedMemoryRange mmr2 = { };
-        mmr2.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+        VkMappedMemoryRange mmr2 = mmr;
         mmr2.memory = m_vFrames[m_uCurrentFrame].CubeBuffer.GetMemoryHandle();
-        mmr2.offset = 0;
-        mmr2.size = VK_WHOLE_SIZE;
 
         VkMappedMemoryRange mmrs[2] = { mmr, mmr2 };
         vkFlushMappedMemoryRanges(m_pDeviceAdapter->GetAdapterHandle(), 2, mmrs);

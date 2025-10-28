@@ -1,10 +1,8 @@
 #ifndef AB_VOXEL_GRID_H
 #define AB_VOXEL_GRID_H
 
-#include "Core.h"
-#include "Debug/Logger.hpp"
 #include "Voxels.hpp"
-#include "Math/Vec3.hpp"
+#include "Math.hpp"
 #include "Primitives/Cube.hpp"
 
 #include "Raycaster/SingleVoxel.hpp"
@@ -69,6 +67,8 @@ public:
                 return EReupload::NoAction;
         }
     }
+
+public:
 
     void ForceUpload()
     { m_Reupload = EReupload::RequestStaging; }

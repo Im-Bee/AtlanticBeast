@@ -1,8 +1,7 @@
 #ifndef AB_OBJECT_H
 #define AB_OBJECT_H
 
-#include "Math/Vec3.hpp"
-#include "Math/Rot.hpp"
+#include "Math.hpp"
 
 namespace Voxels
 {

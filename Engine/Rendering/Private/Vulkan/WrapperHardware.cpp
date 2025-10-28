@@ -1,3 +1,5 @@
+#include "Voxels.hpp"
+
 #include "Vulkan/WrapperHardware.hpp"
 #include "Vulkan/ErrorHandling.hpp"
 

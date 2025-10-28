@@ -1,3 +1,5 @@
+#include "Voxels.hpp"
+
 #include "Vulkan/SwapChain.hpp"
 
 #include "Vulkan/ErrorHandling.hpp"

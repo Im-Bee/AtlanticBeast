@@ -1,7 +1,7 @@
+#include "Voxels.hpp"
+
 #include "Raycaster/VoxelPipeline.hpp"
 
-#include "Core.h"
-#include "Debug/Logger.hpp"
 #include "Vulkan/ErrorHandling.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"

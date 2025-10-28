@@ -1,8 +1,7 @@
 #ifndef AB_CUBE_H
 #define AB_CUBE_H
 
-#include "Math/Math.hpp"
-#include "Math/Vec3.hpp"
+#include "Math.hpp"
 #include "Primitives/Object.hpp"
 
 namespace Voxels
