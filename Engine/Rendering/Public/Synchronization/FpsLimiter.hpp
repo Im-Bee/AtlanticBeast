@@ -8,7 +8,7 @@ class FpsLimiter
 {
 public:
 
-    FpsLimiter(const float fTargetMs);
+    BEAST_API FpsLimiter(const float fTargetMs);
 
     ~FpsLimiter() = default;
 
@@ -22,7 +22,7 @@ public:
 
 public:
 
-    void Block(const float fDelta);
+    BEAST_API void Block(const float fDelta);
 
 private:
 

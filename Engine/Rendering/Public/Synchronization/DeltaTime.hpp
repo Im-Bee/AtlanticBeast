@@ -14,7 +14,7 @@ class DeltaTime
 
 public:
     
-    DeltaTime();
+    BEAST_API DeltaTime();
     
     ~DeltaTime() = default;
 
@@ -31,12 +31,12 @@ public:
     /**
      * @brief Sets the first timestamp on the timer
      */
-    void SetReferenceFrame();
+    BEAST_API void SetReferenceFrame();
 
     /**
      * @return Delta time between current and last fetch
      */
-    float FetchMs();
+    BEAST_API float FetchMs();
 
 private:
 
