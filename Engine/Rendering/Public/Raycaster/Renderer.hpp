@@ -14,6 +14,8 @@ namespace Voxels
 
 class Renderer
 {
+    using FrameResourcesArray = ::std::array<VoxelFrameResources, Voxels::MAX_FRAMES_IN_FLIGHT>;
+
 public:
 
     Renderer()
@@ -69,11 +71,11 @@ private:
 
     VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const AdapterWrapper> da, VkCommandPool cmdPool);
 
-    ::std::array<VoxelFrameResources, MAX_FRAMES_IN_FLIGHT> CreateFrameResources(const ::std::shared_ptr<const AdapterWrapper>& da,
-                                                                                 const ::std::shared_ptr<VoxelPipeline>& pipeline,
-                                                                                 const ::std::shared_ptr<const WorldGrid>& vg,
-                                                                                 VkCommandPool cmdPool,
-                                                                                 size_t uFrames);
+    FrameResourcesArray CreateFrameResources(const ::std::shared_ptr<const AdapterWrapper>& da,
+                                             const ::std::shared_ptr<VoxelPipeline>& pipeline,
+                                             const ::std::shared_ptr<const WorldGrid>& vg,
+                                             VkCommandPool cmdPool,
+                                             size_t uFrames);
 
     void RecordCommands(VkCommandBuffer& cmdBuff,
                         const ::std::shared_ptr<VoxelPipeline>& pipeline, 
@@ -97,7 +99,7 @@ private:
     VkCommandPool m_CommandPool = VK_NULL_HANDLE;
 
     size_t m_uCurrentFrame;
-    ::std::array<VoxelFrameResources, Voxels::MAX_FRAMES_IN_FLIGHT> m_vFrames;
+    ::std::unique_ptr<FrameResourcesArray> m_vFrames = nullptr;
 
 };
 

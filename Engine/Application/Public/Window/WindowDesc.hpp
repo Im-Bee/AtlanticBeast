@@ -37,18 +37,18 @@ WindowDesc CreateWindowDesc(U&& wstrName,
                             int32_t width, 
                             int32_t height)
 { 
-    WindowDesc wd;
+    WindowDesc wd = { };
 
     wd.Name             = ::std::forward<U>(wstrName);
 	wd.pwszClassName    = NULL;    
     wd.Width            = width;
     wd.Height           = height;
-    wd.LastEvent        = NothingNew;
     wd.IsAlive          = false;
+    wd.LastEvent        &= 0;
    
 #ifdef _WIN32
     wd.Hwnd = NULL;
-	wd.Wcex = { 0 };
+	wd.Wcex = { };
 #elif __linux__
     wd.DisplayHandle    = NULL;
     wd.WindowHandle     = 0;

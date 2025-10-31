@@ -160,7 +160,7 @@ public:
         }
 
         // Don't reset the last event flags if the only flag that we have set is EAbWindowEvents::ChangedBehavior
-        if (this->m_pWindowDesc->LastEvent & (EAbWindowEvents::EventsMask & ~EAbWindowEvents::ChangedBehavior))
+        if (this->m_pWindowDesc->LastEvent & ~EAbWindowEvents::ChangedBehavior)
             m_pWindowDesc->LastEvent &= 0;
 
         // Make sure that after EAbWindowEvents::ChangedBehavior propagation, 

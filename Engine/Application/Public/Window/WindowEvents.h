@@ -12,7 +12,6 @@ typedef enum EAbWindowEvents
     Resize = Destroy << 1,
     Input = Resize << 1,
     ChangedBehavior = Input << 1,
-    EventsMask = 0xFFFFFFFF
 } EAbWindowEvents;
 
 #endif // !AB_WINDOW_EVENTS_H
