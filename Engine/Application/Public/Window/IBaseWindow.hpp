@@ -154,8 +154,7 @@ public:
         AB_ASSERT(m_pWindowDesc != nullptr);
         AB_ASSERT(m_Policy != nullptr);
 
-        if (!m_pWindowDesc->IsAlive) 
-        {
+        if (!m_pWindowDesc->IsAlive) {
             AB_LOG(Core::Debug::Warning, L"Cannot destroy dead window");
             return;
         }

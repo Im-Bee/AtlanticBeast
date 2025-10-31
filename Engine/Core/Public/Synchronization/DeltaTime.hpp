@@ -39,7 +39,7 @@ public:
     BEAST_API float FetchMs();
 
     /**
-     * @brief This method doesn't update the last check time. 
+     * @brief This method doesn't update the last fetch time. 
      *
      * @return Delta time between current and last reference frame or fetch
      */
