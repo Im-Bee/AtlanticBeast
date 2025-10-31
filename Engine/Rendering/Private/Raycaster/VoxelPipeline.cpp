@@ -75,7 +75,7 @@ UploadDescriptor VoxelPipeline::GetUniformUploadDescriptor(const GPUStreamBuffer
     write.descriptorCount  = 1;
     write.pBufferInfo      = &bufferInfo;
 
-    return UploadDescriptor { bufferInfo, write };
+    return UploadDescriptor(bufferInfo, write);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -227,9 +227,9 @@ VkPipelineLayout VoxelPipeline::CreatePipelineLayout(shared_ptr<const AdapterWra
 // ---------------------------------------------------------------------------------------------------------------------
 VkShaderModule VoxelPipeline::LoadShader(shared_ptr<const AdapterWrapper>& da, const string& strPath)
 {
-    vector<char>                vBuffer;
-    size_t                      uFileSize;
-    VkShaderModule              shaderModule;
+    vector<char>    vBuffer;
+    size_t          uFileSize;
+    VkShaderModule  shaderModule;
 
     ifstream file(strPath, ios::ate | ios::binary);
 
@@ -284,26 +284,6 @@ VkPipeline VoxelPipeline::CreateComputePipeline(shared_ptr<const AdapterWrapper>
                                            &pipeline));
 
     return pipeline;
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-uint32_t VoxelPipeline::FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
-{
-    VkPhysicalDeviceMemoryProperties memProperties;
-
-    vkGetPhysicalDeviceMemoryProperties(m_pHardware->GetPhysicalDevice(), &memProperties); 
-
-    for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i) 
-    {
-        bool bTypeMatch          = (typeFilter & (1 << i)) != 0;
-        bool bPropertiesMatch    = (memProperties.memoryTypes[i].propertyFlags & properties) == properties;
-
-        if (bTypeMatch && bPropertiesMatch) {
-            return i;
-        }
-    }
-
-    throw AB_EXCEPT("Failed to find suitable memory type!");
 }
 
 } // !Voxels

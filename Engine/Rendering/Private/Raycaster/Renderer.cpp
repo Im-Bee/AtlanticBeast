@@ -60,10 +60,10 @@ void Renderer::Update(const float)
                                                         frames[m_uCurrentFrame].StageVoxelBuffer, 
                                                         VoxelPipeline::EShaderResource::VoxelGrid));
 
-        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], 
+        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetCubes()[0], 
                                         frames[m_uCurrentFrame].StageCubeBuffer,
                                         m_pPipeline->GetUniformUploadDescriptor(
-                                                        frames[m_uCurrentFrame].StageVoxelBuffer, 
+                                                        frames[m_uCurrentFrame].StageCubeBuffer, 
                                                         VoxelPipeline::EShaderResource::Cubes));
     }
 

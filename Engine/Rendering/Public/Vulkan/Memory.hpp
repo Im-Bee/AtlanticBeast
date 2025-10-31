@@ -14,6 +14,16 @@ namespace Voxels
 
 struct UploadDescriptor
 {
+    UploadDescriptor() = delete;
+
+    UploadDescriptor(VkDescriptorBufferInfo bufferInfo,
+                     VkWriteDescriptorSet write)
+        : BufferInfo(bufferInfo)
+        , Write(write)
+    {
+        Write.pBufferInfo = &BufferInfo;
+    }
+
     VkDescriptorBufferInfo BufferInfo;
     VkWriteDescriptorSet Write;
 };

@@ -87,8 +87,6 @@ private:
                                      VkPipelineLayout pipelineLayout, 
                                      VkShaderModule shaderModule);
 
-    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
 private:
     
     ::std::shared_ptr<const HardwareWrapper>   m_pHardware         = nullptr;
