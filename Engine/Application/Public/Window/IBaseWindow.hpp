@@ -38,12 +38,24 @@ public:
         this->Destroy(); 
     }
 
-    IBaseWindow(const IBaseWindow& other) = delete;
+public:
+
+    IBaseWindow(const IBaseWindow&) = delete;
+    IBaseWindow& operator=(const IBaseWindow&) noexcept = delete;
     
     IBaseWindow(IBaseWindow&& other) noexcept
 		: m_Policy(::std::move(other.m_Policy))
         , m_pWindowDesc(::std::move(other.m_pWindowDesc))
     { }
+
+    IBaseWindow& operator=(IBaseWindow&& other) noexcept
+    {
+        this->m_Policy      = ::std::move(other.m_Policy);
+        this->m_pWindowDesc = ::std::move(other.m_pWindowDesc);
+
+        other.m_pWindowDesc = nullptr;
+    }
+
 
 public:
 
@@ -140,7 +152,9 @@ public:
         AB_ASSERT(m_pWindowDesc != nullptr);
         AB_ASSERT(m_Policy != nullptr);
 
-        if (!m_pWindowDesc->IsAlive) {
+        if (m_pWindowDesc &&
+            !m_pWindowDesc->IsAlive) 
+        {
             AB_LOG(Core::Debug::Warning, L"Cannot destroy dead window");
             return;
         }
