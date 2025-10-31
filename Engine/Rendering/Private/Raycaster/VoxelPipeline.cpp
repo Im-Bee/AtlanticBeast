@@ -5,7 +5,6 @@
 #include "Vulkan/ErrorHandling.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
-#include <algorithm>
 
 namespace Voxels
 {

@@ -62,7 +62,7 @@ public:
     VkPipeline GetPipelineHandle() const
     { return m_ComputePipeline; }
 
-    VkDescriptorSet& GetDescrpitorSet()
+    VkDescriptorSet& GetDescriptorSet()
     { return m_DescriptorSet; }
 
     const VoxelPushConstants& GetPushConstants() const

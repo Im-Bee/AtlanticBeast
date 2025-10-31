@@ -316,7 +316,7 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const shared_pt
                             VK_PIPELINE_BIND_POINT_COMPUTE,
                             pipeline->GetLayoutHandle(),
                             0, 1,
-                            &pipeline->GetDescrpitorSet(),
+                            &pipeline->GetDescriptorSet(),
                             0, NULL);
 
     vkCmdPushConstants(cmdBuffer,
