@@ -5,6 +5,7 @@
 #include "Vulkan/ErrorHandling.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
+#include <algorithm>
 
 namespace Voxels
 {
@@ -75,7 +76,7 @@ UploadDescriptor VoxelPipeline::GetUniformUploadDescriptor(const GPUStreamBuffer
     write.descriptorCount  = 1;
     write.pBufferInfo      = &bufferInfo;
 
-    return UploadDescriptor(bufferInfo, write);
+    return UploadDescriptor(std::move(bufferInfo), std::move(write));
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

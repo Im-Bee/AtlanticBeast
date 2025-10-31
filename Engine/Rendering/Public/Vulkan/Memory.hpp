@@ -15,11 +15,12 @@ namespace Voxels
 struct UploadDescriptor
 {
     UploadDescriptor() = delete;
-
-    UploadDescriptor(VkDescriptorBufferInfo bufferInfo,
-                     VkWriteDescriptorSet write)
-        : BufferInfo(bufferInfo)
-        , Write(write)
+    
+    template<typename U, typename L>
+    UploadDescriptor(U&& bufferInfo,
+                     L&& write)
+        : BufferInfo(::std::forward<U>(bufferInfo))
+        , Write(::std::forward<L>(write))
     {
         Write.pBufferInfo = &BufferInfo;
     }
