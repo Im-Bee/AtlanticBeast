@@ -26,4 +26,12 @@ float DeltaTime::FetchMs()
     return diff; 
 }
 
+// --------------------------------------------------------------------------------------------------------------------
+float DeltaTime::DeltaMs() 
+{ 
+    auto now = Clock::now();
+    float diff = duration_cast<Duration>(now - m_LastTimeStamp).count();
+    return diff; 
+}
+
 } //!Core

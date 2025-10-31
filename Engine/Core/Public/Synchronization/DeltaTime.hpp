@@ -34,9 +34,16 @@ public:
     BEAST_API void SetReferenceFrame();
 
     /**
-     * @return Delta time between current and last fetch
+     * @return Delta time between current and last reference frame or fetch
      */
     BEAST_API float FetchMs();
+
+    /**
+     * @brief This method doesn't update the last check time. 
+     *
+     * @return Delta time between current and last reference frame or fetch
+     */
+    BEAST_API float DeltaMs();
 
 private:
 

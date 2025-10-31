@@ -35,6 +35,19 @@ EAppStatus AppStatus::GetAppCurrentStatus()
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+uint32_t AppStatus::SendOpenWindowSignal(shared_ptr<WindowDesc> pWd)
+{
+    AB_LOG(Debug::Info, L"Got new window signal");
+
+    ++m_uNumberOfWindows;
+
+    UpdateStatus();
+    m_WindowHandles.push_back(pWd);
+
+    return m_uNumberOfWindows;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 uint32_t AppStatus::SendCloseWindowSignal(shared_ptr<WindowDesc> pWd)
 {
     AB_LOG(Debug::Info, L"Got close window signal");
@@ -46,19 +59,6 @@ uint32_t AppStatus::SendCloseWindowSignal(shared_ptr<WindowDesc> pWd)
 
     UpdateStatus();
     m_WindowHandles.remove(pWd);
-
-    return m_uNumberOfWindows;
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-uint32_t AppStatus::SendOpenWindowSignal(shared_ptr<WindowDesc> pWd)
-{
-    AB_LOG(Debug::Info, L"Got new window signal");
-
-    ++m_uNumberOfWindows;
-
-    UpdateStatus();
-    m_WindowHandles.push_back(pWd);
 
     return m_uNumberOfWindows;
 }

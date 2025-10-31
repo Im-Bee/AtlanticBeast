@@ -14,7 +14,6 @@ using namespace App;
 int main()
 {
     EmptyCanvas renderWindow;
-    renderWindow.ChangePolicy<DefaultSystemWindowPolicy>();
     const auto& input = renderWindow.GetInput();
     Voxels::Renderer render = { };
     DeltaTime dt = { };
@@ -38,19 +37,6 @@ int main()
     pc->SetRotation(Voxels::Vec3 { -0.5f, 1.25f, 0.f });
     pc->SetPositon(Voxels::Vec3 { 14.5f, 30.25f, 25.f });
     pc->SetGrid(vg); 
-
-    dt.SetReferenceFrame();
-    {   
-        const float fDeltaMs = dt.FetchMs();
-        fl.Block(fDeltaMs);
-
-        renderWindow.Update(fDeltaMs);
-        render.Update(fDeltaMs);
-        render.Render();
-    }
-    renderWindow.ChangePolicy<DefaultGameSystemWindowPolicy>();
-    render.Destroy();
-    render.Initialize(renderWindow.GetWindowDesc(), vg);
 
 	// Main loop
     dt.SetReferenceFrame();

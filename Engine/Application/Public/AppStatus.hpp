@@ -38,9 +38,9 @@ public:
 
 private:
 
-    uint32_t SendCloseWindowSignal(::std::shared_ptr<WindowDesc> pWd);
-
     uint32_t SendOpenWindowSignal(::std::shared_ptr<WindowDesc> pWd);
+
+    uint32_t SendCloseWindowSignal(::std::shared_ptr<WindowDesc> pWd);
 
     void UpdateStatus();
 
