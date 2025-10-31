@@ -78,7 +78,7 @@ public:
     template<typename U>
     void ModifyVoxel(iVec3 pos, U&& cube)
     {
-        GenerateCube(Vec3::ToVec3(pos));
+        GenerateCube(Vec3::ToVec3(pos), m_VoxelGrid);
         m_Reupload = RequestStaging;
     }
 
@@ -86,7 +86,7 @@ private:
 
     ::std::vector<Voxel> GenerateGrid(size_t uGridWidth, ::std::vector<Cube>& vCubes);
 
-    BEAST_API void GenerateCube(const Vec3& offsetPos);
+    BEAST_API void GenerateCube(const Vec3& offsetPos, ::std::vector<Voxel>& vGrid);
 
 private:
 

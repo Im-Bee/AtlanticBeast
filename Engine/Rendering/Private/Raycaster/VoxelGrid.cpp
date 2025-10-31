@@ -34,7 +34,7 @@ vector<Voxel> WorldGrid::GenerateGrid(size_t uGridWidth, vector<Cube>& vCubes)
     for (uint32_t z = uCubeStart; z < uCubeEnd; ++z) {
         for (uint32_t y = uCubeStart; y < uCubeEnd; ++y) {
             for (uint32_t x = uCubeStart; x < uCubeEnd; ++x) {
-                GenerateCube(Vec3(x, y, z));
+                GenerateCube(Vec3(x, y, z), voxelGrid);
             }
         }
     }
@@ -46,11 +46,11 @@ vector<Voxel> WorldGrid::GenerateGrid(size_t uGridWidth, vector<Cube>& vCubes)
                                       y * uDim +
                                       z * uDim * uDim;
 
-                if (m_VoxelGrid[uIndex].Type == 0) {
-                    m_VoxelGrid[uIndex] = Voxel { };
+                if (voxelGrid[uIndex].Type == 0) {
+                    voxelGrid[uIndex] = Voxel { };
                 }
-                m_VoxelGrid[uIndex].Type    = -1;
-                m_VoxelGrid[uIndex].Color   = 0xFFFF00FF;
+                voxelGrid[uIndex].Type    = -1;
+                voxelGrid[uIndex].Color   = 0xFFFF00FF;
             }
         }
     }
@@ -59,7 +59,7 @@ vector<Voxel> WorldGrid::GenerateGrid(size_t uGridWidth, vector<Cube>& vCubes)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void WorldGrid::GenerateCube(const Vec3& offsetPos)
+void WorldGrid::GenerateCube(const Vec3& offsetPos, vector<Voxel>& vGrid)
 {
     static uint32_t kc = 0;
     const size_t uDim = this->GetGridWidth();
@@ -67,11 +67,11 @@ void WorldGrid::GenerateCube(const Vec3& offsetPos)
                           offsetPos.y * uDim +
                           offsetPos.z * uDim * uDim;
 
-    if (m_VoxelGrid[uIndex].Type == 0) {
-        m_VoxelGrid[uIndex] = Voxel { };
+    if (vGrid[uIndex].Type == 0) {
+        vGrid[uIndex] = Voxel { };
     }
 
-    m_VoxelGrid[uIndex].Id[m_VoxelGrid[uIndex].Type++] = m_uCubesCount;
+    vGrid[uIndex].Id[vGrid[uIndex].Type++] = m_uCubesCount;
 
     Cube c;
     c.SetPositon(offsetPos + Vec3(0.9f, 0.5f, 0.5f));
@@ -88,11 +88,11 @@ void WorldGrid::GenerateCube(const Vec3& offsetPos)
                                       (offsetPos.y + y) * uDim + 
                                       (offsetPos.z + z) * uDim * uDim;
 
-                if (uCornerIndex < m_VoxelGrid.size() && 
-                    m_VoxelGrid[uCornerIndex].Type != -1 && 
-                    m_VoxelGrid[uCornerIndex].Type < Voxel::MaxPerInstance) 
+                if (uCornerIndex < vGrid.size() &&
+                    vGrid[uCornerIndex].Type != -1 &&
+                    vGrid[uCornerIndex].Type < Voxel::MaxPerInstance)
                 {
-                    m_VoxelGrid[uCornerIndex].Id[m_VoxelGrid[uCornerIndex].Type++] = m_uCubesCount;
+                    vGrid[uCornerIndex].Id[vGrid[uCornerIndex].Type++] = m_uCubesCount;
                 }
             }
         }

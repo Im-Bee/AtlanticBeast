@@ -148,6 +148,7 @@ void Renderer::Destroy()
             vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].RenderFinished, nullptr);
             vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].ImageAvailable, nullptr);
             vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].InFlightFence, nullptr);
+			m_vFrames[i].InFlightFence = VK_NULL_HANDLE;
             vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &m_vFrames[i].CommandBuffer);
             m_vFrames[i].StageVoxelBuffer.~GPUStreamBuffer();
             m_vFrames[i].StageCubeBuffer.~GPUStreamBuffer();
@@ -210,14 +211,14 @@ VkCommandBuffer Renderer::CreateCommandBuffer(::std::shared_ptr<const AdapterWra
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-vector<VoxelFrameResources> Renderer::CreateFrameResources(const ::std::shared_ptr<const AdapterWrapper>& da,
-                                                           const ::std::shared_ptr<VoxelPipeline>& pipeline,
-                                                           const ::std::shared_ptr<const WorldGrid>& vg,
-                                                           VkCommandPool cmdPool,
-                                                           size_t uFrames)
+array<VoxelFrameResources, MAX_FRAMES_IN_FLIGHT> Renderer::CreateFrameResources(const ::std::shared_ptr<const AdapterWrapper>& da,
+                                                                                const ::std::shared_ptr<VoxelPipeline>& pipeline,
+                                                                                const ::std::shared_ptr<const WorldGrid>& vg,
+                                                                                VkCommandPool cmdPool,
+                                                                                size_t uFrames)
 {
     VkDevice device = da->GetAdapterHandle();
-    vector<VoxelFrameResources> result(uFrames);
+    array<VoxelFrameResources, MAX_FRAMES_IN_FLIGHT> result;
 
     VkSemaphoreCreateInfo semaphoreInfo = { };
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -392,19 +393,21 @@ void Renderer::RecreateSwapChain()
         return;
     }
 
-    for (size_t i = 0; i < m_vFrames.size(); ++i)
-        vkWaitForFences(m_pDeviceAdapter->GetAdapterHandle(), 1, &m_vFrames[i].InFlightFence, VK_TRUE, UINT64_MAX);
+    if (m_vFrames[0].InFlightFence != VK_NULL_HANDLE) {
+        for (size_t i = 0; i < m_vFrames.size(); ++i)
+                vkWaitForFences(m_pDeviceAdapter->GetAdapterHandle(), 1, &m_vFrames[i].InFlightFence, VK_TRUE, UINT64_MAX);
 
-    for (size_t i = 0; i < m_vFrames.size(); ++i) 
-    {
-        vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].RenderFinished, nullptr);
-        vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].ImageAvailable, nullptr);
-        vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].InFlightFence, nullptr);
-        vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &m_vFrames[i].CommandBuffer);
-        m_vFrames[i].StageVoxelBuffer.~GPUStreamBuffer();
-        m_vFrames[i].StageCubeBuffer.~GPUStreamBuffer();
-        m_vFrames[i].VoxelBuffer.~GPUBuffer();
-        m_vFrames[i].CubeBuffer.~GPUBuffer();
+        for (size_t i = 0; i < m_vFrames.size(); ++i)
+        {
+            vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].RenderFinished, nullptr);
+            vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].ImageAvailable, nullptr);
+            vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), m_vFrames[i].InFlightFence, nullptr);
+            vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &m_vFrames[i].CommandBuffer);
+            m_vFrames[i].StageVoxelBuffer.~GPUStreamBuffer();
+            m_vFrames[i].StageCubeBuffer.~GPUStreamBuffer();
+            m_vFrames[i].VoxelBuffer.~GPUBuffer();
+            m_vFrames[i].CubeBuffer.~GPUBuffer();
+        }
     }
 
     m_pSwapChain = nullptr;

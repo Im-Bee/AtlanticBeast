@@ -1,3 +1,4 @@
+#ifdef __linux__
 #ifndef AB_X11_ERROR_HANDLING_H
 #define AB_X11_ERROR_HANDLING_H
 
@@ -19,3 +20,4 @@ int X11HandleError(Display *display, XErrorEvent *error)
 
 
 #endif // !AB_X11_ERROR_HANDLING_H
+#endif // __linux__

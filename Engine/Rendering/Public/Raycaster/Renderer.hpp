@@ -69,11 +69,11 @@ private:
 
     VkCommandBuffer CreateCommandBuffer(::std::shared_ptr<const AdapterWrapper> da, VkCommandPool cmdPool);
 
-    ::std::vector<VoxelFrameResources> CreateFrameResources(const ::std::shared_ptr<const AdapterWrapper>& da,
-                                                            const ::std::shared_ptr<VoxelPipeline>& pipeline,
-                                                            const ::std::shared_ptr<const WorldGrid>& vg,
-                                                            VkCommandPool cmdPool,
-                                                            size_t uFrames);
+    ::std::array<VoxelFrameResources, MAX_FRAMES_IN_FLIGHT> CreateFrameResources(const ::std::shared_ptr<const AdapterWrapper>& da,
+                                                                                 const ::std::shared_ptr<VoxelPipeline>& pipeline,
+                                                                                 const ::std::shared_ptr<const WorldGrid>& vg,
+                                                                                 VkCommandPool cmdPool,
+                                                                                 size_t uFrames);
 
     void RecordCommands(VkCommandBuffer& cmdBuff,
                         const ::std::shared_ptr<VoxelPipeline>& pipeline, 
@@ -97,7 +97,7 @@ private:
     VkCommandPool m_CommandPool = VK_NULL_HANDLE;
 
     size_t m_uCurrentFrame;
-    ::std::vector<VoxelFrameResources> m_vFrames;
+    ::std::array<VoxelFrameResources, Voxels::MAX_FRAMES_IN_FLIGHT> m_vFrames;
 
 };
 
