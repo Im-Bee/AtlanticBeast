@@ -1,3 +1,4 @@
+#include "Debug/Logger.hpp"
 #include "Voxels.hpp"
 
 #include "Vulkan/Instance.hpp"
@@ -37,7 +38,7 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityF
         L"[Vulkan]: %s";
 #endif // !_WIN32
 
-    AB_LOG(Core::Debug::Info, pwszFormat, pCallbackData->pMessage);
+    ::Core::Debug::Logger::Get()->Log(Core::Debug::Info, pwszFormat, pCallbackData->pMessage);
     return VK_FALSE;
 }
 
