@@ -1,6 +1,7 @@
 #ifndef AB_CSYSTEM_H
 #define AB_CSYSTEM_H
 
+#include <array>
 #include <atomic>
 #include <exception>
 #include <chrono>

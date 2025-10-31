@@ -2,15 +2,16 @@
 #ifndef AB_X11_ERROR_HANDLING_H
 #define AB_X11_ERROR_HANDLING_H
 
-#include "Debug/Logger.hpp"
+#include "Core.h"
+
 namespace Core 
 {
 
 int X11HandleError(Display *display, XErrorEvent *error) 
 {
-    char szErrorMessage[256];
+    ::std::array<char, AB_MEDIUM_STRING> szErrorMessage;
 
-    XGetErrorText(display, error->error_code, szErrorMessage, sizeof(szErrorMessage));
+    XGetErrorText(display, error->error_code, &szErrorMessage[0], szErrorMessage.size());
     ::Core::Debug::Logger::Get()->Log(Debug::Error, L"X11 Error: %s", szErrorMessage);
 
     return 0; 
