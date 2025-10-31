@@ -7,7 +7,7 @@
 namespace Core 
 {
 
-int X11HandleError(Display *display, XErrorEvent *error) 
+inline int X11HandleError(Display *display, XErrorEvent *error) 
 {
     ::std::array<char, AB_MEDIUM_STRING> szErrorMessage;
 
