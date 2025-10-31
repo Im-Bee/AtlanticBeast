@@ -59,95 +59,9 @@ VoxelPipeline::~VoxelPipeline()
 }
 
 // Public // -----------------------------------------------------------------------------------------------------------
-GPUStreamBuffer VoxelPipeline::ReserveStagingBuffer(const size_t uSizeInBytes)
-{
-    AB_LOG(Core::Debug::Info, L"Reserving staging buffer of %llu bytes", uSizeInBytes);
-
-    const VkDevice da = m_pDeviceAdapter->GetAdapterHandle();
-    VkMemoryRequirements    memRequirements;
-    VkBuffer                voxelBuffer;
-    VkDeviceMemory          voxelBufferMemory;
-
-    VkBufferCreateInfo bufferInfo = { };
-    bufferInfo.sType        = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size         = uSizeInBytes;
-    bufferInfo.usage        = VK_BUFFER_USAGE_TRANSFER_SRC_BIT;
-    bufferInfo.sharingMode  = VK_SHARING_MODE_EXCLUSIVE;
-
-    THROW_IF_FAILED(vkCreateBuffer(m_pDeviceAdapter->GetAdapterHandle(), 
-                                   &bufferInfo,
-                                   NULL,
-                                   &voxelBuffer));
-
-    vkGetBufferMemoryRequirements(da, voxelBuffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo = { };
-    allocInfo.sType             = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize    = memRequirements.size;
-    allocInfo.memoryTypeIndex   = FindMemoryType(memRequirements.memoryTypeBits,         
-                                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | 
-                                                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-    THROW_IF_FAILED(vkAllocateMemory(da, &allocInfo, NULL, &voxelBufferMemory));
-    THROW_IF_FAILED(vkBindBufferMemory(da, voxelBuffer, voxelBufferMemory, 0));
-
-    return GPUStreamBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, nullptr, uSizeInBytes);
-}
-
-// --------------------------------------------------------------------------------------------------------------------
-GPUBuffer VoxelPipeline::ReserveGPUBuffer(const size_t uSizeInBytes)
-{
-    AB_LOG(Core::Debug::Info, L"Reserving gpu buffer of %llu bytes", uSizeInBytes);
-
-    const VkDevice da = m_pDeviceAdapter->GetAdapterHandle();
-    VkMemoryRequirements    memRequirements;
-    VkBuffer                voxelBuffer;
-    VkDeviceMemory          voxelBufferMemory;
-
-    VkBufferCreateInfo bufferInfo = { };
-    bufferInfo.sType        = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size         = uSizeInBytes;
-    bufferInfo.usage        = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-    bufferInfo.sharingMode  = VK_SHARING_MODE_EXCLUSIVE;
-
-    THROW_IF_FAILED(vkCreateBuffer(m_pDeviceAdapter->GetAdapterHandle(), 
-                                   &bufferInfo,
-                                   NULL,
-                                   &voxelBuffer));
-
-    vkGetBufferMemoryRequirements(da, voxelBuffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo = { };
-    allocInfo.sType             = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize    = memRequirements.size;
-    allocInfo.memoryTypeIndex   = FindMemoryType(memRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-
-    THROW_IF_FAILED(vkAllocateMemory(da, &allocInfo, NULL, &voxelBufferMemory));
-    THROW_IF_FAILED(vkBindBufferMemory(da, voxelBuffer, voxelBufferMemory, 0));
-
-    return GPUBuffer(m_pDeviceAdapter, voxelBufferMemory, voxelBuffer, uSizeInBytes);
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-void VoxelPipeline::UploadOnStreamBuffer(const void* pUpload, 
-                                         GPUStreamBuffer& outBuffer,
-                                         const ShaderResource& sr)
-{
-    AB_ASSERT((outBuffer.GetMemoryHandle() != VK_NULL_HANDLE));
-    AB_ASSERT((outBuffer.GetBufferHandle() != VK_NULL_HANDLE));
-
-    const VkDevice da = m_pDeviceAdapter->GetAdapterHandle();
-    
-    if (*outBuffer.GetDataPointer() == nullptr) {
-        THROW_IF_FAILED(vkMapMemory(da, 
-                                    outBuffer.GetMemoryHandle(),
-                                    0,
-                                    outBuffer.GetSizeInBytes(),
-                                    0,
-                                    outBuffer.GetDataPointer()));
-    }
-    memcpy(*outBuffer.GetDataPointer(), pUpload, outBuffer.GetSizeInBytes());
-
+UploadDescriptor VoxelPipeline::GetUniformUploadDescriptor(const GPUStreamBuffer& outBuffer, 
+                                                           const EShaderResource& sr)
+{ 
     VkDescriptorBufferInfo bufferInfo = { };
     bufferInfo.buffer  = outBuffer.GetBufferHandle();
     bufferInfo.offset  = 0;
@@ -161,11 +75,7 @@ void VoxelPipeline::UploadOnStreamBuffer(const void* pUpload,
     write.descriptorCount  = 1;
     write.pBufferInfo      = &bufferInfo;
 
-    vkUpdateDescriptorSets(da,
-                           1,
-                           &write,
-                           0,
-                           NULL);
+    return UploadDescriptor { bufferInfo, write };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -224,12 +134,12 @@ VkDescriptorSetLayout VoxelPipeline::CreateDescriptorLayout(shared_ptr<const Ada
     bindings[0].descriptorCount     = 1;
     bindings[0].stageFlags          = VK_SHADER_STAGE_COMPUTE_BIT;
 
-    bindings[1].binding             = VoxelPipeline::ShaderResource::VoxelGrid;
+    bindings[1].binding             = VoxelPipeline::EShaderResource::VoxelGrid;
     bindings[1].descriptorType      = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     bindings[1].descriptorCount     = 1;
     bindings[1].stageFlags          = VK_SHADER_STAGE_COMPUTE_BIT;
 
-    bindings[2].binding             = VoxelPipeline::ShaderResource::Cubes;
+    bindings[2].binding             = VoxelPipeline::EShaderResource::Cubes;
     bindings[2].descriptorType      = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
     bindings[2].descriptorCount     = 1;
     bindings[2].stageFlags          = VK_SHADER_STAGE_COMPUTE_BIT;

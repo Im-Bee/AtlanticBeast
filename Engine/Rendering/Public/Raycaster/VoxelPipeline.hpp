@@ -4,6 +4,7 @@
 #include "Math.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
+#include "Vulkan/Memory.hpp"
 #include "Raycaster/PushConstants.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Voxels.hpp"
@@ -18,7 +19,7 @@ class VoxelPipeline
 
 public:
 
-    enum ShaderResource
+    enum EShaderResource
     {
         VoxelGrid = 1,
         Cubes = VoxelGrid << 1,
@@ -33,13 +34,8 @@ public:
 
 public:
 
-    BEAST_API GPUStreamBuffer ReserveStagingBuffer(const size_t uSizeInBytes);
-
-    BEAST_API GPUBuffer ReserveGPUBuffer(const size_t uSizeInBytes);
-
-    BEAST_API void UploadOnStreamBuffer(const void* pUpload, 
-                                        GPUStreamBuffer& outBuffer,
-                                        const ShaderResource& sr);
+    BEAST_API UploadDescriptor GetUniformUploadDescriptor(const GPUStreamBuffer& outBuffer, 
+                                                          const EShaderResource& sr);
 
     BEAST_API void LoadImage(VkImage image);
 

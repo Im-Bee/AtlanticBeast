@@ -13,6 +13,7 @@ public:
 
     GPUStreamBuffer() 
         : GPUBuffer() 
+        , m_pData(nullptr)
     { }
 
     GPUStreamBuffer(::std::shared_ptr<const AdapterWrapper> da,
