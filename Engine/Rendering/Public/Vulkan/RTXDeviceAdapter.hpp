@@ -13,19 +13,18 @@ class RTXDeviceAdapter : public AdapterWrapper
 {
 public:
 
-    BEAST_API RTXDeviceAdapter(::std::shared_ptr<const HardwareWrapper> gpu);
-
-    ~RTXDeviceAdapter() = default;
+    RTXDeviceAdapter(::std::shared_ptr<const HardwareWrapper> gpu)
+        : AdapterWrapper(gpu,
+                         VK_QUEUE_COMPUTE_BIT | VK_QUEUE_GRAPHICS_BIT,
+                         GetExtensionsImpl(),
+                         GetFeaturesImpl())
+    { }
 
 public:
 
     const ::std::vector<const char*> GetExtensionsImpl() const;
 
     void* GetFeaturesImpl() const;
-
-private:
-
-    ::std::shared_ptr<const HardwareWrapper> m_pGPU = nullptr;
 
 };
 

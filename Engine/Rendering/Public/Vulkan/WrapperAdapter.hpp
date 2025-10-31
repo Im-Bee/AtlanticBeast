@@ -2,6 +2,7 @@
 #define AB_WRAPPER_ADAPTER_H
 
 #include "Voxels.hpp"
+#include "Vulkan/WrapperHardware.hpp"
 
 namespace Voxels
 {
@@ -12,12 +13,13 @@ public:
 
     AdapterWrapper() = delete;
 
-    AdapterWrapper(VkPhysicalDevice gpu, 
+    AdapterWrapper(::std::shared_ptr<const HardwareWrapper> pHardware,
                    const uint32_t uFlags,
                    const std::vector<const char*>& vExtensions,
                    const void* pFeatures)
-        : m_uQueueFamily(ChooseQueueFamily(gpu, uFlags))
-        , m_Device(CreateDevice(gpu, vExtensions, pFeatures, m_uQueueFamily))
+        : m_pGPU(pHardware)
+        , m_uQueueFamily(ChooseQueueFamily(m_pGPU->GetPhysicalDevice(), uFlags))
+        , m_Device(CreateDevice(m_pGPU->GetPhysicalDevice(), vExtensions, pFeatures, m_uQueueFamily))
         , m_Queue(CreateQueue(m_Device, m_uQueueFamily))
     { 
         AB_LOG(Core::Debug::Info, L"Initializing adapter");
@@ -63,6 +65,8 @@ private:
     VkQueue CreateQueue(VkDevice dv, uint32_t uQueueIndex) const;
 
 private:
+
+    ::std::shared_ptr<const HardwareWrapper> m_pGPU = nullptr;
 
     uint32_t m_uQueueFamily = 0;
 

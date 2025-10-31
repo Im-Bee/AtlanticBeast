@@ -27,12 +27,12 @@ Swapchain::Swapchain(shared_ptr<const Instance> pInst,
     , m_SurfaceFormat(PickFormat(m_pHardware, m_Surface))
     , m_PresentMode(PickMode(m_pHardware, m_Surface))
     , m_pSwapChain(CreateSwapChain(m_pDeviceAdapter,
-                                  m_Surface,
-                                  m_Capabilities,
-                                  m_Extent,
-                                  m_uImageCount,
-                                  m_SurfaceFormat,
-                                  m_PresentMode))
+                                   m_Surface,
+                                   m_Capabilities,
+                                   m_Extent,
+                                   m_uImageCount,
+                                   m_SurfaceFormat,
+                                   m_PresentMode))
     , m_uCurrentImageIndex(0)
     , m_SwapChainImages(CreateSwapChainImages(m_pDeviceAdapter, m_pSwapChain, m_uImageCount))
 {
@@ -134,10 +134,10 @@ VkExtent2D Swapchain::GetExtentInternal(const VkSurfaceCapabilitiesKHR& capabili
 // ---------------------------------------------------------------------------------------------------------------------
 VkSwapchainKHR Swapchain::CreateSwapChain(shared_ptr<const AdapterWrapper>& pAdapter,
                                           VkSurfaceKHR surface,
-                                          VkSurfaceCapabilitiesKHR& capabilities,
-                                          VkExtent2D& extent2D,
+                                          const VkSurfaceCapabilitiesKHR& capabilities,
+                                          const VkExtent2D& extent2D,
                                           uint32_t uImageCount,
-                                          VkSurfaceFormatKHR& surfaceFormat,
+                                          const VkSurfaceFormatKHR& surfaceFormat,
                                           VkPresentModeKHR presentMode)
 {
     VkSwapchainKHR swapChain = VK_NULL_HANDLE;
@@ -243,7 +243,7 @@ VkPresentModeKHR Swapchain::PickMode(shared_ptr<const HardwareWrapper>& pHardwar
 }
  
 // ---------------------------------------------------------------------------------------------------------------------
-uint32_t Swapchain::CreateAmountOfSwapChainImages(::std::shared_ptr<const AdapterWrapper>& pAdapter, 
+uint32_t Swapchain::GetNumberOfSwapChainImages(::std::shared_ptr<const AdapterWrapper>& pAdapter, 
                                                   VkSwapchainKHR swapchain)
 {
     uint32_t uImageCount = 0;

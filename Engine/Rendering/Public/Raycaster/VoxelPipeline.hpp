@@ -81,7 +81,8 @@ private:
     VkPipelineLayout CreatePipelineLayout(::std::shared_ptr<const AdapterWrapper>& da,
                                           VkDescriptorSetLayout descriptorSetLayout);
 
-    VkShaderModule LoadShader(::std::shared_ptr<const AdapterWrapper>& da, const ::std::string& strPath);
+    VkShaderModule LoadShader(::std::shared_ptr<const AdapterWrapper>& da, 
+                              const ::std::string& strPath);
 
     VkPipeline CreateComputePipeline(::std::shared_ptr<const AdapterWrapper>& da, 
                                      VkPipelineLayout pipelineLayout, 
@@ -89,9 +90,9 @@ private:
 
 private:
     
-    ::std::shared_ptr<const HardwareWrapper>   m_pHardware         = nullptr;
-    ::std::shared_ptr<const AdapterWrapper>    m_pDeviceAdapter    = nullptr;
-    ::std::shared_ptr<const Swapchain>  m_pSwapChain        = nullptr;
+    ::std::shared_ptr<const HardwareWrapper>    m_pHardware         = nullptr;
+    ::std::shared_ptr<const AdapterWrapper>     m_pDeviceAdapter    = nullptr;
+    ::std::shared_ptr<const Swapchain>          m_pSwapChain        = nullptr;
 
     VoxelPushConstants m_Vpc;
 
@@ -103,6 +104,7 @@ private:
     VkPipeline              m_ComputePipeline   = VK_NULL_HANDLE;
 
     VkImageView m_ImageView = VK_NULL_HANDLE;
+
 };
 
 } // !Voxels

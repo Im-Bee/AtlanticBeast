@@ -217,9 +217,9 @@ VkPipelineLayout VoxelPipeline::CreatePipelineLayout(shared_ptr<const AdapterWra
     layoutInfo.pPushConstantRanges      = &pushConstantRange;
 
     THROW_IF_FAILED(vkCreatePipelineLayout(da->GetAdapterHandle(), 
-                                         &layoutInfo,
-                                         NULL,
-                                         &pipelineLayout));
+                                           &layoutInfo,
+                                           NULL,
+                                           &pipelineLayout));
 
     return pipelineLayout;
 }

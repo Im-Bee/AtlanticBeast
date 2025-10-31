@@ -54,19 +54,22 @@ private:
     
     uint32_t GetImageCountInternal(const VkSurfaceCapabilitiesKHR& capabilities);
 
-    VkSurfaceFormatKHR PickFormat(::std::shared_ptr<const HardwareWrapper>& pHardware, VkSurfaceKHR surface);
+    VkSurfaceFormatKHR PickFormat(::std::shared_ptr<const HardwareWrapper>& pHardware,
+                                  VkSurfaceKHR surface);
 
-    VkPresentModeKHR PickMode(::std::shared_ptr<const HardwareWrapper>& pHardware, VkSurfaceKHR surface);
+    VkPresentModeKHR PickMode(::std::shared_ptr<const HardwareWrapper>& pHardware, 
+                              VkSurfaceKHR surface);
 
     VkSwapchainKHR CreateSwapChain(::std::shared_ptr<const AdapterWrapper>& pAdapter,
                                    VkSurfaceKHR surface,
-                                   VkSurfaceCapabilitiesKHR& capabilities,
-                                   VkExtent2D& extent2D,
+                                   const VkSurfaceCapabilitiesKHR& capabilities,
+                                   const VkExtent2D& extent2D,
                                    uint32_t uImageCount,
-                                   VkSurfaceFormatKHR& surfaceFormat,
+                                   const VkSurfaceFormatKHR& surfaceFormat,
                                    VkPresentModeKHR presentMode);
 
-    uint32_t CreateAmountOfSwapChainImages(::std::shared_ptr<const AdapterWrapper>& pAdapter, VkSwapchainKHR swapchain);
+    uint32_t GetNumberOfSwapChainImages(::std::shared_ptr<const AdapterWrapper>& pAdapter, 
+                                        VkSwapchainKHR swapchain);
 
     ::std::vector<VkImage> CreateSwapChainImages(::std::shared_ptr<const AdapterWrapper>& pAdapter,
                                                  VkSwapchainKHR swapchain,

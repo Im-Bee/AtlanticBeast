@@ -13,8 +13,6 @@ public:
 
     BEAST_API MinimalHardware(::std::shared_ptr<const Instance> pInstance);
 
-    ~MinimalHardware() = default; 
-
 private:
 
     VkPhysicalDevice ChooseGPU(const ::std::shared_ptr<const Instance>& pInstance);

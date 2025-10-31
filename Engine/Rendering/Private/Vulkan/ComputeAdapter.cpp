@@ -8,15 +8,6 @@ namespace Voxels
 using namespace std;
 
 // --------------------------------------------------------------------------------------------------------------------
-ComputeAdapter::ComputeAdapter(shared_ptr<const HardwareWrapper> gpu)
-    : AdapterWrapper(gpu->GetPhysicalDevice(), 
-                     VK_QUEUE_COMPUTE_BIT | VK_QUEUE_GRAPHICS_BIT,
-                     GetExtensions(),
-                     GetFeaturesImpl())
-    , m_pGPU(gpu)
-{ }
-
-// --------------------------------------------------------------------------------------------------------------------
 const ::std::vector<const char*>& ComputeAdapter::GetExtensionsImpl() const
 {
     static const std::vector<const char*> vpszDeviceExtensions = {

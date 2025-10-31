@@ -19,8 +19,6 @@ public:
 
     BEAST_API RTXHardware(::std::shared_ptr<const Instance> pInstance);
 
-    ~RTXHardware() = default;
-
 private:
     
     VkPhysicalDevice ChooseGPU(const ::std::shared_ptr<const Instance>& pInstance);

@@ -13,21 +13,13 @@ class ComputeAdapter : public AdapterWrapper
 {
 public:
 
-    BEAST_API ComputeAdapter(::std::shared_ptr<const HardwareWrapper> gpu);
-
-    ~ComputeAdapter() = default;
-
-public:
-
-    ComputeAdapter(const ComputeAdapter&) = delete;
-    ComputeAdapter(ComputeAdapter&&) = default;
-
-    ComputeAdapter& operator=(const ComputeAdapter&) noexcept = delete;
-    ComputeAdapter& operator=(ComputeAdapter&& other) noexcept 
-    {
-        m_pGPU = std::move(other.m_pGPU);
-        return *this;
-    }
+    ComputeAdapter(::std::shared_ptr<const HardwareWrapper> gpu)
+        : AdapterWrapper(gpu, 
+                         VK_QUEUE_COMPUTE_BIT | VK_QUEUE_GRAPHICS_BIT,
+                         GetExtensions(),
+                         GetFeaturesImpl())
+        , m_pGPU(gpu)
+    { }
 
 public:
 
