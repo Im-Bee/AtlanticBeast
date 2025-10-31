@@ -217,11 +217,11 @@ VkCommandBuffer Renderer::CreateCommandBuffer(shared_ptr<const AdapterWrapper> d
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-array<VoxelFrameResources, MAX_FRAMES_IN_FLIGHT> Renderer::CreateFrameResources(const shared_ptr<const AdapterWrapper>& da,
-                                                                                const shared_ptr<VoxelPipeline>& pipeline,
-                                                                                const shared_ptr<const WorldGrid>& vg,
-                                                                                VkCommandPool cmdPool,
-                                                                                size_t uFrames)
+Renderer::FrameResourcesArray Renderer::CreateFrameResources(const shared_ptr<const AdapterWrapper>& da,
+                                                             const shared_ptr<VoxelPipeline>& pipeline,
+                                                             const shared_ptr<const WorldGrid>& vg,
+                                                             VkCommandPool cmdPool,
+                                                             size_t uFrames)
 {
     VkDevice device = da->GetAdapterHandle();
     array<VoxelFrameResources, MAX_FRAMES_IN_FLIGHT> result;

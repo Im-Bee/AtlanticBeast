@@ -3,6 +3,7 @@
 
 #include "Window/IBaseWindow.hpp"
 #include "Window/WindowPolicy/GameSystemPolicy.hpp"
+#include "Input/UserInput.hpp"
 
 namespace App
 {

@@ -20,7 +20,6 @@ struct WindowDesc
     int32_t                         IsAlive;
     EAbWindowEventsFlags            LastEvent;
     ::std::queue<AbInputStruct>     InputStruct;
-    uint32_t                        uUinqueIndex;
 
 #ifdef _WIN32
     HWND            Hwnd;

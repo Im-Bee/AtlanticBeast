@@ -5,14 +5,16 @@
 namespace App
 {
 
+using namespace std;
 using namespace Core;
 
 // --------------------------------------------------------------------------------------------------------------------
 EAppStatus AppStatus::m_AppCurrentStatus = EAppStatus::Dead;
 
 // --------------------------------------------------------------------------------------------------------------------
-AppStatus::AppStatus():
-    m_uNumberOfWindows(0)
+AppStatus::AppStatus()
+    : m_uNumberOfWindows(0)
+    , m_WindowHandles()
 { }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -33,7 +35,7 @@ EAppStatus AppStatus::GetAppCurrentStatus()
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-uint32_t AppStatus::SendClosedWindowSignal()
+uint32_t AppStatus::SendCloseWindowSignal(shared_ptr<WindowDesc> pWd)
 {
     AB_LOG(Debug::Info, L"Got close window signal");
 
@@ -43,18 +45,20 @@ uint32_t AppStatus::SendClosedWindowSignal()
     }
 
     UpdateStatus();
+    m_WindowHandles.remove(pWd);
 
     return m_uNumberOfWindows;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-uint32_t AppStatus::SendOpenedWindowSignal()
+uint32_t AppStatus::SendOpenWindowSignal(shared_ptr<WindowDesc> pWd)
 {
     AB_LOG(Debug::Info, L"Got new window signal");
 
     ++m_uNumberOfWindows;
 
     UpdateStatus();
+    m_WindowHandles.push_back(pWd);
 
     return m_uNumberOfWindows;
 }

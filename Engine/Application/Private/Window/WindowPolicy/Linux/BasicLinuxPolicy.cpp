@@ -1,10 +1,11 @@
-#include "X11ErrorHandling.hpp"
 #ifdef __linux__
 
 #include "Core.h"
 
+#include "X11ErrorHandling.hpp"
 #include "Window/BaseWindowDetails.h"
 #include "Window/WindowPolicy/Linux/BasicLinuxPolicy.hpp"
+#include "AppStatus.hpp"
 
 namespace App
 {
@@ -104,9 +105,8 @@ void BasicLinuxWindowPolicy::DestroyImpl(WindowDesc* pWd)
     AB_ASSERT(pWd->WindowHandle);
 
     XDestroyWindow(pWd->DisplayHandle, pWd->WindowHandle);
-    UpdateImpl(pWd);
-
     AbAskToCloseDisplayLinux(NULL);
+
     pWd->WindowHandle   = 0;
     pWd->DisplayHandle  = NULL;
     pWd->Screen         = 0;
@@ -133,7 +133,11 @@ void BasicLinuxWindowPolicy::UpdateImpl(WindowDesc* pWd)
             event.type != DestroyNotify &&
             event.type != GenericEvent) 
         {
-            return;
+            for (const auto& handle : App::AppStatus::Get().GetWindowHandles()) {
+                if (event.xany.window == handle->WindowHandle) {
+                    return;
+                }
+            }
         }
 
         XNextEvent(display, &event);
@@ -151,11 +155,11 @@ uint32_t BasicLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
 
     switch (event.type) {
         case KeyPress:
-            HandleKeyPressOrRelease(pWd, event, AbKeyPress);
+            HandleKey(pWd, event, AbKeyPress);
             return 0;
 
         case KeyRelease: 
-            HandleKeyPressOrRelease(pWd, event, AbKeyRelease);
+            HandleKey(pWd, event, AbKeyRelease);
             return 0;
 
         case ButtonPress:
@@ -192,13 +196,13 @@ uint32_t BasicLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
 
 
         case Expose:
-            pWd->LastEvent  = Resize;
+            pWd->LastEvent  |= Resize;
             pWd->Width      = event.xexpose.width;
             pWd->Height     = event.xexpose.height;
             return 1;
 
         case ConfigureNotify:
-            pWd->LastEvent  = Resize;
+            pWd->LastEvent  |= Resize;
             pWd->Height     = event.xconfigure.height;
             pWd->Width      = event.xconfigure.width;
             return 1;
@@ -213,19 +217,18 @@ uint32_t BasicLinuxWindowPolicy::OnUpdate(WindowDesc* pWd, XEvent& event)
                 break;
 
             if (static_cast<Atom>(event.xclient.data.l[0]) == wmDeleteMessage) {
-                pWd->LastEvent = Destroy;
-                return 1;
+                pWd->LastEvent |= Destroy;
+                return 0;
             }
 
-            return 1;
+            return 0;
     }
 
-    pWd->LastEvent = EAbWindowEvents::NothingNew;
     return 0;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void BasicLinuxWindowPolicy::HandleKeyPressOrRelease(WindowDesc* pWd, XEvent& event, EAbInputEvents ie)
+void BasicLinuxWindowPolicy::HandleKey(WindowDesc* pWd, XEvent& event, EAbInputEvents ie)
 {
     pWd->LastEvent |= Input;
 

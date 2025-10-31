@@ -2,14 +2,10 @@
 #define AB_IBASEWINDOW_H
 
 #include "Core.h"
-#include "Debug/Logger.hpp"
-#include "Input/UserInput.hpp"
 #include "Window/WindowDesc.hpp"
 #include "Window/WindowEvents.h"
 #include "Window/WindowPolicy/BasicSystemPolicy.hpp"
 #include "AppStatus.hpp"
-#include <memory>
-#include <string>
 
 namespace App
 {
@@ -108,7 +104,7 @@ public:
             return;
         }
         
-        m_pWindowDesc->uUinqueIndex = App::AppStatus::Get().SendOpenedWindowSignal();
+        App::AppStatus::Get().SendOpenWindowSignal(m_pWindowDesc);
 
         if (m_Policy->WindowPolicyCreate(m_pWindowDesc.get()) != 0) {
             throw AB_EXCEPT("Couldn't create the window");
@@ -143,7 +139,7 @@ public:
             return;
         }
         
-        App::AppStatus::Get().SendClosedWindowSignal();
+        App::AppStatus::Get().SendCloseWindowSignal(m_pWindowDesc);
         
         m_Policy->WindowPolicyDestroy(m_pWindowDesc.get());
         
