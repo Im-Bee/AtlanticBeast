@@ -5,6 +5,8 @@
 
 #include "CameraController.hpp"
 #include "Synchronization/FpsLimiter.hpp"
+#include "Window/WindowPolicy/BasicSystemPolicy.hpp"
+#include "Window/WindowPolicy/GameSystemPolicy.hpp"
 
 using namespace Core;
 using namespace App;
@@ -12,10 +14,12 @@ using namespace App;
 int main()
 {
     EmptyCanvas renderWindow;
+    renderWindow.ChangePolicy<DefaultSystemWindowPolicy>();
     const auto& input = renderWindow.GetInput();
     Voxels::Renderer render = { };
     DeltaTime dt = { };
     FpsLimiter fl(1000.f / 60.f);
+
 
     ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
 	const auto& pc = pwc->GetCharacter();
@@ -35,16 +39,32 @@ int main()
     pc->SetPositon(Voxels::Vec3 { 14.5f, 30.25f, 25.f });
     pc->SetGrid(vg); 
 
+    dt.SetReferenceFrame();
+    {   
+        const float fDeltaMs = dt.FetchMs();
+        fl.Block(fDeltaMs);
+
+        renderWindow.Update(fDeltaMs);
+        render.Update(fDeltaMs);
+        render.Render();
+    }
+    renderWindow.ChangePolicy<DefaultGameSystemWindowPolicy>();
+    render.Destroy();
+    render.Initialize(renderWindow.GetWindowDesc(), vg);
+
 	// Main loop
     dt.SetReferenceFrame();
     while (AppStatus::GetAppCurrentStatus()) 
     {   
-        const float fDelta = dt.FetchMs();
-        fl.Block(fDelta);
-        ::Core::Debug::Logger::Get()->Log(Core::Debug::Info, L"Fps: %f Frame duration: %fms", 1000.f / fDelta, fDelta);
+        const float fDeltaMs = dt.FetchMs();
+        fl.Block(fDeltaMs);
+        // AB_LOG(Core::Debug::Info, 
+        //        L"Fps: %f Frame duration: %fms",
+        //        1000.f / fDeltaMs,
+        //        fDeltaMs);
 
-        renderWindow.Update(fDelta);
-        render.Update(fDelta);
+        renderWindow.Update(fDeltaMs);
+        render.Update(fDeltaMs);
         render.Render();
     }
 

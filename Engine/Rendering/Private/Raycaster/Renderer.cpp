@@ -1,3 +1,4 @@
+#include "Debug/Logger.hpp"
 #include "Voxels.hpp"
 
 #include "Raycaster/Renderer.hpp"
@@ -19,6 +20,8 @@ using namespace std;
 void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
                           ::std::shared_ptr<WorldGrid> vg) 
 {
+    AB_LOG(Core::Debug::Info, L"Initializing renderer!");
+
     m_pInstance         = make_shared<Instance>();
     m_pHardware         = make_shared<MinimalHardware>(m_pInstance);
     m_pDeviceAdapter    = make_shared<ComputeAdapter>(dynamic_pointer_cast<HardwareWrapper>(m_pHardware));
@@ -27,6 +30,7 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
     m_pPipeline         = make_shared<VoxelPipeline>(dynamic_pointer_cast<HardwareWrapper>(m_pHardware), 
                                                      dynamic_pointer_cast<AdapterWrapper>(m_pDeviceAdapter));
 
+    AB_LOG(Core::Debug::Info, L"Initializing command pool");
     m_CommandPool = CreateCommandPool(dynamic_pointer_cast<AdapterWrapper>(m_pDeviceAdapter), 
                                       m_pDeviceAdapter->GetQueueFamilyIndex());
 
@@ -40,6 +44,10 @@ void Renderer::Initialize(::std::shared_ptr<const WindowDesc> wd,
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Update(const float)
 {
+    if (m_pWindowDesc->LastEvent & EAbWindowEvents::ChangedBehavior) {
+        RecreateSwapChain();
+    }
+
     if (m_pVoxelGrid->ReuploadStatus() & WorldGrid::EReupload::RequestStaging) {
         AB_LOG(Core::Debug::Info, L"Staging the buffers");
         m_pPipeline->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], 
@@ -128,6 +136,8 @@ void Renderer::Render()
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Destroy()
 {
+    AB_LOG(Core::Debug::Info, L"Destroying renderer");
+
     if (m_pDeviceAdapter != nullptr) {
         vkDeviceWaitIdle(m_pDeviceAdapter->GetAdapterHandle());
     }

@@ -17,6 +17,7 @@ Instance::Instance()
 // ---------------------------------------------------------------------------------------------------------------------
 Instance::~Instance()
 { 
+    AB_LOG(Core::Debug::Info, L"Destroying instance");
     if (m_Instance != VK_NULL_HANDLE) {
         vkDestroyInstance(m_Instance, NULL);
         m_Instance = VK_NULL_HANDLE;

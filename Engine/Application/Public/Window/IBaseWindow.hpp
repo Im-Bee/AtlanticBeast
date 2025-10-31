@@ -2,10 +2,14 @@
 #define AB_IBASEWINDOW_H
 
 #include "Core.h"
+#include "Debug/Logger.hpp"
 #include "Input/UserInput.hpp"
 #include "Window/WindowDesc.hpp"
+#include "Window/WindowEvents.h"
 #include "Window/WindowPolicy/BasicSystemPolicy.hpp"
 #include "AppStatus.hpp"
+#include <memory>
+#include <string>
 
 namespace App
 {
@@ -22,7 +26,10 @@ class IBaseWindow
 {
 public:
 
-    IBaseWindow() = default;
+    IBaseWindow() 
+        : m_Policy(::std::make_unique<WindowPolicy>())
+        , m_pWindowDesc(::std::make_shared<WindowDesc>(CreateWindowDesc(L"IBaseWindow", 1280, 720)))
+    { }
 
     template<class U>
     explicit IBaseWindow(U&& windowDesc = WindowDesc())
@@ -47,15 +54,46 @@ public:
     template<class NewPolicy>
     void ChangePolicy()
     {
-        bool bWasAlive = m_pWindowDesc->IsAlive;
+        AB_ASSERT(m_pWindowDesc != nullptr);
 
-        if (bWasAlive)
-            this->Destroy();
+        bool bWasAlive = this->m_pWindowDesc->IsAlive;
+        ::std::unique_ptr<DefaultSystemWindowPolicy> pNewPolicy = ::std::make_unique<NewPolicy>();
+        m_Policy.swap(pNewPolicy);
+        if (!bWasAlive) {
+            return;
+        }
 
-        m_Policy = ::std::make_unique<NewPolicy>();
-        
-        if (bWasAlive) 
+        WindowDesc oldDesc = *(this->m_pWindowDesc.get());
+        WindowDesc newDesc = CreateWindowDesc(oldDesc.Name, 
+                                              oldDesc.Width, 
+                                              oldDesc.Height);
+        *(this->m_pWindowDesc.get()) = newDesc;
+
+        try {
+            AB_LOG(Core::Debug::Warning, L"Creating new window!");
             this->Create();
+        }
+        catch (...) {
+            *(this->m_pWindowDesc.get()) = oldDesc;
+            m_Policy.swap(pNewPolicy);
+            AB_LOG(Core::Debug::Error, L"We couldn't change this window policy!");
+            return;
+        }
+
+        newDesc = *(this->m_pWindowDesc.get());
+        *(this->m_pWindowDesc.get()) = oldDesc;
+        m_Policy.swap(pNewPolicy);
+        try {
+            AB_LOG(Core::Debug::Warning, L"Destroying the old window!");
+            this->Destroy();
+        }
+        catch (...) { 
+            AB_LOG(Core::Debug::Error, L"Old verison of window wasn't properly closed!");
+        }
+
+        *(this->m_pWindowDesc.get()) = newDesc;
+        m_Policy.swap(pNewPolicy);
+        m_pWindowDesc->LastEvent = EAbWindowEvents::ChangedBehavior;
     }
 
 public:
@@ -66,6 +104,7 @@ public:
 		AB_ASSERT(m_Policy != nullptr);
 
         if (m_pWindowDesc->IsAlive) {
+            AB_LOG(Core::Debug::Warning, L"Cannot create alive window");
             return;
         }
         
@@ -100,6 +139,7 @@ public:
         AB_ASSERT(m_Policy != nullptr);
 
         if (!m_pWindowDesc->IsAlive) {
+            AB_LOG(Core::Debug::Warning, L"Cannot destroy dead window");
             return;
         }
         
@@ -119,7 +159,13 @@ public:
             return;
         }
 
-        m_pWindowDesc->LastEvent &= 0;
+        // Don't reset the last event flags if the only flag that we have set is EAbWindowEvents::ChangedBehavior
+        if (this->m_pWindowDesc->LastEvent & (EAbWindowEvents::EventsMask & ~EAbWindowEvents::ChangedBehavior))
+            m_pWindowDesc->LastEvent &= 0;
+
+        // Make sure that after EAbWindowEvents::ChangedBehavior propagation, 
+        // we are going to reset the events by setting EAbWindowEvents::NothingNew flag
+        this->m_pWindowDesc->LastEvent |= EAbWindowEvents::NothingNew;
         m_Policy->WindowPolicyUpdate(m_pWindowDesc.get());
         
         if (m_pWindowDesc->LastEvent & EAbWindowEvents::Destroy) {
@@ -138,13 +184,11 @@ public:
 private:
 
     void HandleMessage(const float fDelta, EAbWindowEventsFlags events)
-    {
-        static_cast<Derived*>(this)->HandleMessageImpl(fDelta, events);
-    }
+    { static_cast<Derived*>(this)->HandleMessageImpl(fDelta, events); }
 
 private:
     
-    ::std::unique_ptr<WindowPolicy> m_Policy;
+    ::std::unique_ptr<DefaultSystemWindowPolicy> m_Policy;
 
     ::std::shared_ptr<WindowDesc> m_pWindowDesc;
 

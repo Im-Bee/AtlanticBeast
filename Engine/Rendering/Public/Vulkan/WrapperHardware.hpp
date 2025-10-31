@@ -1,6 +1,8 @@
 #ifndef AB_WRAPPER_HARDWARE_H
 #define AB_WRAPPER_HARDWARE_H
 
+#include "Voxels.hpp"
+
 namespace Voxels
 {
 
@@ -12,12 +14,17 @@ public:
 
     explicit HardwareWrapper(VkPhysicalDevice physicalDevice)
         : m_PhysicalDevice(physicalDevice)
-    { }
+    { 
+        AB_LOG(Core::Debug::Info, L"Initializing hardware");
+    }
 
     HardwareWrapper(HardwareWrapper&&) noexcept = default;
     HardwareWrapper(const HardwareWrapper&) = delete;
 
-    ~HardwareWrapper() = default;
+    ~HardwareWrapper() 
+    {
+        AB_LOG(Core::Debug::Info, L"Destroying hardware");
+    }
 
 public: 
 

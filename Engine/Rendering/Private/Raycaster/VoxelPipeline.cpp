@@ -30,6 +30,8 @@ VoxelPipeline::VoxelPipeline(::std::shared_ptr<const HardwareWrapper> hw,
 // ---------------------------------------------------------------------------------------------------------------------
 VoxelPipeline::~VoxelPipeline()
 {
+    AB_LOG(Core::Debug::Info, L"Destroying pipeline");
+
     if (m_ImageView != VK_NULL_HANDLE) {
         vkDestroyImageView(m_pDeviceAdapter->GetAdapterHandle(), m_ImageView, nullptr);
         m_ImageView = VK_NULL_HANDLE;

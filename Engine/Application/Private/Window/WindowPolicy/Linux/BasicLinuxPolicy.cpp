@@ -1,3 +1,4 @@
+#include "X11ErrorHandling.hpp"
 #ifdef __linux__
 
 #include "Core.h"
@@ -13,6 +14,7 @@ using namespace Core;
 // ---------------------------------------------------------------------------------------------------------------------
 uint32_t BasicLinuxWindowPolicy::CreateImpl(WindowDesc* pWd)
 {
+    XSetErrorHandler(X11HandleError);
     pWd->DisplayHandle = AbAskForDisplayLinux(NULL);
 
     if (pWd->DisplayHandle == NULL) {

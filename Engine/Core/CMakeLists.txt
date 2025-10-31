@@ -15,7 +15,7 @@ SET(CORE_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/CoreMinimal.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/AbLimits.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Exception.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Debug/Assert.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Debug/Assert.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Debug/Logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Core.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Synchronization/FpsLimiter.hpp"

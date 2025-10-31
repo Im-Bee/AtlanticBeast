@@ -17,10 +17,13 @@ public:
         : m_uQueueFamily(ChooseQueueFamily(gpu, uFlags))
         , m_Device(CreateDevice(gpu, vExtensions, pFeatures, m_uQueueFamily))
         , m_Queue(CreateQueue(m_Device, m_uQueueFamily))
-    { }
+    { 
+        AB_LOG(Core::Debug::Info, L"Initializing adapter");
+    }
                    
     ~AdapterWrapper()
     {
+        AB_LOG(Core::Debug::Info, L"Destroying adapter");
         if (m_Device != VK_NULL_HANDLE) {
             vkDestroyDevice(m_Device, NULL);
             m_Device = VK_NULL_HANDLE;
