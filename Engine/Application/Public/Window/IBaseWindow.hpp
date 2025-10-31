@@ -35,7 +35,7 @@ public:
 
     ~IBaseWindow()
     { 
-        if (m_pWindowDesc) {
+        if (m_pWindowDesc.get()) {
             this->Destroy(); 
         }
     }
