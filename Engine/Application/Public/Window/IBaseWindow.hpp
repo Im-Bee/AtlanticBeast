@@ -55,29 +55,34 @@ public:
         bool bWasAlive = this->m_pWindowDesc->IsAlive;
         ::std::unique_ptr<DefaultSystemWindowPolicy> pNewPolicy = ::std::make_unique<NewPolicy>();
         m_Policy.swap(pNewPolicy);
+        
+        // If the window wasn't created yet, there is nothing left to do
         if (!bWasAlive) {
             return;
         }
 
+        // Create structs for new state and to keep the old state of WindowDesc
         WindowDesc oldDesc = *(this->m_pWindowDesc.get());
         WindowDesc newDesc = CreateWindowDesc(oldDesc.Name, 
                                               oldDesc.Width, 
                                               oldDesc.Height);
-        *(this->m_pWindowDesc.get()) = newDesc;
 
+        // Try to create the new window
+        SetWindowDescBufferStateInternal(newDesc);
         try {
             AB_LOG(Core::Debug::Warning, L"Creating new window!");
             this->Create();
         }
         catch (...) {
-            *(this->m_pWindowDesc.get()) = oldDesc;
+            SetWindowDescBufferStateInternal(oldDesc);
             m_Policy.swap(pNewPolicy);
             AB_LOG(Core::Debug::Error, L"We couldn't change this window policy!");
             return;
         }
 
+        // Load old state, try to destroy the old window
         newDesc = *(this->m_pWindowDesc.get());
-        *(this->m_pWindowDesc.get()) = oldDesc;
+        SetWindowDescBufferStateInternal(oldDesc);
         m_Policy.swap(pNewPolicy);
         try {
             AB_LOG(Core::Debug::Warning, L"Destroying the old window!");
@@ -87,7 +92,8 @@ public:
             AB_LOG(Core::Debug::Error, L"Old verison of window wasn't properly closed!");
         }
 
-        *(this->m_pWindowDesc.get()) = newDesc;
+        // Load our new policy and new state
+        SetWindowDescBufferStateInternal(newDesc);
         m_Policy.swap(pNewPolicy);
         m_pWindowDesc->LastEvent = EAbWindowEvents::ChangedBehavior;
     }
@@ -181,6 +187,11 @@ private:
 
     void HandleMessage(const float fDelta, EAbWindowEventsFlags events)
     { static_cast<Derived*>(this)->HandleMessageImpl(fDelta, events); }
+
+private:
+
+    void SetWindowDescBufferStateInternal(const WindowDesc& wd) 
+    { *(this->m_pWindowDesc.get()) = wd; }
 
 private:
     

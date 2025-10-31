@@ -14,12 +14,12 @@ WorldGrid::WorldGrid(size_t uGridWidth)
     : m_uGridDim(uGridWidth)
     , m_Cubes(uGridWidth * uGridWidth * uGridWidth)
     , m_uCubesCount(0)
-    , m_VoxelGrid(GenerateGrid(m_uGridDim, m_Cubes))
+    , m_VoxelGrid(GenerateGrid(m_uGridDim, m_Cubes, m_uCubesCount))
     , m_Reupload(RequestStaging)
 { }
 
 // ---------------------------------------------------------------------------------------------------------------------
-vector<Voxel> WorldGrid::GenerateGrid(size_t uGridWidth, vector<Cube>& vCubes)
+vector<Voxel> WorldGrid::GenerateGrid(const size_t uGridWidth, vector<Cube>& vCubes, size_t& uCubesState)
 {
     vector<Voxel>   voxelGrid(uGridWidth * uGridWidth * uGridWidth);
     size_t          uDim = VoxelGridDim;
@@ -34,7 +34,10 @@ vector<Voxel> WorldGrid::GenerateGrid(size_t uGridWidth, vector<Cube>& vCubes)
     for (uint32_t z = uCubeStart; z < uCubeEnd; ++z) {
         for (uint32_t y = uCubeStart; y < uCubeEnd; ++y) {
             for (uint32_t x = uCubeStart; x < uCubeEnd; ++x) {
-                GenerateCube(Vec3(x, y, z), voxelGrid);
+                GenerateCube(Vec3(x, y, z), 
+                             voxelGrid,
+                             vCubes,
+                             uCubesState);
             }
         }
     }
@@ -59,7 +62,10 @@ vector<Voxel> WorldGrid::GenerateGrid(size_t uGridWidth, vector<Cube>& vCubes)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void WorldGrid::GenerateCube(const Vec3& offsetPos, vector<Voxel>& vGrid)
+void WorldGrid::GenerateCube(const Vec3& offsetPos, 
+                             vector<Voxel>& vGrid,
+                             vector<Cube>& vCubes,
+                             size_t& uCubesState)
 {
     static uint32_t kc = 0;
     const size_t uDim = this->GetGridWidth();
@@ -109,7 +115,7 @@ void WorldGrid::GenerateCube(const Vec3& offsetPos, vector<Voxel>& vGrid)
         c.SetColor(0x0000FF00);
         kc = 0;
     }
-    m_Cubes[m_uCubesCount++] = c;
+    vCubes[uCubesState++] = c;
 }
 
 } // !Voxels

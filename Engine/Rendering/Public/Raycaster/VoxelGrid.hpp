@@ -2,9 +2,8 @@
 #define AB_VOXEL_GRID_H
 
 #include "Voxels.hpp"
-#include "Math.hpp"
-#include "Primitives/Cube.hpp"
 
+#include "Primitives/Cube.hpp"
 #include "Raycaster/SingleVoxel.hpp"
 
 namespace Voxels
@@ -78,15 +77,20 @@ public:
     template<typename U>
     void ModifyVoxel(iVec3 pos, U&& cube)
     {
-        GenerateCube(Vec3::ToVec3(pos), m_VoxelGrid);
+        GenerateCube(Vec3::ToVec3(pos), m_VoxelGrid, m_Cubes, m_uCubesCount);
         m_Reupload = RequestStaging;
     }
 
 private:
 
-    ::std::vector<Voxel> GenerateGrid(size_t uGridWidth, ::std::vector<Cube>& vCubes);
+    ::std::vector<Voxel> GenerateGrid(const size_t uGridWidth,
+                                      ::std::vector<Cube>& vCubes,
+                                      size_t& uCubesState);
 
-    BEAST_API void GenerateCube(const Vec3& offsetPos, ::std::vector<Voxel>& vGrid);
+    BEAST_API void GenerateCube(const Vec3& offsetPos,
+                                ::std::vector<Voxel>& vGrid,
+                                ::std::vector<Cube>& vCubes,
+                                size_t& uCubesState);
 
 private:
 
@@ -103,6 +107,4 @@ private:
 };
 
 } // !Voxels
-
 #endif // !AB_VOXEL_GRID_H
-
