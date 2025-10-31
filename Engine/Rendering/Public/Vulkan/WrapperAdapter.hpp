@@ -1,6 +1,8 @@
 #ifndef AB_WRAPPER_ADAPTER_H
 #define AB_WRAPPER_ADAPTER_H
 
+#include "Voxels.hpp"
+
 namespace Voxels
 {
 
@@ -11,9 +13,9 @@ public:
     AdapterWrapper() = delete;
 
     AdapterWrapper(VkPhysicalDevice gpu, 
-            const uint32_t uFlags,
-            const std::vector<const char*>& vExtensions,
-            const void* pFeatures)
+                   const uint32_t uFlags,
+                   const std::vector<const char*>& vExtensions,
+                   const void* pFeatures)
         : m_uQueueFamily(ChooseQueueFamily(gpu, uFlags))
         , m_Device(CreateDevice(gpu, vExtensions, pFeatures, m_uQueueFamily))
         , m_Queue(CreateQueue(m_Device, m_uQueueFamily))
