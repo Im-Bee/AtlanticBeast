@@ -41,7 +41,7 @@ layout(push_constant) uniform PushConstants
 const float INF     = 1.f / 0.f;
 const float PI      = 3.141592;
 const float TWO_PI  = 6.283185;
-const float EPSILON = 0.0001;
+const float EPSILON = 0.001;
 const vec4  baseSkyColor    = vec4(.4078, .4725, 1., 1.);
 const float maxRenderDist   = 20.f;
 const int   maxSteps        = int(maxRenderDist * 2.6);
@@ -577,17 +577,11 @@ void main()
         if (fDistance <= maxSteps) 
         {   
             vec3 shaded = finalColor.xyz;
-            if (hitType != HIT_TYPE_VOXEL) {
-                shaded = PhongSoftShadows(CameraPos.xyz, 
-                                          hitPos,
-                                          normal,
-                                          int(distance(hitPos, lightPos) * 1.5)) * finalColor.xyz;
-            } else {
-                shaded = Phong(CameraPos.xyz, 
-                               hitPos,
-                               normal,
-                               int(distance(hitPos, lightPos) * 1.5)) * finalColor.xyz;
-            }
+
+            shaded = PhongSoftShadows(CameraPos.xyz, 
+                                      hitPos,
+                                      normal,
+                                      int(distance(hitPos, lightPos) * 1.5)) * finalColor.xyz;
             // finalColor = vec4(shaded, finalColor.w);
 
             finalColor = vec4(Reflection(ro, 
