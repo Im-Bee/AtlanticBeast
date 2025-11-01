@@ -25,20 +25,13 @@ struct UploadDescriptor
     constexpr UploadDescriptor(U&& bufferInfo,
                                L&& write,
                                EUploadType type,
-                               T buffer)
+                               const T& buffer)
         : BufferInfo(::std::forward<U>(bufferInfo))
         , Write(::std::forward<L>(write))
         , Type(type)
     {
         Write.pBufferInfo = &BufferInfo;
-        switch (Type) {
-            case EUploadType::LocalBuffer: 
-                LocalBuf = buffer;
-                break;
-            case EUploadType::StreamBuffer: 
-                StreamBuf = buffer;
-                break;
-        }
+        LocalBuf = buffer;
     }
 
     ~UploadDescriptor() 
@@ -50,14 +43,7 @@ struct UploadDescriptor
         , Type(other.Type)
     { 
         Write.pBufferInfo = &BufferInfo;
-        switch (Type) {
-            case EUploadType::LocalBuffer: 
-                LocalBuf = other.LocalBuf;
-                break;
-            case EUploadType::StreamBuffer: 
-                StreamBuf = other.StreamBuf;
-                break;
-        }
+        LocalBuf = other.LocalBuf;
     }
     
     UploadDescriptor& operator=(const UploadDescriptor& other) noexcept
@@ -66,14 +52,8 @@ struct UploadDescriptor
         Write = other.Write;
         Type = other.Type;
         Write.pBufferInfo = &BufferInfo;
-        switch (Type) {
-            case EUploadType::LocalBuffer: 
-                LocalBuf = other.LocalBuf;
-                break;
-            case EUploadType::StreamBuffer: 
-                StreamBuf = other.StreamBuf;
-                break;
-        }
+        LocalBuf = other.LocalBuf;
+        
         return *this;
     }
 
@@ -83,14 +63,7 @@ struct UploadDescriptor
         , Type(other.Type)
     { 
         Write.pBufferInfo = &BufferInfo;
-        switch (Type) {
-            case EUploadType::LocalBuffer: 
-                LocalBuf = std::move(other.LocalBuf);
-                break;
-            case EUploadType::StreamBuffer: 
-                StreamBuf = std::move(other.StreamBuf);
-                break;
-        }
+        LocalBuf = std::move(other.LocalBuf);
     }
 
     UploadDescriptor& operator=(UploadDescriptor&& other) noexcept
@@ -99,14 +72,8 @@ struct UploadDescriptor
         Write = std::move(other.Write);
         Type = std::move(other.Type);
         Write.pBufferInfo = &BufferInfo;
-        switch (Type) {
-            case EUploadType::LocalBuffer: 
-                LocalBuf = other.LocalBuf;
-                break;
-            case EUploadType::StreamBuffer: 
-                StreamBuf = other.StreamBuf;
-                break;
-        }
+        LocalBuf = other.LocalBuf;
+
         return *this;
     }
 
@@ -114,11 +81,7 @@ struct UploadDescriptor
     VkWriteDescriptorSet Write;
     EUploadType Type;
 
-    union 
-    {
-        ::std::weak_ptr<GPUBuffer> LocalBuf;
-        ::std::weak_ptr<GPUStreamBuffer> StreamBuf;
-    };
+    ::std::weak_ptr<GPUBuffer> LocalBuf;
 };
 
 

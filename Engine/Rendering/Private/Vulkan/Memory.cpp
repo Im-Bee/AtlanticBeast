@@ -94,11 +94,12 @@ void Memory::UploadOnStreamBuffer(const void* pUpload,
     if (onSet.Type != UploadDescriptor::EUploadType::StreamBuffer) {
         throw AB_EXCEPT("UploadOnStreamBuffer, type of buffer is invalid");
     }
-    if (onSet.StreamBuf.expired()) {
+    if (onSet.LocalBuf.expired()) {
         throw AB_EXCEPT("UploadOnStreamBuffer, buffer is expired");
     }
     
-    auto buf = onSet.StreamBuf.lock();
+	auto lock = onSet.LocalBuf.lock();
+    GPUStreamBuffer* buf = reinterpret_cast<GPUStreamBuffer*>(lock.get());
     AB_ASSERT((buf->GetMemoryHandle() != VK_NULL_HANDLE));
     AB_ASSERT((buf->GetBufferHandle() != VK_NULL_HANDLE));
 
