@@ -1,12 +1,11 @@
-#include "Raycaster/VoxelPipeline.hpp"
 #include "Voxels.hpp"
 
 #include "Raycaster/Renderer.hpp"
 
-#include "Raycaster/VoxelFrameResources.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Vulkan/ComputeAdapter.hpp"
 #include "Vulkan/ErrorHandling.hpp"
+#include "Vulkan/FrameResources.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/Memory.hpp"
 #include "Vulkan/MinimalHardware.hpp"
@@ -36,6 +35,11 @@ void Renderer::Initialize(shared_ptr<const WindowDesc> wd,
     m_CommandPool = CreateCommandPool(dynamic_pointer_cast<AdapterWrapper>(m_pDeviceAdapter), 
                                       m_pDeviceAdapter->GetQueueFamilyIndex());
 
+    m_StageVoxelBuffer   = std::move(m_pMemory->ReserveStagingBuffer(vg->GetAmountOfVoxels() * sizeof(Voxel)));
+    m_StageCubeBuffer    = std::move(m_pMemory->ReserveStagingBuffer(vg->GetAmountOfCubes() * sizeof(Cube)));
+    m_VoxelBuffer   = std::move(m_pMemory->ReserveGPUBuffer(vg->GetAmountOfVoxels() * sizeof(Voxel)));
+    m_CubeBuffer    = std::move(m_pMemory->ReserveGPUBuffer(vg->GetAmountOfCubes() * sizeof(Cube)));
+
     // Recreating swap chain also creates frame resources and initializes swap chain
     RecreateSwapChain();
 
@@ -54,17 +58,16 @@ void Renderer::Update(const float)
 
     if (m_pVoxelGrid->ReuploadStatus() & WorldGrid::EReupload::RequestStaging) {
         AB_LOG(Core::Debug::Info, L"Staging the buffers");
-        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], 
-                                        frames[m_uCurrentFrame].StageVoxelBuffer,
-                                        m_pPipeline->GetUniformUploadDescriptor(
-                                                        frames[m_uCurrentFrame].StageVoxelBuffer, 
-                                                        VoxelPipeline::EShaderResource::VoxelGrid));
 
-        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetCubes()[0], 
-                                        frames[m_uCurrentFrame].StageCubeBuffer,
-                                        m_pPipeline->GetUniformUploadDescriptor(
-                                                        frames[m_uCurrentFrame].StageCubeBuffer, 
-                                                        VoxelPipeline::EShaderResource::Cubes));
+        UploadDescriptor ud1 = m_pPipeline->GetUniformUploadDescriptor(m_StageVoxelBuffer, 
+                                                                       VoxelPipeline::EShaderResource::VoxelGrid);
+
+        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], ud1);
+
+        UploadDescriptor ud2 = m_pPipeline->GetUniformUploadDescriptor(m_StageCubeBuffer, 
+                                                                       VoxelPipeline::EShaderResource::Cubes);
+
+        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetCubes()[0], ud2);
     }
 
     Vec3 rot = m_pCamera->GetRotation();
@@ -150,27 +153,22 @@ void Renderer::Destroy()
         vkDeviceWaitIdle(m_pDeviceAdapter->GetAdapterHandle());
 
     if (m_pDeviceAdapter != nullptr)
-        DestroyResources();
+        DestroyFrameResources();
 
     if (m_CommandPool != VK_NULL_HANDLE) {
         vkDestroyCommandPool(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, nullptr);
         m_CommandPool = VK_NULL_HANDLE;
     }
-
-    if (m_pPipeline != nullptr) 
-        m_pPipeline = nullptr;
-
-    if (m_pSwapChain != nullptr) 
-        m_pSwapChain = nullptr;
-
-    if (m_pDeviceAdapter != nullptr) 
-        m_pDeviceAdapter = nullptr;
-
-    if (m_pHardware != nullptr) 
-        m_pHardware = nullptr;
-
-    if (m_pInstance != nullptr) 
-        m_pInstance = nullptr;
+    
+    m_StageVoxelBuffer   = nullptr;
+    m_StageCubeBuffer    = nullptr;
+    m_VoxelBuffer   = nullptr;
+    m_CubeBuffer    = nullptr;
+    m_pPipeline     = nullptr;
+    m_pSwapChain    = nullptr;
+    m_pDeviceAdapter = nullptr;
+    m_pHardware     = nullptr;
+    m_pInstance     = nullptr;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -214,7 +212,7 @@ Renderer::FrameResourcesArray Renderer::CreateFrameResources(const shared_ptr<co
                                                              size_t uFrames)
 {
     VkDevice device = da->GetAdapterHandle();
-    array<VoxelFrameResources, MAX_FRAMES_IN_FLIGHT> result;
+    FrameResourcesArray result;
 
     VkSemaphoreCreateInfo semaphoreInfo = { };
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -233,14 +231,6 @@ Renderer::FrameResourcesArray Renderer::CreateFrameResources(const shared_ptr<co
         }
 
         result[i].CommandBuffer = CreateCommandBuffer(da, cmdPool);
-
-        result[i].StageVoxelBuffer   = std::move(memory->ReserveStagingBuffer(
-            vg->GetAmountOfVoxels() * sizeof(Voxel)));
-        result[i].StageCubeBuffer    = std::move(memory->ReserveStagingBuffer(
-            vg->GetAmountOfCubes() * sizeof(Cube)));
-
-        result[i].VoxelBuffer   = std::move(memory->ReserveGPUBuffer(vg->GetAmountOfVoxels() * sizeof(Voxel)));
-        result[i].CubeBuffer    = std::move(memory->ReserveGPUBuffer(vg->GetAmountOfCubes() * sizeof(Cube)));
     }
 
     m_pVoxelGrid->ForceUpload();
@@ -331,27 +321,27 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const shared_pt
         VkBufferCopy copyRegion = { };
         copyRegion.srcOffset = 0;
         copyRegion.dstOffset = 0;
-        copyRegion.size      = frames[m_uCurrentFrame].StageVoxelBuffer.GetSizeInBytes();
+        copyRegion.size      = m_StageVoxelBuffer->GetSizeInBytes();
         vkCmdCopyBuffer(cmdBuffer, 
-                        frames[m_uCurrentFrame].StageVoxelBuffer.GetBufferHandle(), 
-                        frames[m_uCurrentFrame].VoxelBuffer.GetBufferHandle(), 
+                        m_StageVoxelBuffer->GetBufferHandle(), 
+                        m_VoxelBuffer->GetBufferHandle(), 
                         1,
                         &copyRegion);
 
-        copyRegion.size = frames[m_uCurrentFrame].StageCubeBuffer.GetSizeInBytes();
+        copyRegion.size = m_StageCubeBuffer->GetSizeInBytes();
         vkCmdCopyBuffer(cmdBuffer, 
-                        frames[m_uCurrentFrame].StageCubeBuffer.GetBufferHandle(), 
-                        frames[m_uCurrentFrame].CubeBuffer.GetBufferHandle(), 
+                        m_StageCubeBuffer->GetBufferHandle(), 
+                        m_CubeBuffer->GetBufferHandle(), 
                         1,
                         &copyRegion);
 
         VkMappedMemoryRange mmr = { };
         mmr.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-        mmr.memory = frames[m_uCurrentFrame].VoxelBuffer.GetMemoryHandle();
+        mmr.memory = m_VoxelBuffer->GetMemoryHandle();
         mmr.offset = 0;
         mmr.size = VK_WHOLE_SIZE;
         VkMappedMemoryRange mmr2 = mmr;
-        mmr2.memory = frames[m_uCurrentFrame].CubeBuffer.GetMemoryHandle();
+        mmr2.memory = m_CubeBuffer->GetMemoryHandle();
 
         VkMappedMemoryRange mmrs[2] = { mmr, mmr2 };
         vkFlushMappedMemoryRanges(m_pDeviceAdapter->GetAdapterHandle(), 2, mmrs);
@@ -363,12 +353,12 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const shared_pt
     bufferBarriers[0].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
     bufferBarriers[0].srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
     bufferBarriers[0].dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    bufferBarriers[0].buffer = frames[m_uCurrentFrame].VoxelBuffer.GetBufferHandle();
+    bufferBarriers[0].buffer = m_VoxelBuffer->GetBufferHandle();
     bufferBarriers[0].offset = 0;
     bufferBarriers[0].size = VK_WHOLE_SIZE;
     
     bufferBarriers[1] = bufferBarriers[0];
-    bufferBarriers[1].buffer = frames[m_uCurrentFrame].CubeBuffer.GetBufferHandle();
+    bufferBarriers[1].buffer = m_CubeBuffer->GetBufferHandle();
 
     vkCmdPipelineBarrier(cmdBuffer,
                          VK_PIPELINE_STAGE_TRANSFER_BIT,
@@ -384,7 +374,7 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const shared_pt
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void Renderer::DestroyResources()
+void Renderer::DestroyFrameResources()
 {
     AB_LOG(Core::Debug::Info, L"Destroying frame resources");
 
@@ -401,10 +391,6 @@ void Renderer::DestroyResources()
             vkDestroySemaphore(m_pDeviceAdapter->GetAdapterHandle(), frames[i].ImageAvailable, nullptr);
             vkDestroyFence(m_pDeviceAdapter->GetAdapterHandle(), frames[i].InFlightFence, nullptr);
             vkFreeCommandBuffers(m_pDeviceAdapter->GetAdapterHandle(), m_CommandPool, 1, &frames[i].CommandBuffer);
-            frames[i].StageVoxelBuffer.~GPUStreamBuffer();
-            frames[i].StageCubeBuffer.~GPUStreamBuffer();
-            frames[i].VoxelBuffer.~GPUBuffer();
-            frames[i].CubeBuffer.~GPUBuffer();
         }
     }
 }
@@ -417,7 +403,7 @@ void Renderer::RecreateSwapChain()
         return;
     }
 
-    DestroyResources();
+    DestroyFrameResources();
 
     m_pSwapChain = nullptr;
     m_pSwapChain = make_unique<Swapchain>(m_pInstance, 

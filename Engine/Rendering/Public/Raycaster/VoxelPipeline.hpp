@@ -34,7 +34,7 @@ public:
 
 public:
 
-    BEAST_API UploadDescriptor GetUniformUploadDescriptor(const GPUStreamBuffer& outBuffer, 
+    BEAST_API UploadDescriptor GetUniformUploadDescriptor(const ::std::shared_ptr<GPUStreamBuffer>& outBuffer, 
                                                           const EShaderResource& sr);
 
     BEAST_API void LoadImage(VkImage image);

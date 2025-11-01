@@ -1,12 +1,12 @@
 #ifndef AB_RENDERER_H
 #define AB_RENDERER_H
 
+#include "Vulkan/FrameResources.hpp"
 #include "Vulkan/Instance.hpp"
 #include "Vulkan/MinimalHardware.hpp"
 #include "Vulkan/ComputeAdapter.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Raycaster/VoxelPipeline.hpp"
-#include "Raycaster/VoxelFrameResources.hpp"
 #include "Primitives/Camera.hpp"
 
 namespace Voxels
@@ -14,7 +14,7 @@ namespace Voxels
 
 class Renderer
 {
-    using FrameResourcesArray = ::std::array<VoxelFrameResources, Voxels::MAX_FRAMES_IN_FLIGHT>;
+    using FrameResourcesArray = ::std::array<FrameResources, Voxels::MAX_FRAMES_IN_FLIGHT>;
 
 public:
 
@@ -89,7 +89,7 @@ private:
 
 private:
 
-    void DestroyResources();
+    void DestroyFrameResources();
 
     void RecreateSwapChain();
 
@@ -110,6 +110,10 @@ private:
     size_t m_uCurrentFrame;
     ::std::unique_ptr<FrameResourcesArray> m_vFrames = nullptr;
 
+    ::std::shared_ptr<GPUBuffer>    m_VoxelBuffer;
+    ::std::shared_ptr<GPUBuffer>    m_CubeBuffer;    
+    ::std::shared_ptr<GPUStreamBuffer> m_StageVoxelBuffer;
+    ::std::shared_ptr<GPUStreamBuffer> m_StageCubeBuffer;
 };
 
 } // !Voxels

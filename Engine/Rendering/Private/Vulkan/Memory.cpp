@@ -1,6 +1,9 @@
 #include "Vulkan/Memory.hpp"
 
+#include "Core.h"
+#include "Debug/Assert.hpp"
 #include "Vulkan/ErrorHandling.hpp"
+#include <memory>
 
 namespace Voxels
 {
@@ -15,7 +18,7 @@ Memory::Memory(shared_ptr<const HardwareWrapper> pHardware,
 { }
 
 // --------------------------------------------------------------------------------------------------------------------
-GPUStreamBuffer Memory::ReserveStagingBuffer(const size_t uSizeInBytes)
+shared_ptr<GPUStreamBuffer> Memory::ReserveStagingBuffer(const size_t uSizeInBytes)
 {
     AB_LOG(Core::Debug::Info, L"Reserving staging buffer of %llu bytes", uSizeInBytes);
 
@@ -47,11 +50,11 @@ GPUStreamBuffer Memory::ReserveStagingBuffer(const size_t uSizeInBytes)
     THROW_IF_FAILED(vkAllocateMemory(da, &allocInfo, NULL, &voxelBufferMemory));
     THROW_IF_FAILED(vkBindBufferMemory(da, voxelBuffer, voxelBufferMemory, 0));
 
-    return GPUStreamBuffer(m_pAdapter, voxelBufferMemory, voxelBuffer, nullptr, uSizeInBytes);
+    return make_shared<GPUStreamBuffer>(m_pAdapter, voxelBufferMemory, voxelBuffer, nullptr, uSizeInBytes);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-GPUBuffer Memory::ReserveGPUBuffer(const size_t uSizeInBytes)
+shared_ptr<GPUBuffer> Memory::ReserveGPUBuffer(const size_t uSizeInBytes)
 {
     AB_LOG(Core::Debug::Info, L"Reserving gpu buffer of %llu bytes", uSizeInBytes);
 
@@ -81,28 +84,35 @@ GPUBuffer Memory::ReserveGPUBuffer(const size_t uSizeInBytes)
     THROW_IF_FAILED(vkAllocateMemory(da, &allocInfo, NULL, &deviceMem));
     THROW_IF_FAILED(vkBindBufferMemory(da, buffer, deviceMem, 0));
 
-    return GPUBuffer(m_pAdapter, deviceMem, buffer, uSizeInBytes);
+    return make_shared<GPUBuffer>(m_pAdapter, deviceMem, buffer, uSizeInBytes);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 void Memory::UploadOnStreamBuffer(const void* pUpload, 
-                                  GPUStreamBuffer& outBuffer,
-                                  const UploadDescriptor& onSet)
+                                  UploadDescriptor& onSet)
 {
-    AB_ASSERT((outBuffer.GetMemoryHandle() != VK_NULL_HANDLE));
-    AB_ASSERT((outBuffer.GetBufferHandle() != VK_NULL_HANDLE));
+    if (onSet.Type != UploadDescriptor::EUploadType::StreamBuffer) {
+        throw AB_EXCEPT("UploadOnStreamBuffer, type of buffer is invalid");
+    }
+    if (onSet.StreamBuf.expired()) {
+        throw AB_EXCEPT("UploadOnStreamBuffer, buffer is expired");
+    }
+    
+    auto buf = onSet.StreamBuf.lock();
+    AB_ASSERT((buf->GetMemoryHandle() != VK_NULL_HANDLE));
+    AB_ASSERT((buf->GetBufferHandle() != VK_NULL_HANDLE));
 
     const VkDevice da = m_pAdapter->GetAdapterHandle();
     
-    if (*outBuffer.GetDataPointer() == nullptr) {
+    if (buf->GetDataPointer() == nullptr) {
         THROW_IF_FAILED(vkMapMemory(da, 
-                                    outBuffer.GetMemoryHandle(),
+                                    buf->GetMemoryHandle(),
                                     0,
-                                    outBuffer.GetSizeInBytes(),
+                                    buf->GetSizeInBytes(),
                                     0,
-                                    outBuffer.GetDataPointer()));
+                                    buf->GetPtrToDataPointer()));
     }
-    memcpy(*outBuffer.GetDataPointer(), pUpload, outBuffer.GetSizeInBytes());
+    memcpy(buf->GetDataPointer(), pUpload, buf->GetSizeInBytes());
 
     vkUpdateDescriptorSets(da,
                            1,

@@ -11,22 +11,114 @@
 namespace Voxels
 {
 
-
 struct UploadDescriptor
 {
+    enum EUploadType 
+    {
+        LocalBuffer,
+        StreamBuffer,
+    };
+
     UploadDescriptor() = delete;
     
-    template<typename U, typename L>
-    UploadDescriptor(U&& bufferInfo,
-                     L&& write)
+    template<typename U, typename L, class T>
+    constexpr UploadDescriptor(U&& bufferInfo,
+                               L&& write,
+                               EUploadType type,
+                               T buffer)
         : BufferInfo(::std::forward<U>(bufferInfo))
         , Write(::std::forward<L>(write))
+        , Type(type)
     {
         Write.pBufferInfo = &BufferInfo;
+        switch (Type) {
+            case EUploadType::LocalBuffer: 
+                LocalBuf = buffer;
+                break;
+            case EUploadType::StreamBuffer: 
+                StreamBuf = buffer;
+                break;
+        }
+    }
+
+    ~UploadDescriptor() 
+    { }
+
+    UploadDescriptor(const UploadDescriptor& other) noexcept 
+        : BufferInfo(other.BufferInfo)
+        , Write(other.Write)
+        , Type(other.Type)
+    { 
+        Write.pBufferInfo = &BufferInfo;
+        switch (Type) {
+            case EUploadType::LocalBuffer: 
+                LocalBuf = other.LocalBuf;
+                break;
+            case EUploadType::StreamBuffer: 
+                StreamBuf = other.StreamBuf;
+                break;
+        }
+    }
+    
+    UploadDescriptor& operator=(const UploadDescriptor& other) noexcept
+    {
+        BufferInfo = other.BufferInfo;
+        Write = other.Write;
+        Type = other.Type;
+        Write.pBufferInfo = &BufferInfo;
+        switch (Type) {
+            case EUploadType::LocalBuffer: 
+                LocalBuf = other.LocalBuf;
+                break;
+            case EUploadType::StreamBuffer: 
+                StreamBuf = other.StreamBuf;
+                break;
+        }
+        return *this;
+    }
+
+    UploadDescriptor(UploadDescriptor&& other) noexcept 
+        : BufferInfo(std::move(other.BufferInfo))
+        , Write(std::move(other.Write))
+        , Type(other.Type)
+    { 
+        Write.pBufferInfo = &BufferInfo;
+        switch (Type) {
+            case EUploadType::LocalBuffer: 
+                LocalBuf = std::move(other.LocalBuf);
+                break;
+            case EUploadType::StreamBuffer: 
+                StreamBuf = std::move(other.StreamBuf);
+                break;
+        }
+    }
+
+    UploadDescriptor& operator=(UploadDescriptor&& other) noexcept
+    {
+        BufferInfo = std::move(other.BufferInfo);
+        Write = std::move(other.Write);
+        Type = std::move(other.Type);
+        Write.pBufferInfo = &BufferInfo;
+        switch (Type) {
+            case EUploadType::LocalBuffer: 
+                LocalBuf = other.LocalBuf;
+                break;
+            case EUploadType::StreamBuffer: 
+                StreamBuf = other.StreamBuf;
+                break;
+        }
+        return *this;
     }
 
     VkDescriptorBufferInfo BufferInfo;
     VkWriteDescriptorSet Write;
+    EUploadType Type;
+
+    union 
+    {
+        ::std::weak_ptr<GPUBuffer> LocalBuf;
+        ::std::weak_ptr<GPUStreamBuffer> StreamBuf;
+    };
 };
 
 
@@ -51,13 +143,13 @@ public:
 
 public:
 
-    BEAST_API GPUStreamBuffer ReserveStagingBuffer(const size_t uSizeInBytes);
+    BEAST_API ::std::shared_ptr<GPUStreamBuffer> ReserveStagingBuffer(const size_t uSizeInBytes);
 
-    BEAST_API GPUBuffer ReserveGPUBuffer(const size_t uSizeInBytes);
+    BEAST_API ::std::shared_ptr<GPUBuffer> ReserveGPUBuffer(const size_t uSizeInBytes);
 
     BEAST_API void UploadOnStreamBuffer(const void* pUpload, 
-                                        GPUStreamBuffer& outBuffer,
-                                        const UploadDescriptor& onSet);
+                                        UploadDescriptor& onSet);
+
 private:
 
     uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);

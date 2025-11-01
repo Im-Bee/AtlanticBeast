@@ -45,6 +45,8 @@ public:
 public:
 
     GPUBuffer(const GPUBuffer& other) = delete;
+    GPUBuffer& operator=(const GPUBuffer& other) noexcept = delete;
+
     GPUBuffer(GPUBuffer&& other) noexcept
         : m_pDeviceAdapter(std::move(other.m_pDeviceAdapter))
         , m_DeviceMemory(other.m_DeviceMemory)
@@ -55,7 +57,6 @@ public:
         other.m_Buffer = VK_NULL_HANDLE;
     }
 
-    GPUBuffer& operator=(const GPUBuffer& other) noexcept = delete;
     GPUBuffer& operator=(GPUBuffer&& other) noexcept
     {
         this->m_pDeviceAdapter  = std::move(other.m_pDeviceAdapter);

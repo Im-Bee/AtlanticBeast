@@ -40,12 +40,13 @@ public:
 public:
 
     GPUStreamBuffer(const GPUStreamBuffer& other) = delete;
+    GPUStreamBuffer& operator=(const GPUStreamBuffer& other) noexcept = delete;
+
     GPUStreamBuffer(GPUStreamBuffer&& other) noexcept
         : GPUBuffer(std::move(other))
         , m_pData(other.m_pData)
     { }
 
-    GPUStreamBuffer& operator=(const GPUStreamBuffer& other) noexcept = delete;
     GPUStreamBuffer& operator=(GPUStreamBuffer&& other) noexcept
     {
         this->GPUBuffer::operator=(std::move(other));
@@ -57,7 +58,10 @@ public:
 
 public:
 
-    void** GetDataPointer()
+    void* GetDataPointer() const
+    { return m_pData; }
+
+    void** GetPtrToDataPointer()
     { return &m_pData; }
 
 private:

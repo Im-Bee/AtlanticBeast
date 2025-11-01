@@ -4,6 +4,7 @@
 
 #include "Vulkan/ErrorHandling.hpp"
 #include "Vulkan/GPUStreamBuffer.hpp"
+#include "Vulkan/Memory.hpp"
 #include "Vulkan/SwapChain.hpp"
 
 namespace Voxels
@@ -59,11 +60,11 @@ VoxelPipeline::~VoxelPipeline()
 }
 
 // Public // -----------------------------------------------------------------------------------------------------------
-UploadDescriptor VoxelPipeline::GetUniformUploadDescriptor(const GPUStreamBuffer& outBuffer, 
+UploadDescriptor VoxelPipeline::GetUniformUploadDescriptor(const shared_ptr<GPUStreamBuffer>& outBuffer, 
                                                            const EShaderResource& sr)
 { 
     VkDescriptorBufferInfo bufferInfo = { };
-    bufferInfo.buffer  = outBuffer.GetBufferHandle();
+    bufferInfo.buffer  = outBuffer->GetBufferHandle();
     bufferInfo.offset  = 0;
     bufferInfo.range   = VK_WHOLE_SIZE;
 
@@ -75,7 +76,10 @@ UploadDescriptor VoxelPipeline::GetUniformUploadDescriptor(const GPUStreamBuffer
     write.descriptorCount  = 1;
     write.pBufferInfo      = &bufferInfo;
 
-    return UploadDescriptor(std::move(bufferInfo), std::move(write));
+    return UploadDescriptor(std::move(bufferInfo), 
+                            std::move(write),
+                            UploadDescriptor::EUploadType::StreamBuffer,
+                            outBuffer);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
