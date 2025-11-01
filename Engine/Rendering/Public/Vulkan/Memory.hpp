@@ -19,6 +19,8 @@ struct UploadDescriptor
         StreamBuffer,
     };
 
+public:
+
     UploadDescriptor() = delete;
     
     template<typename U, typename L, class T>
@@ -31,11 +33,13 @@ struct UploadDescriptor
         , Type(type)
     {
         Write.pBufferInfo = &BufferInfo;
-        LocalBuf = buffer;
+        Buffer = buffer;
     }
 
     ~UploadDescriptor() 
     { }
+
+public:
 
     UploadDescriptor(const UploadDescriptor& other) noexcept 
         : BufferInfo(other.BufferInfo)
@@ -43,7 +47,7 @@ struct UploadDescriptor
         , Type(other.Type)
     { 
         Write.pBufferInfo = &BufferInfo;
-        LocalBuf = other.LocalBuf;
+        Buffer = other.Buffer;
     }
     
     UploadDescriptor& operator=(const UploadDescriptor& other) noexcept
@@ -52,7 +56,7 @@ struct UploadDescriptor
         Write = other.Write;
         Type = other.Type;
         Write.pBufferInfo = &BufferInfo;
-        LocalBuf = other.LocalBuf;
+        Buffer = other.Buffer;
         
         return *this;
     }
@@ -63,7 +67,7 @@ struct UploadDescriptor
         , Type(other.Type)
     { 
         Write.pBufferInfo = &BufferInfo;
-        LocalBuf = std::move(other.LocalBuf);
+        Buffer = std::move(other.Buffer);
     }
 
     UploadDescriptor& operator=(UploadDescriptor&& other) noexcept
@@ -72,16 +76,18 @@ struct UploadDescriptor
         Write = std::move(other.Write);
         Type = std::move(other.Type);
         Write.pBufferInfo = &BufferInfo;
-        LocalBuf = other.LocalBuf;
+        Buffer = other.Buffer;
 
         return *this;
     }
 
+public:
+
     VkDescriptorBufferInfo BufferInfo;
     VkWriteDescriptorSet Write;
     EUploadType Type;
+    ::std::weak_ptr<GPUBuffer> Buffer;
 
-    ::std::weak_ptr<GPUBuffer> LocalBuf;
 };
 
 

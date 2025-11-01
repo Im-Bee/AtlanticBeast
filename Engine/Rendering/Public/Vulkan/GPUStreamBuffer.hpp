@@ -3,7 +3,6 @@
 
 #include "Voxels.hpp"
 #include "Vulkan/GPUBuffer.hpp"
-#include <vulkan/vulkan_core.h>
 
 namespace Voxels 
 {

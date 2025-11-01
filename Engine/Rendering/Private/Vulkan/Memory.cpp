@@ -1,9 +1,8 @@
+#include "Voxels.hpp"
+
 #include "Vulkan/Memory.hpp"
 
-#include "Core.h"
-#include "Debug/Assert.hpp"
 #include "Vulkan/ErrorHandling.hpp"
-#include <memory>
 
 namespace Voxels
 {
@@ -94,27 +93,27 @@ void Memory::UploadOnStreamBuffer(const void* pUpload,
     if (onSet.Type != UploadDescriptor::EUploadType::StreamBuffer) {
         throw AB_EXCEPT("UploadOnStreamBuffer, type of buffer is invalid");
     }
-    if (onSet.LocalBuf.expired()) {
+    if (onSet.Buffer.expired()) {
         throw AB_EXCEPT("UploadOnStreamBuffer, buffer is expired");
     }
     
-	auto lock = onSet.LocalBuf.lock();
-    GPUStreamBuffer* buf = reinterpret_cast<GPUStreamBuffer*>(lock.get());
-    AB_ASSERT((buf->GetMemoryHandle() != VK_NULL_HANDLE));
-    AB_ASSERT((buf->GetBufferHandle() != VK_NULL_HANDLE));
+	const auto lock = onSet.Buffer.lock();
+    GPUStreamBuffer* buffer = reinterpret_cast<GPUStreamBuffer*>(lock.get());
+    AB_ASSERT((buffer->GetMemoryHandle() != VK_NULL_HANDLE));
+    AB_ASSERT((buffer->GetBufferHandle() != VK_NULL_HANDLE));
 
     const VkDevice da = m_pAdapter->GetAdapterHandle();
-    bool updateDescSets = buf->GetDataPointer() == nullptr ? true : false;
+    const bool updateDescSets = buffer->GetDataPointer() == nullptr ? true : false;
     
-    if (buf->GetDataPointer() == nullptr) {
+    if (buffer->GetDataPointer() == nullptr) {
         THROW_IF_FAILED(vkMapMemory(da, 
-                                    buf->GetMemoryHandle(),
+                                    buffer->GetMemoryHandle(),
                                     0,
-                                    buf->GetSizeInBytes(),
+                                    buffer->GetSizeInBytes(),
                                     0,
-                                    buf->GetPtrToDataPointer()));
+                                    buffer->GetPtrToDataPointer()));
     }
-    memcpy(buf->GetDataPointer(), pUpload, buf->GetSizeInBytes());
+    memcpy(buffer->GetDataPointer(), pUpload, buffer->GetSizeInBytes());
 
     if (updateDescSets) {
         vkUpdateDescriptorSets(da,
