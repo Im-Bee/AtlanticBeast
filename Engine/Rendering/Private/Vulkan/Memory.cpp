@@ -104,6 +104,7 @@ void Memory::UploadOnStreamBuffer(const void* pUpload,
     AB_ASSERT((buf->GetBufferHandle() != VK_NULL_HANDLE));
 
     const VkDevice da = m_pAdapter->GetAdapterHandle();
+    bool updateDescSets = buf->GetDataPointer() == nullptr ? true : false;
     
     if (buf->GetDataPointer() == nullptr) {
         THROW_IF_FAILED(vkMapMemory(da, 
@@ -115,11 +116,13 @@ void Memory::UploadOnStreamBuffer(const void* pUpload,
     }
     memcpy(buf->GetDataPointer(), pUpload, buf->GetSizeInBytes());
 
-    vkUpdateDescriptorSets(da,
-                           1,
-                           &onSet.Write,
-                           0,
-                           NULL);
+    if (updateDescSets) {
+        vkUpdateDescriptorSets(da,
+                               1,
+                               &onSet.Write,
+                               0,
+                               NULL);
+    }
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

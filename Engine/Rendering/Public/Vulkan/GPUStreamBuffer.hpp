@@ -3,6 +3,7 @@
 
 #include "Voxels.hpp"
 #include "Vulkan/GPUBuffer.hpp"
+#include <vulkan/vulkan_core.h>
 
 namespace Voxels 
 {
@@ -63,6 +64,14 @@ public:
 
     void** GetPtrToDataPointer()
     { return &m_pData; }
+
+public:
+
+    void Reset()
+    {
+        vkUnmapMemory(this->m_pDeviceAdapter->GetAdapterHandle(), this->GetMemoryHandle());
+        m_pData = nullptr;
+    }
 
 private:
 

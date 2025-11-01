@@ -232,7 +232,9 @@ Renderer::FrameResourcesArray Renderer::CreateFrameResources(const shared_ptr<co
 
         result[i].CommandBuffer = CreateCommandBuffer(da, cmdPool);
     }
-
+    
+    m_StageVoxelBuffer->Reset();
+    m_StageCubeBuffer->Reset();
     m_pVoxelGrid->ForceUpload();
 
     return result;
