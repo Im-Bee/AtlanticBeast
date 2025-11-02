@@ -2,7 +2,6 @@
 #define AB_CONTROLLER_OBJECT_H
 
 #include "Core.h"
-#include "Debug/Assert.h"
 #include "Input/UserInput.hpp"
 #include "Bind.h"
 
@@ -24,7 +23,10 @@ public:
             m_pUserInput.lock()->Unbind(this);
     }
 
-    ControllerObject(const ControllerObject&) = delete;
+public:
+
+    ControllerObject(const ControllerObject&) noexcept = delete;
+    ControllerObject& operator=(const ControllerObject&) noexcept = delete;
 
     ControllerObject(ControllerObject&& other) noexcept
         : m_pUserInput(std::move(other.m_pUserInput))
@@ -52,23 +54,29 @@ private:
 
 } // !App
 
-#define AB_DECL_ACTION(baseClass, action, customName, ...)              \
-    static ::AbActionType UseAction##customName(void* pThis)            \
-    {                                                                   \
-        AB_ASSERT(pThis != nullptr);                                    \
-                                                                        \
-        static_cast<baseClass*>(pThis)->action(__VA_ARGS__);            \
-        return ::AbActionType();                                        \
+#ifdef _WIN32
+#   define AB_VA_ARGS_(...) , __VA_ARGS__
+#else
+#   define AB_VA_ARGS_(...) __VA_OPT__(,) __VA_ARGS__
+#endif // _WIN32
+
+#define AB_DECL_ACTION(baseClass, action, customName, ...)                          \
+    static ::AbActionType UseAction##customName(const float fDelta, void* pThis)    \
+    {                                                                               \
+        AB_ASSERT(pThis != nullptr);                                                \
+                                                                                    \
+        static_cast<baseClass*>(pThis)->action(fDelta AB_VA_ARGS_(__VA_ARGS__));    \
+        return ::AbActionType();                                                    \
     }
 
 
-#define AB_DECL_MOUSE_ACTION(baseClass, action, customName)                             \
-    static ::AbActionType UseAction##customName(void* pThis, int32_t fX, int32_t fY)    \
-    {                                                                                   \
-        AB_ASSERT(pThis != nullptr);                                                    \
-                                                                                        \
-        static_cast<baseClass*>(pThis)->action(fX, fY);                                 \
-        return ::AbActionType();                                                        \
+#define AB_DECL_MOUSE_ACTION(baseClass, action, customName)                                                 \
+    static ::AbActionType UseAction##customName(const float fDelta, void* pThis, int32_t fX, int32_t fY)    \
+    {                                                                                                       \
+        AB_ASSERT(pThis != nullptr);                                                                        \
+                                                                                                            \
+        static_cast<baseClass*>(pThis)->action(fDelta, fX, fY);                                             \
+        return ::AbActionType();                                                                            \
     }
 
 

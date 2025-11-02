@@ -1,7 +1,7 @@
 #ifndef AB_KEY_BIND_H
 #define AB_KEY_BIND_H
 
-#include "CSystem.h"
+#include "Core.h"
 
 /**
  * Empty struct to force binding type safety. Like a rock for your shoe.
@@ -47,7 +47,7 @@ typedef struct AbInputBind {
     };
 } AbInputBind;
 
-typedef AbActionType (*AbAction)(void* pThis);
-typedef AbActionType (*AbMouseAction)(void* pThis, int32_t X, int32_t y);
+typedef AbActionType (*AbAction)(const float fDelta, void* pThis);
+typedef AbActionType (*AbMouseAction)(const float fDelta, void* pThis, int32_t X, int32_t y);
   
 #endif // !AB_KEY_BIND_H

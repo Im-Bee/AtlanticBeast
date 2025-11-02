@@ -1,8 +1,11 @@
 #include "Core.h"
+#include "Debug/Logger.hpp"
 #include "EmptyCanvas.hpp"
 #include "Raycaster/Renderer.hpp"
+#include "Synchronization/DeltaTime.hpp"
 
 #include "CameraController.hpp"
+#include "Synchronization/FpsLimiter.hpp"
 
 using namespace Core;
 using namespace App;
@@ -12,6 +15,9 @@ int main()
     EmptyCanvas renderWindow;
     const auto& input = renderWindow.GetInput();
     Voxels::Renderer render = { };
+    DeltaTime dt = { };
+    FpsLimiter fl(1000.f / 60.f);
+
 
     ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
 	const auto& pc = pwc->GetCharacter();
@@ -32,27 +38,18 @@ int main()
     pc->SetGrid(vg); 
 
 	// Main loop
+    dt.SetReferenceFrame();
     while (AppStatus::GetAppCurrentStatus()) 
-    {
-        renderWindow.Update();
-        
-        static uint8_t r = 0;
-        static uint8_t g = 111;
-        static uint8_t b = 52;
-        static int32_t index = 0; 
-                               
-        if (index < vg->GetAmountOfVoxels()) {
-            Voxels::Voxel v;
-            v.Type = 1;
-            v.RGBA = (static_cast<uint32_t>(r++) << 24) |
-                     (static_cast<uint32_t>(g++) << 16) |
-                     (static_cast<uint32_t>(b++) << 8) | + 0x000000FF;
-			v.MaterialReflectPower = 0.1f;
-        
-            vg->ModifyVoxel(index++, std::move(v));
-        }
-        
-        render.Update();
+    {   
+        const float fDeltaMs = dt.FetchMs();
+        fl.Block(fDeltaMs);
+        ::Core::Debug::Logger::Get()->Log(::Core::Debug::Info, 
+                                          L"Fps: %f Frame duration: %fms",
+                                          1000.f / fDeltaMs,
+                                          fDeltaMs);
+
+        renderWindow.Update(fDeltaMs);
+        render.Update(fDeltaMs);
         render.Render();
     }
 

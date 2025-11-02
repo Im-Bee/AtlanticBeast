@@ -1,0 +1,501 @@
+#version 450
+#extension GL_ARB_shading_language_include : enable
+#include "Math.glsl"
+#include "Random.glsl"
+#include "Colors.glsl"
+#include "Common.glsl"
+
+struct Voxel 
+{
+    uint    Type;
+    uint    Color;
+    uint    Id[26];
+};
+
+struct CubeColored
+{
+    Cube Geometry;
+    uint Color;  
+    uint _Padding1;  
+    uint _Padding2;  
+    uint _Padding3;  
+};
+
+layout(local_size_x = 16, local_size_y = 16) in;
+layout(binding = 0, rgba8) uniform image2D outputImage;
+layout(std430, binding = 1) readonly buffer Voxels 
+{
+    Voxel VoxelData[]; 
+};
+layout(std430, binding = 2) readonly buffer Cubes 
+{
+    CubeColored CubeData[]; 
+};
+layout(push_constant) uniform PushConstants 
+{
+    vec4    CameraPos;
+    ivec4   GridSize;
+    vec4    CameraLookDir;
+    vec4    CameraRight;
+    vec4    CameraUp;
+    float   fFov;
+    uint    _Padding1;
+    uint    _Padding2;
+    uint    _Padding3;
+};
+
+const vec4  baseSkyColor    = vec4(.4078, .4725, 1., 1.);
+const vec3  lightPos        = vec3(20.0, 24.0, 10.0);
+const vec3  lightColor      = vec3(1., 1., 1.);
+const float maxRenderDist   = 20.f;
+const int   maxSteps        = int(maxRenderDist * 2.6);
+
+#define LAST_UNKNOWN_AXIS -1
+#define LAST_X_AXIS 0
+#define LAST_Y_AXIS 1
+#define LAST_Z_AXIS 2
+
+#define HIT_TYPE_UNKNOWN -1
+#define HIT_TYPE_VOXEL 0
+#define HIT_TYPE_OBJECT 1
+
+
+// --------------------------------------------------------------------------------------------------------------------
+bool TestObjects(in const Voxel onVoxel,
+                 in const vec3  ro,
+                 in const vec3  rd,
+                 out uint   uHitIndex,
+                 out float  fDistance,
+                 out vec3   hitCoords,
+                 out vec3   normal)
+{
+    fDistance = INF;
+    
+    uint uLastId;
+    float fLastHitMin;
+    float fLastHitMax;
+    vec3 lastNormal;
+    for (uint k = 0; k < onVoxel.Type; ++k) 
+    {
+        uLastId = onVoxel.Id[k];
+        if (!RayIntersectsAABB(ro, 
+                               rd,
+                               CubeData[uLastId].Geometry,
+                               fLastHitMin,
+                               fLastHitMax,
+                               lastNormal)) 
+        {
+            continue;
+        }
+
+        if (fLastHitMin < fDistance &&
+            fLastHitMin >= EPSILON && 
+            fLastHitMin < INF)
+        {
+            uHitIndex   = uLastId;
+            fDistance   = fLastHitMin;
+            normal      = lastNormal;
+        }
+    }
+
+    // Check if the hit was valid
+    if (fDistance != INF) {
+        hitCoords = ro + rd * fDistance;
+        return true;
+    } 
+    else {
+        return false;
+    }
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+bool MarchTheRay(in const vec3  ro,
+                 in const vec3  rd,
+                 in const int   maxSteps,
+                 out vec3   hitCoords,
+                 out uint   hitIndex,
+                 out float  fDistance,
+                 out vec3   normal,
+                 out int    hitType)
+{
+    ivec3 voxel = ivec3(ro);
+    ivec3 step  = ivec3(sign(rd));
+
+    vec3 invDir = 1.0 / rd;
+    vec3 tDelta = abs(invDir);
+    vec3 tMax;
+    
+    // Calc initial offset
+    for (int i = 0; i < 3; ++i) {
+        float offset = rd[i] > 0.0 ?
+                       1.0 - fract(ro[i]) : 
+                       fract(ro[i]);
+
+        tMax[i] = tDelta[i] * offset;
+    }
+
+    int lastStepAxis = LAST_UNKNOWN_AXIS;
+    for (int stepCount = 0; stepCount < maxSteps; ++stepCount)
+    {
+        if (voxel.x <= 0 || voxel.x >= GridSize.x ||
+            voxel.y <= 0 || voxel.y >= GridSize.y ||
+            voxel.z <= 0 || voxel.z >= GridSize.z)
+        {
+            break;
+        }
+
+        int index = voxel.x + 
+                    voxel.y * GridSize.x +
+                    voxel.z * GridSize.x * GridSize.y;
+    
+        // Check for hits
+        if (VoxelData[index].Type == uint(-1))
+        {
+            if (lastStepAxis == LAST_X_AXIS) {
+                fDistance = tMax.x - tDelta.x;
+            }
+            else if (lastStepAxis == LAST_Y_AXIS) {
+                fDistance = tMax.y - tDelta.y;
+            }
+            else {
+                fDistance = tMax.z - tDelta.z;
+            }
+
+            normal               = vec3(0.);
+            normal[lastStepAxis] = -float(step[lastStepAxis]);
+
+            hitIndex    = index;
+            hitCoords   = ro + rd * fDistance;
+            hitType     = HIT_TYPE_VOXEL;
+
+            return true;
+        } 
+        if (VoxelData[index].Type > 0 &&
+            TestObjects(VoxelData[index],
+                        ro,
+                        rd,
+                        hitIndex,
+                        fDistance,
+                        hitCoords,
+                        normal))
+        {
+            hitType = HIT_TYPE_OBJECT;
+            return true;
+        }
+    
+        // Move the ray
+        if (tMax.x < tMax.y) 
+        {
+            if (tMax.x < tMax.z) {
+                voxel.x += step.x;
+                tMax.x  += tDelta.x;
+                lastStepAxis = LAST_X_AXIS;
+            } else {
+                voxel.z += step.z;
+                tMax.z  += tDelta.z;
+                lastStepAxis = LAST_Z_AXIS;
+            }
+        } 
+        else 
+        {
+            if (tMax.y < tMax.z) {
+                voxel.y += step.y;
+                tMax.y  += tDelta.y;
+                lastStepAxis = LAST_Y_AXIS;
+            } else {
+                voxel.z += step.z;
+                tMax.z  += tDelta.z;
+                lastStepAxis = LAST_Z_AXIS;
+            }
+        }
+
+    }
+
+    return false;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+bool ShadowRay(in const vec3 from, 
+               in const vec3 to, 
+               in const int maxDistance)
+{
+    const vec3 dir = normalize(to - from);
+    vec3    dummyHit;
+    uint    dummyIndex;
+    vec3    dummyNormal;
+    float   dummyDistance;
+    int     dummyHitType;
+
+    return MarchTheRay(from + dir * EPSILON,
+                       dir,
+                       maxDistance,
+                       dummyHit,
+                       dummyIndex,
+                       dummyDistance,
+                       dummyNormal,
+                       dummyHitType);
+}
+
+
+
+// --------------------------------------------------------------------------------------------------------------------
+float SoftShadowRay(in const vec3   from, 
+                    in const vec3   to, 
+                    in const vec3   normal, 
+                    in const int    maxDistance)
+{
+    const float r = 4.;
+    const float samples = 16;
+
+    vec3    dir = normalize(to - from);
+    vec3    dummyHit;
+    uint    dummyIndex;
+    vec3    dummyNormal;
+    float   dummyDistance;
+    int     dummyHitType;
+    float   shadow = 1.;
+    
+    const float sampleStep  = TWO_PI / samples;
+    const float mixFactor   = 0.015;
+
+    float angle;
+    vec3 offset;
+    for (int i = 0; i < samples; ++i)
+    {
+        angle   = float(i) * sampleStep;
+        offset  = vec3(cos(angle), sin(angle), 0.0) * r; 
+
+        dir = normalize(to + offset - from);
+        dir = mix(dir, RandomPointOnHemisphere(normal), mixFactor);
+
+        if (MarchTheRay(from + dir * EPSILON,
+                        dir,
+                        maxDistance,
+                        dummyHit,
+                        dummyIndex,
+                        dummyDistance,
+                        dummyNormal,
+                        dummyHitType)) 
+        {
+            shadow -= (1. / samples);
+        }
+    }
+
+    return shadow;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+vec3 Phong(in const vec3   camPos,
+           in const vec3   pos,
+           in const vec3   normal,
+           in const int    maxDistance)
+{
+    const float ambientStrength     = 0.1;
+    const float diffuseStrength     = 0.9;
+    const float specularStrength    = 0.4;
+    const float shininess           = 256.0;
+
+    vec3 lightDir   = normalize(lightPos - pos);
+    vec3 viewDir    = normalize(camPos   - pos);
+    vec3 reflectDir = normalize(lightDir + viewDir);
+
+    float diff = max(dot(normal, lightDir), 0.0);
+    float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
+
+    vec3 ambient    = ambientStrength * lightColor;
+    vec3 diffuse    = diffuseStrength * diff * lightColor;
+    vec3 specular   = specularStrength * spec * lightColor;
+
+    return ambient + diffuse + specular;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+vec3 PhongShadows(in const vec3     camPos,
+                  in const vec3     pos,
+                  in const vec3     normal,
+                  in const int      maxDistance)
+{
+    const float ambientStrength     = 0.1;
+    const float diffuseStrength     = 0.9;
+    const float specularStrength    = 0.4;
+    const float shininess           = 256.0;
+
+    vec3 lightDir   = normalize(lightPos - pos);
+    vec3 viewDir    = normalize(camPos   - pos);
+    vec3 reflectDir = normalize(lightDir + viewDir);
+
+    float diff = max(dot(normal, lightDir), 0.0);
+    float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
+    float shadow = ShadowRay(pos, lightPos, int(maxDistance )) ? 0.05 : 1.0;
+
+    vec3 ambient    = ambientStrength * lightColor;
+    vec3 diffuse    = diffuseStrength * diff * lightColor * shadow;
+    vec3 specular   = specularStrength * spec * lightColor * shadow;
+
+    return ambient + diffuse + specular;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+vec3 PhongSoftShadows(in const vec3     camPos,
+                      in const vec3     pos,
+                      in const vec3     normal,
+                      in const int      maxDistance)
+{
+    const float ambientStrength     = 0.1;
+    const float diffuseStrength     = 0.9;
+    const float specularStrength    = 0.4;
+    const float shininess           = 256.0;
+
+    vec3 lightDir   = normalize(lightPos - pos);
+    vec3 viewDir    = normalize(camPos   - pos);
+    vec3 reflectDir = normalize(lightDir + viewDir);
+
+    float diff = max(dot(normal, lightDir), 0.0);
+    float spec = pow(max(dot(normal, reflectDir), 0.0), shininess);
+    float shadow = SoftShadowRay(pos, lightPos, normal, int(maxDistance));
+
+    vec3 ambient    = ambientStrength * lightColor;
+    vec3 diffuse    = diffuseStrength * diff * lightColor * shadow;
+    vec3 specular   = specularStrength * spec * lightColor * shadow;
+
+    return ambient + diffuse + specular;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+vec3 Reflection(in vec3     from,
+                in vec3     to,
+                in const int    maxSteps,
+                in const uint   bounces,
+                in const vec3   baseColor,
+                in vec3     normal,
+                in float    fMaterialReflectPower)
+{
+    vec3    dir;
+    vec3    hit;
+    uint    index;
+    float   fDistance = 1.;
+    vec3    normalRef;
+    int     hitType;
+
+    vec3    incident;
+    float   fLocalReflect;
+    vec3    reflectedColor = baseColor;
+    vec4    hitBaseColor;
+    const float roughness = 0.08;
+
+    for (uint i = 0; i < bounces; ++i)
+    {
+        if (fMaterialReflectPower <= 0.0)
+            break;
+
+        dir = reflect(normalize(to - from), normal);
+        dir = mix(dir, RandomPointOnHemisphere(normal), roughness * fDistance * 0.25);
+
+        if (!MarchTheRay(to + dir * EPSILON,
+                         dir,
+                         maxSteps,
+                         hit,
+                         index,
+                         fDistance,
+                         normalRef,
+                         hitType)) 
+        {
+            reflectedColor = mix(reflectedColor, baseSkyColor.xyz, fMaterialReflectPower);
+            break;
+        }
+
+        from    = to;
+        to      = hit;
+        normal  = normalRef;
+
+        if (hitType == HIT_TYPE_VOXEL) {
+            hitBaseColor    = ExtractColorInt(VoxelData[index].Color);
+            fLocalReflect   = 0.23;
+        }
+        else if (hitType == HIT_TYPE_OBJECT) {
+            hitBaseColor    = ExtractColorInt(CubeData[index].Color);
+            fLocalReflect   = 0.23;
+        } 
+        else {
+            hitBaseColor    = baseSkyColor;
+            fLocalReflect   = 0;
+        }
+        
+        reflectedColor = mix(reflectedColor, 
+                             PhongShadows(CameraPos.xyz, hit, normal, int(maxSteps * 0.25)) * hitBaseColor.xyz,
+                             fMaterialReflectPower);
+
+        fMaterialReflectPower *= fLocalReflect * 2;
+    }
+
+    return reflectedColor;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+void main() 
+{
+    ivec2 iPixelCoord = ivec2(gl_GlobalInvocationID.xy);
+
+    float halfFov       = fFov * 0.5;
+    float aspectRatio   = float(imageSize(outputImage).x) / float(imageSize(outputImage).y);
+    float scale         = tan(halfFov);
+
+    vec2 uv = ((vec2(iPixelCoord) + vec2(0.5)) / vec2(imageSize(outputImage))) * 2. - 1.; 
+    if (IsCrosshair(uv, aspectRatio)) {
+        imageStore(outputImage, iPixelCoord, vec4(1., 1., 1., 1.));
+        return;
+    }
+
+    vec3 ro  = CameraPos.xyz;
+    vec3 rd  = normalize(CameraLookDir.xyz +
+                         uv.x * aspectRatio * scale * CameraRight.xyz +
+                         uv.y * scale * CameraUp.xyz);
+
+    vec4 finalColor = baseSkyColor;
+
+    vec3    hitPos;
+    uint    index;
+    float   fDistance;
+    vec3    normal;
+    int     hitType;
+    if (MarchTheRay(ro, rd, maxSteps, hitPos, index, fDistance, normal, hitType)) 
+    {
+        if (hitType == HIT_TYPE_VOXEL) {
+            finalColor = ExtractColorInt(VoxelData[index].Color);
+        }
+        if (hitType == HIT_TYPE_OBJECT) {
+            finalColor = ExtractColorInt(CubeData[index].Color);
+        }
+
+        if (fDistance <= maxSteps) 
+        {   
+            vec3 shaded = finalColor.xyz;
+
+            shaded = PhongSoftShadows(CameraPos.xyz, 
+                                      hitPos,
+                                      normal,
+                                      int(distance(hitPos, lightPos) * 1.5)) * shaded;
+
+            // finalColor = vec4(shaded, finalColor.w);
+            finalColor = vec4(Reflection(ro, 
+                                         hitPos, 
+                                         int(maxSteps * 0.5f), 
+                                         4, 
+                                         shaded,
+                                         normal,
+                                         0.25),
+                              finalColor.w);
+        }
+    }
+
+    if (fDistance > maxRenderDist) {
+        finalColor = mix(finalColor, 
+                         baseSkyColor,
+                         clamp(fDistance - maxRenderDist, 
+                               0.f,
+                               maxRenderDist * .5f) / (maxRenderDist * .5f));
+    }
+
+    imageStore(outputImage, iPixelCoord, finalColor);
+}
+

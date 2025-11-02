@@ -1,8 +1,7 @@
 #ifndef AB_EXCEPT_H
 #define AB_EXCEPT_H
 
-#include "ExportImport.h"
-#include "CSystem.hpp"
+#include "CoreMinimal.h"
 
 namespace Core
 {

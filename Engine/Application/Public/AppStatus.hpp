@@ -2,6 +2,7 @@
 #define AB_APPSTATUS_H
 
 #include "Core.h"
+#include "Window/WindowDesc.hpp"
 
 namespace App
 {
@@ -32,17 +33,22 @@ public:
 
     static EAppStatus GetAppCurrentStatus();
 
+    const ::std::list<::std::shared_ptr<WindowDesc>>& GetWindowHandles() const
+    { return m_WindowHandles; }
+
 private:
 
-    uint32_t SendClosedWindowSignal();
+    uint32_t SendOpenWindowSignal(::std::shared_ptr<WindowDesc> pWd);
 
-    uint32_t SendOpenedWindowSignal();
+    uint32_t SendCloseWindowSignal(::std::shared_ptr<WindowDesc> pWd);
 
     void UpdateStatus();
 
 private:
 
     uint32_t m_uNumberOfWindows;
+
+    ::std::list<::std::shared_ptr<WindowDesc>> m_WindowHandles;
 
 };
 

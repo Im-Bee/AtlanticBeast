@@ -3,13 +3,13 @@
 
 
 #ifdef __linux__
-#   ifdef _BEAST_CORE_EXPORTS
+#   ifdef _BEAST_EXPORTS
 #         define BEAST_API __attribute__((visibility("default")))
 #      else
 #         define BEAST_API
 #   endif // !_BEAST_EXPORTS
 #elif _WIN32
-#   ifdef _BEAST_CORE_EXPORTS
+#   ifdef _BEAST_EXPORTS
 #           define BEAST_API __declspec(dllexport)
 #       else
 #           define BEAST_API __declspec(dllimport)

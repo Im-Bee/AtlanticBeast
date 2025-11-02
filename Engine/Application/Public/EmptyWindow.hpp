@@ -32,7 +32,7 @@ public:
 
 private:
 
-    virtual void HandleMessageImpl(EAbWindowEventsFlags)
+    virtual void HandleMessageImpl(const float, EAbWindowEventsFlags)
     {
         // AB_LOG(Debug::Info, L"Proccessing a message! ... %u", msg);
     }

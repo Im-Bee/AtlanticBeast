@@ -20,7 +20,6 @@ struct WindowDesc
     int32_t                         IsAlive;
     EAbWindowEventsFlags            LastEvent;
     ::std::queue<AbInputStruct>     InputStruct;
-    uint32_t                        uUinqueIndex;
 
 #ifdef _WIN32
     HWND            Hwnd;
@@ -37,20 +36,22 @@ WindowDesc CreateWindowDesc(U&& wstrName,
                             int32_t width, 
                             int32_t height)
 { 
-    WindowDesc wd;
+    WindowDesc wd = { };
 
-    wd.Name         = ::std::forward<U>(wstrName);
-    wd.Width        = width;
-    wd.Height       = height;
-    wd.LastEvent    = NothingNew;
-    wd.IsAlive      = false;
+    wd.Name             = ::std::forward<U>(wstrName);
+	wd.pwszClassName    = NULL;    
+    wd.Width            = width;
+    wd.Height           = height;
+    wd.IsAlive          = false;
+    wd.LastEvent        &= 0;
    
 #ifdef _WIN32
     wd.Hwnd = NULL;
+	wd.Wcex = { };
 #elif __linux__
-    wd.DisplayHandle = NULL;
-    wd.WindowHandle = 0;
-    wd.Screen = 0;
+    wd.DisplayHandle    = NULL;
+    wd.WindowHandle     = 0;
+    wd.Screen           = 0;
 #endif // !_WIN32
     return wd;
 }

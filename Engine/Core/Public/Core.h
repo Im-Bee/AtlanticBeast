@@ -1,12 +1,10 @@
 #ifndef AB_CORE_H
 #define AB_CORE_H
 
-#include "SystemIncludes.h"
-#include "ExportImport.h"
+#include "CoreMinimal.h"
 #include "AbLimits.h"
 
 #ifdef __cplusplus
-
 #include "Exception.hpp"
 
 namespace Core::Debug
@@ -16,11 +14,10 @@ static const char szLogPostfix[] = "_AtlanticBeast.log";
 
 } // !Core
 
-
 #undef AB_EXCEPT
 #define AB_EXCEPT(message) ::Core::Exception(message, __LINE__, __FILE__)
 
-#include "Debug/Assert.h"
+#include "Debug/Assert.hpp"
 #include "Debug/Logger.hpp"
 
 #ifdef _DEBUG

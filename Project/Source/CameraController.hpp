@@ -7,7 +7,7 @@
 #include "Primitives/Camera.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 #include "Raycaster/Rays.hpp"
-#include "Math/Math.hpp"
+#include "Math.hpp"
 
 class PaperCharacter : public Voxels::Camera
 {
@@ -17,6 +17,7 @@ public:
     explicit PaperCharacter(U&&... args)
         : m_vg(nullptr)
         , Camera(::std::forward<U>(args)...)
+        , m_fSpeed(0.1f)
     { }
 
 
@@ -24,77 +25,69 @@ public:
 
 public:
 
-    void SetGrid(::std::shared_ptr<Voxels::VoxelGrid> vg)
+    void SetGrid(::std::shared_ptr<Voxels::WorldGrid> vg)
     {
         m_vg = vg;
     }
 
 public:
 
-    void PlaceBlock()
+    void PlaceBlock(const float)
     {
         Voxels::Vec3 rot = this->GetRotation();
         Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0.f, 0.f, 1.f }, rot.x), rot.y));
 
         Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
 
-        if (hr.bHit)
-        {
-            Voxels::Voxel v;
-            v.Type = 1;
-            v.RGBA = (m_uColor += 12739871) | 0x999999FF;
-            v.MaterialReflectPower = 0.5f;
-            v._Padding2 = 0;
-            m_vg->ModifyVoxel(static_cast<size_t>((hr.iHitCoords.x + hr.Normal.x) +
-                (hr.iHitCoords.y + hr.Normal.y) * m_vg->GetGridWidth() +
-                (hr.iHitCoords.z + hr.Normal.z) * m_vg->GetGridWidth() * m_vg->GetGridWidth()),
-                v);
+        if (hr.bHit) {
+            m_vg->ModifyVoxel(Voxels::iVec3(hr.iHitCoords + hr.Normal), Voxels::Cube());
         }
     }
 
-    void RemoveBlock()
+    void RemoveBlock(const float)
     {
         Voxels::Vec3 rot = this->GetRotation();
         Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0.f, 0.f, 1.f }, rot.x), rot.y));
 
         Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
 
-        if (hr.bHit)
-        {
-            Voxels::Voxel v;
-            v.Type = 0;
-            m_vg->ModifyVoxel(hr.iHitCoords.x +
-                              hr.iHitCoords.y * m_vg->GetGridWidth() +
-                              hr.iHitCoords.z * m_vg->GetGridWidth() * m_vg->GetGridWidth(), v);
+        if (hr.bHit) {
         }
     }
 
-    void MoveForwardBackwards(float fDir)
+    void MoveForwardBackwards(const float fDelta, float fDir)
     {
         Voxels::Rot3 rot = this->GetRotation();
         Voxels::Vec3 lookDir = Voxels::RotateY(Voxels::Vec3{ 0.f, 0.f, 1.f }, rot.y);
 
-        this->AddPositon(lookDir * fDir);
+        this->AddPositon(lookDir * fDir * (fDelta * m_fSpeed));
     }
 
-    void Strafe(float fDir)
+    void Strafe(const float fDelta, float fDir)
     {
         Voxels::Rot3 rot = this->GetRotation();
         Voxels::Vec3 lookDir = Voxels::RotateY(Voxels::Vec3{ 0.f, 0.f, 1.f }, rot.y + (90.f * Voxels::AB_DEG_TO_RAD));
 
-        this->AddPositon(lookDir * fDir);
+        this->AddPositon(lookDir * fDir * (fDelta * m_fSpeed));
     }
 
-    void MouseMove(int32_t fX, int32_t fY)
+    void MouseMove(const float fDelta, int32_t fX, int32_t fY)
     {
-        this->AddRotation(Voxels::Rot3{ -0.0015f * fY, -0.0015f * fX, 0.f });
+        this->AddRotation(Voxels::Rot3{ -0.0045f * fY * (fDelta * 0.01f), -0.0045f * fX * (fDelta * 0.01f), 0.f });
+    }
+
+    void Move(const float fDelta, const Voxels::Vec3& dir)
+    {
+        this->AddPositon(dir * (fDelta * m_fSpeed));
     }
 
 private:
 
-    ::std::shared_ptr<Voxels::VoxelGrid> m_vg;
+    ::std::shared_ptr<Voxels::WorldGrid> m_vg;
 
     uint32_t m_uColor;
+
+    const float m_fSpeed = -1.f;
 
 };
 
@@ -116,21 +109,9 @@ public:
 
     AB_DECL_ACTION(PaperCharacter, MoveForwardBackwards, MoveBack, -0.1f);
 
-    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveUp, Voxels::Vec3{ 0.f, 0.1f, 0.f });
+    AB_DECL_ACTION(PaperCharacter, Move, MoveUp, Voxels::Vec3{ 0.f, 0.1f, 0.f });
 
-    AB_DECL_ACTION(Voxels::Camera, AddPositon, MoveDown, Voxels::Vec3{ 0.f, -0.1f, 0.f });
-
-    AB_DECL_ACTION(Voxels::Camera, AddRotation, UpPitch, Voxels::Vec3{ 0.01f, 0.f, 0.f });
-
-    AB_DECL_ACTION(Voxels::Camera, AddRotation, DownPitch, Voxels::Vec3{ -0.01f, 0.f, 0.f });
-
-    AB_DECL_ACTION(Voxels::Camera, AddRotation, RightYaw, Voxels::Vec3{ 0.f, 0.01f, 0.f });
-
-    AB_DECL_ACTION(Voxels::Camera, AddRotation, LeftYaw, Voxels::Vec3{ 0.f, -0.01f, 0.f });
-
-    AB_DECL_ACTION(Voxels::Camera, IncreaseFov, FovUp, 1.0f);
-
-    AB_DECL_ACTION(Voxels::Camera, IncreaseFov, FovDown, -1.0f);
+    AB_DECL_ACTION(PaperCharacter, Move, MoveDown, Voxels::Vec3{ 0.f, -0.1f, 0.f });
 
     AB_DECL_ACTION(PaperCharacter, PlaceBlock, PlaceBlock);
 

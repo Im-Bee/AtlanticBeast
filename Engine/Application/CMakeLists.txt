@@ -8,8 +8,11 @@ SET(APPLICATION_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Win32/BasicWin32Policy.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Window/WindowPolicy/Win32/WindowModeGameWin32Policy.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Input/UserInput.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Input/IBindMap.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Input/KeysMap.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Input/KeysMap.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Input/MouseMap.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Input/MouseMap.hpp"
 )
 SET(APPLICATION_HEADRES 
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/App.h"
@@ -32,8 +35,6 @@ SET(APPLICATION_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/Bind.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/InputEvents.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/KeyList.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/KeysMap.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/MouseMap.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Input/ControllerObject.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/EmptyWindow.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/EmptyCanvas.hpp"
@@ -66,6 +67,6 @@ TARGET_LINK_LIBRARIES(AppLib PUBLIC
 
 TARGET_PRECOMPILE_HEADERS(AppLib PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Public/App.h")
 
-TARGET_COMPILE_DEFINITIONS(AppLib PRIVATE _BEAST_CORE_EXPORTS)
+TARGET_COMPILE_DEFINITIONS(AppLib PRIVATE _BEAST_EXPORTS)
 
 

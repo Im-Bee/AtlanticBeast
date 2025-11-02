@@ -1,9 +1,6 @@
-#include "Core.h"
 #include "App.h"
-#include "Window/IBaseWindow.hpp"
 
-#include <cstring>
-#include <unordered_map>
+#include "Window/IBaseWindow.hpp"
 
 using namespace std;
 

@@ -70,8 +70,8 @@ jobs:
       id: cache-vulkan
       uses: actions/cache@v4
       with:
-        path: C:/VulkanSDK/1.4.321.1
-        key: ${{ runner.os }}-vulkan-1.4.321.1
+        path: C:/VulkanSDK
+        key: ${{ runner.os }}-vulkan
 
     - name: Install Vulkan SDK (Windows)
       if: runner.os == 'Windows' && steps.cache-vulkan.outputs.cache-hit != 'true'
@@ -80,12 +80,29 @@ jobs:
           curl -L https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe --output VulkanSDK.exe 
           ./VulkanSDK.exe --accept-licenses --default-answer --confirm-command install
       shell: pwsh
-
-    - name: Add vulkan to patch (Windows)
+      
+    - name: Add Vulkan SDK to PATH (Windows)
       if: runner.os == 'Windows'
       run: |
-          echo "VULKAN_SDK=C:\VulkanSDK\1.4.321.1" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          echo "PATH=C:\VulkanSDK\1.4.321.1\Bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        $vulkan_sdk_path = "C:\\VulkanSDK"
+        $vulkan_version = Get-ChildItem -Path $vulkan_sdk_path -Directory | Sort-Object Name | Select-Object -Last 1
+        $vulkan_version_path = "$vulkan_sdk_path\\$($vulkan_version.Name)"
+        
+        Write-Output "Vulkan SDK Version Path: $vulkan_version_path"
+        Write-Output "Vulkan Include Directory Path: $vulkan_version_path\\include"
+        Write-Output "Vulkan Library Path: $vulkan_version_path\\lib\\vulkan-1.lib"
+        Write-Output "Vulkan Bin Path: $vulkan_version_path\\Bin"
+        
+        Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_SDK=$vulkan_version_path"
+        Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_INCLUDE_DIR=$vulkan_version_path\\include"
+        Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_LIBRARY=$vulkan_version_path\\lib\\vulkan-1.lib"
+        
+        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\\;$vulkan_version_path\\lib;$vulkan_version_path\\bin;$env:PATH"
+      shell: pwsh
+
+    - name: Verify GITHUB_ENV file content
+      run: |
+        cat $env:GITHUB_ENV
       shell: pwsh
       
     - name: Configure CMake

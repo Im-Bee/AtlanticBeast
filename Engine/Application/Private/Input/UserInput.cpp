@@ -1,6 +1,9 @@
-#include "Input/UserInput.hpp"
 #include "Core.h"
-#include "Debug/Logger.hpp"
+
+#include "Input/UserInput.hpp"
+
+#include "MouseMap.hpp"
+#include "KeysMap.hpp"
 #include "Input/InputEvents.h"
 #include "Input/ControllerObject.hpp"
 
@@ -8,6 +11,32 @@ namespace App
 {
 
 using namespace Core;
+
+// --------------------------------------------------------------------------------------------------------------------
+struct UserInput::Impl 
+{
+    KeysMap KeyReleaseMap;
+    KeysMap KeyPressMap;
+    KeysMap KeyContinuous;
+    KeysMap ButtonReleaseMap;
+    KeysMap ButtonPressMap;
+    MouseMap MotionMouseMap;
+};
+
+// --------------------------------------------------------------------------------------------------------------------
+UserInput::UserInput(::std::shared_ptr<WindowDesc> pWd)
+    : WindowListener(pWd)
+    , m_bIsCapturing(false)
+    , m_vCurrentlyPressedKeys()
+    , m_pImpl(new Impl())
+{ }
+
+// --------------------------------------------------------------------------------------------------------------------
+UserInput::~UserInput()
+{
+    if (m_pImpl)
+        delete m_pImpl;
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 void UserInput::StartCapturing()
@@ -26,7 +55,7 @@ void UserInput::StopCapturing()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void UserInput::Update()
+void UserInput::Update(const float fDelta)
 { 
     // Always replay the continuos keybinds that are currently pressed
     if (m_vCurrentlyPressedKeys.any()) {
@@ -35,7 +64,7 @@ void UserInput::Update()
                 continue;
             }
 
-            m_KeyContinuous.PlayAction(i);
+            m_pImpl->KeyContinuous.PlayAction(fDelta, i);
         }
     }
     
@@ -55,8 +84,8 @@ void UserInput::Update()
 
                 m_vCurrentlyPressedKeys.set(key);
 
-                m_KeyPressMap.PlayAction(key);
-                m_KeyContinuous.PlayAction(key);
+                m_pImpl->KeyPressMap.PlayAction(fDelta, key);
+                m_pImpl->KeyContinuous.PlayAction(fDelta, key);
                 continue;
             }
 
@@ -71,7 +100,7 @@ void UserInput::Update()
 
                 m_vCurrentlyPressedKeys.flip(key);
 
-                m_KeyReleaseMap.PlayAction(key);
+                m_pImpl->KeyReleaseMap.PlayAction(fDelta, key);
                 continue;
             }
 
@@ -81,7 +110,7 @@ void UserInput::Update()
                 continue;
 
             case EAbInputEvents::AbMotion:
-                m_MouseMap.PlayAction(is.Mouse.MouseX, is.Mouse.MouseY);
+                m_pImpl->MotionMouseMap.PlayAction(fDelta, is.Mouse.MouseX, is.Mouse.MouseY);
                 is.Mouse.MouseX = 0;
                 is.Mouse.MouseY = 0;
                 continue;
@@ -111,17 +140,17 @@ void UserInput::Bind(void* pThis, ControllerObject* pCo, AbAction action, AbMous
         }
 
         if (bind.Keyboard.KeyState & EAbOnState::Press) {
-            m_KeyPressMap.BindAction(bind, pThis, action, nullptr);
+            m_pImpl->KeyPressMap.BindAction(bind, pThis, action, nullptr);
         }
         else if (bind.Keyboard.KeyState & EAbOnState::Release) {
-            m_KeyReleaseMap.BindAction(bind, pThis, action, nullptr);
+            m_pImpl->KeyReleaseMap.BindAction(bind, pThis, action, nullptr);
         }
         else if (bind.Keyboard.KeyState & EAbOnState::Continuous) {
-            m_KeyContinuous.BindAction(bind, pThis, action, nullptr);
+            m_pImpl->KeyContinuous.BindAction(bind, pThis, action, nullptr);
         }
     }
     else if (bind.Type & EAbBindType::Mouse) {
-        m_MouseMap.BindAction(bind, pThis, nullptr, mouseAction);
+        m_pImpl->MotionMouseMap.BindAction(bind, pThis, nullptr, mouseAction);
     }
 
     m_BindsHandles[pCo].push_back({ bind, pThis });
@@ -146,18 +175,18 @@ void UserInput::Unbind(ControllerObject* pCo)
         if (inputBind.Type & EAbBindType::Keyboard) 
         {
             if (inputBind.Keyboard.KeyState & EAbOnState::Press) {
-                m_KeyPressMap.UnbindAction(inputBind, bindHandle.pThis);
+                m_pImpl->KeyPressMap.UnbindAction(inputBind, bindHandle.pThis);
             }
             else if (inputBind.Keyboard.KeyState & EAbOnState::Release) {
-                m_KeyReleaseMap.UnbindAction(inputBind, bindHandle.pThis);
+                m_pImpl->KeyReleaseMap.UnbindAction(inputBind, bindHandle.pThis);
             }
             else if (inputBind.Keyboard.KeyState & EAbOnState::Continuous) {
-                m_KeyContinuous.UnbindAction(inputBind, bindHandle.pThis);
+                m_pImpl->KeyContinuous.UnbindAction(inputBind, bindHandle.pThis);
             }
         }
         else if (inputBind.Type & EAbBindType::Mouse)
         {
-            m_MouseMap.UnbindAction(inputBind, bindHandle.pThis);
+            m_pImpl->MotionMouseMap.UnbindAction(inputBind, bindHandle.pThis);
         }
     }
 

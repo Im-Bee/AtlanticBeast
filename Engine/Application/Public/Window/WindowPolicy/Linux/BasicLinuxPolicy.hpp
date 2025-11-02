@@ -48,7 +48,7 @@ public:
 
 private:
 
-    void HandleKeyPressOrRelease(WindowDesc* pWd, XEvent& event, EAbInputEvents ie);
+    void HandleKey(WindowDesc* pWd, XEvent& event, EAbInputEvents ie);
 
 };
 

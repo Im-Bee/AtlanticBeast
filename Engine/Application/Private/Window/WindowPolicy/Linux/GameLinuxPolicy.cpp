@@ -1,4 +1,5 @@
 #ifdef __linux__
+
 #include "Window/WindowPolicy/Linux/GameLinuxPolicy.hpp"
 
 namespace App

@@ -6,10 +6,10 @@ FILE(GLOB_RECURSE PRJT_SOURCE
 
 ADD_EXECUTABLE(AtlBee  
     "${PRJT_SOURCE}"
- "Source/PlayableCharacter.cpp")
+)
 
 TARGET_LINK_LIBRARIES(AtlBee PRIVATE 
     CoreLib
     AppLib
-    VoxelsLib
+    RenderingLib
 )

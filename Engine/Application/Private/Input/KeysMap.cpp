@@ -1,5 +1,6 @@
-#include "Input/KeysMap.hpp"
-#include "Debug/Assert.h"
+#include "Core.h"
+
+#include "KeysMap.hpp"
 
 namespace App
 {
@@ -34,14 +35,14 @@ void KeysMap::UnbindActionImpl(const AbInputBind& ib, void* pThis)
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void KeysMap::PlayAction(AbKeyId keyCode)
+void KeysMap::PlayAction(const float fDelta, AbKeyId keyCode)
 {
 	AB_ASSERT(keyCode > AB_INVALID_KEY && keyCode < AB_KEY_COUNT);
 
 	const auto& playableAction = m_vKeys[keyCode];
 
     if (playableAction.pThis) {
-	    playableAction.action(playableAction.pThis);
+	    playableAction.action(fDelta, playableAction.pThis);
     }
 }
 
