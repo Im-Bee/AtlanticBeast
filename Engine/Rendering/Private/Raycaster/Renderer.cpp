@@ -62,12 +62,16 @@ void Renderer::Update(const float)
         UploadDescriptor ud1 = m_pPipeline->GetUniformUploadDescriptor(m_StageVoxelBuffer, 
                                                                        VoxelPipeline::EShaderResource::VoxelGrid);
 
-        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], ud1);
+        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], 
+                                        m_pVoxelGrid->GetAmountOfVoxels() * sizeof(Voxel),
+                                        ud1);
 
         UploadDescriptor ud2 = m_pPipeline->GetUniformUploadDescriptor(m_StageCubeBuffer, 
                                                                        VoxelPipeline::EShaderResource::Cubes);
 
-        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetCubes()[0], ud2);
+        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetCubes()[0], 
+                                        m_pVoxelGrid->GetAmountOfCubes() * sizeof(Cube),
+                                        ud2);
     }
 
     Vec3 rot = m_pCamera->GetRotation();

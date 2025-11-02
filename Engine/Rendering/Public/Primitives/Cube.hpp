@@ -12,12 +12,10 @@ class alignas(16) Cube : public WorldObject
 public:
 
     Cube() 
-        : m_fHalfSize(.25f, .25f, .25f)
-        , m_uColor(0x4422DDFF)
+        : m_fHalfSize(.5f, .5f, .5f)
+        , m_uColor(0xFFFFFFFF)
         , WorldObject()
-    { 
-        this->SetRotation(Rot3(2.9, 1., 0.1));
-    }
+    { }
 
 public:
 

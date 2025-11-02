@@ -7,6 +7,7 @@
 #include "WrapperAdapter.hpp"
 #include "GPUBuffer.hpp"
 #include "GPUStreamBuffer.hpp"
+#include <memory>
 
 namespace Voxels
 {
@@ -24,10 +25,10 @@ public:
     UploadDescriptor() = delete;
     
     template<typename U, typename L, class T>
-    constexpr UploadDescriptor(U&& bufferInfo,
-                               L&& write,
-                               EUploadType type,
-                               const T& buffer)
+    UploadDescriptor(U&& bufferInfo,
+                     L&& write,
+                     EUploadType type,
+                     const T& buffer)
         : BufferInfo(::std::forward<U>(bufferInfo))
         , Write(::std::forward<L>(write))
         , Type(type)
@@ -86,7 +87,7 @@ public:
     VkDescriptorBufferInfo BufferInfo;
     VkWriteDescriptorSet Write;
     EUploadType Type;
-    ::std::weak_ptr<GPUBuffer> Buffer;
+    ::std::shared_ptr<GPUBuffer> Buffer;
 
 };
 
@@ -117,6 +118,7 @@ public:
     BEAST_API ::std::shared_ptr<GPUBuffer> ReserveGPUBuffer(const size_t uSizeInBytes);
 
     BEAST_API void UploadOnStreamBuffer(const void* pUpload, 
+                                        const size_t uUploadSize,
                                         UploadDescriptor& onSet);
 
 private:

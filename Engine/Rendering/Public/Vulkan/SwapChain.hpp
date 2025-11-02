@@ -32,6 +32,14 @@ public:
 
 public:
 
+    Swapchain(Swapchain&&) noexcept = default;
+    Swapchain& operator=(Swapchain&&) noexcept = delete;
+
+    Swapchain(const Swapchain&) noexcept = delete;
+    Swapchain& operator=(const Swapchain&) noexcept = delete;
+
+public:
+
     VkSwapchainKHR GetSwapChainHandle() const
     { return m_pSwapChain; }
 

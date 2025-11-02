@@ -88,21 +88,22 @@ shared_ptr<GPUBuffer> Memory::ReserveGPUBuffer(const size_t uSizeInBytes)
 
 // --------------------------------------------------------------------------------------------------------------------
 void Memory::UploadOnStreamBuffer(const void* pUpload, 
+                                  const size_t uUploadSize,
                                   UploadDescriptor& onSet)
 {
-    if (onSet.Type != UploadDescriptor::EUploadType::StreamBuffer) {
-        throw AB_EXCEPT("UploadOnStreamBuffer, type of buffer is invalid");
-    }
-    if (onSet.Buffer.expired()) {
-        throw AB_EXCEPT("UploadOnStreamBuffer, buffer is expired");
+    AB_ASSERT(onSet.Buffer->GetMemoryHandle() != VK_NULL_HANDLE);
+    AB_ASSERT(onSet.Buffer->GetBufferHandle() != VK_NULL_HANDLE);
+    AB_ASSERT(onSet.Buffer->GetSizeInBytes() <= uUploadSize);
+
+    if (onSet.Type != UploadDescriptor::EUploadType::StreamBuffer)
+    {
+        ::Core::Debug::Logger::Get()->Log(::Core::Debug::Error,
+                                          L"UploadOnStreamBuffer, type of buffer is invalid type");
+        return;
     }
     
-	const auto lock = onSet.Buffer.lock();
-    GPUStreamBuffer* buffer = reinterpret_cast<GPUStreamBuffer*>(lock.get());
-    AB_ASSERT((buffer->GetMemoryHandle() != VK_NULL_HANDLE));
-    AB_ASSERT((buffer->GetBufferHandle() != VK_NULL_HANDLE));
-
     const VkDevice da = m_pAdapter->GetAdapterHandle();
+    GPUStreamBuffer* buffer = reinterpret_cast<GPUStreamBuffer*>(onSet.Buffer.get());
     const bool updateDescSets = buffer->GetDataPointer() == nullptr ? true : false;
     
     if (buffer->GetDataPointer() == nullptr) {
@@ -114,7 +115,6 @@ void Memory::UploadOnStreamBuffer(const void* pUpload,
                                     buffer->GetPtrToDataPointer()));
     }
     memcpy(buffer->GetDataPointer(), pUpload, buffer->GetSizeInBytes());
-
     if (updateDescSets) {
         vkUpdateDescriptorSets(da,
                                1,
