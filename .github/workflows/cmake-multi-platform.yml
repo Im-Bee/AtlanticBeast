@@ -88,17 +88,26 @@ jobs:
         $vulkan_version = Get-ChildItem -Path $vulkan_sdk_path -Directory | Sort-Object Name | Select-Object -Last 1
         $vulkan_version_path = "$vulkan_sdk_path\\$($vulkan_version.Name)"
         Write-Output "Vulkan SDK Version Path: $vulkan_version_path"
-        Write-Output "Vulkan Include Directory Path: $vulkan_version_path\include"
-        Write-Output "Vulkan Library Path: $vulkan_version_path\lib\vulkan-1.lib"
-        Write-Output "Vulkan Bin Path: $vulkan_version_path\Bin"
+        Write-Output "Vulkan Include Directory Path: $vulkan_version_path\\include"
+        Write-Output "Vulkan Library Path: $vulkan_version_path\\lib\\vulkan-1.lib"
+        Write-Output "Vulkan Bin Path: $vulkan_version_path\\Bin"
         Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_SDK=$vulkan_version_path"
-        Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_INCLUDE_DIR=$vulkan_version_path\include"
-        Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_LIBRARY=$vulkan_version_path\lib\vulkan-1.lib"
-        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\Bin;$env:PATH"
-        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\Lib;$env:PATH"
-        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\;$env:PATH"
+        Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_INCLUDE_DIR=$vulkan_version_path\\include"
+        Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_LIBRARY=$vulkan_version_path\\lib\\vulkan-1.lib"
+        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\\Bin;$env:PATH"
+        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\\Lib;$env:PATH"
+        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\\;$env:PATH"
+        Write-Output "VULKAN_SDK=$env:VULKAN_SDK"
+        Write-Output "VULKAN_SDK=$env:VULKAN_SDK"
+        Write-Output "VULKAN_INCLUDE_DIR=$env:VULKAN_INCLUDE_DIR"
+        Write-Output "VULKAN_LIBRARY=$env:VULKAN_LIBRARY"
+        Write-Output "PATH=$env:PATH"
       shell: pwsh
 
+    - name: Verify GITHUB_ENV file content
+      run: |
+        cat $env:GITHUB_ENV
+      shell: pwsh
       
     - name: Configure CMake
       run: 
