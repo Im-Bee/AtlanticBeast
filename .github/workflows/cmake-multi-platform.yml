@@ -71,7 +71,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: C:/VulkanSDK
-        key: ${{ runner.os }}-vulkan-${{ env.VULKAN_VERSION }}
+        key: ${{ runner.os }}-vulkan
 
     - name: Install Vulkan SDK (Windows)
       if: runner.os == 'Windows' && steps.cache-vulkan.outputs.cache-hit != 'true'
