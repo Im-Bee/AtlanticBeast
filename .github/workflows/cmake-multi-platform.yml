@@ -80,19 +80,20 @@ jobs:
           curl -L https://sdk.lunarg.com/sdk/download/latest/windows/vulkan-sdk.exe --output VulkanSDK.exe 
           ./VulkanSDK.exe --accept-licenses --default-answer --confirm-command install
       shell: pwsh
-
-    - name: Add Vulkan to path (Windows)
+      
+    - name: Add Vulkan SDK to PATH (Windows)
       if: runner.os == 'Windows'
       run: |
         $vulkan_sdk_path = "C:\\VulkanSDK"
         $vulkan_version = Get-ChildItem -Path $vulkan_sdk_path -Directory | Sort-Object Name | Select-Object -Last 1
-        $vulkan_version = ($vulkan_version.Name)
-        echo "VULKAN_SDK=$vulkan_sdk_path\$vulkan_version" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "VULKAN_INCLUDE_DIR=$vulkan_sdk_path\\$vulkan_version\\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "VULKAN_LIBRARY=$vulkan_sdk_path\\$vulkan_version\\lib\\vulkan-1.lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "PATH=$vulkan_sdk_path\\$vulkan_version\\Lib;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "PATH=$vulkan_sdk_path\\$vulkan_version\\Bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "PATH=$vulkan_sdk_path\\$vulkan_version\\;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        $vulkan_version_path = "$vulkan_sdk_path\\$($vulkan_version.Name)"
+        echo "Vulkan SDK path: $vulkan_version_path"
+        echo "VULKAN_SDK=$vulkan_version_path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "VULKAN_INCLUDE_DIR=$vulkan_version_path\\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "VULKAN_LIBRARY=$vulkan_version_path\\lib\\vulkan-1.lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "PATH=$vulkan_version_path\\Bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "PATH=$vulkan_version_path\\Lib;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        echo "PATH=$vulkan_version_path\\;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
         echo "VULKAN_SDK=$env:VULKAN_SDK"
         echo "VULKAN_INCLUDE_DIR=$env:VULKAN_INCLUDE_DIR"
         echo "VULKAN_LIBRARY=$env:VULKAN_LIBRARY"
