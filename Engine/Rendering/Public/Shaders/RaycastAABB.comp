@@ -58,7 +58,7 @@ const int   maxSteps        = int(maxRenderDist * 2.6);
 #define HIT_TYPE_OBJECT 1
 
 // --------------------------------------------------------------------------------------------------------------------
-mat3 RotationMatrix(in vec3 angles) 
+mat3 RotationMatrix(in const vec3 angles) 
 {
     float sx = sin(angles.x);
     float sy = sin(angles.y);
@@ -298,7 +298,7 @@ bool MarchTheRay(in const vec3  ro,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-vec4 ExtractColorInt(in uint uPackedColor)
+vec4 ExtractColorInt(in const uint uPackedColor)
 {        
     float r = float((uPackedColor >> 24) & 0xFFu) / 255.;
     float g = float((uPackedColor >> 16) & 0xFFu) / 255.;
@@ -309,9 +309,11 @@ vec4 ExtractColorInt(in uint uPackedColor)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-bool ShadowRay(in vec3 from, in vec3 to, in int maxDistance)
+bool ShadowRay(in const vec3 from, 
+               in const vec3 to, 
+               in const int maxDistance)
 {
-    vec3    dir = normalize(to - from);
+    const vec3 dir = normalize(to - from);
     vec3    dummyHit;
     uint    dummyIndex;
     vec3    dummyNormal;
@@ -329,13 +331,13 @@ bool ShadowRay(in vec3 from, in vec3 to, in int maxDistance)
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-float Random(in vec2 uv)
+float Random(in const vec2 uv)
 {
     return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-vec3 RandomPointOnHemisphere(in vec3 normal)
+vec3 RandomPointOnHemisphere(in const vec3 normal)
 {
     vec3 randPoint = vec3(Random(gl_GlobalInvocationID.xy - normal.yx) - .5,
                           Random(gl_GlobalInvocationID.xy) - .5, 
@@ -359,7 +361,10 @@ vec3 RandomColor()
 
 
 // --------------------------------------------------------------------------------------------------------------------
-float SoftShadowRay(in vec3 from, in vec3 to, in vec3 normal, in int maxDistance)
+float SoftShadowRay(in const vec3 from, 
+                    in const vec3 to, 
+                    in const vec3 normal, 
+                    in const int maxDistance)
 {
     const float r = 4.;
     const float samples = 16;
@@ -549,16 +554,19 @@ vec3 Reflection(in vec3     from,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-bool IsCrossHair(in const vec2 uv, in const float aspectRatio) 
+bool IsCrossHair(in const vec2 uv, 
+                 in const float aspectRatio) 
 {
     const float fCrossHairWidth = 0.0026;
     float fCrossHairWidthX = fCrossHairWidth;
     float fCrossHairWidthY = fCrossHairWidth;
+
     if (aspectRatio >= 1.f) {
         fCrossHairWidthY *= aspectRatio;
     } else {
         fCrossHairWidthX *= aspectRatio;
     }
+
     return abs(uv).x < fCrossHairWidthX && abs(uv).y < fCrossHairWidthY;
 }
 
@@ -621,10 +629,13 @@ void main()
         }
     }
 
-    if (fDistance > maxRenderDist)
+    if (fDistance > maxRenderDist) {
         finalColor = mix(finalColor, 
                          baseSkyColor,
-                         clamp(fDistance - maxRenderDist, 0.f, maxRenderDist * .5f) / (maxRenderDist * .5f));
+                         clamp(fDistance - maxRenderDist, 
+                               0.f,
+                               maxRenderDist * .5f) / (maxRenderDist * .5f));
+    }
 
     imageStore(outputImage, pixelCoord, finalColor);
 }
