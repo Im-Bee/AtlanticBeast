@@ -145,7 +145,7 @@ void Renderer::Render()
         return;
     }
 
-    m_uCurrentFrame = (++m_uCurrentFrame) % MAX_FRAMES_IN_FLIGHT;
+    m_uCurrentFrame = (++m_uCurrentFrame) % FrameResources::MAX_FRAMES_IN_FLIGHT;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -164,15 +164,15 @@ void Renderer::Destroy()
         m_CommandPool = VK_NULL_HANDLE;
     }
     
-    m_StageVoxelBuffer   = nullptr;
-    m_StageCubeBuffer    = nullptr;
-    m_VoxelBuffer   = nullptr;
-    m_CubeBuffer    = nullptr;
-    m_pPipeline     = nullptr;
-    m_pSwapChain    = nullptr;
-    m_pDeviceAdapter = nullptr;
-    m_pHardware     = nullptr;
-    m_pInstance     = nullptr;
+    m_StageVoxelBuffer  = nullptr;
+    m_StageCubeBuffer   = nullptr;
+    m_VoxelBuffer       = nullptr;
+    m_CubeBuffer        = nullptr;
+    m_pPipeline         = nullptr;
+    m_pSwapChain        = nullptr;
+    m_pDeviceAdapter    = nullptr;
+    m_pHardware         = nullptr;
+    m_pInstance         = nullptr;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -421,7 +421,7 @@ void Renderer::RecreateSwapChain()
                                                                                 m_pMemory,
                                                                                 m_pVoxelGrid,
                                                                                 m_CommandPool,
-                                                                                MAX_FRAMES_IN_FLIGHT)));
+                                                                                FrameResources::MAX_FRAMES_IN_FLIGHT)));
     m_uCurrentFrame = 0;
     AB_LOG(Core::Debug::Info, L"Swapchain recreated");
 }

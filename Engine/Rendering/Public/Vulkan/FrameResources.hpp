@@ -6,10 +6,10 @@
 namespace Voxels
 {
 
-constexpr size_t MAX_FRAMES_IN_FLIGHT = 2;
-
 struct FrameResources
 {
+    constexpr static size_t MAX_FRAMES_IN_FLIGHT = 2;
+
 	VkFence			InFlightFence;
 	VkSemaphore		ImageAvailable;
 	VkSemaphore		RenderFinished;

@@ -14,7 +14,7 @@ namespace Voxels
 
 class Renderer
 {
-    using FrameResourcesArray = ::std::array<FrameResources, Voxels::MAX_FRAMES_IN_FLIGHT>;
+    using FrameResourcesArray = ::std::array<FrameResources, Voxels::FrameResources::MAX_FRAMES_IN_FLIGHT>;
 
 public:
 

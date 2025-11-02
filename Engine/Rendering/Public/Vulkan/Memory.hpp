@@ -7,7 +7,6 @@
 #include "WrapperAdapter.hpp"
 #include "GPUBuffer.hpp"
 #include "GPUStreamBuffer.hpp"
-#include <memory>
 
 namespace Voxels
 {
