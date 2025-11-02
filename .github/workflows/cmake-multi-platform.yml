@@ -97,9 +97,7 @@ jobs:
         Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_INCLUDE_DIR=$vulkan_version_path\\include"
         Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_LIBRARY=$vulkan_version_path\\lib\\vulkan-1.lib"
         
-        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\\bin;$env:PATH"
-        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\\lib;$env:PATH"
-        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\\;$env:PATH"
+        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\\;$vulkan_version_path\\lib;$vulkan_version_path\\bin;$env:PATH"
       shell: pwsh
 
     - name: Verify GITHUB_ENV file content
