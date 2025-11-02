@@ -13,10 +13,11 @@ function(compileShaders SHADERS_PATH COMPILE_TARGET)
         
             GET_FILENAME_COMPONENT(SHADER_NAME ${SHADER_PATH} NAME)
             SET(SPIRV_PATH "${SHADER_BIN_DIR}/${SHADER_NAME}.spv")
+            MESSAGE("COMMAND glslangValidator -V -I${SHADER_SRC_DIR}/ ${SHADER_PATH} -o ${SPIRV_PATH}")
         
             ADD_CUSTOM_COMMAND(
                 OUTPUT ${SPIRV_PATH}
-                COMMAND glslangValidator -V ${SHADER_PATH} -o ${SPIRV_PATH}
+                COMMAND glslangValidator -V -I${SHADER_SRC_DIR}/ ${SHADER_PATH} -o ${SPIRV_PATH}
                 DEPENDS ${SHADER_PATH}
                 COMMENT "Compiling shader ${SHADER_NAME}"
                 VERBATIM

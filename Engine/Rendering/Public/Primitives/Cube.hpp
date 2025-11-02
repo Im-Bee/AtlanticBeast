@@ -41,8 +41,8 @@ public:
 
 private:
 
-    uint32_t m_uColor;  
     Vec3     m_fHalfSize;
+    uint32_t m_uColor;  
 };
 
 } // !Voxels
