@@ -91,17 +91,12 @@ jobs:
         Write-Output "Vulkan Include Directory Path: $vulkan_version_path\include"
         Write-Output "Vulkan Library Path: $vulkan_version_path\lib\vulkan-1.lib"
         Write-Output "Vulkan Bin Path: $vulkan_version_path\Bin"
-        echo "Vulkan SDK path: $vulkan_version_path"
-        echo "VULKAN_SDK=$vulkan_version_path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "VULKAN_INCLUDE_DIR=$vulkan_version_path\\include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "VULKAN_LIBRARY=$vulkan_version_path\\lib\\vulkan-1.lib" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "PATH=$vulkan_version_path\\Bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "PATH=$vulkan_version_path\\Lib;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "PATH=$vulkan_version_path\\;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-        echo "VULKAN_SDK=$env:VULKAN_SDK"
-        echo "VULKAN_INCLUDE_DIR=$env:VULKAN_INCLUDE_DIR"
-        echo "VULKAN_LIBRARY=$env:VULKAN_LIBRARY"
-        echo "PATH=$env:PATH"
+        Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_SDK=$vulkan_version_path"
+        Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_INCLUDE_DIR=$vulkan_version_path\include"
+        Add-Content -Path $env:GITHUB_ENV -Value "VULKAN_LIBRARY=$vulkan_version_path\lib\vulkan-1.lib"
+        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\Bin;$env:PATH"
+        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\Lib;$env:PATH"
+        Add-Content -Path $env:GITHUB_ENV -Value "PATH=$vulkan_version_path\;$env:PATH"
       shell: pwsh
 
       
