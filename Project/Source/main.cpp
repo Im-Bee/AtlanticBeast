@@ -1,12 +1,11 @@
 #include "Core.h"
+#include "Debug/Logger.hpp"
 #include "EmptyCanvas.hpp"
 #include "Raycaster/Renderer.hpp"
 #include "Synchronization/DeltaTime.hpp"
 
 #include "CameraController.hpp"
 #include "Synchronization/FpsLimiter.hpp"
-#include "Window/WindowPolicy/BasicSystemPolicy.hpp"
-#include "Window/WindowPolicy/GameSystemPolicy.hpp"
 
 using namespace Core;
 using namespace App;
@@ -44,10 +43,10 @@ int main()
     {   
         const float fDeltaMs = dt.FetchMs();
         fl.Block(fDeltaMs);
-        // AB_LOG(Core::Debug::Info, 
-        //        L"Fps: %f Frame duration: %fms",
-        //        1000.f / fDeltaMs,
-        //        fDeltaMs);
+        ::Core::Debug::Logger::Get()->Log(::Core::Debug::Info, 
+                                          L"Fps: %f Frame duration: %fms",
+                                          1000.f / fDeltaMs,
+                                          fDeltaMs);
 
         renderWindow.Update(fDeltaMs);
         render.Update(fDeltaMs);

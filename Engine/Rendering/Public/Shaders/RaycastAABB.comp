@@ -239,10 +239,10 @@ bool ShadowRay(in const vec3 from,
 
 
 // --------------------------------------------------------------------------------------------------------------------
-float SoftShadowRay(in const vec3 from, 
-                    in const vec3 to, 
-                    in const vec3 normal, 
-                    in const int maxDistance)
+float SoftShadowRay(in const vec3   from, 
+                    in const vec3   to, 
+                    in const vec3   normal, 
+                    in const int    maxDistance)
 {
     const float r = 4.;
     const float samples = 16;
@@ -310,10 +310,10 @@ vec3 Phong(in const vec3   camPos,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-vec3 PhongShadows(in const vec3   camPos,
-                  in const vec3   pos,
-                  in const vec3   normal,
-                  in const int    maxDistance)
+vec3 PhongShadows(in const vec3     camPos,
+                  in const vec3     pos,
+                  in const vec3     normal,
+                  in const int      maxDistance)
 {
     const float ambientStrength     = 0.1;
     const float diffuseStrength     = 0.9;
@@ -336,10 +336,10 @@ vec3 PhongShadows(in const vec3   camPos,
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-vec3 PhongSoftShadows(in vec3   camPos,
-                      in vec3   pos,
-                      in vec3   normal,
-                      in int    maxDistance)
+vec3 PhongSoftShadows(in const vec3     camPos,
+                      in const vec3     pos,
+                      in const vec3     normal,
+                      in const int      maxDistance)
 {
     const float ambientStrength     = 0.1;
     const float diffuseStrength     = 0.9;
@@ -368,10 +368,8 @@ vec3 Reflection(in vec3     from,
                 in const uint   bounces,
                 in const vec3   baseColor,
                 in vec3     normal,
-                in float    MaterialReflectPower)
+                in float    fMaterialReflectPower)
 {
-    float   localReflect;
-    vec3    incident;
     vec3    dir;
     vec3    hit;
     uint    index;
@@ -379,13 +377,15 @@ vec3 Reflection(in vec3     from,
     vec3    normalRef;
     int     hitType;
 
-    vec3 reflectedColor = baseColor;
-    vec4 hitBaseColor;
+    vec3    incident;
+    float   fLocalReflect;
+    vec3    reflectedColor = baseColor;
+    vec4    hitBaseColor;
     const float roughness = 0.08;
 
     for (uint i = 0; i < bounces; ++i)
     {
-        if (MaterialReflectPower <= 0.0)
+        if (fMaterialReflectPower <= 0.0)
             break;
 
         dir = reflect(normalize(to - from), normal);
@@ -400,7 +400,7 @@ vec3 Reflection(in vec3     from,
                          normalRef,
                          hitType)) 
         {
-            reflectedColor = mix(reflectedColor, baseSkyColor.xyz, MaterialReflectPower);
+            reflectedColor = mix(reflectedColor, baseSkyColor.xyz, fMaterialReflectPower);
             break;
         }
 
@@ -409,23 +409,23 @@ vec3 Reflection(in vec3     from,
         normal  = normalRef;
 
         if (hitType == HIT_TYPE_VOXEL) {
-            hitBaseColor = ExtractColorInt(VoxelData[index].Color);
-            localReflect = 0.23;
+            hitBaseColor    = ExtractColorInt(VoxelData[index].Color);
+            fLocalReflect   = 0.23;
         }
         else if (hitType == HIT_TYPE_OBJECT) {
-            hitBaseColor = ExtractColorInt(CubeData[index].Color);
-            localReflect = 0.23;
+            hitBaseColor    = ExtractColorInt(CubeData[index].Color);
+            fLocalReflect   = 0.23;
         } 
         else {
-            hitBaseColor = baseSkyColor;
-            localReflect = 0;
+            hitBaseColor    = baseSkyColor;
+            fLocalReflect   = 0;
         }
         
         reflectedColor = mix(reflectedColor, 
                              PhongShadows(CameraPos.xyz, hit, normal, int(maxSteps * 0.25)) * hitBaseColor.xyz,
-                             MaterialReflectPower);
+                             fMaterialReflectPower);
 
-        MaterialReflectPower *= localReflect * 2;
+        fMaterialReflectPower *= fLocalReflect * 2;
     }
 
     return reflectedColor;
@@ -434,16 +434,15 @@ vec3 Reflection(in vec3     from,
 // --------------------------------------------------------------------------------------------------------------------
 void main() 
 {
-    ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
+    ivec2 iPixelCoord = ivec2(gl_GlobalInvocationID.xy);
 
     float halfFov       = fFov * 0.5;
     float aspectRatio   = float(imageSize(outputImage).x) / float(imageSize(outputImage).y);
     float scale         = tan(halfFov);
 
-    vec2 uv = ((vec2(pixelCoord) + vec2(0.5)) / vec2(imageSize(outputImage))) * 2. - 1.; 
-    if (IsCrosshair(uv, aspectRatio)) 
-    {
-        imageStore(outputImage, pixelCoord, vec4(1., 1., 1., 1.));
+    vec2 uv = ((vec2(iPixelCoord) + vec2(0.5)) / vec2(imageSize(outputImage))) * 2. - 1.; 
+    if (IsCrosshair(uv, aspectRatio)) {
+        imageStore(outputImage, iPixelCoord, vec4(1., 1., 1., 1.));
         return;
     }
 
@@ -454,12 +453,11 @@ void main()
 
     vec4 finalColor = baseSkyColor;
 
-    vec3 hitPos;
-    uint index;
-    float fDistance;
-    vec3 normal;
-    int hitType;
-
+    vec3    hitPos;
+    uint    index;
+    float   fDistance;
+    vec3    normal;
+    int     hitType;
     if (MarchTheRay(ro, rd, maxSteps, hitPos, index, fDistance, normal, hitType)) 
     {
         if (hitType == HIT_TYPE_VOXEL) {
@@ -498,6 +496,6 @@ void main()
                                maxRenderDist * .5f) / (maxRenderDist * .5f));
     }
 
-    imageStore(outputImage, pixelCoord, finalColor);
+    imageStore(outputImage, iPixelCoord, finalColor);
 }
 

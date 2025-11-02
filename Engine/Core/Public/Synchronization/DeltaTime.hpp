@@ -8,9 +8,9 @@ namespace Core
 
 class DeltaTime
 {
-    using Clock     = ::std::chrono::steady_clock;
-    using Duration  = ::std::chrono::duration<float, ::std::milli>;
-    using TimeStamp = ::std::chrono::time_point<Clock>;
+    using ClockType     = ::std::chrono::steady_clock;
+    using DurationMs    = ::std::chrono::duration<float, ::std::milli>;
+    using TimeStamp     = ::std::chrono::time_point<ClockType>;
 
 public:
     

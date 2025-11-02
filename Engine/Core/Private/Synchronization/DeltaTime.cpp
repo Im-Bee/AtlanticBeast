@@ -10,18 +10,18 @@ using namespace ::std::chrono;
 
 // --------------------------------------------------------------------------------------------------------------------
 DeltaTime::DeltaTime()
-    : m_LastTimeStamp(Clock::now())
+    : m_LastTimeStamp(ClockType::now())
 { }
 
 // --------------------------------------------------------------------------------------------------------------------
 void DeltaTime::SetReferenceFrame()
-{ m_LastTimeStamp = Clock::now(); }
+{ m_LastTimeStamp = ClockType::now(); }
 
 // --------------------------------------------------------------------------------------------------------------------
 float DeltaTime::FetchMs() 
 { 
-    auto now = Clock::now();
-    float diff = duration_cast<Duration>(now - m_LastTimeStamp).count();
+    auto now = ClockType::now();
+    float diff = duration_cast<DurationMs>(now - m_LastTimeStamp).count();
     m_LastTimeStamp = now;
     return diff; 
 }
@@ -29,8 +29,8 @@ float DeltaTime::FetchMs()
 // --------------------------------------------------------------------------------------------------------------------
 float DeltaTime::DeltaMs() 
 { 
-    auto now = Clock::now();
-    float diff = duration_cast<Duration>(now - m_LastTimeStamp).count();
+    auto now = ClockType::now();
+    float diff = duration_cast<DurationMs>(now - m_LastTimeStamp).count();
     return diff; 
 }
 
