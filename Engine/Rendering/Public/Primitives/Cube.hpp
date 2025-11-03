@@ -19,18 +19,6 @@ public:
 
 public:
 
-    Cube& operator=(const Cube&) noexcept = default;
-    Cube& operator=(Cube&&) noexcept = default;
-
-    Cube(const Cube&) = default;
-    Cube(Cube&&) = default;
-
-public:
-
-    ~Cube() = default;
-
-public:
-
     Vec3 GetHalfSize() const
     { return m_fHalfSize; }
 
@@ -43,6 +31,7 @@ private:
 
     Vec3     m_fHalfSize;
     uint32_t m_uColor;  
+
 };
 
 } // !Voxels
