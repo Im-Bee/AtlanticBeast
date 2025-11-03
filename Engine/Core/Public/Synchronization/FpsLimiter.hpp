@@ -31,6 +31,7 @@ public:
      * between current and next call.
      *
      * @param fDelta Amount of time that passed since last block in ms
+     * @param fFetchMs Amount of time that took for the last frame to render in ms
      */
     BEAST_API float Block(const float fDeltaMs, const float fFetchMs);
 

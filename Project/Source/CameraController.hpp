@@ -71,7 +71,7 @@ public:
         this->AddPositon(lookDir * fDir * (fDelta * m_fSpeed));
     }
 
-    void MouseMove(const float fDelta, int32_t fX, int32_t fY)
+    void MouseMove(const float, int32_t fX, int32_t fY)
     {
         this->AddRotation(Voxels::Rot3{ -0.00085f * fY, -0.00085f * fX, 0.f });
     }
