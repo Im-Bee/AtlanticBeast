@@ -9,7 +9,8 @@ ADD_EXECUTABLE(AtlBee
 )
 
 TARGET_LINK_LIBRARIES(AtlBee PRIVATE 
-    CoreLib
-    AppLib
-    RenderingLib
+    BeeCore
+    BeeApp
+    BeeRendering
+    Jolt
 )

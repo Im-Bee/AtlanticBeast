@@ -1,4 +1,4 @@
-SET(RENDERING_SOURCE 
+SET(BEE_RENDERING_SOURCE 
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Primitives/Object.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/Instance.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/WrapperHardware.cpp"
@@ -15,7 +15,7 @@ SET(RENDERING_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/Renderer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
-SET(RENDERING_HEADRES 
+SET(BEE_RENDERING_HEADRES 
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Object.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Camera.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/ErrorHandling.hpp"
@@ -37,29 +37,29 @@ SET(RENDERING_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp"
 )
 
-ADD_LIBRARY(RenderingLib SHARED 
-    "${RENDERING_SOURCE}"
-    "${RENDERING_HEADRES}"
+ADD_LIBRARY(BeeRendering SHARED 
+    "${BEE_RENDERING_SOURCE}"
+    "${BEE_RENDERING_HEADRES}"
 )
 
 FIND_PACKAGE(Vulkan REQUIRED)
 
-TARGET_INCLUDE_DIRECTORIES(RenderingLib PUBLIC 
+TARGET_INCLUDE_DIRECTORIES(BeeRendering PUBLIC 
     "${Vulkan_INCLUDE_DIRS}"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/"
 )
 
-TARGET_LINK_LIBRARIES(RenderingLib PUBLIC 
+TARGET_LINK_LIBRARIES(BeeRendering PUBLIC 
     "${Vulkan_LIBRARIES}"
-    CoreLib
-    MathLib
-    AppLib
+    BeeCore
+    BeeMath
+    BeeApp
 )
 
-TARGET_PRECOMPILE_HEADERS(RenderingLib PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp")
+TARGET_PRECOMPILE_HEADERS(BeeRendering PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Public/Voxels.hpp")
 
-TARGET_COMPILE_DEFINITIONS(RenderingLib PRIVATE _BEAST_EXPORTS)
+TARGET_COMPILE_DEFINITIONS(BeeRendering PRIVATE _BEAST_EXPORTS)
 
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/shaders.cmake)
 compileShaders("${CMAKE_CURRENT_SOURCE_DIR}/Public/Shaders" CompileShadersForVoxels)
-ADD_DEPENDENCIES(RenderingLib CompileShadersForVoxels)
+ADD_DEPENDENCIES(BeeRendering CompileShadersForVoxels)
