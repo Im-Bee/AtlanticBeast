@@ -15,13 +15,21 @@ FpsLimiter::FpsLimiter(const float fTargetMs)
 { }
 
 // --------------------------------------------------------------------------------------------------------------------
-void FpsLimiter::Block(const float fDeltaMs)
+float FpsLimiter::Block(const float fDeltaMs, const float fFetchMs)
 {
     using DurationMs = duration<float, milli>;
     const float fCompensationFactor = 0.1f;
+    
+    m_fBalance += m_fTarget - fFetchMs;
+    const float fTotalWait = m_fTarget - fDeltaMs + m_fBalance;
+    if (fTotalWait <= 0.f) {
+        m_fBalance *= 0.5f;
+        return 0.f;
+	}
 
-    m_fBalance += fCompensationFactor * (m_fTarget - fDeltaMs);
-    this_thread::sleep_for(DurationMs(max(0.f, m_fTarget + m_fBalance)));
+    this_thread::sleep_for(DurationMs(fTotalWait));
+
+    return fTotalWait;
 }
 
 } //!Core

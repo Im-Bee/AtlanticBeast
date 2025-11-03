@@ -16,7 +16,7 @@ int main()
     const auto& input = renderWindow.GetInput();
     Voxels::Renderer render = { };
     DeltaTime dt = { };
-    FpsLimiter fl(1000.f / 60.f);
+    FpsLimiter fl(1000.f / 120.f);
 
 
     ::std::shared_ptr<PlayablePaper> pwc = ::std::make_shared<PlayablePaper>();
@@ -42,15 +42,17 @@ int main()
     while (AppStatus::GetAppCurrentStatus()) 
     {   
         const float fDeltaMs = dt.FetchMs();
-        fl.Block(fDeltaMs);
-        ::Core::Debug::Logger::Get()->Log(::Core::Debug::Info, 
-                                          L"Fps: %f Frame duration: %fms",
-                                          1000.f / fDeltaMs,
-                                          fDeltaMs);
-
         renderWindow.Update(fDeltaMs);
         render.Update(fDeltaMs);
         render.Render();
+        const float fBlock = fl.Block(dt.DeltaMs(), fDeltaMs);
+
+
+        ::Core::Debug::Logger::Get()->Log(::Core::Debug::Info, 
+                                          L"Fps: %f Frame duration: %fms Blocked for: %fms",
+                                          1000.f / fDeltaMs,
+                                          fDeltaMs,
+                                          fBlock);
     }
 
     AB_LOG(Core::Debug::Info, L"App is closing...");

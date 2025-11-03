@@ -32,7 +32,7 @@ public:
      *
      * @param fDelta Amount of time that passed since last block in ms
      */
-    BEAST_API void Block(const float fDeltaMs);
+    BEAST_API float Block(const float fDeltaMs, const float fFetchMs);
 
 private:
 

@@ -73,7 +73,7 @@ public:
 
     void MouseMove(const float fDelta, int32_t fX, int32_t fY)
     {
-        this->AddRotation(Voxels::Rot3{ -0.0045f * fY * (fDelta * 0.01f), -0.0045f * fX * (fDelta * 0.01f), 0.f });
+        this->AddRotation(Voxels::Rot3{ -0.00085f * fY, -0.00085f * fX, 0.f });
     }
 
     void Move(const float fDelta, const Voxels::Vec3& dir)
