@@ -1,12 +1,11 @@
 #ifndef AB_VOXEL_GRID_H
 #define AB_VOXEL_GRID_H
 
-#include "Core.h"
-#include "Debug/Logger.hpp"
 #include "Voxels.hpp"
 
 #include "Vulkan/MemoryUploadTracker.hpp"
 #include "Raycaster/SingleVoxel.hpp"
+#include "Primitives/ColoredCube.hpp"
 
 namespace Voxels
 {
@@ -158,6 +157,8 @@ private:
     size_t m_uObjectsCount = -1;
 
 };
+
+typedef ::Voxels::WorldGrid<ColoredCube> CubeWorld;
 
 } // !Voxels
 #endif // !AB_VOXEL_GRID_H

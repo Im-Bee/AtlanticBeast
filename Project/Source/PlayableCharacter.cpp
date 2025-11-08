@@ -1,4 +1,4 @@
-#include "CameraController.hpp"
+#include "MainCharacter.hpp"
 
 void PlayablePaper::BindToInput(const ::std::shared_ptr<App::UserInput>& pInput)
 {

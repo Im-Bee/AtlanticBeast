@@ -6,17 +6,15 @@
 #include "Raycaster/VoxelGrid.hpp"
 
 // --------------------------------------------------------------------------------------------------------------------
-class alignas(16) ColoredCube : public Voxels::Cube
-                              , public Voxels::ColorProperty
-{ };
+
 
 // --------------------------------------------------------------------------------------------------------------------
-class World : public ::Voxels::WorldGrid<ColoredCube> 
+class World : public ::Voxels::CubeWorld 
 {
 public:
 
     World()
-        : ::Voxels::WorldGrid<ColoredCube>()
+        : ::Voxels::CubeWorld()
     { GenerateFloor(); }
 
 private:
@@ -24,7 +22,7 @@ private:
     void GenerateFloor()
     {
         const size_t uDim = this->GetGridWidth();
-        ColoredCube cc = { };
+        ::Voxels::ColoredCube cc = { };
         cc.SetColor(0xAA0090FF);
 
         for (uint32_t z = 0; z < uDim; ++z) {
@@ -43,7 +41,7 @@ class InWorldCube
 {
 public:
 
-    InWorldCube(const ::std::shared_ptr<World>& pW, ColoredCube& pC) 
+    InWorldCube(const ::std::shared_ptr<World>& pW, ::Voxels::ColoredCube& pC) 
         : m_pWorld(pW)
         , m_pCube(&pC)
         , m_pPhysics(nullptr)
@@ -64,7 +62,7 @@ public:
     ::std::shared_ptr<World> GetWorld() const
     { return m_pWorld.lock(); }
 
-    ColoredCube* GetCube() const
+    ::Voxels::ColoredCube* GetCube() const
     { return (m_pWorld.expired() ? nullptr : m_pCube); }
 
 public:
@@ -76,7 +74,7 @@ private:
 
     ::std::weak_ptr<World> m_pWorld;
 
-    ColoredCube* m_pCube = nullptr;
+    ::Voxels::ColoredCube* m_pCube = nullptr;
 
     void* m_pPhysics = nullptr;
 

@@ -4,7 +4,7 @@
 #include "Synchronization/DeltaTime.hpp"
 #include "Synchronization/FpsLimiter.hpp"
 
-#include "CameraController.hpp"
+#include "MainCharacter.hpp"
 #include "Game.hpp"
 
 using namespace std;
