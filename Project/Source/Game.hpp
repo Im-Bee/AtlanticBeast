@@ -5,10 +5,12 @@
 #include "Primitives/MaterialProperties/ColorProperty.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 
+// --------------------------------------------------------------------------------------------------------------------
 class alignas(16) ColoredCube : public Voxels::Cube
                               , public Voxels::ColorProperty
 { };
 
+// --------------------------------------------------------------------------------------------------------------------
 class World : public ::Voxels::WorldGrid<ColoredCube> 
 {
 public:
@@ -36,6 +38,7 @@ private:
     
 };
 
+// --------------------------------------------------------------------------------------------------------------------
 class InWorldCube 
 {
 public:
@@ -79,6 +82,7 @@ private:
 
 };
 
+// --------------------------------------------------------------------------------------------------------------------
 class Game
 {
 public:
