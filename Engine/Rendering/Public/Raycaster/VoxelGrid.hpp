@@ -121,7 +121,7 @@ public:
 public:
 
     template<class U>
-    StoredObjectType* GenerateAtVoxel(const iVec3& pos, U&& sot)
+    StoredObjectType* GenerateObjectAtVoxel(const iVec3& pos, U&& sot)
     {
         StoredObjectType* pR = GenerateObject(pos, this->GetGrid(), ::std::forward<U>(sot));
         this->ForceUpload();

@@ -41,7 +41,7 @@ public:
         Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
 
         if (hr.bHit) {
-            m_vg->GenerateAtVoxel(Voxels::iVec3(hr.iHitCoords + hr.Normal), ::Voxels::ColoredCube());
+            m_vg->GenerateObjectAtVoxel(Voxels::iVec3(hr.iHitCoords + hr.Normal), ::Voxels::ColoredCube());
         }
     }
 
