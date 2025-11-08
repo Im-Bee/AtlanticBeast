@@ -1,5 +1,4 @@
 SET(BEE_RENDERING_SOURCE 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Primitives/Object.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/Instance.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/WrapperHardware.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/WrapperAdapter.cpp"
@@ -16,7 +15,6 @@ SET(BEE_RENDERING_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
 SET(BEE_RENDERING_HEADRES 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Object.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Camera.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/ErrorHandling.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vulkan/GPUBuffer.hpp"

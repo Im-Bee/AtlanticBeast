@@ -1,4 +1,5 @@
 SET(BEE_MATH_SOURCE 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Primitives/Object.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Math.cpp"
 )
 SET(BEE_MATH_HEADRES 
@@ -9,6 +10,8 @@ SET(BEE_MATH_HEADRES
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vec3.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vec3Operators.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Public/Vec4.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Object.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Public/Primitives/Cube.hpp"
 )
 
 ADD_LIBRARY(BeeMath SHARED
