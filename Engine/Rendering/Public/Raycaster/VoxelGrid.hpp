@@ -100,16 +100,17 @@ public:
 public:
 
     template<class U>
-    void GenerateAtVoxel(const iVec3& pos, U&& sot)
+    StoredObjectType* GenerateAtVoxel(const iVec3& pos, U&& sot)
     {
-        GenerateObject(pos, this->GetGrid(), ::std::forward<U>(sot));
+        StoredObjectType* pR = GenerateObject(pos, this->GetGrid(), ::std::forward<U>(sot));
         this->ForceUpload();
+        return pR;
     }
 
 private:
 
     template<class U>
-    void GenerateObject(iVec3 pos, ::std::vector<Voxel>& voxelsGrid, U&& sot)
+    StoredObjectType* GenerateObject(iVec3 pos, ::std::vector<Voxel>& voxelsGrid, U&& sot)
     { 
         const size_t uDim = this->GetGridWidth(); 
         const size_t uIndex = pos.x + 
@@ -147,8 +148,8 @@ private:
                 }
             }
         }
-
-        m_StoredObjects[m_uObjectsCount++] = ::std::forward<U>(sot);
+        
+        return &(m_StoredObjects[m_uObjectsCount++] = ::std::forward<U>(sot));
     }
 
 private:

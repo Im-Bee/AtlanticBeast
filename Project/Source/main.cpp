@@ -16,7 +16,7 @@ int main()
     EmptyCanvas renderWindow;
     const auto& input = renderWindow.GetInput();
     Voxels::Renderer render = { };
-    shared_ptr<World> worldGrid = make_shared<World>();
+    Game g = { };
     DeltaTime dt = { };
     FpsLimiter fl(1000.f / 120.f);
 
@@ -32,11 +32,11 @@ int main()
     input->StartCapturing();
 
     render.SetCurrentCamera(::std::dynamic_pointer_cast<Voxels::Camera>(pc));
-    render.Initialize(renderWindow.GetWindowDesc(), worldGrid);
+    render.Initialize(renderWindow.GetWindowDesc(), g.GetWorld());
     
     pc->SetRotation(Voxels::Vec3 { -0.5f, 1.25f, 0.f });
     pc->SetPositon(Voxels::Vec3 { 14.5f, 2.25f, 25.f });
-    pc->SetGrid(worldGrid); 
+    pc->SetGrid(g.GetWorld()); 
 
 	// Main loop
     dt.SetReferenceFrame();

@@ -9,7 +9,6 @@ class alignas(16) ColoredCube : public Voxels::Cube
                               , public Voxels::ColorProperty
 { };
 
-
 class World : public ::Voxels::WorldGrid<ColoredCube> 
 {
 public:
@@ -44,6 +43,7 @@ public:
     InWorldCube(const ::std::shared_ptr<World>& pW, ColoredCube& pC) 
         : m_pWorld(pW)
         , m_pCube(&pC)
+        , m_pPhysics(nullptr)
     { }
 
     ~InWorldCube() = default;
@@ -74,5 +74,38 @@ private:
     ::std::weak_ptr<World> m_pWorld;
 
     ColoredCube* m_pCube = nullptr;
+
+    void* m_pPhysics = nullptr;
+
+};
+
+class Game
+{
+public:
+
+    Game()
+        : m_pWorld(::std::make_shared<World>())
+        , m_vInWorldObjects()
+    { }
+
+    ~Game() = default;
+
+public:
+
+    Game(const Game&) noexcept = default;
+    Game& operator=(const Game&) noexcept = default;
+
+    Game(Game&&) noexcept = default;
+    Game& operator=(Game&&) noexcept = default;
+
+public:
+
+    ::std::shared_ptr<World> GetWorld() const
+    { return m_pWorld; }
+
+private:
+
+    ::std::shared_ptr<World> m_pWorld = nullptr;
+    ::std::vector<InWorldCube> m_vInWorldObjects;
 
 };
