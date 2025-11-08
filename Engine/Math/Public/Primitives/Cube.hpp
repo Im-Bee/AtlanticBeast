@@ -13,7 +13,6 @@ public:
 
     Cube() 
         : m_fHalfSize(.5f, .5f, .5f)
-        , m_uColor(0xFFFFFFFF)
         , WorldObject()
     { }
 
@@ -24,13 +23,12 @@ public:
 
 public:
 
-    void SetColor(uint32_t color) 
-    { m_uColor = color | 0x000000FF; }
+    void SetHalfSize(Vec3 halfSize)
+    { m_fHalfSize = halfSize; }
 
 private:
 
-    Vec3     m_fHalfSize;
-    uint32_t m_uColor;  
+    Vec3 m_fHalfSize;
 
 };
 

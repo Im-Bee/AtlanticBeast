@@ -56,7 +56,7 @@ void Renderer::Update(const float)
 
     auto& frames = *m_vFrames.get();
 
-    if (m_pVoxelGrid->ReuploadStatus() & WorldGrid::EReupload::RequestStaging) {
+    if (m_pVoxelGrid->ReuploadStatus() & EReupload::RequestStaging) {
         AB_LOG(Core::Debug::Info, L"Staging the buffers");
 
         UploadDescriptor ud1 = m_pPipeline->GetUniformUploadDescriptor(m_StageVoxelBuffer, 
@@ -322,7 +322,8 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const shared_pt
                        sizeof(VoxelPushConstants),
                        &pipeline->GetPushConstants());
 
-    if (m_pVoxelGrid->ReuploadStatus() & WorldGrid::EReupload::RequestGpuUpload) {
+    if (m_pVoxelGrid->ReuploadStatus() & EReupload::RequestGpuUpload) 
+    {
         AB_LOG(Core::Debug::Info, L"Uploading the buffers");
         VkBufferCopy copyRegion = { };
         copyRegion.srcOffset = 0;

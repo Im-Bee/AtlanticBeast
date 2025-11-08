@@ -15,11 +15,10 @@ WorldGrid::WorldGrid(size_t uGridWidth)
     , m_Cubes(uGridWidth * uGridWidth * uGridWidth)
     , m_uCubesCount(0)
     , m_VoxelGrid(GenerateGrid(m_uGridDim, m_Cubes, m_uCubesCount))
-    , m_Reupload(RequestStaging)
 { }
 
 // ---------------------------------------------------------------------------------------------------------------------
-vector<Voxel> WorldGrid::GenerateGrid(const size_t uGridWidth, vector<Cube>& vCubes, size_t& uCubesState)
+vector<Voxel> WorldGrid::GenerateGrid(const size_t uGridWidth, vector<CubeType>& vCubes, size_t& uCubesState)
 {
     vector<Voxel>   voxelGrid(uGridWidth * uGridWidth * uGridWidth);
     size_t          uDim = VoxelGridDim;
@@ -64,7 +63,7 @@ vector<Voxel> WorldGrid::GenerateGrid(const size_t uGridWidth, vector<Cube>& vCu
 // --------------------------------------------------------------------------------------------------------------------
 void WorldGrid::GenerateCube(const Vec3& offsetPos, 
                              vector<Voxel>& vGrid,
-                             vector<Cube>& vCubes,
+                             vector<CubeType>& vCubes,
                              size_t& uCubesState)
 {
     static uint32_t kc = 0;
@@ -79,7 +78,7 @@ void WorldGrid::GenerateCube(const Vec3& offsetPos,
 
     vGrid[uIndex].Id[vGrid[uIndex].Type++] = m_uCubesCount;
 
-    Cube c;
+    CubeType c;
     c.SetPositon(offsetPos + Vec3(0.9f, 0.5f, 0.5f));
     auto cubePos = c.GetPosition();
     auto cubeSizes = c.GetHalfSize();
