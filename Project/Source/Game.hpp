@@ -6,9 +6,6 @@
 #include "Raycaster/VoxelGrid.hpp"
 
 // --------------------------------------------------------------------------------------------------------------------
-
-
-// --------------------------------------------------------------------------------------------------------------------
 class World : public ::Voxels::CubeWorld 
 {
 public:
@@ -23,12 +20,11 @@ private:
     {
         const size_t uDim = this->GetGridWidth();
         ::Voxels::ColoredCube cc = { };
-        cc.SetColor(0xAA0090FF);
 
         for (uint32_t z = 0; z < uDim; ++z) {
             for (uint32_t y = 0; y < 2; ++y) {
                 for (uint32_t x = 0; x < uDim; ++x) {
-                    this->GenerateAtVoxel(Voxels::iVec3(x, y, z), cc);
+                    this->SetVoxel(Voxels::iVec3(x, y, z), 0xAA0090FF);
                 }
             }
         }

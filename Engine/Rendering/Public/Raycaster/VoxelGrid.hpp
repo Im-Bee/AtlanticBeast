@@ -47,6 +47,28 @@ public:
     
     virtual size_t GetObjectsSizeInBytes() const = 0;
 
+public:
+
+    void SetVoxel(const iVec3& pos, uint32_t uColor)
+    {
+        ::std::vector<Voxel>& voxelsGrid = this->GetGrid();
+        const size_t uDim = this->GetGridWidth(); 
+        const size_t uIndex = pos.x + 
+                              pos.y * uDim +
+                              pos.z * uDim * uDim;
+
+
+        if (uIndex < voxelsGrid.size())
+        {
+            voxelsGrid[uIndex].Type = -1;
+            voxelsGrid[uIndex].Color = uColor;
+        }
+
+        this->ForceUpload();
+    }
+
+public:
+
     virtual bool CheckIfVoxelOccupied(const iVec3& pos) const = 0;
 
 private:
