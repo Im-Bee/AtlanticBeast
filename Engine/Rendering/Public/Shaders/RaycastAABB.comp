@@ -55,8 +55,8 @@ const int   maxSteps        = int(maxRenderDist * 2.6);
 #define LAST_Y_AXIS 1
 #define LAST_Z_AXIS 2
 
-#define HIT_TYPE_UNKNOWN -1
-#define HIT_TYPE_VOXEL 0
+#define HIT_TYPE_UNKNOWN 0
+#define HIT_TYPE_VOXEL -1
 #define HIT_TYPE_OBJECT 1
 
 
@@ -149,7 +149,7 @@ bool MarchTheRay(in const vec3  ro,
                     voxel.z * GridSize.x * GridSize.y;
     
         // Check for hits
-        if (VoxelData[index].Type == uint(-1))
+        if (VoxelData[index].Type == uint(HIT_TYPE_VOXEL))
         {
             if (lastStepAxis == LAST_X_AXIS) {
                 fDistance = tMax.x - tDelta.x;
@@ -170,7 +170,7 @@ bool MarchTheRay(in const vec3  ro,
 
             return true;
         } 
-        if (VoxelData[index].Type > 0 &&
+        if (VoxelData[index].Type > HIT_TYPE_UNKNOWN &&
             TestObjects(VoxelData[index],
                         ro,
                         rd,
@@ -422,7 +422,7 @@ vec3 Reflection(in vec3     from,
         }
         
         reflectedColor = mix(reflectedColor, 
-                             PhongShadows(CameraPos.xyz, hit, normal, int(maxSteps * 0.25)) * hitBaseColor.xyz,
+                             PhongSoftShadows(CameraPos.xyz, hit, normal, int(maxSteps * 0.25)) * hitBaseColor.xyz,
                              fMaterialReflectPower);
 
         fMaterialReflectPower *= fLocalReflect * 2;

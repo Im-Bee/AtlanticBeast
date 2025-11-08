@@ -1,18 +1,17 @@
-#ifndef AB_BASIC_CUBE_H
-#define AB_BASIC_CUBE_H
+#ifndef AB_COLOR_PROPERTY_H
+#define AB_COLOR_PROPERTY_H
 
-#include "Primitives/Cube.hpp"
+#include "Voxels.hpp"
 
 namespace Voxels
 {
 
-class alignas(16) ColorCube : public Cube
+class ColorProperty
 {
 public:
 
-    ColorCube() 
+    ColorProperty() 
         : m_uColor(0xFFFFFFFF)
-        , Cube()
     { }
 
 public:
@@ -33,4 +32,4 @@ private:
 };
 
 } // !Voxels
-#endif //!AB_BASIC_CUBE_H
+#endif //!AB_COLOR_PROPERTY_H

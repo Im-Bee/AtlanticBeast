@@ -40,7 +40,7 @@ public:
 
 public:
 
-    VkSwapchainKHR GetSwapChainHandle() const
+    VkSwapchainKHR& GetSwapChainHandle() 
     { return m_pSwapChain; }
 
     VkImage GetImage(uint32_t i) const
@@ -65,8 +65,8 @@ private:
     VkSurfaceFormatKHR PickFormat(::std::shared_ptr<const HardwareWrapper>& pHardware,
                                   VkSurfaceKHR surface);
 
-    VkPresentModeKHR PickMode(::std::shared_ptr<const HardwareWrapper>& pHardware, 
-                              VkSurfaceKHR surface);
+    VkPresentModeKHR PickPresentationMode(::std::shared_ptr<const HardwareWrapper>& pHardware, 
+                                          VkSurfaceKHR surface);
 
     VkSwapchainKHR CreateSwapChain(::std::shared_ptr<const AdapterWrapper>& pAdapter,
                                    VkSurfaceKHR surface,

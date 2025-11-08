@@ -12,8 +12,8 @@ class alignas(16) Cube : public WorldObject
 public:
 
     Cube() 
-        : m_fHalfSize(.5f, .5f, .5f)
-        , WorldObject()
+        : WorldObject()
+        , m_fHalfSize(.5f, .5f, .5f)
     { }
 
 public:

@@ -1,13 +1,13 @@
 #ifndef AB_PIPELINE_H
 #define AB_PIPELINE_H
 
-#include "Math.hpp"
+#include "Voxels.hpp"
+
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/SwapChain.hpp"
 #include "Vulkan/Memory.hpp"
 #include "Raycaster/PushConstants.hpp"
 #include "Raycaster/VoxelGrid.hpp"
-#include "Voxels.hpp"
 
 namespace Voxels
 {

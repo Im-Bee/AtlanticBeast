@@ -7,7 +7,7 @@ namespace Voxels
 
 using namespace std;
 
-HitResult MarchTheRay(const WorldGrid* vg, const Vec3& ro, const Vec3& rd, size_t maxSteps)
+HitResult MarchTheRay(const IWorldGrid* vg, const Vec3& ro, const Vec3& rd, size_t maxSteps)
 {
     HitResult result;
     result.bHit         = false;
@@ -51,7 +51,8 @@ HitResult MarchTheRay(const WorldGrid* vg, const Vec3& ro, const Vec3& rd, size_
                              voxel.y * gridWidth +
                              voxel.z * gridWidth * gridWidth;
 
-        if (vg->GetGrid()[index].Type == uint32_t(-1))
+        if (vg->GetGrid()[index].Type == static_cast<uint32_t>(-1) ||
+            (vg->GetGrid()[index].Type > 0 && vg->CheckIfVoxelOccupied(voxel)))
         {
             result.bHit         = true;
             result.iHitCoords   = voxel;
@@ -76,40 +77,6 @@ HitResult MarchTheRay(const WorldGrid* vg, const Vec3& ro, const Vec3& rd, size_
             }
 
             return result;
-        }
-        if (vg->GetGrid()[index].Type > 0)
-        {
-            uint32_t id;
-            for (uint32_t k = 0; k < vg->GetGrid()[index].Type; ++k) 
-            {
-                Vec3 pos = vg->GetCubes()[vg->GetGrid()[index].Id[k]].GetPosition();
-                if (voxel.x == uint32_t(pos.x) && 
-                    voxel.y == uint32_t(pos.y) && 
-                    voxel.z == uint32_t(pos.z))
-                {
-                    result.bHit         = true;
-                    result.iHitCoords   = voxel;
-                    result.uHitIndex    = index;
-                    switch (lastStepAxis) {
-                        case X:
-                            result.Normal       = Vec3(-float(step.x), 0.0f, 0.0f);
-                            result.fDistance    = tMax.x - tDelta.x;
-                            break;
-                        case Y:
-                            result.Normal       = Vec3(0.0f, -float(step.y), 0.0f);
-                            result.fDistance    = tMax.y - tDelta.y;
-                            break;
-                        case Z:
-                            result.Normal       = Vec3(0.0f, 0.0f, -float(step.z));
-                            result.fDistance    = tMax.z - tDelta.z;
-                            break;
-                        default:
-                            result.Normal = Vec3(0.f, 0.f, 0.f);
-                            result.fDistance    = tMax.z - tDelta.z;
-                    }
-                    return result;
-                }
-            }
         }
 
         if (tMax.x < tMax.y)

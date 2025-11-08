@@ -25,7 +25,7 @@ Swapchain::Swapchain(shared_ptr<const Instance> pInst,
     , m_Extent(GetExtentInternal(m_Capabilities, m_pWindowDesc))
     , m_uImageCount(GetImageCountInternal(m_Capabilities))
     , m_SurfaceFormat(PickFormat(m_pHardware, m_Surface))
-    , m_PresentMode(PickMode(m_pHardware, m_Surface))
+    , m_PresentMode(PickPresentationMode(m_pHardware, m_Surface))
     , m_pSwapChain(CreateSwapChain(m_pDeviceAdapter,
                                    m_Surface,
                                    m_Capabilities,
@@ -182,9 +182,9 @@ VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const HardwareWrapper>& pHar
 
     vFormats.resize(uFormatCount);
     THROW_IF_FAILED(vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDeviceHandle,
-                                                       surface,
-                                                       &uFormatCount,
-                                                       &vFormats[0]));
+                                                         surface,
+                                                         &uFormatCount,
+                                                         &vFormats[0]));
 
     AB_ASSERT(!vFormats.empty());
 
@@ -215,29 +215,27 @@ VkSurfaceFormatKHR Swapchain::PickFormat(shared_ptr<const HardwareWrapper>& pHar
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-VkPresentModeKHR Swapchain::PickMode(shared_ptr<const HardwareWrapper>& pHardware, VkSurfaceKHR surface)
+VkPresentModeKHR Swapchain::PickPresentationMode(shared_ptr<const HardwareWrapper>& pHardware, VkSurfaceKHR surface)
 { 
     VkPhysicalDevice            physicalDeviceHandle    = pHardware->GetPhysicalDevice();
     uint32_t                    uPresentModeCount       = 0;
     vector<VkPresentModeKHR>    vPresentModes           = { };
 
     THROW_IF_FAILED(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDeviceHandle,
-                                                            surface,
-                                                            &uPresentModeCount,
-                                                            NULL));
+                                                              surface,
+                                                              &uPresentModeCount,
+                                                              NULL));
     vPresentModes.resize(uPresentModeCount);
     THROW_IF_FAILED(vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDeviceHandle,
-                                                            surface,
-                                                            &uPresentModeCount,
-                                                            &vPresentModes[0]));
+                                                              surface,
+                                                              &uPresentModeCount,
+                                                              &vPresentModes[0]));
     AB_ASSERT(!vPresentModes.empty());
 
     for (const auto& mode : vPresentModes) 
-    {
-        if (mode == VK_PRESENT_MODE_MAILBOX_KHR) {
+        if (mode == VK_PRESENT_MODE_MAILBOX_KHR) 
             return mode;
-        }
-    }
+
 
     return VK_PRESENT_MODE_FIFO_KHR;
 }

@@ -1,3 +1,5 @@
+#include "Consts.hpp"
+#include "Debug/Logger.hpp"
 #include "Voxels.hpp"
 
 #include "Raycaster/Renderer.hpp"
@@ -18,7 +20,7 @@ using namespace std;
 
 // ---------------------------------------------------------------------------------------------------------------------
 void Renderer::Initialize(shared_ptr<const WindowDesc> wd,
-                          shared_ptr<WorldGrid> vg) 
+                          shared_ptr<IWorldGrid> vg) 
 {
     AB_LOG(Core::Debug::Info, L"Initializing renderer!");
 
@@ -35,10 +37,10 @@ void Renderer::Initialize(shared_ptr<const WindowDesc> wd,
     m_CommandPool = CreateCommandPool(dynamic_pointer_cast<AdapterWrapper>(m_pDeviceAdapter), 
                                       m_pDeviceAdapter->GetQueueFamilyIndex());
 
-    m_StageVoxelBuffer   = std::move(m_pMemory->ReserveStagingBuffer(vg->GetAmountOfVoxels() * sizeof(Voxel)));
-    m_StageCubeBuffer    = std::move(m_pMemory->ReserveStagingBuffer(vg->GetAmountOfCubes() * sizeof(Cube)));
-    m_VoxelBuffer   = std::move(m_pMemory->ReserveGPUBuffer(vg->GetAmountOfVoxels() * sizeof(Voxel)));
-    m_CubeBuffer    = std::move(m_pMemory->ReserveGPUBuffer(vg->GetAmountOfCubes() * sizeof(Cube)));
+    m_StageVoxelBuffer   = std::move(m_pMemory->ReserveStagingBuffer(vg->GetVoxelsSizeInBytes()));
+    m_StageCubeBuffer    = std::move(m_pMemory->ReserveStagingBuffer(vg->GetObjectsSizeInBytes()));
+    m_VoxelBuffer   = std::move(m_pMemory->ReserveGPUBuffer(vg->GetVoxelsSizeInBytes()));
+    m_CubeBuffer    = std::move(m_pMemory->ReserveGPUBuffer(vg->GetObjectsSizeInBytes()));
 
     // Recreating swap chain also creates frame resources and initializes swap chain
     RecreateSwapChain();
@@ -56,27 +58,28 @@ void Renderer::Update(const float)
 
     auto& frames = *m_vFrames.get();
 
-    if (m_pVoxelGrid->ReuploadStatus() & EReupload::RequestStaging) {
+    if (m_pVoxelGrid->ReuploadStatus() & EReupload::RequestStaging) 
+    {
         AB_LOG(Core::Debug::Info, L"Staging the buffers");
 
         UploadDescriptor ud1 = m_pPipeline->GetUniformUploadDescriptor(m_StageVoxelBuffer, 
                                                                        VoxelPipeline::EShaderResource::VoxelGrid);
 
-        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetGrid()[0], 
-                                        m_pVoxelGrid->GetAmountOfVoxels() * sizeof(Voxel),
+        m_pMemory->UploadOnStreamBuffer(m_pVoxelGrid->GetGridPtr(), 
+                                        m_pVoxelGrid->GetVoxelsSizeInBytes(),
                                         ud1);
 
         UploadDescriptor ud2 = m_pPipeline->GetUniformUploadDescriptor(m_StageCubeBuffer, 
                                                                        VoxelPipeline::EShaderResource::Cubes);
 
-        m_pMemory->UploadOnStreamBuffer(&m_pVoxelGrid->GetCubes()[0], 
-                                        m_pVoxelGrid->GetAmountOfCubes() * sizeof(Cube),
+        m_pMemory->UploadOnStreamBuffer(m_pVoxelGrid->GetObjectsPtr(),
+                                        m_pVoxelGrid->GetObjectsSizeInBytes(),
                                         ud2);
     }
 
     Vec3 rot = m_pCamera->GetRotation();
     Vec3 rotVec = Normalize(RotateY(RotateX(Vec3 { 0.f, 0.f, 1.f }, rot.x), rot.y));
-    Vec3 cameraRight = Normalize(Cross(rotVec, Vec3 { 0.f, 1.f, 0.f }));
+    Vec3 cameraRight = Normalize(Cross(rotVec, Vec3 { 0.f, -1.f, 0.f }));
     Vec3 cameraUp = Cross(cameraRight, rotVec);
 
     m_pPipeline->LoadPushConstants(m_pCamera->GetFov() * AB_DEG_TO_RAD,
@@ -130,13 +133,12 @@ void Renderer::Render()
 
     THROW_IF_FAILED(vkQueueSubmit(m_pDeviceAdapter->GetQueueHandle(), 1, &submitInfo, frame.InFlightFence));
 
-    VkSwapchainKHR swapchain = m_pSwapChain->GetSwapChainHandle();
     VkPresentInfoKHR presentInfo = { };
     presentInfo.sType                   = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     presentInfo.waitSemaphoreCount      = 1;
     presentInfo.pWaitSemaphores         = &frame.RenderFinished;
     presentInfo.swapchainCount          = 1;
-    presentInfo.pSwapchains             = &swapchain;
+    presentInfo.pSwapchains             = &m_pSwapChain->GetSwapChainHandle();
     presentInfo.pImageIndices           = &uImageIndex;
 
     result = vkQueuePresentKHR(m_pDeviceAdapter->GetQueueHandle(), &presentInfo);
@@ -211,7 +213,7 @@ VkCommandBuffer Renderer::CreateCommandBuffer(shared_ptr<const AdapterWrapper> d
 // ---------------------------------------------------------------------------------------------------------------------
 Renderer::FrameResourcesArray Renderer::CreateFrameResources(const shared_ptr<const AdapterWrapper>& da,
                                                              const unique_ptr<Memory>& memory,
-                                                             const shared_ptr<const WorldGrid>& vg,
+                                                             const shared_ptr<const IWorldGrid>& vg,
                                                              VkCommandPool cmdPool,
                                                              size_t uFrames)
 {
@@ -347,8 +349,11 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const shared_pt
         mmr.memory = m_VoxelBuffer->GetMemoryHandle();
         mmr.offset = 0;
         mmr.size = VK_WHOLE_SIZE;
-        VkMappedMemoryRange mmr2 = mmr;
+        VkMappedMemoryRange mmr2 = { };
+        mmr2.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
         mmr2.memory = m_CubeBuffer->GetMemoryHandle();
+        mmr2.offset = 0;
+        mmr2.size = VK_WHOLE_SIZE;
 
         VkMappedMemoryRange mmrs[2] = { mmr, mmr2 };
         vkFlushMappedMemoryRanges(m_pDeviceAdapter->GetAdapterHandle(), 2, mmrs);

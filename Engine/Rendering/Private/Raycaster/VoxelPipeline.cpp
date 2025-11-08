@@ -6,6 +6,7 @@
 #include "Vulkan/GPUStreamBuffer.hpp"
 #include "Vulkan/Memory.hpp"
 #include "Vulkan/SwapChain.hpp"
+#include <vulkan/vulkan_core.h>
 
 namespace Voxels
 {

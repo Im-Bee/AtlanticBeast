@@ -93,7 +93,7 @@ void Memory::UploadOnStreamBuffer(const void* pUpload,
 {
     AB_ASSERT(onSet.Buffer->GetMemoryHandle() != VK_NULL_HANDLE);
     AB_ASSERT(onSet.Buffer->GetBufferHandle() != VK_NULL_HANDLE);
-    AB_ASSERT(onSet.Buffer->GetSizeInBytes() <= uUploadSize);
+    AB_ASSERT(onSet.Buffer->GetSizeInBytes() >= uUploadSize);
 
     if (onSet.Type != UploadDescriptor::EUploadType::StreamBuffer)
     {
@@ -114,7 +114,7 @@ void Memory::UploadOnStreamBuffer(const void* pUpload,
                                     0,
                                     buffer->GetPtrToDataPointer()));
     }
-    memcpy(buffer->GetDataPointer(), pUpload, buffer->GetSizeInBytes());
+    memcpy(buffer->GetDataPointer(), pUpload, uUploadSize);
     if (updateDescSets) {
         vkUpdateDescriptorSets(da,
                                1,

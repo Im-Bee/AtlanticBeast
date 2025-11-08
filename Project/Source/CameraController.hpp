@@ -8,6 +8,7 @@
 #include "Raycaster/VoxelGrid.hpp"
 #include "Raycaster/Rays.hpp"
 #include "Math.hpp"
+#include "Game.hpp"
 
 class PaperCharacter : public Voxels::Camera
 {
@@ -25,7 +26,7 @@ public:
 
 public:
 
-    void SetGrid(::std::shared_ptr<Voxels::WorldGrid> vg)
+    void SetGrid(::std::shared_ptr<World> vg)
     {
         m_vg = vg;
     }
@@ -40,14 +41,16 @@ public:
         Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
 
         if (hr.bHit) {
-            m_vg->ModifyVoxel(Voxels::iVec3(hr.iHitCoords + hr.Normal), Voxels::Cube());
+            m_vg->GenerateAtVoxel(Voxels::iVec3(hr.iHitCoords + hr.Normal), ColoredCube());
         }
     }
 
     void RemoveBlock(const float)
     {
         Voxels::Vec3 rot = this->GetRotation();
-        Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0.f, 0.f, 1.f }, rot.x), rot.y));
+        Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0.f, 0.f, 1.f }, 
+                                                                                 rot.x), 
+                                                                 rot.y));
 
         Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
 
@@ -73,7 +76,7 @@ public:
 
     void MouseMove(const float, int32_t fX, int32_t fY)
     {
-        this->AddRotation(Voxels::Rot3{ -0.00085f * fY, -0.00085f * fX, 0.f });
+        this->AddRotation(Voxels::Rot3{ 0.00085f * fY, 0.00085f * fX, 0.f });
     }
 
     void Move(const float fDelta, const Voxels::Vec3& dir)
@@ -83,7 +86,7 @@ public:
 
 private:
 
-    ::std::shared_ptr<Voxels::WorldGrid> m_vg;
+    ::std::shared_ptr<World> m_vg;
 
     uint32_t m_uColor;
 
@@ -101,17 +104,17 @@ public:
 
 public:
 
-    AB_DECL_ACTION(PaperCharacter, Strafe, MoveRight, -0.1f);
+    AB_DECL_ACTION(PaperCharacter, Strafe, MoveRight, 0.1f);
 
-    AB_DECL_ACTION(PaperCharacter, Strafe, MoveLeft, 0.1f);
+    AB_DECL_ACTION(PaperCharacter, Strafe, MoveLeft, -0.1f);
 
     AB_DECL_ACTION(PaperCharacter, MoveForwardBackwards, MoveFront, 0.1f);
 
     AB_DECL_ACTION(PaperCharacter, MoveForwardBackwards, MoveBack, -0.1f);
 
-    AB_DECL_ACTION(PaperCharacter, Move, MoveUp, Voxels::Vec3{ 0.f, 0.1f, 0.f });
+    AB_DECL_ACTION(PaperCharacter, Move, MoveUp, Voxels::Vec3{ 0.f, -0.1f, 0.f });
 
-    AB_DECL_ACTION(PaperCharacter, Move, MoveDown, Voxels::Vec3{ 0.f, -0.1f, 0.f });
+    AB_DECL_ACTION(PaperCharacter, Move, MoveDown, Voxels::Vec3{ 0.f, 0.1f, 0.f });
 
     AB_DECL_ACTION(PaperCharacter, PlaceBlock, PlaceBlock);
 

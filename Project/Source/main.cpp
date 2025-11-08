@@ -1,12 +1,13 @@
 #include "Core.h"
-#include "Debug/Logger.hpp"
 #include "EmptyCanvas.hpp"
 #include "Raycaster/Renderer.hpp"
 #include "Synchronization/DeltaTime.hpp"
-
-#include "CameraController.hpp"
 #include "Synchronization/FpsLimiter.hpp"
 
+#include "CameraController.hpp"
+#include "Game.hpp"
+
+using namespace std;
 using namespace Core;
 using namespace App;
 
@@ -15,6 +16,7 @@ int main()
     EmptyCanvas renderWindow;
     const auto& input = renderWindow.GetInput();
     Voxels::Renderer render = { };
+    shared_ptr<World> worldGrid = make_shared<World>();
     DeltaTime dt = { };
     FpsLimiter fl(1000.f / 120.f);
 
@@ -30,12 +32,11 @@ int main()
     input->StartCapturing();
 
     render.SetCurrentCamera(::std::dynamic_pointer_cast<Voxels::Camera>(pc));
-    render.Initialize(renderWindow.GetWindowDesc());
+    render.Initialize(renderWindow.GetWindowDesc(), worldGrid);
     
-    auto vg = render.GetGrid();
     pc->SetRotation(Voxels::Vec3 { -0.5f, 1.25f, 0.f });
-    pc->SetPositon(Voxels::Vec3 { 14.5f, 30.25f, 25.f });
-    pc->SetGrid(vg); 
+    pc->SetPositon(Voxels::Vec3 { 14.5f, 2.25f, 25.f });
+    pc->SetGrid(worldGrid); 
 
 	// Main loop
     dt.SetReferenceFrame();
@@ -48,11 +49,11 @@ int main()
         const float fBlock = fl.Block(dt.DeltaMs(), fDeltaMs);
 
 
-        ::Core::Debug::Logger::Get()->Log(::Core::Debug::Info, 
-                                          L"Fps: %f Frame duration: %fms Blocked for: %fms",
-                                          1000.f / fDeltaMs,
-                                          fDeltaMs,
-                                          fBlock);
+        // ::Core::Debug::Logger::Get()->Log(::Core::Debug::Info, 
+        //                                   L"Fps: %f Frame duration: %fms Blocked for: %fms",
+        //                                   1000.f / fDeltaMs,
+        //                                   fDeltaMs,
+        //                                   fBlock);
     }
 
     AB_LOG(Core::Debug::Info, L"App is closing...");
