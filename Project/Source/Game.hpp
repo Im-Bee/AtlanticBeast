@@ -103,6 +103,14 @@ public:
     ::std::shared_ptr<World> GetWorld() const
     { return m_pWorld; }
 
+public:
+
+    void Update(float fDelta)
+    { 
+        for (auto& inWorldCube : m_vInWorldObjects) 
+            inWorldCube.Update(fDelta);
+    }
+
 private:
 
     ::std::shared_ptr<World> m_pWorld = nullptr;
