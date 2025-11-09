@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Game.hpp"
 #include "Voxels.hpp"
 #include "Input/ControllerObject.hpp"
 #include "Input/UserInput.hpp"
@@ -8,7 +9,6 @@
 #include "Raycaster/VoxelGrid.hpp"
 #include "Raycaster/Rays.hpp"
 #include "Math.hpp"
-#include "Game.hpp"
 
 class PaperCharacter : public Voxels::Camera
 {
@@ -16,19 +16,16 @@ public:
 
     template<class... U>
     explicit PaperCharacter(U&&... args)
-        : m_vg(nullptr)
+        : m_g(nullptr)
         , Camera(::std::forward<U>(args)...)
         , m_fSpeed(0.1f)
     { }
 
-
-    ~PaperCharacter() = default;
-
 public:
 
-    void SetGrid(::std::shared_ptr<World> vg)
+    void SetGrid(::std::shared_ptr<Game> vg)
     {
-        m_vg = vg;
+        m_g = vg;
     }
 
 public:
@@ -38,10 +35,10 @@ public:
         Voxels::Vec3 rot = this->GetRotation();
         Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0.f, 0.f, 1.f }, rot.x), rot.y));
 
-        Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
+        Voxels::HitResult hr = Voxels::MarchTheRay(m_g->GetWorld().get(), this->GetPosition(), lookDir, 10);
 
         if (hr.bHit) {
-            m_vg->GenerateObjectAtVoxel(Voxels::iVec3(hr.iHitCoords + hr.Normal), ::Voxels::ColoredCube());
+            m_g->GenerateCube(Voxels::iVec3(hr.iHitCoords + hr.Normal));
         }
     }
 
@@ -52,7 +49,7 @@ public:
                                                                                  rot.x), 
                                                                  rot.y));
 
-        Voxels::HitResult hr = Voxels::MarchTheRay(m_vg.get(), this->GetPosition(), lookDir, 10);
+        Voxels::HitResult hr = Voxels::MarchTheRay(m_g->GetWorld().get(), this->GetPosition(), lookDir, 10);
 
         if (hr.bHit) {
         }
@@ -86,7 +83,7 @@ public:
 
 private:
 
-    ::std::shared_ptr<World> m_vg;
+    ::std::shared_ptr<Game> m_g;
 
     uint32_t m_uColor;
 

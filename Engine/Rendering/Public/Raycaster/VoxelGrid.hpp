@@ -1,11 +1,14 @@
 #ifndef AB_VOXEL_GRID_H
 #define AB_VOXEL_GRID_H
 
+#include "Core.h"
+#include "Debug/Logger.hpp"
 #include "Voxels.hpp"
 
 #include "Vulkan/MemoryUploadTracker.hpp"
 #include "Raycaster/SingleVoxel.hpp"
 #include "Primitives/ColoredCube.hpp"
+#include <cstddef>
 
 namespace Voxels
 {
@@ -135,6 +138,94 @@ public:
         size_t uId = GenerateObject(pos, this->GetGrid(), ::std::forward<U>(sot));
         this->ForceUpload();
         return uId;
+    }
+
+    void UpdatePos(const Vec3& newPos, size_t uId)
+    {
+        auto& voxelsGrid = this->GetGrid();
+        const size_t uDim = this->GetGridWidth(); 
+        const size_t uIndex = CalcIndex(iVec3::ToiVec3(m_StoredObjects[uId].GetPosition()));
+        const size_t uObjId = m_uObjectsCount;
+
+        AB_ASSERT(uIndex < voxelsGrid.size());
+        
+        if (m_uObjectsCount >= m_StoredObjects.size() - 1) {
+            AB_LOG(Core::Debug::Warning, L"Reached object limit of objects in the world");
+            return;
+        }
+        if (voxelsGrid[uIndex].Type == Voxel::FullSolid) {
+            AB_LOG(Core::Debug::Info, L"Tries to create an object on solid voxel");
+            return;
+        }
+        if (voxelsGrid[uIndex].Type >= Voxel::MaxPerInstance)
+        {
+            AB_LOG(Core::Debug::Warning, L"Reached object limit for the choosen voxel");
+            return;
+        }
+
+        iVec3 objectSizes = iVec3::ToiVec3(m_StoredObjects[uId].GetHalfSize() * 4.f);
+        iVec3 pos = iVec3::ToiVec3(m_StoredObjects[uId].GetPosition());
+
+        for (int32_t x = -objectSizes.x; x <= objectSizes.x; ++x) {
+            for (int32_t y = -objectSizes.y; y <= objectSizes.y; ++y) {
+                for (int32_t z = -objectSizes.z; z <= objectSizes.z; ++z)
+                {
+                    if (x == 0 && y == 0 && z == 0)
+                        continue;
+    
+                    size_t uCornerIndex = CalcIndex(iVec3(pos.x + x, pos.y + y, pos.z + z));
+
+                    if (uCornerIndex >= voxelsGrid.size() || voxelsGrid[uCornerIndex].Type == Voxel::FullSolid)
+                        continue;
+
+                    if (voxelsGrid[uCornerIndex].Type == 0) {
+                        continue;
+                    }
+
+                    if (voxelsGrid[uCornerIndex].Type == 1) {
+                        --voxelsGrid[uCornerIndex].Type;
+                        continue;
+                    }
+
+                    for (uint32_t i = 0; i < voxelsGrid[uCornerIndex].Type; ++i) 
+                    {
+                        if (voxelsGrid[uCornerIndex].Id[i] != uObjId) 
+                            continue;
+
+                        voxelsGrid[uCornerIndex].Id[i] = --voxelsGrid[uCornerIndex].Type;
+                    }
+                }
+            }
+        }
+
+        m_StoredObjects[uId].SetPositon(newPos);
+
+        // Incremeant the type on connected voxels
+        pos = iVec3::ToiVec3(m_StoredObjects[uId].GetPosition());
+
+        for (int32_t x = -objectSizes.x; x <= objectSizes.x; ++x) {
+            for (int32_t y = -objectSizes.y; y <= objectSizes.y; ++y) {
+                for (int32_t z = -objectSizes.z; z <= objectSizes.z; ++z)
+                {
+                    if (x == 0 && y == 0 && z == 0)
+                        continue;
+    
+                    size_t uCornerIndex = CalcIndex(iVec3(pos.x + x, pos.y + y, pos.z + z));
+
+                    if (uCornerIndex >= voxelsGrid.size() || voxelsGrid[uCornerIndex].Type == Voxel::FullSolid)
+                        continue;
+
+                    if (voxelsGrid[uCornerIndex].Type >= Voxel::MaxPerInstance) {
+                        AB_LOG(Core::Debug::Warning, L"Reached object limit for the connected voxel");
+                        continue;
+                    }
+
+                    voxelsGrid[uCornerIndex].Id[voxelsGrid[uCornerIndex].Type++] = uObjId;
+                }
+            }
+        }
+
+        this->ForceUpload();
     }
 
 private:
