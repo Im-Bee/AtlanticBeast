@@ -1,8 +1,5 @@
 #pragma once
 
-#include "Voxels.hpp"
-#include "Primitives/Cube.hpp"
-#include "Primitives/MaterialProperties/ColorProperty.hpp"
 #include "Raycaster/VoxelGrid.hpp"
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -37,9 +34,9 @@ class InWorldCube
 {
 public:
 
-    InWorldCube(const ::std::shared_ptr<World>& pW, ::Voxels::ColoredCube& pC) 
+    InWorldCube(const ::std::shared_ptr<World>& pW, size_t uC) 
         : m_pWorld(pW)
-        , m_pCube(&pC)
+        , m_uCubeId(uC)
         , m_pPhysics(nullptr)
     { }
 
@@ -58,9 +55,6 @@ public:
     ::std::shared_ptr<World> GetWorld() const
     { return m_pWorld.lock(); }
 
-    ::Voxels::ColoredCube* GetCube() const
-    { return (m_pWorld.expired() ? nullptr : m_pCube); }
-
 public:
 
     void Update(float fDelta)
@@ -70,7 +64,7 @@ private:
 
     ::std::weak_ptr<World> m_pWorld;
 
-    ::Voxels::ColoredCube* m_pCube = nullptr;
+    size_t m_uCubeId = -1;
 
     void* m_pPhysics = nullptr;
 

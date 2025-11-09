@@ -94,6 +94,14 @@ public:
     virtual size_t GetObjectsSizeInBytes() const override 
     { return m_StoredObjects.size() * sizeof(StoredObjectType); }
 
+    StoredObjectType& GetById(size_t uId) 
+    {
+        AB_ASSERT(uId < m_uObjectsCount);
+        return m_StoredObjects[uId]; 
+    }
+
+public:
+
     virtual bool CheckIfVoxelOccupied(const iVec3& pos) const override
     { 
         const ::std::vector<Voxel>& voxelsGrid = this->GetGrid();
@@ -117,17 +125,17 @@ public:
 public:
 
     template<class U>
-    StoredObjectType* GenerateObjectAtVoxel(const iVec3& pos, U&& sot)
+    size_t GenerateObjectAtVoxel(const iVec3& pos, U&& sot)
     {
-        StoredObjectType* pR = GenerateObject(pos, this->GetGrid(), ::std::forward<U>(sot));
+        size_t uId = GenerateObject(pos, this->GetGrid(), ::std::forward<U>(sot));
         this->ForceUpload();
-        return pR;
+        return uId;
     }
 
 private:
 
     template<class U>
-    StoredObjectType* GenerateObject(iVec3 pos, ::std::vector<Voxel>& voxelsGrid, U&& sot)
+    size_t GenerateObject(iVec3 pos, ::std::vector<Voxel>& voxelsGrid, U&& sot)
     { 
         const size_t uDim = this->GetGridWidth(); 
         const size_t uIndex = pos.x + 
@@ -135,15 +143,19 @@ private:
                               pos.z * uDim * uDim;
 
         AB_ASSERT(uIndex < voxelsGrid.size());
-
+        
+        if (m_uObjectsCount >= m_StoredObjects.size() - 1) {
+            AB_LOG(Core::Debug::Warning, L"Reached object limit of objects in the world");
+            return -1;
+        }
         if (voxelsGrid[uIndex].Type == Voxel::FullSolid) {
             AB_LOG(Core::Debug::Info, L"Tries to create an object on solid voxel");
-            return nullptr;
+            return -1;
         }
         if (voxelsGrid[uIndex].Type >= Voxel::MaxPerInstance)
         {
             AB_LOG(Core::Debug::Warning, L"Reached object limit for the choosen voxel");
-            return nullptr;
+            return -1;
         }
 
         voxelsGrid[uIndex].Id[voxelsGrid[uIndex].Type++] = m_uObjectsCount;
@@ -152,7 +164,6 @@ private:
         // Incremeant the type on connected voxels
         iVec3 objectSizes = iVec3::ToiVec3(sot.GetHalfSize() * 2.f);
         pos = iVec3::ToiVec3(sot.GetPosition());
-        AB_LOG(Core::Debug::Info, L"%d", objectSizes.x);
 
         for (int32_t x = -objectSizes.x; x <= objectSizes.x; ++x) {
             for (int32_t y = -objectSizes.y; y <= objectSizes.y; ++y) {
@@ -178,7 +189,8 @@ private:
             }
         }
         
-        return &(m_StoredObjects[m_uObjectsCount++] = ::std::forward<U>(sot));
+        m_StoredObjects[m_uObjectsCount++] = ::std::forward<U>(sot);
+        return m_uObjectsCount - 1;
     }
 
 private:
