@@ -1,1 +1,3 @@
+SET(BUILD_SHARED_LIBS ON CACHE BOOL "Compile Jolt as a shared library" FORCE)
+
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/JoltPhysics/Build)
