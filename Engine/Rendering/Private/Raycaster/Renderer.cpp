@@ -26,15 +26,15 @@ void Renderer::Initialize(shared_ptr<const WindowDesc> wd,
 
     m_pInstance         = make_shared<Instance>();
     m_pHardware         = make_shared<MinimalHardware>(m_pInstance);
-    m_pDeviceAdapter    = make_shared<ComputeAdapter>(dynamic_pointer_cast<HardwareWrapper>(m_pHardware));
+    m_pDeviceAdapter    = make_shared<ComputeAdapter>(static_pointer_cast<HardwareWrapper>(m_pHardware));
     m_pMemory           = make_unique<Memory>(m_pHardware, m_pDeviceAdapter);
     m_pWindowDesc       = wd;
     m_pVoxelGrid        = vg;
-    m_pPipeline         = make_shared<VoxelPipeline>(dynamic_pointer_cast<HardwareWrapper>(m_pHardware), 
-                                                     dynamic_pointer_cast<AdapterWrapper>(m_pDeviceAdapter));
+    m_pPipeline         = make_shared<VoxelPipeline>(static_pointer_cast<HardwareWrapper>(m_pHardware),
+                                                     static_pointer_cast<AdapterWrapper>(m_pDeviceAdapter));
 
     AB_LOG(Core::Debug::Info, L"Initializing command pool");
-    m_CommandPool = CreateCommandPool(dynamic_pointer_cast<AdapterWrapper>(m_pDeviceAdapter), 
+    m_CommandPool = CreateCommandPool(static_pointer_cast<AdapterWrapper>(m_pDeviceAdapter),
                                       m_pDeviceAdapter->GetQueueFamilyIndex());
 
     m_StageVoxelBuffer   = std::move(m_pMemory->ReserveStagingBuffer(vg->GetVoxelsSizeInBytes()));
@@ -419,8 +419,8 @@ void Renderer::RecreateSwapChain()
 
     m_pSwapChain = nullptr;
     m_pSwapChain = make_unique<Swapchain>(m_pInstance, 
-                                          dynamic_pointer_cast<HardwareWrapper>(m_pHardware), 
-                                          dynamic_pointer_cast<AdapterWrapper>(m_pDeviceAdapter),
+                                          static_pointer_cast<HardwareWrapper>(m_pHardware), 
+                                          static_pointer_cast<AdapterWrapper>(m_pDeviceAdapter),
                                           m_pWindowDesc);
 
     m_vFrames = make_unique<FrameResourcesArray>(std::move(CreateFrameResources(m_pDeviceAdapter,

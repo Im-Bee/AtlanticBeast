@@ -31,7 +31,7 @@ int main()
 
     input->StartCapturing();
 
-    render.SetCurrentCamera(::std::dynamic_pointer_cast<Voxels::Camera>(pc));
+    render.SetCurrentCamera(::std::static_pointer_cast<Voxels::Camera>(pc));
     render.Initialize(renderWindow.GetWindowDesc(), g->GetWorld());
     
     pc->SetRotation(Voxels::Vec3 { -0.5f, 1.25f, 0.f });
