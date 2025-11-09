@@ -65,7 +65,7 @@ void Renderer::Update(const float)
         UploadDescriptor ud1 = m_pPipeline->GetUniformUploadDescriptor(m_StageVoxelBuffer, 
                                                                        VoxelPipeline::EShaderResource::VoxelGrid);
 
-        m_pMemory->UploadOnStreamBuffer(m_pVoxelGrid->GetGridPtr(), 
+        m_pMemory->UploadOnStreamBuffer(m_pVoxelGrid->GetGrid().data(), 
                                         m_pVoxelGrid->GetVoxelsSizeInBytes(),
                                         ud1);
 

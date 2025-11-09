@@ -57,13 +57,10 @@ public:
                               pos.y * uDim +
                               pos.z * uDim * uDim;
 
+        AB_ASSERT(uIndex < voxelsGrid.size());
 
-        if (uIndex < voxelsGrid.size())
-        {
-            voxelsGrid[uIndex].Type = -1;
-            voxelsGrid[uIndex].Color = uColor;
-        }
-
+        voxelsGrid[uIndex].Type = Voxel::FullSolid;
+        voxelsGrid[uIndex].Color = uColor;
         this->ForceUpload();
     }
 
@@ -105,15 +102,14 @@ public:
                               pos.y * uDim +
                               pos.z * uDim * uDim;
 
-        if (voxelsGrid[uIndex].Type == 0) {
-            return false;
-        }
+        AB_ASSERT(uIndex < voxelsGrid.size());
 
-        for (uint32_t i = 0; i < voxelsGrid[uIndex].Type; ++i) {
-            if (iVec3::ToiVec3(m_StoredObjects[voxelsGrid[uIndex].Id[i]].GetPosition()) == pos) {
+        if (voxelsGrid[uIndex].Type == 0)
+            return false;
+
+        for (uint32_t i = 0; i < voxelsGrid[uIndex].Type; ++i)
+            if (iVec3::ToiVec3(m_StoredObjects[voxelsGrid[uIndex].Id[i]].GetPosition()) == pos) 
                 return true;
-            }
-        }
         
         return false;
     }
@@ -138,21 +134,30 @@ private:
                               pos.y * uDim +
                               pos.z * uDim * uDim;
 
+        AB_ASSERT(uIndex < voxelsGrid.size());
 
-        if (uIndex < voxelsGrid.size() &&
-            voxelsGrid[uIndex].Type != -1 &&
-            voxelsGrid[uIndex].Type < Voxel::MaxPerInstance)
+        if (voxelsGrid[uIndex].Type == Voxel::FullSolid) {
+            AB_LOG(Core::Debug::Info, L"Tries to create an object on solid voxel");
+            return nullptr;
+        }
+        if (voxelsGrid[uIndex].Type >= Voxel::MaxPerInstance)
         {
-            voxelsGrid[uIndex].Id[voxelsGrid[uIndex].Type++] = m_uObjectsCount;
+            AB_LOG(Core::Debug::Warning, L"Reached object limit for the choosen voxel");
+            return nullptr;
         }
 
-        iVec3 objectSizes = iVec3::ToiVec3(sot.GetHalfSize() + (1.f * 1.5f));
+        voxelsGrid[uIndex].Id[voxelsGrid[uIndex].Type++] = m_uObjectsCount;
         sot.SetPositon(Vec3::ToVec3(pos) + sot.GetHalfSize());
+
+        // Incremeant the type on connected voxels
+        iVec3 objectSizes = iVec3::ToiVec3(sot.GetHalfSize() * 2.f);
         pos = iVec3::ToiVec3(sot.GetPosition());
+        AB_LOG(Core::Debug::Info, L"%d", objectSizes.x);
 
         for (int32_t x = -objectSizes.x; x <= objectSizes.x; ++x) {
             for (int32_t y = -objectSizes.y; y <= objectSizes.y; ++y) {
-                for (int32_t z = -objectSizes.z; z <= objectSizes.z; ++z) {
+                for (int32_t z = -objectSizes.z; z <= objectSizes.z; ++z)
+                {
                     if (x == 0 && y == 0 && z == 0)
                         continue;
 
@@ -160,12 +165,15 @@ private:
                                           (pos.y + y) * uDim + 
                                           (pos.z + z) * uDim * uDim;
                     
-                    if (uCornerIndex < voxelsGrid.size() &&
-                        voxelsGrid[uCornerIndex].Type != -1 &&
-                        voxelsGrid[uCornerIndex].Type < Voxel::MaxPerInstance)
-                    {
-                        voxelsGrid[uCornerIndex].Id[voxelsGrid[uCornerIndex].Type++] = m_uObjectsCount;
+                    if (uCornerIndex >= voxelsGrid.size() || voxelsGrid[uCornerIndex].Type == Voxel::FullSolid)
+                        continue;
+
+                    if (voxelsGrid[uCornerIndex].Type >= Voxel::MaxPerInstance) {
+                        AB_LOG(Core::Debug::Warning, L"Reached object limit for the connected voxel");
+                        continue;
                     }
+
+                    voxelsGrid[uCornerIndex].Id[voxelsGrid[uCornerIndex].Type++] = m_uObjectsCount;
                 }
             }
         }
