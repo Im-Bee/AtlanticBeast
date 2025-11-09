@@ -144,6 +144,7 @@ private:
     { 
         const size_t uDim = this->GetGridWidth(); 
         const size_t uIndex = CalcIndex(pos);
+        const size_t uObjId = m_uObjectsCount;
 
         AB_ASSERT(uIndex < voxelsGrid.size());
         
@@ -161,7 +162,7 @@ private:
             return -1;
         }
 
-        voxelsGrid[uIndex].Id[voxelsGrid[uIndex].Type++] = m_uObjectsCount;
+        voxelsGrid[uIndex].Id[voxelsGrid[uIndex].Type++] = uObjId;
         sot.SetPositon(Vec3::ToVec3(pos) + sot.GetHalfSize());
 
         // Incremeant the type on connected voxels
@@ -185,13 +186,13 @@ private:
                         continue;
                     }
 
-                    voxelsGrid[uCornerIndex].Id[voxelsGrid[uCornerIndex].Type++] = m_uObjectsCount;
+                    voxelsGrid[uCornerIndex].Id[voxelsGrid[uCornerIndex].Type++] = uObjId;
                 }
             }
         }
         
         m_StoredObjects[m_uObjectsCount++] = ::std::forward<U>(sot);
-        return m_uObjectsCount - 1;
+        return uObjId;
     }
 
 private:
