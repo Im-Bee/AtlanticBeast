@@ -53,9 +53,7 @@ public:
     {
         ::std::vector<Voxel>& voxelsGrid = this->GetGrid();
         const size_t uDim = this->GetGridWidth(); 
-        const size_t uIndex = pos.x + 
-                              pos.y * uDim +
-                              pos.z * uDim * uDim;
+        const size_t uIndex = CalcIndex(pos);
 
         AB_ASSERT(uIndex < voxelsGrid.size());
 
@@ -67,6 +65,15 @@ public:
 public:
 
     virtual bool CheckIfVoxelOccupied(const iVec3& pos) const = 0;
+
+protected:
+
+    size_t CalcIndex(const iVec3& pos) const 
+    {
+        return pos.x + 
+               pos.y * m_uGridDim +
+               pos.z * m_uGridDim * m_uGridDim;
+    }
 
 private:
 
@@ -106,9 +113,7 @@ public:
     { 
         const ::std::vector<Voxel>& voxelsGrid = this->GetGrid();
         const size_t uDim = this->GetGridWidth(); 
-        const size_t uIndex = pos.x + 
-                              pos.y * uDim +
-                              pos.z * uDim * uDim;
+        const size_t uIndex = CalcIndex(pos);
 
         AB_ASSERT(uIndex < voxelsGrid.size());
 
@@ -138,9 +143,7 @@ private:
     size_t GenerateObject(iVec3 pos, ::std::vector<Voxel>& voxelsGrid, U&& sot)
     { 
         const size_t uDim = this->GetGridWidth(); 
-        const size_t uIndex = pos.x + 
-                              pos.y * uDim +
-                              pos.z * uDim * uDim;
+        const size_t uIndex = CalcIndex(pos);
 
         AB_ASSERT(uIndex < voxelsGrid.size());
         
@@ -171,11 +174,9 @@ private:
                 {
                     if (x == 0 && y == 0 && z == 0)
                         continue;
+    
+                    size_t uCornerIndex = CalcIndex(iVec3(pos.x + x, pos.y + y, pos.z + z));
 
-                    size_t uCornerIndex = (pos.x + x) + 
-                                          (pos.y + y) * uDim + 
-                                          (pos.z + z) * uDim * uDim;
-                    
                     if (uCornerIndex >= voxelsGrid.size() || voxelsGrid[uCornerIndex].Type == Voxel::FullSolid)
                         continue;
 
