@@ -290,7 +290,7 @@ private:
         for (uint32_t z = 0; z < uDim; ++z) {
             for (uint32_t y = 0; y < 2; ++y) {
                 for (uint32_t x = 0; x < uDim; ++x) {
-                    this->SetVoxel(Voxels::iVec3(x, y, z), 0xAA0090FF);
+                    this->SetVoxel(Voxels::iVec3(x, y, z), 0x101010FF);
                 }
             }
         }
