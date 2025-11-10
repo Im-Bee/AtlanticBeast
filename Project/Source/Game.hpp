@@ -17,6 +17,7 @@
 #include "Debug/Logger.hpp"
 #include "Jolt/Physics/Body/BodyID.h"
 #include "Raycaster/VoxelGrid.hpp"
+#include "Synchronization/DeltaTime.hpp"
 #include "Vec3.hpp"
 
 namespace Layers
@@ -159,11 +160,14 @@ public:
 
     void Update(float fDelta)
     { 
+        // Convert to seconds
+        fDelta *= 0.001f;
+
         // If you take larger steps than 1 / 60th of a second you need to do multiple collision steps in order to keep the simulation stable. Do 1 collision step per 1 / 60th of a second (round up).
-		const int cCollisionSteps = 1;
+		const int cCollisionSteps = ::std::ceil(fDelta / (1.f / 60.f));
 
 		// Step the world
-		m_pPhysicsSystem->Update(1.f / 60.f, cCollisionSteps, m_pTempAlloc.get(), m_pJobSystem.get());
+		m_pPhysicsSystem->Update(fDelta, cCollisionSteps, m_pTempAlloc.get(), m_pJobSystem.get());
     }
 
     void DestroyJolt()
@@ -184,7 +188,7 @@ public:
 
         JPH::BodyInterface &body_interface = m_pPhysicsSystem->GetBodyInterface();
 
-        JPH::BodyCreationSettings boxSettings(new JPH::BoxShape(JPH::Vec3(0.5f, 0.5f, 0.5f)),
+        JPH::BodyCreationSettings boxSettings(new JPH::BoxShape(JPH::Vec3(0.515f, 0.515f, 0.515f)),
                                               JPH::RVec3(p.x, p.y, p.z), 
                                               JPH::Quat::sIdentity(), 
                                               JPH::EMotionType::Dynamic, 
@@ -203,6 +207,18 @@ public:
         auto jv = body_interface.GetCenterOfMassPosition(id);
         
         return Voxels::Vec3(jv.GetX(), jv.GetY(), jv.GetZ());
+    }
+
+    Voxels::Rot3 GetCubeRot(const JPH::BodyID& id)
+    {
+        AB_ASSERT(m_pPhysicsSystem != nullptr);
+
+        JPH::BodyInterface &body_interface = m_pPhysicsSystem->GetBodyInterface();
+
+        auto jv = body_interface.GetRotation(id);
+        auto euler = jv.GetEulerAngles();
+        
+        return Voxels::Rot3(-euler.GetX(), -euler.GetY(), -euler.GetZ());
     }
 
 private:
@@ -317,9 +333,11 @@ public:
     void Update(float fDelta)
     { 
         auto newPos = m_pPhysics->GetCubePos(m_PhysicsId);
+        auto newRot = m_pPhysics->GetCubeRot(m_PhysicsId);
 
         if (auto pLock = m_pWorld.lock()) {
             pLock->UpdatePos(newPos, m_uCubeId);
+            pLock->UpdateRot(newRot, m_uCubeId);
         }
     }
 

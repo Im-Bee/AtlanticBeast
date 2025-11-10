@@ -1,14 +1,11 @@
 #ifndef AB_VOXEL_GRID_H
 #define AB_VOXEL_GRID_H
 
-#include "Core.h"
-#include "Debug/Logger.hpp"
 #include "Voxels.hpp"
 
 #include "Vulkan/MemoryUploadTracker.hpp"
 #include "Raycaster/SingleVoxel.hpp"
 #include "Primitives/ColoredCube.hpp"
-#include <cstddef>
 
 namespace Voxels
 {
@@ -140,12 +137,12 @@ public:
         return uId;
     }
 
-    void UpdatePos(const Vec3& newPos, size_t uId)
+    void UpdatePos(const Vec3& newPos, size_t uObjectId)
     {
         auto& voxelsGrid = this->GetGrid();
         const size_t uDim = this->GetGridWidth(); 
-        const size_t uIndex = CalcIndex(iVec3::ToiVec3(m_StoredObjects[uId].GetPosition()));
-        const size_t uObjId = m_uObjectsCount;
+        const size_t uIndex = CalcIndex(iVec3::ToiVec3(m_StoredObjects[uObjectId].GetPosition()));
+        StoredObjectType& obj = m_StoredObjects[uObjectId];
 
         AB_ASSERT(uIndex < voxelsGrid.size());
         
@@ -162,57 +159,62 @@ public:
             AB_LOG(Core::Debug::Warning, L"Reached object limit for the choosen voxel");
             return;
         }
+    
+        const Vec3 halfSize = obj.GetHalfSize();
+        const iVec3 iPos = iVec3::ToiVec3(obj.GetPosition());
+        const iVec3 newiPos = iVec3::ToiVec3(newPos);
+        obj.SetPositon(newPos);
 
-        iVec3 objectSizes = iVec3::ToiVec3(m_StoredObjects[uId].GetHalfSize() * 4.f);
-        iVec3 pos = iVec3::ToiVec3(m_StoredObjects[uId].GetPosition());
+        this->ForceUpload();
 
+        if (newiPos == iPos) {
+            return;
+        }
+
+        iVec3 objectSizes = iVec3::ToiVec3(obj.GetHalfSize() * 4.f);
         for (int32_t x = -objectSizes.x; x <= objectSizes.x; ++x) {
             for (int32_t y = -objectSizes.y; y <= objectSizes.y; ++y) {
                 for (int32_t z = -objectSizes.z; z <= objectSizes.z; ++z)
                 {
                     if (x == 0 && y == 0 && z == 0)
                         continue;
+
+                    size_t uCornerIndex = CalcIndex(iVec3(iPos.x + x, iPos.y + y, iPos.z + z));
     
-                    size_t uCornerIndex = CalcIndex(iVec3(pos.x + x, pos.y + y, pos.z + z));
+                    auto& nthVoxel = voxelsGrid[uCornerIndex];
 
-                    if (uCornerIndex >= voxelsGrid.size() || voxelsGrid[uCornerIndex].Type == Voxel::FullSolid)
+                    if (uCornerIndex >= voxelsGrid.size() || nthVoxel.Type == Voxel::FullSolid || nthVoxel.Type == 0)
                         continue;
 
-                    if (voxelsGrid[uCornerIndex].Type == 0) {
-                        continue;
-                    }
-
-                    if (voxelsGrid[uCornerIndex].Type == 1) {
-                        --voxelsGrid[uCornerIndex].Type;
+                    if (nthVoxel.Type == 1) {
+                        --nthVoxel.Type;
                         continue;
                     }
 
-                    for (uint32_t i = 0; i < voxelsGrid[uCornerIndex].Type; ++i) 
+                    for (uint32_t i = 0; i < nthVoxel.Type; ++i) 
                     {
-                        if (voxelsGrid[uCornerIndex].Id[i] != uObjId) 
+                        if (nthVoxel.Id[i] != uObjectId) 
                             continue;
 
-                        voxelsGrid[uCornerIndex].Id[i] = --voxelsGrid[uCornerIndex].Type;
+                        nthVoxel.Id[i] = nthVoxel.Id[--nthVoxel.Type];
+                        break;
                     }
                 }
             }
         }
 
-        m_StoredObjects[uId].SetPositon(newPos);
-
         // Incremeant the type on connected voxels
-        pos = iVec3::ToiVec3(m_StoredObjects[uId].GetPosition());
+        objectSizes = iVec3::ToiVec3(obj.GetHalfSize() * 2.f);
 
         for (int32_t x = -objectSizes.x; x <= objectSizes.x; ++x) {
             for (int32_t y = -objectSizes.y; y <= objectSizes.y; ++y) {
                 for (int32_t z = -objectSizes.z; z <= objectSizes.z; ++z)
                 {
-                    if (x == 0 && y == 0 && z == 0)
-                        continue;
-    
-                    size_t uCornerIndex = CalcIndex(iVec3(pos.x + x, pos.y + y, pos.z + z));
+                    size_t uCornerIndex = CalcIndex(iVec3(newiPos.x + x, newiPos.y + y, newiPos.z + z));
 
-                    if (uCornerIndex >= voxelsGrid.size() || voxelsGrid[uCornerIndex].Type == Voxel::FullSolid)
+                    auto& nthVoxel = voxelsGrid[uCornerIndex];
+
+                    if (uCornerIndex >= voxelsGrid.size() || nthVoxel.Type == Voxel::FullSolid)
                         continue;
 
                     if (voxelsGrid[uCornerIndex].Type >= Voxel::MaxPerInstance) {
@@ -220,10 +222,20 @@ public:
                         continue;
                     }
 
-                    voxelsGrid[uCornerIndex].Id[voxelsGrid[uCornerIndex].Type++] = uObjId;
+                    nthVoxel.Id[nthVoxel.Type++] = uObjectId;
                 }
             }
         }
+    }
+
+    void UpdateRot(const Rot3& newRot, size_t uId)
+    {
+        if (m_uObjectsCount >= m_StoredObjects.size() - 1) {
+            AB_LOG(Core::Debug::Warning, L"Reached object limit of objects in the world");
+            return;
+        }
+
+        m_StoredObjects[uId].SetRotation(newRot);
 
         this->ForceUpload();
     }
