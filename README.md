@@ -37,6 +37,11 @@ X - Remove a block<br>
 5 - Increase fov<br>
 6 - Decrease fov<br>
 
+# Gif from tests (bugs featured)
+<p float="left">
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/2025-11-10%2003-42-03.gif?raw=true" alt="Screenshot" width="45%"/>
+</p>
+
 # Screenshots
 <p float="left">
   <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/DocScreen01.jpg?raw=true" alt="Screenshot" width="49%"/>
