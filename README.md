@@ -1,6 +1,6 @@
 # AtlanticBeast
 
-Realtime GPU based software voxel ray tracer in vulkan and Minecraft alike demo game. <br>
+Realtime GPU ray tracer with custom acceleration structure based on a simplistic voxel grid in vulkan and Minecraft alike demo game. <br>
 
 Project uses voxel traversal algorithm implementation based on <br>
 'A Fast Voxel Traversal Algorithm for Ray Tracing'<br>
