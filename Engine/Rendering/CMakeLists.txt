@@ -10,6 +10,7 @@ SET(BEE_RENDERING_SOURCE
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Vulkan/Memory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/Rays.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/VoxelPipeline.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/VoxelGrid.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Raycaster/Renderer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Private/Voxels.cpp"
 )
