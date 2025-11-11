@@ -381,7 +381,7 @@ vec3 Reflection(in vec3     from,
     float   fLocalReflect;
     vec3    reflectedColor = baseColor;
     vec4    hitBaseColor;
-    const float roughness = 0.0;
+    const float roughness = 0.007;
 
     for (uint i = 0; i < bounces; ++i)
     {
@@ -480,10 +480,10 @@ void main()
             finalColor = vec4(Reflection(ro, 
                                          hitPos, 
                                          int(maxSteps * 0.5f), 
-                                         4, 
+                                         3, 
                                          shaded,
                                          normal,
-                                         0.5),
+                                         0.42),
                               finalColor.w);
         }
     }

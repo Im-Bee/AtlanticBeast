@@ -78,9 +78,13 @@ public:
 	{
 		switch ((JPH::BroadPhaseLayer::Type)inLayer)
 		{
-		case (JPH::BroadPhaseLayer::Type)BroadPhaseLayers::NON_MOVING:	return "NON_MOVING";
-		case (JPH::BroadPhaseLayer::Type)BroadPhaseLayers::MOVING:		return "MOVING";
-		default:													JPH_ASSERT(false); return "INVALID";
+		case (JPH::BroadPhaseLayer::Type)BroadPhaseLayers::NON_MOVING:	
+                return "NON_MOVING";
+		case (JPH::BroadPhaseLayer::Type)BroadPhaseLayers::MOVING:		
+                return "MOVING";
+		default:													
+                JPH_ASSERT(false); 
+                return "INVALID";
 		}
 	}
 #endif // JPH_EXTERNAL_PROFILE || JPH_PROFILE_ENABLED
@@ -186,15 +190,12 @@ public:
         JPH::BodyInterface &body_interface = m_pPhysicsSystem->GetBodyInterface();
 
         JPH::Vec3 force = { };
-        if (normal.x != 0) {
+        if (normal.x != 0) 
             force.SetX(-normal.x * fForceMul);
-        }
-        if (normal.y != 0) {
+        else if (normal.y != 0) 
             force.SetY(-normal.y * fForceMul);
-        }
-        if (normal.z != 0) {
+        else 
             force.SetZ(-normal.z * fForceMul);
-        }
 
         body_interface.SetLinearVelocity(bodyId, force);
     }
@@ -206,8 +207,7 @@ public:
         AB_ASSERT(m_pPhysicsSystem != nullptr);
 
         JPH::BodyInterface &body_interface = m_pPhysicsSystem->GetBodyInterface();
-
-        JPH::BodyCreationSettings boxSettings(new JPH::BoxShape(JPH::Vec3(0.515f, 0.515f, 0.515f)),
+        JPH::BodyCreationSettings boxSettings(new JPH::BoxShape(JPH::Vec3(0.505_r, 0.505_r, 0.505_r)),
                                               JPH::RVec3(p.x, p.y, p.z), 
                                               JPH::Quat::sIdentity(), 
                                               JPH::EMotionType::Dynamic, 
@@ -234,10 +234,9 @@ public:
 
         JPH::BodyInterface &body_interface = m_pPhysicsSystem->GetBodyInterface();
 
-        auto jv = body_interface.GetRotation(id);
-        auto euler = jv.GetEulerAngles();
+        auto euler = body_interface.GetRotation(id).GetEulerAngles();
         
-        return Voxels::Rot3(-euler.GetX(), -euler.GetY(), -euler.GetZ());
+        return Voxels::Rot3(euler.GetX(), euler.GetY(), euler.GetZ());
     }
 
 private:
@@ -253,7 +252,7 @@ private:
         // Next we can create a rigid body to serve as the floor, we make a large box
         // Create the settings for the collision volume (the shape).
         // Note that for simple shapes (like boxes) you can also directly construct a BoxShape.
-        JPH::BoxShapeSettings floor_shape_settings(JPH::Vec3(100.0f, 1.0f, 100.0f));
+        JPH::BoxShapeSettings floor_shape_settings(JPH::Vec3(100.0_r, 1.0_r, 100.0_r));
         floor_shape_settings.SetEmbedded(); // A ref counted object on the stack (base class RefTarget) should be marked as such to prevent it from being freed when its reference count goes to 0.
 
         // Create the shape
@@ -266,12 +265,10 @@ private:
                                                  JPH::Quat::sIdentity(),
                                                  JPH::EMotionType::Static,
                                                  Layers::NON_MOVING);
-
-        // Create the actual rigid body
-        JPH::Body *floor = body_interface.CreateBody(floor_settings); // Note that if we run out of bodies this can return nullptr
+        floor_settings.mFriction = 0.23;
 
         // Add it to the world
-        body_interface.AddBody(floor->GetID(), JPH::EActivation::DontActivate);
+        body_interface.CreateAndAddBody(floor_settings, JPH::EActivation::DontActivate);
     }
 
 private:
@@ -464,7 +461,7 @@ public:
         }
 
         if (!pWC) {
-            ::Core::Debug::Logger::Get()->Log(Core::Debug::Info, L"Invalid id");
+            AB_LOG(Core::Debug::Info, L"Invalid id on push");
             return;
         }
 
