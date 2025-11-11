@@ -52,6 +52,21 @@ public:
         Voxels::HitResult hr = Voxels::MarchTheRay(m_g->GetWorld().get(), this->GetPosition(), lookDir, 10);
 
         if (hr.bHit) {
+            m_g->GetIdFromPos(hr.iHitCoords);
+        }
+    }
+
+    void Push(const float, const float fForceMul)
+    {
+        Voxels::Vec3 rot = this->GetRotation();
+        Voxels::Vec3 lookDir = Voxels::Normalize(Voxels::RotateY(Voxels::RotateX(Voxels::Vec3{ 0.f, 0.f, 1.f }, 
+                                                                                 rot.x), 
+                                                                 rot.y));
+
+        Voxels::HitResult hr = Voxels::MarchTheRay(m_g->GetWorld().get(), this->GetPosition(), lookDir, 10);
+
+        if (hr.bHit) {
+            m_g->PushCube(m_g->GetIdFromPos(hr.iHitCoords), hr.Normal, fForceMul);
         }
     }
 
@@ -116,6 +131,12 @@ public:
     AB_DECL_ACTION(PaperCharacter, PlaceBlock, PlaceBlock);
 
     AB_DECL_ACTION(PaperCharacter, RemoveBlock, RemoveBlock);
+
+    AB_DECL_ACTION(PaperCharacter, Push, PushBlockLowForce, 10.f);
+
+    AB_DECL_ACTION(PaperCharacter, Push, PushBlockMediumForce, 50.f);
+
+    AB_DECL_ACTION(PaperCharacter, Push, PushBlockHighForce, 100.f);
 
     AB_DECL_MOUSE_ACTION(PaperCharacter, MouseMove, Mouse);
 

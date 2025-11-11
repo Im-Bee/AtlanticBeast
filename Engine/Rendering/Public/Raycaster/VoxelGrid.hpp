@@ -134,16 +134,14 @@ public:
             return;
         }
     
-
-
-        const Vec3 halfSize = obj.GetHalfSize();
+        const iVec3 area = iVec3::ToiVec3(obj.GetHalfSize() + 1);
         this->RemoveFromGrid(iVec3::ToiVec3(obj.GetPosition()), 
-                             iVec3::ToiVec3(obj.GetHalfSize() + 1),
+                             area,
                              uObjectId);
 
         obj.SetPositon(newPos);
-        this->PlaceOnGrid(iVec3::ToiVec3(obj.GetPosition()), 
-                          iVec3::ToiVec3(obj.GetHalfSize() + 1),
+        this->PlaceOnGrid(iVec3::ToiVec3(newPos), 
+                          area,
                           uObjectId);
 
         this->ForceUpload();

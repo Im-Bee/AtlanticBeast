@@ -55,7 +55,12 @@ public:
 public:
 
     void ForceUpload()
-    { m_Reupload = EReupload::RequestStaging; }
+    { 
+        if (m_Reupload & EReupload::RequestStaging)
+            return;
+
+        m_Reupload = EReupload::RequestStaging; 
+    }
 
 private:
 

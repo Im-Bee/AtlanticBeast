@@ -12,12 +12,11 @@
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
+#include <Jolt/Physics/Body/BodyID.h>
 
 #include "Core.h"
 #include "Debug/Logger.hpp"
-#include "Jolt/Physics/Body/BodyID.h"
 #include "Raycaster/VoxelGrid.hpp"
-#include "Synchronization/DeltaTime.hpp"
 #include "Vec3.hpp"
 
 namespace Layers
@@ -180,6 +179,26 @@ public:
 
 public:
 
+    void PushCube(const JPH::BodyID& bodyId, const Voxels::Vec3& normal, const float fForceMul) 
+    {
+        AB_ASSERT(m_pPhysicsSystem != nullptr);
+
+        JPH::BodyInterface &body_interface = m_pPhysicsSystem->GetBodyInterface();
+
+        JPH::Vec3 force = { };
+        if (normal.x != 0) {
+            force.SetX(-normal.x * fForceMul);
+        }
+        if (normal.y != 0) {
+            force.SetY(-normal.y * fForceMul);
+        }
+        if (normal.z != 0) {
+            force.SetZ(-normal.z * fForceMul);
+        }
+
+        body_interface.SetLinearVelocity(bodyId, force);
+    }
+
     JPH::BodyID CreateCube(const Voxels::Vec3& p)
     {
         using namespace JPH::literals;
@@ -328,6 +347,12 @@ public:
     ::std::shared_ptr<World> GetWorld() const
     { return m_pWorld.lock(); }
 
+    size_t GetId() 
+    { return m_uCubeId; }
+
+    const JPH::BodyID& GetPhysicsId() const
+    { return m_PhysicsId; }
+
 public:
 
     void Update(float fDelta)
@@ -341,6 +366,15 @@ public:
         }
     }
 
+    Voxels::Vec3 GetPos()
+    {
+        if (auto pLock = m_pWorld.lock()) {
+            return pLock->GetById(m_uCubeId).GetPosition();
+        }
+
+        throw AB_EXCEPT("Couldn't lock the world or the cube has wrong id.");
+    }
+
 private:
 
     ::std::weak_ptr<World> m_pWorld;
@@ -350,6 +384,7 @@ private:
     Physics* m_pPhysics = nullptr;
 
     JPH::BodyID m_PhysicsId;
+
 };
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -400,6 +435,40 @@ public:
         Voxels::Vec3 setP(0.5f + p.x, 0.5f + p.y, 0.5f + p.z); 
         
         m_vInWorldObjects.push_back(InWorldCube(m_pWorld, uCubeId, &m_Physics, m_Physics.CreateCube(setP)));
+    }
+
+public:
+
+    size_t GetIdFromPos(const Voxels::iVec3& pos)
+    {
+        for (auto& c : m_vInWorldObjects) 
+        {
+            if (Voxels::iVec3::ToiVec3(c.GetPos()) == pos) 
+                return c.GetId();
+        }
+
+        return -1;
+    }
+
+    void PushCube(size_t uCubeId, const Voxels::Vec3& normal, const float fForceMul) 
+    {
+        InWorldCube* pWC = nullptr;
+
+        for (auto& c : m_vInWorldObjects) 
+        {
+            if (c.GetId() != uCubeId) 
+                continue;
+
+            pWC = &c;
+            break;
+        }
+
+        if (!pWC) {
+            ::Core::Debug::Logger::Get()->Log(Core::Debug::Info, L"Invalid id");
+            return;
+        }
+
+        m_Physics.PushCube(pWC->GetPhysicsId(), normal, fForceMul);
     }
 
 private:

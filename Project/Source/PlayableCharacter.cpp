@@ -33,6 +33,18 @@ void PlayablePaper::BindToInput(const ::std::shared_ptr<App::UserInput>& pInput)
     ib.Keyboard.KeyState = Press;
     pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionRemoveBlock, nullptr, ib);
 
+    ib.Keyboard.KeyCode = App::AB_KEY_1;
+    ib.Keyboard.KeyState = Press;
+    pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionPushBlockLowForce, nullptr, ib);
+
+    ib.Keyboard.KeyCode = App::AB_KEY_2;
+    ib.Keyboard.KeyState = Press;
+    pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionPushBlockMediumForce, nullptr, ib);
+
+    ib.Keyboard.KeyCode = App::AB_KEY_3;
+    ib.Keyboard.KeyState = Press;
+    pInput->Bind(m_Character.get(), &m_Controller, &PaperController::UseActionPushBlockHighForce, nullptr, ib);
+
     ib.Type = Mouse; 
     pInput->Bind(m_Character.get(), &m_Controller, nullptr, &PaperController::UseActionMouse, ib);
 }

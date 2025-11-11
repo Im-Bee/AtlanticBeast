@@ -47,7 +47,7 @@ layout(push_constant) uniform PushConstants
 const vec4  baseSkyColor    = vec4(.4078, .4725, 1., 1.);
 const vec3  lightPos        = vec3(20.0, 24.0, 10.0);
 const vec3  lightColor      = vec3(1., 1., 1.);
-const float maxRenderDist   = 20.f;
+const float maxRenderDist   = 50.f;
 const int   maxSteps        = int(maxRenderDist * 2.6);
 
 #define LAST_UNKNOWN_AXIS -1
@@ -381,7 +381,7 @@ vec3 Reflection(in vec3     from,
     float   fLocalReflect;
     vec3    reflectedColor = baseColor;
     vec4    hitBaseColor;
-    const float roughness = 0.08;
+    const float roughness = 0.0;
 
     for (uint i = 0; i < bounces; ++i)
     {
@@ -483,7 +483,7 @@ void main()
                                          4, 
                                          shaded,
                                          normal,
-                                         0.25),
+                                         0.5),
                               finalColor.w);
         }
     }
