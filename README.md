@@ -1,14 +1,16 @@
 # AtlanticBeast
 
-Realtime GPU based software voxel ray tracer in vulkan and Minecraft alike demo game. <br>
+Realtime GPU ray tracer with custom acceleration structure based on a simplistic voxel grid in vulkan and Minecraft alike demo game. <br>
 
 Project uses voxel traversal algorithm implementation based on <br>
 'A Fast Voxel Traversal Algorithm for Ray Tracing'<br>
-by John Amanatides and Andrew Woo (1987) and Blinn-Phong Reflection lighting.
-Implements a custom cross-platform window management system with runtime switchable behavior.
-Features a low-latency input system and a fully custom Vulkan-based compute rendering pipeline.
+by John Amanatides and Andrew Woo (1987) and Blinn-Phong Reflection lighting.<br>
 
-# Demo
+Implements a custom cross-platform window management system with runtime switchable behavior.<br>
+
+Features a low-latency input system and a fully custom Vulkan-based compute rendering pipeline.<br>
+
+# About demo
 
 In demo we can play a simple minecraft lookalike game where you can place and remove blocks.
 
@@ -21,19 +23,16 @@ D - Strafe right<br>
 A - Strafe left<br>
 E - Fly up<br>
 Q - Fly down<br>
-Mouse - camera rotation<br>
+Mouse movement - camera rotation<br>
 
 ### Interactions:
 SPACE - Place a block<br>
 X - Remove a block<br>
 
-### Debug:
-1 - Rotate yaw to the left<br>
-2 - Rotate yaw to the right<br>
-3 - Pitch up<br>
-4 - Pitch down<br>
-5 - Increase fov<br>
-6 - Decrease fov<br>
+# Gif from tests (bugs featured)
+<p float="left">
+  <img src="https://github.com/Im-Bee/AtlanticBeast/blob/master/Docs/2025-11-10%2003-42-03.gif?raw=true" alt="Screenshot" width="45%"/>
+</p>
 
 # Screenshots
 <p float="left">
@@ -79,9 +78,7 @@ Prefer release build.
 
 ### CMake
 
-``` sh
-git clone --recurse-submodules -j8 https://github.com/Im-Bee/AtlanticBeast.git
-cd AtlanticBeast
+``` batch
 mkdir Build
 cd Build
 cmake .. -DCMAKE_BUILD_TYPE=Release
