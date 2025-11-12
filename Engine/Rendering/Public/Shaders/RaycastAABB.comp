@@ -446,6 +446,8 @@ void main()
         return;
     }
 
+
+
     vec3 ro  = CameraPos.xyz;
     vec3 rd  = normalize(CameraLookDir.xyz +
                          uv.x * aspectRatio * scale * CameraRight.xyz +
@@ -471,6 +473,8 @@ void main()
         {   
             vec3 shaded = finalColor.xyz;
 
+
+
             shaded = PhongSoftShadows(CameraPos.xyz, 
                                       hitPos,
                                       normal,
@@ -483,7 +487,7 @@ void main()
                                          3, 
                                          shaded,
                                          normal,
-                                         0.42),
+                                         0.23),
                               finalColor.w);
         }
     }

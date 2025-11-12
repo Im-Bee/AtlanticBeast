@@ -73,6 +73,7 @@ bool RayIntersectsAABB(in const vec3 ro,
                        out vec3     normal)
 {
     const mat3 cubeRot = RotationMatrix(onCube.Rot.xyz);
+    const mat3 invCubeRot = inverse(cubeRot);
     const vec3 lro = cubeRot * (ro - onCube.Pos.xyz);
     const vec3 lrd = cubeRot * rd;
 
@@ -85,7 +86,7 @@ bool RayIntersectsAABB(in const vec3 ro,
         return false;
     }
 
-    normal = normalize(cubeRot * CubeNormal(lro + lrd * fHitMin, onCube.HalfSize.xyz));
+    normal = normalize(inverse(cubeRot) * CubeNormal(lro + lrd * fHitMin, onCube.HalfSize.xyz));
 
     return true;
 }
