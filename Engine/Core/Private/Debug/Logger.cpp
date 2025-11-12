@@ -1,5 +1,6 @@
 #include "Core.h"
 
+#include <chrono>
 #include <iostream>
 #include <cstdarg>
 #include <cwchar>
@@ -38,17 +39,18 @@ Logger* Logger::Get()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-void Logger::Log(const ESeverity sev, const wchar_t pwszFmt[], ...)
+void Logger::Log(const ESeverity sev, const wchar_t wszFmt[], ...)
 {
+    const auto timeStamp = chrono::system_clock::now();
     wchar_t* pwszMessage = new wchar_t[AB_LONG_STRING];
 
     va_list args;
-    va_start(args, pwszFmt);
-    vswprintf(pwszMessage, AB_LONG_STRING, pwszFmt, args);
+    va_start(args, wszFmt);
+    vswprintf(pwszMessage, AB_LONG_STRING, wszFmt, args);
     va_end(args);
 
     lock_guard<mutex> lock(m_InstanceLock);
-    m_MessageQueue.push({ chrono::system_clock::now(), sev, pwszMessage });
+    m_MessageQueue.push({ timeStamp, sev, pwszMessage });
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

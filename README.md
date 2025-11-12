@@ -61,6 +61,8 @@ Build dependencies:
 ### CMake
 
 ``` sh
+git clone --recurse-submodules -j8 https://github.com/Im-Bee/AtlanticBeast.git &&
+cd AtlanticBeast &&
 mkdir Build &&
 cd Build &&
 cmake .. -DCMAKE_BUILD_TYPE=Release &&

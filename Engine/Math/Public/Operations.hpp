@@ -93,6 +93,28 @@ inline Vec3 RotateY(const Vec3& v, float angleRad)
 
     return result;
 }
+// ---------------------------------------------------------------------------------------------------------------------
+template<class Vector>
+constexpr inline Vector RotateZ(const Vector& v, float angleRad)
+{
+    static_assert(Core::TypeIsAlwaysFalse<Vector>, 
+                  "This size of a vector doesn't have impementation of rotate z yet");
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+template<>
+inline Vec3 RotateZ(const Vec3& v, float angleRad)
+{
+    Vec3 result;
+    float c = std::cos(angleRad);
+    float s = std::sin(angleRad);
+
+    result.x = v.x * c - v.y * s;
+    result.y = v.x * s + v.y * c;
+    result.z = v.z;
+
+    return result;
+}
 
 // ---------------------------------------------------------------------------------------------------------------------
 template<class Vector>

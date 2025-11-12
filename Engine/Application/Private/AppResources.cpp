@@ -30,11 +30,9 @@ AppResources::AppResources()
 
     sPath[uLen] = '\0';
 
-    wchar_t* wc = new wchar_t[uLen + 1];
-    mbstowcs (wc, sPath, uLen);
-
-    wstring wstrPath(wc);
-
+    wstring wstrPath(uLen + 1, { });
+    mbstowcs (wstrPath.data(), sPath, uLen);
+    
     return wstrPath.substr(0, wstrPath.find_last_of('/'));
 }
 

@@ -52,13 +52,13 @@ public:
         return m_pCamera;
     }
 
-    ::std::shared_ptr<WorldGrid>& GetGrid()
+    ::std::shared_ptr<IWorldGrid>& GetGrid()
     { return m_pVoxelGrid; }
 
 public:
 
     BEAST_API void Initialize(::std::shared_ptr<const WindowDesc> wd,
-                              ::std::shared_ptr<WorldGrid> vg = ::std::make_shared<WorldGrid>());
+                              ::std::shared_ptr<IWorldGrid> vg);
 
     BEAST_API void Update(const float);
 
@@ -76,7 +76,7 @@ private:
 
     FrameResourcesArray CreateFrameResources(const ::std::shared_ptr<const AdapterWrapper>& da,
                                              const ::std::unique_ptr<Memory>& memory,
-                                             const ::std::shared_ptr<const WorldGrid>& vg,
+                                             const ::std::shared_ptr<const IWorldGrid>& vg,
                                              VkCommandPool cmdPool,
                                              size_t uFrames);
 
@@ -99,7 +99,7 @@ private:
     ::std::shared_ptr<MinimalHardware>      m_pHardware         = nullptr;
     ::std::shared_ptr<ComputeAdapter>       m_pDeviceAdapter    = nullptr;
     ::std::shared_ptr<const WindowDesc>     m_pWindowDesc       = nullptr;
-    ::std::shared_ptr<WorldGrid>            m_pVoxelGrid        = nullptr;
+    ::std::shared_ptr<IWorldGrid>           m_pVoxelGrid        = nullptr;
     ::std::shared_ptr<Camera>               m_pCamera           = nullptr;
     ::std::unique_ptr<Swapchain>            m_pSwapChain        = nullptr;
     ::std::unique_ptr<Memory>               m_pMemory           = nullptr;

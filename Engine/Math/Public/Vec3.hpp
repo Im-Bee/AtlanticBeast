@@ -57,6 +57,8 @@ public:
 
     inline Vec3 operator+(const class iVec3& vB) const;
 
+    inline Vec3 operator+(const uint32_t vB) const;
+
     inline Vec3 operator*(const Vec3& vB) const;
 
     inline Vec3 operator*(const float vB) const;
@@ -102,10 +104,15 @@ public:
 public:
 
     template<typename Vector>
-    static iVec3 ToVec3(Vector v)
+    static iVec3 ToiVec3(Vector v)
     { return iVec3(v.x, v.y, v.z); }
     
 public:
+
+    constexpr bool operator==(const iVec3& other) const noexcept 
+    {
+        return this->x == other.x && this->y == other.y && this->z == other.z;
+    }
 
     constexpr int32_t operator[](size_t uIndex) const
     {
@@ -134,6 +141,8 @@ public:
     }
 
     inline iVec3 operator+(const Vec3& vB) const;
+
+    inline iVec3 operator*(const uint32_t vB) const;
 };
 
 } // !Voxels

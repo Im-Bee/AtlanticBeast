@@ -9,10 +9,10 @@ const float EPSILON = 1e-4;
 mat3 RotationMatrix(in const vec3 angles) 
 {
     float sx = sin(angles.x);
-    float sy = sin(angles.y);
-    float sz = sin(angles.z);
     float cx = cos(angles.x);
+    float sy = sin(angles.y);
     float cy = cos(angles.y);
+    float sz = sin(angles.z);
     float cz = cos(angles.z);
 
     mat3 rotX = mat3(1,  0,   0,  
@@ -73,9 +73,9 @@ bool RayIntersectsAABB(in const vec3 ro,
                        out vec3     normal)
 {
     const mat3 cubeRot = RotationMatrix(onCube.Rot.xyz);
-    const mat3 invCubeRot = transpose(cubeRot);
-    const vec3 lro = invCubeRot * (ro - onCube.Pos.xyz);
-    const vec3 lrd = invCubeRot * rd;
+    const mat3 invCubeRot = inverse(cubeRot);
+    const vec3 lro = cubeRot * (ro - onCube.Pos.xyz);
+    const vec3 lrd = cubeRot * rd;
 
     if (!IntersectRayAABB(lro, 
                           lrd,
@@ -86,7 +86,7 @@ bool RayIntersectsAABB(in const vec3 ro,
         return false;
     }
 
-    normal = normalize(cubeRot * CubeNormal(lro + lrd * fHitMin, onCube.HalfSize.xyz));
+    normal = normalize(inverse(cubeRot) * CubeNormal(lro + lrd * fHitMin, onCube.HalfSize.xyz));
 
     return true;
 }

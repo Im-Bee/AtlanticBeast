@@ -1,122 +1,91 @@
-#include "Voxels.hpp"
-
 #include "Raycaster/VoxelGrid.hpp"
-
-#include "Raycaster/SingleVoxel.hpp"
 
 namespace Voxels
 {
 
-using namespace std;
-
-// ---------------------------------------------------------------------------------------------------------------------
-WorldGrid::WorldGrid(size_t uGridWidth)
-    : m_uGridDim(uGridWidth)
-    , m_Cubes(uGridWidth * uGridWidth * uGridWidth)
-    , m_uCubesCount(0)
-    , m_VoxelGrid(GenerateGrid(m_uGridDim, m_Cubes, m_uCubesCount))
-    , m_Reupload(RequestStaging)
-{ }
-
-// ---------------------------------------------------------------------------------------------------------------------
-vector<Voxel> WorldGrid::GenerateGrid(const size_t uGridWidth, vector<Cube>& vCubes, size_t& uCubesState)
+// --------------------------------------------------------------------------------------------------------------------
+void IWorldGrid::SetVoxel(const iVec3& pos, uint32_t uColor)
 {
-    vector<Voxel>   voxelGrid(uGridWidth * uGridWidth * uGridWidth);
-    size_t          uDim = VoxelGridDim;
+    ::std::vector<Voxel>& voxelsGrid = this->GetGrid();
+    const size_t uDim   = this->GetGridWidth(); 
+    const size_t uIndex = CalcIndex(pos);
 
-    for (auto& voxel : voxelGrid) {
-        voxel.Type = 0; 
-    }
+    AB_ASSERT(uIndex < voxelsGrid.size());
 
-    size_t uIndex;
-    size_t uCubeStart = 11;
-    size_t uCubeEnd   = 14;
-    for (uint32_t z = uCubeStart; z < uCubeEnd; ++z) {
-        for (uint32_t y = uCubeStart; y < uCubeEnd; ++y) {
-            for (uint32_t x = uCubeStart; x < uCubeEnd; ++x) {
-                GenerateCube(Vec3(x, y, z), 
-                             voxelGrid,
-                             vCubes,
-                             uCubesState);
-            }
-        }
-    }
-
-    for (uint32_t z = 0; z < uDim; ++z) {
-        for (uint32_t y = 32; y < 33; ++y) {
-            for (uint32_t x = 0; x < uDim; ++x) {
-                const size_t uIndex = x + 
-                                      y * uDim +
-                                      z * uDim * uDim;
-
-                if (voxelGrid[uIndex].Type == 0) {
-                    voxelGrid[uIndex] = Voxel { };
-                }
-                voxelGrid[uIndex].Type    = -1;
-                voxelGrid[uIndex].Color   = 0xFFFF00FF;
-            }
-        }
-    }
-
-    return voxelGrid;
+    voxelsGrid[uIndex].Type     = Voxel::FullSolid;
+    voxelsGrid[uIndex].Color    = uColor;
+    this->ForceUpload();
 }
 
 // --------------------------------------------------------------------------------------------------------------------
-void WorldGrid::GenerateCube(const Vec3& offsetPos, 
-                             vector<Voxel>& vGrid,
-                             vector<Cube>& vCubes,
-                             size_t& uCubesState)
+size_t IWorldGrid::CalcIndex(const iVec3& pos) const
 {
-    static uint32_t kc = 0;
-    const size_t uDim = this->GetGridWidth();
-    const size_t uIndex = offsetPos.x + 
-                          offsetPos.y * uDim +
-                          offsetPos.z * uDim * uDim;
+    return pos.x + 
+           pos.y * m_uGridDim +
+           pos.z * m_uGridDim * m_uGridDim;
+}
 
-    if (vGrid[uIndex].Type == 0) {
-        vGrid[uIndex] = Voxel { };
-    }
-
-    vGrid[uIndex].Id[vGrid[uIndex].Type++] = m_uCubesCount;
-
-    Cube c;
-    c.SetPositon(offsetPos + Vec3(0.9f, 0.5f, 0.5f));
-    auto cubePos = c.GetPosition();
-    auto cubeSizes = c.GetHalfSize();
-
-    for (int x = -1; x <= 1; ++x) {
-        for (int y = -1; y <= 1; ++y) {
-            for (int z = -1; z <= 1; ++z) {
-                if (x == 0 && y == 0 && z == 0)
+// --------------------------------------------------------------------------------------------------------------------
+void IWorldGrid::PlaceOnGrid(const iVec3& pos, const iVec3& area,const size_t uId)
+{
+    // Incremeant the type on connected voxels'
+    size_t uCornerIndex;
+    for (int32_t x = -area.x; x <= area.x; ++x) {
+        for (int32_t y = -area.y; y <= area.y; ++y) {
+            for (int32_t z = -area.z; z <= area.z; ++z)
+            {
+                uCornerIndex = CalcIndex(iVec3(pos.x + x, pos.y + y, pos.z + z));
+                
+                if (uCornerIndex >= m_VoxelGrid.size()) 
                     continue;
 
-                size_t uCornerIndex = (offsetPos.x + x) + 
-                                      (offsetPos.y + y) * uDim + 
-                                      (offsetPos.z + z) * uDim * uDim;
+                Voxel& voxel = m_VoxelGrid[uCornerIndex];
 
-                if (uCornerIndex < vGrid.size() &&
-                    vGrid[uCornerIndex].Type != -1 &&
-                    vGrid[uCornerIndex].Type < Voxel::MaxPerInstance)
-                {
-                    vGrid[uCornerIndex].Id[vGrid[uCornerIndex].Type++] = m_uCubesCount;
+                if (voxel.Type == Voxel::FullSolid)
+                    continue;
+
+                if (voxel.Type >= Voxel::MaxPerInstance) {
+                    AB_LOG(Core::Debug::Warning, L"Reached object limit for the connected voxel");
+                    continue;
                 }
+
+                voxel.Id[voxel.Type++] = uId;
             }
         }
     }
-    if (kc == 0) {
-        c.SetColor(0xFF000000);
-        ++kc;
-    } 
-    else if (kc == 1) {
-        c.SetColor(0x00FF0000);
-        ++kc;
-    }
-    else {
-        c.SetColor(0x0000FF00);
-        kc = 0;
-    }
-    vCubes[uCubesState++] = c;
 }
 
-} // !Voxels
+// --------------------------------------------------------------------------------------------------------------------
+void IWorldGrid::RemoveFromGrid(const iVec3& pos, const iVec3& area, const size_t uId)
+{
+    // Decremeant the type on connected voxels
+    size_t uCornerIndex;
+    size_t uLastIdOnList;
+    size_t uIndexOfIdOnList;
+    for (int32_t x = -area.x; x <= area.x; ++x) {
+        for (int32_t y = -area.y; y <= area.y; ++y) {
+            for (int32_t z = -area.z; z <= area.z; ++z)
+            {
+                uCornerIndex = CalcIndex(iVec3(pos.x + x, pos.y + y, pos.z + z));
+                
+                if (uCornerIndex >= m_VoxelGrid.size()) 
+                    continue;
 
+                Voxel& voxel = m_VoxelGrid[uCornerIndex];
+
+                if (voxel.Type == Voxel::FullSolid || voxel.Type == 0)
+                    continue;
+
+                uLastIdOnList = voxel.Id[voxel.Type - 1];
+
+                for (uIndexOfIdOnList = 0; uIndexOfIdOnList < voxel.Type; ++uIndexOfIdOnList)
+                    if (voxel.Id[uIndexOfIdOnList] == uId) 
+                        break;
+        
+                voxel.Id[uIndexOfIdOnList] = voxel.Id[--voxel.Type];
+            }
+        }
+    }
+}
+
+} //!Voxels

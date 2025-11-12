@@ -38,7 +38,7 @@ public:
      * @param pwszFmt Format for the message or message itself, written with `vswprintf` standard
      * @param ... Variables to be used in the format
      */
-    BEAST_API void Log(const ESeverity sev, const wchar_t pwszFmt[], ...);
+    BEAST_API void Log(const ESeverity sev, const wchar_t wszFmt[], ...);
 
 private:
 

@@ -47,7 +47,7 @@ layout(push_constant) uniform PushConstants
 const vec4  baseSkyColor    = vec4(.4078, .4725, 1., 1.);
 const vec3  lightPos        = vec3(20.0, 24.0, 10.0);
 const vec3  lightColor      = vec3(1., 1., 1.);
-const float maxRenderDist   = 20.f;
+const float maxRenderDist   = 50.f;
 const int   maxSteps        = int(maxRenderDist * 2.6);
 
 #define LAST_UNKNOWN_AXIS -1
@@ -55,8 +55,8 @@ const int   maxSteps        = int(maxRenderDist * 2.6);
 #define LAST_Y_AXIS 1
 #define LAST_Z_AXIS 2
 
-#define HIT_TYPE_UNKNOWN -1
-#define HIT_TYPE_VOXEL 0
+#define HIT_TYPE_UNKNOWN 0
+#define HIT_TYPE_VOXEL -1
 #define HIT_TYPE_OBJECT 1
 
 
@@ -149,7 +149,7 @@ bool MarchTheRay(in const vec3  ro,
                     voxel.z * GridSize.x * GridSize.y;
     
         // Check for hits
-        if (VoxelData[index].Type == uint(-1))
+        if (VoxelData[index].Type == uint(HIT_TYPE_VOXEL))
         {
             if (lastStepAxis == LAST_X_AXIS) {
                 fDistance = tMax.x - tDelta.x;
@@ -170,7 +170,7 @@ bool MarchTheRay(in const vec3  ro,
 
             return true;
         } 
-        if (VoxelData[index].Type > 0 &&
+        if (VoxelData[index].Type > HIT_TYPE_UNKNOWN &&
             TestObjects(VoxelData[index],
                         ro,
                         rd,
@@ -381,7 +381,7 @@ vec3 Reflection(in vec3     from,
     float   fLocalReflect;
     vec3    reflectedColor = baseColor;
     vec4    hitBaseColor;
-    const float roughness = 0.08;
+    const float roughness = 0.007;
 
     for (uint i = 0; i < bounces; ++i)
     {
@@ -422,7 +422,7 @@ vec3 Reflection(in vec3     from,
         }
         
         reflectedColor = mix(reflectedColor, 
-                             PhongShadows(CameraPos.xyz, hit, normal, int(maxSteps * 0.25)) * hitBaseColor.xyz,
+                             PhongSoftShadows(CameraPos.xyz, hit, normal, int(maxSteps * 0.25)) * hitBaseColor.xyz,
                              fMaterialReflectPower);
 
         fMaterialReflectPower *= fLocalReflect * 2;
@@ -445,6 +445,8 @@ void main()
         imageStore(outputImage, iPixelCoord, vec4(1., 1., 1., 1.));
         return;
     }
+
+
 
     vec3 ro  = CameraPos.xyz;
     vec3 rd  = normalize(CameraLookDir.xyz +
@@ -471,6 +473,8 @@ void main()
         {   
             vec3 shaded = finalColor.xyz;
 
+
+
             shaded = PhongSoftShadows(CameraPos.xyz, 
                                       hitPos,
                                       normal,
@@ -480,10 +484,10 @@ void main()
             finalColor = vec4(Reflection(ro, 
                                          hitPos, 
                                          int(maxSteps * 0.5f), 
-                                         4, 
+                                         3, 
                                          shaded,
                                          normal,
-                                         0.25),
+                                         0.23),
                               finalColor.w);
         }
     }

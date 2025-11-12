@@ -16,7 +16,7 @@ struct HitResult
     Vec3    Normal;
 };
 
-BEAST_API HitResult MarchTheRay(const WorldGrid* vg, const Vec3& ro, const Vec3& rd, size_t maxSteps);
+BEAST_API HitResult MarchTheRay(const IWorldGrid* vg, const Vec3& ro, const Vec3& rd, size_t maxSteps);
      
 } //!Voxels
 #endif //!AB_RAYS_H

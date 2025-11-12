@@ -3,108 +3,192 @@
 
 #include "Voxels.hpp"
 
-#include "Primitives/Cube.hpp"
+#include "Vulkan/MemoryUploadTracker.hpp"
 #include "Raycaster/SingleVoxel.hpp"
+#include "Primitives/ColoredCube.hpp"
 
 namespace Voxels
 {
 
-class WorldGrid
+class IWorldGrid : public MemoryUploadTracker
 {
+protected:
 
-    static constexpr size_t VoxelGridDim = 96;
-
-public:
-
-    enum EReupload
-    {
-        NoAction = 1,
-        RequestStaging = NoAction << 1,
-        RequestGpuUpload = RequestStaging << 1,
-    };
+    static constexpr size_t DefaultVoxelGridDim = 96;
 
 public:
 
-    BEAST_API explicit WorldGrid(size_t uGridWidth = VoxelGridDim);
-    
-    ~WorldGrid() = default;
+    explicit IWorldGrid(size_t uGridWidth = DefaultVoxelGridDim)
+        : m_uGridDim(uGridWidth)
+        , m_VoxelGrid(uGridWidth * uGridWidth * uGridWidth)
+    { }
 
 public:
 
-    const ::std::vector<Cube>& GetCubes() const
-    { return m_Cubes; }
+    const void* GetGridPtr() const
+    { return m_VoxelGrid.data(); }
+
+    ::std::vector<Voxel>& GetGrid()
+    { return m_VoxelGrid; }
 
     const ::std::vector<Voxel>& GetGrid() const
     { return m_VoxelGrid; }
 
-    size_t GetAmountOfVoxels() const
-    { return m_VoxelGrid.size(); }
-
-    size_t GetAmountOfCubes() const
-    { return m_Cubes.size(); }
+    size_t GetVoxelsSizeInBytes() const
+    { return m_VoxelGrid.size() * sizeof(Voxel); }
 
     size_t GetGridWidth() const
     { return m_uGridDim; }
 
-    /**
-     * @brief Returns status that the upload is on, shifts the value to next stage
-     *
-     * @return EReupload enumerator that descirbes the stage
-     */
-    EReupload ReuploadStatus()
-    {
-        switch (m_Reupload) {
-            case EReupload::NoAction:
-                return EReupload::NoAction;
-            case EReupload::RequestStaging:
-                m_Reupload = EReupload::RequestGpuUpload;
-                return EReupload::RequestStaging;
-            case EReupload::RequestGpuUpload:
-                m_Reupload = EReupload::NoAction;
-                return EReupload::RequestGpuUpload;
-            default:
-                return EReupload::NoAction;
-        }
-    }
+    size_t GetAmountOfVoxels() const
+    { return m_VoxelGrid.size(); }
+
+    virtual const void* GetObjectsPtr() const = 0;
+    
+    virtual size_t GetObjectsSizeInBytes() const = 0;
 
 public:
 
-    void ForceUpload()
-    { m_Reupload = EReupload::RequestStaging; }
+    BEAST_API void SetVoxel(const iVec3& pos, uint32_t uColor);
 
 public:
 
-    template<typename U>
-    void ModifyVoxel(iVec3 pos, U&& cube)
-    {
-        GenerateCube(Vec3::ToVec3(pos), m_VoxelGrid, m_Cubes, m_uCubesCount);
-        m_Reupload = RequestStaging;
-    }
+    virtual bool CheckIfVoxelOccupied(const iVec3& pos) const = 0;
 
-private:
+protected:
 
-    ::std::vector<Voxel> GenerateGrid(const size_t uGridWidth,
-                                      ::std::vector<Cube>& vCubes,
-                                      size_t& uCubesState);
+    BEAST_API size_t CalcIndex(const iVec3& pos) const;
 
-    BEAST_API void GenerateCube(const Vec3& offsetPos,
-                                ::std::vector<Voxel>& vGrid,
-                                ::std::vector<Cube>& vCubes,
-                                size_t& uCubesState);
+    BEAST_API void PlaceOnGrid(const iVec3& pos, const iVec3& area, const size_t uId);
+
+    BEAST_API void RemoveFromGrid(const iVec3& pos, const iVec3& area, const size_t uId);
 
 private:
 
     size_t m_uGridDim = -1;
-
-    ::std::vector<Cube> m_Cubes;
-    size_t m_uCubesCount = -1;
-
     ::std::vector<Voxel> m_VoxelGrid;
 
-    EReupload m_Reupload = NoAction;
+};
 
+template<class StoredObjectType>
+class WorldGrid : public IWorldGrid
+{
+public:
+
+    explicit WorldGrid(size_t uGridWidth = IWorldGrid::DefaultVoxelGridDim)
+        : IWorldGrid(uGridWidth)
+        , m_StoredObjects(this->GetVoxelsSizeInBytes() / sizeof(Voxel))
+        , m_uObjectsCount(0)
+    { }
+
+public:
+
+    virtual const void* GetObjectsPtr() const override 
+    { return m_StoredObjects.data(); }
+    
+    virtual size_t GetObjectsSizeInBytes() const override 
+    { return m_StoredObjects.size() * sizeof(StoredObjectType); }
+
+    StoredObjectType& GetById(size_t uId) 
+    {
+        AB_ASSERT(uId < m_uObjectsCount);
+        return m_StoredObjects[uId]; 
+    }
+
+public:
+
+    virtual bool CheckIfVoxelOccupied(const iVec3& pos) const override
+    { 
+        const ::std::vector<Voxel>& voxelsGrid = this->GetGrid();
+        const size_t uDim = this->GetGridWidth(); 
+        const size_t uIndex = CalcIndex(pos);
+
+        AB_ASSERT(uIndex < voxelsGrid.size());
+
+        if (voxelsGrid[uIndex].Type == 0)
+            return false;
+
+        for (uint32_t i = 0; i < voxelsGrid[uIndex].Type; ++i)
+            if (iVec3::ToiVec3(m_StoredObjects[voxelsGrid[uIndex].Id[i]].GetPosition()) == pos) 
+                return true;
+        
+        return false;
+    }
+
+public:
+
+    template<class U>
+    size_t GenerateObjectAtVoxel(const iVec3& pos, U&& sot)
+    {
+        size_t uId = GenerateObject(pos, this->GetGrid(), ::std::forward<U>(sot));
+        this->ForceUpload();
+        return uId;
+    }
+
+    void UpdatePos(const Vec3& newPos, size_t uObjectId)
+    {
+        StoredObjectType& obj = m_StoredObjects[uObjectId];
+
+        if (m_uObjectsCount >= m_StoredObjects.size() - 1) {
+            AB_LOG(Core::Debug::Warning, L"Reached object limit of objects in the world");
+            return;
+        }
+    
+        const iVec3 area = iVec3::ToiVec3(obj.GetHalfSize() + 1);
+        this->RemoveFromGrid(iVec3::ToiVec3(obj.GetPosition()), 
+                             area,
+                             uObjectId);
+
+        obj.SetPositon(newPos);
+        this->PlaceOnGrid(iVec3::ToiVec3(newPos), 
+                          area,
+                          uObjectId);
+
+        this->ForceUpload();
+    }
+
+    void UpdateRot(const Rot3& newRot, size_t uId)
+    {
+        if (m_uObjectsCount >= m_StoredObjects.size() - 1) {
+            AB_LOG(Core::Debug::Warning, L"Reached object limit of objects in the world");
+            return;
+        }
+
+        m_StoredObjects[uId].SetRotation(newRot);
+
+        this->ForceUpload();
+    }
+
+private:
+
+    template<class U>
+    size_t GenerateObject(iVec3 pos, ::std::vector<Voxel>& voxelsGrid, U&& sot)
+    { 
+        const size_t uObjId = m_uObjectsCount;
+        
+        if (m_uObjectsCount >= m_StoredObjects.size() - 1) {
+            AB_LOG(Core::Debug::Warning, L"Reached object limit of objects in the world");
+            return -1;
+        }
+
+        sot.SetPositon(Vec3::ToVec3(pos));
+
+        this->PlaceOnGrid(iVec3::ToiVec3(sot.GetPosition()), 
+                          iVec3::ToiVec3(sot.GetHalfSize() + 1),
+                          uObjId);
+        
+        m_StoredObjects[m_uObjectsCount++] = ::std::forward<U>(sot);
+        return uObjId;
+    }
+
+private:
+
+    ::std::vector<StoredObjectType> m_StoredObjects;
+    size_t m_uObjectsCount = -1;
 
 };
+
+typedef ::Voxels::WorldGrid<ColoredCube> CubeWorld;
 
 } // !Voxels
 #endif // !AB_VOXEL_GRID_H
