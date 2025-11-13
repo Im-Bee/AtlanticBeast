@@ -473,8 +473,6 @@ void main()
         {   
             vec3 shaded = finalColor.xyz;
 
-
-
             shaded = PhongSoftShadows(CameraPos.xyz, 
                                       hitPos,
                                       normal,
