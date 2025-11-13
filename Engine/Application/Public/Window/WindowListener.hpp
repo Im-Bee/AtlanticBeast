@@ -19,6 +19,28 @@ public:
 
 public:
 
+    WindowListener(const WindowListener& other) noexcept
+        : m_pWindowDesc(other.m_pWindowDesc)
+    { }
+
+    WindowListener& operator=(const WindowListener& other) noexcept
+    {
+        this->m_pWindowDesc = other.m_pWindowDesc; 
+        return *this;
+    }
+
+    WindowListener(WindowListener&& other) noexcept
+        : m_pWindowDesc(std::move(other.m_pWindowDesc))
+    { }
+
+    WindowListener& operator=(WindowListener&& other) noexcept
+    { 
+        this->m_pWindowDesc = std::move(other.m_pWindowDesc); 
+        return *this;
+    }
+
+public:
+
 	void ListenToWindow(::std::shared_ptr<WindowDesc> pWd)
 	{
 		AB_ASSERT(pWd != nullptr);

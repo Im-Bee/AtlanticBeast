@@ -19,8 +19,8 @@ public:
 
     ~ControllerObject()
     {
-        if (!m_pUserInput.expired())
-            m_pUserInput.lock()->Unbind(this);
+        if (auto pUserInput = m_pUserInput.lock())
+            pUserInput->Unbind(this);
     }
 
 public:
@@ -54,11 +54,7 @@ private:
 
 } // !App
 
-#ifdef _WIN32
-#   define AB_VA_ARGS_(...) , __VA_ARGS__
-#else
-#   define AB_VA_ARGS_(...) __VA_OPT__(,) __VA_ARGS__
-#endif // _WIN32
+
 
 #define AB_DECL_ACTION(baseClass, action, customName, ...)                          \
     static ::AbActionType UseAction##customName(const float fDelta, void* pThis)    \
@@ -68,6 +64,7 @@ private:
         static_cast<baseClass*>(pThis)->action(fDelta AB_VA_ARGS_(__VA_ARGS__));    \
         return ::AbActionType();                                                    \
     }
+
 
 
 #define AB_DECL_MOUSE_ACTION(baseClass, action, customName)                                                 \
@@ -80,11 +77,6 @@ private:
     }
 
 
-// ...
-//
-// class CameraController : public Camera, public ControllerObject
-// { };
-//
 
 #endif // !AB_CONTROLLER_OBJECT_H
 

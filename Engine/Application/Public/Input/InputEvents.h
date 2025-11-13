@@ -16,12 +16,12 @@ typedef struct AbInputStruct
     EAbInputEvents Event;
     union {
         struct {
-            AbKeyId        KeyId;
+            AbKeyId KeyId;
         } Keyboard;
 
         struct {
-            int32_t        MouseX;
-            int32_t        MouseY;
+            int32_t MouseX;
+            int32_t MouseY;
         } Mouse;
     };
 } AbInputStruct;

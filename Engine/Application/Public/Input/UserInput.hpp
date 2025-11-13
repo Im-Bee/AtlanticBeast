@@ -13,12 +13,49 @@ class ControllerObject;
 
 class UserInput : public WindowListener
 {
+    
+    struct BindHandle
+    {
+        AbInputBind Ib;
+        void*       pThis;
+    };
+
+    struct UserInputImpl;
+
+    using HandlesMap = ::std::unordered_map<void*, ::std::vector<BindHandle>>;
+    using KeysStatus = ::std::bitset<AB_KEY_COUNT>;
 
 public:
 
     BEAST_API explicit UserInput(::std::shared_ptr<WindowDesc> pWd = nullptr);
 
     BEAST_API ~UserInput();
+
+public:
+
+    /**
+     * @brief Copied objects doesn't use the same capture status as the original.
+     * Copies always are set to non capturing with empty keys status (all the keys are released).  
+     */
+    BEAST_API UserInput(const UserInput&) noexcept;
+
+    /**
+     * @brief Copied objects doesn't use the same capture status as the original.
+     * Copies always are set to non capturing with empty keys status (all the keys are released).  
+     */
+    BEAST_API UserInput& operator=(const UserInput&) noexcept;
+
+    /**
+     * @brief Moved objects doesn't use the same capture status as the original.
+     * Moved objects always are set to non capturing with empty keys status (all the keys are released).  
+     */
+    BEAST_API UserInput(UserInput&&) noexcept;
+
+    /**
+     * @brief Moved objects doesn't use the same capture status as the original.
+     * Moved objects always are set to non capturing with empty keys status (all the keys are released).  
+     */
+    BEAST_API UserInput& operator=(UserInput&&) noexcept;
 
 public:
 
@@ -35,7 +72,11 @@ public:
      * @param mouseAction - mouse action to be performed, should be null, if we are performing action instead 
      * @param bind - AbInputBind struct describing the bind
      **/
-    BEAST_API void Bind(void* pThis, ControllerObject* pCo, AbAction action, AbMouseAction mouseAction, AbInputBind bind);
+    BEAST_API void Bind(void* pThis, 
+                        ControllerObject* pCo,
+                        AbAction action,
+                        AbMouseAction mouseAction,
+                        AbInputBind bind);
 
     BEAST_API void Unbind(ControllerObject* pCo);
     
@@ -47,22 +88,12 @@ public:
 
 private:
 
-    struct BindHandle
-    {
-        AbInputBind Ib;
-        void* pThis;
-    };
-
-private:
-
     bool m_bIsCapturing;
 
-    ::std::unordered_map<void*, ::std::vector<BindHandle>> m_BindsHandles;
+    HandlesMap m_BindsHandles;
+    KeysStatus m_vCurrentlyPressedKeys;
 
-    ::std::bitset<AB_KEY_COUNT> m_vCurrentlyPressedKeys;
-
-    struct Impl;
-    Impl* m_pImpl = nullptr;
+    ::std::unique_ptr<UserInputImpl> m_pImpl;
 
 };
 

@@ -55,7 +55,7 @@ public:
 
     inline Vec3 operator+(const Vec3& vB) const;
 
-    inline Vec3 operator+(const class iVec3& vB) const;
+    inline Vec3 operator+(const struct iVec3& vB) const;
 
     inline Vec3 operator+(const uint32_t vB) const;
 

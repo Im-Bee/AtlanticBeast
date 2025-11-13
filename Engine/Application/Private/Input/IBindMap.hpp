@@ -11,10 +11,17 @@ class IBindMap
 {
 public:
 
-
     IBindMap() = default;
+
     ~IBindMap() = default;
 
+public:
+
+    IBindMap(const IBindMap&) noexcept = default;
+    IBindMap& operator=(const IBindMap&) noexcept = default;
+
+    IBindMap(IBindMap&&) noexcept = default;
+    IBindMap& operator=(IBindMap&&) noexcept = default;
 
 public:
 
