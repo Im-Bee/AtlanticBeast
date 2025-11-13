@@ -58,8 +58,8 @@ public:
 	BPLayerInterfaceImpl()
 	{
 		// Create a mapping table from object to broad phase layer
-		mObjectToBroadPhase[Layers::NON_MOVING] = BroadPhaseLayers::NON_MOVING;
-		mObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
+		m_ObjectToBroadPhase[Layers::NON_MOVING] = BroadPhaseLayers::NON_MOVING;
+		m_ObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
 	}
 
 	virtual uint32_t GetNumBroadPhaseLayers() const override
@@ -70,7 +70,7 @@ public:
 	virtual JPH::BroadPhaseLayer GetBroadPhaseLayer(JPH::ObjectLayer inLayer) const override
 	{
 		JPH_ASSERT(inLayer < Layers::NUM_LAYERS);
-		return mObjectToBroadPhase[inLayer];
+		return m_ObjectToBroadPhase[inLayer];
 	}
 
 #if defined(JPH_EXTERNAL_PROFILE) || defined(JPH_PROFILE_ENABLED)
@@ -90,7 +90,7 @@ public:
 #endif // JPH_EXTERNAL_PROFILE || JPH_PROFILE_ENABLED
 
 private:
-	JPH::BroadPhaseLayer mObjectToBroadPhase[Layers::NUM_LAYERS];
+	JPH::BroadPhaseLayer m_ObjectToBroadPhase[Layers::NUM_LAYERS];
 };
 
 class ObjectVsBroadPhaseLayerFilterImpl : public JPH::ObjectVsBroadPhaseLayerFilter
@@ -187,8 +187,6 @@ public:
     {
         AB_ASSERT(m_pPhysicsSystem != nullptr);
 
-        JPH::BodyInterface &body_interface = m_pPhysicsSystem->GetBodyInterface();
-
         JPH::Vec3 force = { };
         if (normal.x != 0) 
             force.SetX(-normal.x * fForceMul);
@@ -197,23 +195,26 @@ public:
         else 
             force.SetZ(-normal.z * fForceMul);
 
-        body_interface.SetLinearVelocity(bodyId, force);
+        m_pPhysicsSystem->GetBodyInterface().SetLinearVelocity(bodyId, force);
     }
 
-    JPH::BodyID CreateCube(const Voxels::Vec3& p)
+    JPH::BodyID CreateCube(const Voxels::Vec3& p, const Voxels::Vec3& h)
     {
         using namespace JPH::literals;
 
         AB_ASSERT(m_pPhysicsSystem != nullptr);
 
-        JPH::BodyInterface &body_interface = m_pPhysicsSystem->GetBodyInterface();
-        JPH::BodyCreationSettings boxSettings(new JPH::BoxShape(JPH::Vec3(0.505_r, 0.505_r, 0.505_r)),
+        const auto epsilon = 0.008_r;
+
+        JPH::BodyCreationSettings boxSettings(new JPH::BoxShape(JPH::Vec3(epsilon + h.x, 
+                                                                          epsilon + h.y,
+                                                                          epsilon + h.z)),
                                               JPH::RVec3(p.x, p.y, p.z), 
                                               JPH::Quat::sIdentity(), 
                                               JPH::EMotionType::Dynamic, 
                                               Layers::MOVING);
 
-        return body_interface.CreateAndAddBody(boxSettings, JPH::EActivation::Activate);
+        return m_pPhysicsSystem->GetBodyInterface().CreateAndAddBody(boxSettings, JPH::EActivation::Activate);
     }
 
 
@@ -221,22 +222,18 @@ public:
     {
         AB_ASSERT(m_pPhysicsSystem != nullptr);
 
-        JPH::BodyInterface &body_interface = m_pPhysicsSystem->GetBodyInterface();
-
-        auto jv = body_interface.GetCenterOfMassPosition(id);
+        auto cubePos = m_pPhysicsSystem->GetBodyInterface().GetCenterOfMassPosition(id);
         
-        return Voxels::Vec3(jv.GetX(), jv.GetY(), jv.GetZ());
+        return Voxels::Vec3(cubePos.GetX(), cubePos.GetY(), cubePos.GetZ());
     }
 
     Voxels::Rot3 GetCubeRot(const JPH::BodyID& id)
     {
         AB_ASSERT(m_pPhysicsSystem != nullptr);
 
-        JPH::BodyInterface &body_interface = m_pPhysicsSystem->GetBodyInterface();
-
-        auto euler = body_interface.GetRotation(id).GetEulerAngles();
+        auto rotEuler = m_pPhysicsSystem->GetBodyInterface().GetRotation(id).GetEulerAngles();
         
-        return Voxels::Rot3(euler.GetX(), euler.GetY(), euler.GetZ());
+        return Voxels::Rot3(rotEuler.GetX(), rotEuler.GetY(), rotEuler.GetZ());
     }
 
 private:
@@ -247,20 +244,18 @@ private:
 
         AB_ASSERT(m_pPhysicsSystem != nullptr);
 
-        JPH::BodyInterface &body_interface = m_pPhysicsSystem->GetBodyInterface();
-
         // Next we can create a rigid body to serve as the floor, we make a large box
         // Create the settings for the collision volume (the shape).
         // Note that for simple shapes (like boxes) you can also directly construct a BoxShape.
-        JPH::BoxShapeSettings floor_shape_settings(JPH::Vec3(100.0_r, 1.0_r, 100.0_r));
-        floor_shape_settings.SetEmbedded(); // A ref counted object on the stack (base class RefTarget) should be marked as such to prevent it from being freed when its reference count goes to 0.
+        JPH::BoxShapeSettings floorShapeSettings(JPH::Vec3(100.0_r, 1.0_r, 100.0_r));
+        floorShapeSettings.SetEmbedded(); // A ref counted object on the stack (base class RefTarget) should be marked as such to prevent it from being freed when its reference count goes to 0.
 
         // Create the shape
-        JPH::ShapeSettings::ShapeResult floor_shape_result = floor_shape_settings.Create();
-        JPH::ShapeRefC floor_shape = floor_shape_result.Get(); // We don't expect an error here, but you can check floor_shape_result for HasError() / GetError()
+        JPH::ShapeSettings::ShapeResult floorShapeResult = floorShapeSettings.Create();
+        JPH::ShapeRefC floorShape = floorShapeResult.Get(); // We don't expect an error here, but you can check floor_shape_result for HasError() / GetError()
 
         // Create the settings for the body itself. Note that here you can also set other properties like the restitution / friction.
-        JPH::BodyCreationSettings floor_settings(floor_shape, 
+        JPH::BodyCreationSettings floor_settings(floorShape, 
                                                  JPH::RVec3(0.0_r, 1.0_r, 0.0_r), 
                                                  JPH::Quat::sIdentity(),
                                                  JPH::EMotionType::Static,
@@ -268,7 +263,7 @@ private:
         floor_settings.mFriction = 0.23;
 
         // Add it to the world
-        body_interface.CreateAndAddBody(floor_settings, JPH::EActivation::DontActivate);
+        m_pPhysicsSystem->GetBodyInterface().CreateAndAddBody(floor_settings, JPH::EActivation::DontActivate);
     }
 
 private:
@@ -428,10 +423,18 @@ public:
 
     void GenerateCube(const Voxels::iVec3& p)
     {
-        size_t uCubeId = m_pWorld->GenerateObjectAtVoxel(p, ::Voxels::ColoredCube());
+        auto cc = ::Voxels::ColoredCube();
+        cc.SetHalfSize(::Voxels::Vec3(0.5f, 0.5f, 0.5f));
         Voxels::Vec3 setP(0.5f + p.x, 0.5f + p.y, 0.5f + p.z); 
+        Voxels::Vec3 setH(cc.GetHalfSize());
+        cc.SetColor(0x99211200);
+        size_t uCubeId = m_pWorld->GenerateObjectAtVoxel(p, std::move(cc));
         
-        m_vInWorldObjects.push_back(InWorldCube(m_pWorld, uCubeId, &m_Physics, m_Physics.CreateCube(setP)));
+        m_vInWorldObjects.push_back(InWorldCube(m_pWorld,
+                                                uCubeId,
+                                                &m_Physics,
+                                                m_Physics.CreateCube(setP, 
+                                                                     setH)));
     }
 
 public:
