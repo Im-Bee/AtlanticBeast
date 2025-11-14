@@ -38,6 +38,7 @@ AppResources::AppResources()
 
 #elif _WIN32
 
+// --------------------------------------------------------------------------------------------------------------------
 ::std::wstring AppResources::InternalGetExecutablePathW() const
 {
     return wstring(L"./");
@@ -45,6 +46,7 @@ AppResources::AppResources()
 
 #endif // !__linux__
 
+// --------------------------------------------------------------------------------------------------------------------
 ::std::string AppResources::InternalGetExecutablePathA() const
 {
     size_t len = std::wcstombs(nullptr, m_wstrExePathW.c_str(), 0);

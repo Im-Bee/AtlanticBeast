@@ -15,14 +15,6 @@ class BEAST_API GameLinuxWindowPolicy : public BasicLinuxWindowPolicy
 {
 public:
 
-	GameLinuxWindowPolicy() = default;
-	~GameLinuxWindowPolicy() = default;
-
-	GameLinuxWindowPolicy(const GameLinuxWindowPolicy&) = default;
-	GameLinuxWindowPolicy(GameLinuxWindowPolicy&&) noexcept = default;
-
-public:
-
     virtual void OnCreate(WindowDesc* pWd) override;
 
     virtual uint32_t OnUpdate(WindowDesc* pWd, XEvent& event) override;

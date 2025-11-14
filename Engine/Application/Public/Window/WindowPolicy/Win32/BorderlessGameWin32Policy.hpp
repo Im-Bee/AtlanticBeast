@@ -17,14 +17,6 @@ class BorderlessGameWin32Policy : public WindowModeGameWin32WindowPolicy
 {
 public:
 
-    BorderlessGameWin32Policy() = default;
-    ~BorderlessGameWin32Policy() = default;
-
-    BorderlessGameWin32Policy(const BorderlessGameWin32Policy&) = default;
-    BorderlessGameWin32Policy(BorderlessGameWin32Policy&&) noexcept = default;
-
-public:
-
     void OnPreWcex() override
     {
         WindowDesc* pWd = this->GetWindowDesc();

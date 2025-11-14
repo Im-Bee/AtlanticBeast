@@ -17,7 +17,7 @@ struct WindowDesc
 	const wchar_t*                  pwszClassName;
     int32_t                         Width;
     int32_t                         Height;
-    int32_t                         IsAlive;
+    bool                            IsAlive;
     EAbWindowEventsFlags            LastEvent;
     ::std::queue<AbInputStruct>     InputStruct;
 

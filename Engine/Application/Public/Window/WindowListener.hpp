@@ -2,6 +2,7 @@
 #define AB_WINDOW_LISTENER_H
 
 #include "Core.h"
+
 #include "Window/WindowDesc.hpp"
 
 namespace App

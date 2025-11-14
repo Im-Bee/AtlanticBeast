@@ -24,12 +24,6 @@ public:
         : IBaseWindow<EmptyWindow>(::std::forward<U>(windowDesc))
     { }
 
-    ~EmptyWindow() = default;
-
-    EmptyWindow(EmptyWindow&&) noexcept = default;
-
-    EmptyWindow(const EmptyWindow&) = delete;
-
 private:
 
     virtual void HandleMessageImpl(const float, EAbWindowEventsFlags)

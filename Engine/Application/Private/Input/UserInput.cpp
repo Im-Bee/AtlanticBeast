@@ -224,7 +224,7 @@ void UserInput::Bind(void* pThis, ControllerObject* pCo, AbAction action, AbMous
     }
 
     m_BindsHandles[pCo].push_back({ bind, pThis });
-    AB_LOG(Core::Debug::Info, L"New bind for %p, type %d", pCo, bind.Type);
+    AB_LOG(Core::Debug::Info, L"New bind [Controller address: %p] [Bind type: %d]", pCo, bind.Type);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

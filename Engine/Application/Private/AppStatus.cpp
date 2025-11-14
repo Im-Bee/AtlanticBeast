@@ -30,9 +30,7 @@ AppStatus& AppStatus::Get()
 
 // --------------------------------------------------------------------------------------------------------------------
 EAppStatus AppStatus::GetAppCurrentStatus()
-{
-	return m_AppCurrentStatus;
-}
+{ return m_AppCurrentStatus; }
 
 // --------------------------------------------------------------------------------------------------------------------
 uint32_t AppStatus::SendOpenWindowSignal(shared_ptr<WindowDesc> pWd)
@@ -44,7 +42,7 @@ uint32_t AppStatus::SendOpenWindowSignal(shared_ptr<WindowDesc> pWd)
     UpdateStatus();
     m_WindowHandles.push_back(pWd);
 
-    return m_uNumberOfWindows;
+    return  m_uNumberOfWindows;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -52,24 +50,19 @@ uint32_t AppStatus::SendCloseWindowSignal(shared_ptr<WindowDesc> pWd)
 {
     AB_LOG(Debug::Info, L"Got close window signal");
 
-    if (m_uNumberOfWindows > 0)
-    {
-        --m_uNumberOfWindows;
-    }
-
+    m_uNumberOfWindows = m_uNumberOfWindows > 0 ? --m_uNumberOfWindows : m_uNumberOfWindows;
     UpdateStatus();
     m_WindowHandles.remove(pWd);
-
-    return m_uNumberOfWindows;
+    
+    return  m_uNumberOfWindows;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
 void AppStatus::UpdateStatus()
 {
-	AB_LOG(Debug::ESeverity::Info, L"AppStatus: Number of windows: %d", m_uNumberOfWindows);
+	AB_LOG(Debug::ESeverity::Info, L"AppStatus updated [Number of active windows: %d]", m_uNumberOfWindows);
 
-    if (m_uNumberOfWindows == 0)
-    {
+    if (m_uNumberOfWindows == 0) {
         m_AppCurrentStatus = EAppStatus::Dead;
         return;
     }

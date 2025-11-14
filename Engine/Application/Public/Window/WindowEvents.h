@@ -5,7 +5,7 @@
 
 typedef uint32_t EAbWindowEventsFlags;
 
-typedef enum EAbWindowEvents
+typedef enum EAbWindowEvents : EAbWindowEventsFlags
 {
     NothingNew = 1,
     Destroy = NothingNew << 1,

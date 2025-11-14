@@ -3,10 +3,12 @@
 
 #include "Voxels.hpp"
 
+#include "IMaterialProperties.hpp"
+
 namespace Voxels
 {
 
-class ColorProperty
+class ColorProperty : public IMaterialProperties
 {
 public:
 

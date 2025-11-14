@@ -14,14 +14,6 @@ class BEAST_API BasicLinuxWindowPolicy : public IWindowPolicy<BasicLinuxWindowPo
 {
 public:
 
-	BasicLinuxWindowPolicy() = default;
-	~BasicLinuxWindowPolicy() = default;
-
-	BasicLinuxWindowPolicy(const BasicLinuxWindowPolicy&) = default;
-	BasicLinuxWindowPolicy(BasicLinuxWindowPolicy&&) noexcept = default;
-
-public:
-
 	uint32_t CreateImpl(WindowDesc* pWd);
 
 	void ShowImpl(WindowDesc* pWd);

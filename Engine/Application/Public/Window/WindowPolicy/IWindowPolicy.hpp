@@ -12,10 +12,16 @@ class IWindowPolicy
 public:
 
 	IWindowPolicy() = default;
+
 	~IWindowPolicy() = default;
 
+public:
+
 	IWindowPolicy(const IWindowPolicy&) = default;
+	IWindowPolicy& operator=(const IWindowPolicy&) = default;
+
 	IWindowPolicy(IWindowPolicy&&) noexcept = default;
+	IWindowPolicy& operator=(IWindowPolicy&&) noexcept = default;
 
 public:
 

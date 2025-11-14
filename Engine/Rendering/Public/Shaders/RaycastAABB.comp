@@ -14,11 +14,11 @@ struct Voxel
 
 struct CubeColored
 {
-    Cube Geometry;
-    uint Color;  
-    uint _Padding1;  
-    uint _Padding2;  
-    uint _Padding3;  
+    Cube    Geometry;
+    uint    Color;  
+    float   Reflection;  
+    uint    Roughness;  
+    uint    _Padding3;  
 };
 
 layout(local_size_x = 16, local_size_y = 16) in;
@@ -368,7 +368,8 @@ vec3 Reflection(in vec3     from,
                 in const uint   bounces,
                 in const vec3   baseColor,
                 in vec3     normal,
-                in float    fMaterialReflectPower)
+                in float    fMaterialReflectPower,
+                in float    fRoughness)
 {
     vec3    dir;
     vec3    hit;
@@ -381,7 +382,6 @@ vec3 Reflection(in vec3     from,
     float   fLocalReflect;
     vec3    reflectedColor = baseColor;
     vec4    hitBaseColor;
-    const float roughness = 0.007;
 
     for (uint i = 0; i < bounces; ++i)
     {
@@ -389,7 +389,7 @@ vec3 Reflection(in vec3     from,
             break;
 
         dir = reflect(normalize(to - from), normal);
-        dir = mix(dir, RandomPointOnHemisphere(normal), roughness * fDistance * 0.25);
+        dir = mix(dir, RandomPointOnHemisphere(normal), fRoughness * fDistance * 0.25);
 
         if (!MarchTheRay(to + dir * EPSILON,
                          dir,
@@ -410,15 +410,17 @@ vec3 Reflection(in vec3     from,
 
         if (hitType == HIT_TYPE_VOXEL) {
             hitBaseColor    = ExtractColorInt(VoxelData[index].Color);
-            fLocalReflect   = 0.23;
+            fLocalReflect   = 0.1;
         }
         else if (hitType == HIT_TYPE_OBJECT) {
             hitBaseColor    = ExtractColorInt(CubeData[index].Color);
-            fLocalReflect   = 0.23;
+            fLocalReflect   = CubeData[index].Reflection;
+            fRoughness      = CubeData[index].Roughness;
         } 
         else {
             hitBaseColor    = baseSkyColor;
-            fLocalReflect   = 0;
+            fLocalReflect   = 0.;
+            fRoughness      = 0.
         }
         
         reflectedColor = mix(reflectedColor, 
@@ -460,13 +462,19 @@ void main()
     float   fDistance;
     vec3    normal;
     int     hitType;
+    float   reflectionPower;
+    float   fRoughness;
     if (MarchTheRay(ro, rd, maxSteps, hitPos, index, fDistance, normal, hitType)) 
     {
         if (hitType == HIT_TYPE_VOXEL) {
             finalColor = ExtractColorInt(VoxelData[index].Color);
+            reflectionPower = 0.1;
+            fRoughness      = 0.1;
         }
         if (hitType == HIT_TYPE_OBJECT) {
             finalColor = ExtractColorInt(CubeData[index].Color);
+            reflectionPower = CubeData[index].Reflection;
+            fRoughness      = CubeData[index].Roughness;
         }
 
         if (fDistance <= maxSteps) 
@@ -485,7 +493,8 @@ void main()
                                          3, 
                                          shaded,
                                          normal,
-                                         0.23),
+                                         reflectionPower,
+                                         fRoughness),
                               finalColor.w);
         }
     }
