@@ -17,7 +17,7 @@ struct CubeColored
     Cube    Geometry;
     uint    Color;  
     float   Reflection;  
-    uint    Roughness;  
+    float   Roughness;  
     uint    _Padding3;  
 };
 
@@ -420,7 +420,6 @@ vec3 Reflection(in vec3     from,
         else {
             hitBaseColor    = baseSkyColor;
             fLocalReflect   = 0.;
-            fRoughness      = 0.;
         }
         
         reflectedColor = mix(reflectedColor, 
@@ -469,7 +468,7 @@ void main()
         if (hitType == HIT_TYPE_VOXEL) {
             finalColor = ExtractColorInt(VoxelData[index].Color);
             reflectionPower = 0.1;
-            fRoughness      = 0.1;
+            fRoughness      = 0.;
         }
         if (hitType == HIT_TYPE_OBJECT) {
             finalColor = ExtractColorInt(CubeData[index].Color);
