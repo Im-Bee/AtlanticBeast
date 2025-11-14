@@ -27,8 +27,6 @@ IF (MSVC)
     SET(CMAKE_MSVC_RUNTIME_LIBRARY 
         "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL" CACHE STRING "" FORCE)
 
-    ADD_COMPILE_OPTIONS("/GR-")
-
     ADD_COMPILE_OPTIONS("/permissive-")
 
 ELSE()

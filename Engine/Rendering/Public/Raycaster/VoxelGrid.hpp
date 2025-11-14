@@ -92,7 +92,7 @@ public:
     { return m_StoredObjects.size() * sizeof(StoredObjectType); }
     
     virtual size_t GetUsedObjectsSizeInBytes() const override 
-    { return m_uObjectsCount * sizeof(StoredObjectType); }
+    { return (m_uObjectsCount + 1) * sizeof(StoredObjectType); }
 
     StoredObjectType& GetById(size_t uId) 
     {

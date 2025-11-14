@@ -16,9 +16,10 @@ struct CubeColored
 {
     Cube    Geometry;
     uint    Color;  
-    float   Reflection;  
     float   Roughness;  
-    uint    _Padding3;  
+    float   Reflection;  
+    uint    _Padding;
+    uint    _Padding2;
 };
 
 layout(local_size_x = 32, local_size_y = 8) in;
@@ -161,7 +162,8 @@ bool MarchTheRay(in const vec3  ro,
 
             return true;
         } 
-        if (testedVoxel > HIT_TYPE_UNKNOWN &&
+        if (testedVoxel > HIT_TYPE_UNKNOWN && 
+            testedVoxel < uint(HIT_TYPE_VOXEL) && 
             TestObjects(VoxelData[index],
                         ro,
                         rd,
@@ -184,19 +186,18 @@ bool MarchTheRay(in const vec3  ro,
             voxel.x += step.x;
             tMax.x += tDelta.x;
             lastStepAxis = LAST_X_AXIS;
+            continue;
         }
-        else if (stepY)
+        if (stepY)
         {
             voxel.y += step.y;
             tMax.y += tDelta.y;
             lastStepAxis = LAST_Y_AXIS;
+            continue;
         }
-        else
-        {
-            voxel.z += step.z;
-            tMax.z += tDelta.z;
-            lastStepAxis = LAST_Z_AXIS;
-        }
+        voxel.z += step.z;
+        tMax.z += tDelta.z;
+        lastStepAxis = LAST_Z_AXIS;
     }
  
 
@@ -435,7 +436,7 @@ void main()
     float halfFov       = fFov * 0.5;
     float scale         = tan(halfFov);
     float aspectRatio   = float(imgSize.x) / float(imgSize.y);
-    vec2 uv = ((vec2(iPixelCoord) + vec2(0.5)) / vec2(imageSize(outputImage))) * 2. - 1.; 
+    vec2 uv = ((vec2(iPixelCoord) + vec2(0.5)) / vec2(imgSize)) * 2. - 1.; 
 
     if (IsCrosshair(uv, aspectRatio)) {
         imageStore(outputImage, iPixelCoord, vec4(1., 1., 1., 1.));

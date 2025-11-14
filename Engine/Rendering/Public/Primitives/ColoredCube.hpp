@@ -13,7 +13,9 @@ class alignas(16) ColoredCube : public Voxels::Cube
                               , public Voxels::ColorProperty
                               , public Voxels::ReflectionProperty
                               , public Voxels::RoughnessProperty
-{ };
+{ 
+	uint32_t m_uPadding;
+};
 
 }
 
