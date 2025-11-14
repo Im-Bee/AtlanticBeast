@@ -435,6 +435,8 @@ public:
                                                 &m_Physics,
                                                 m_Physics.CreateCube(setP, 
                                                                      setH)));
+
+		m_pWorld->ForceUpload();
     }
 
 public:

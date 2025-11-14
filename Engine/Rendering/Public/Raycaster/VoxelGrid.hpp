@@ -138,6 +138,9 @@ public:
             AB_LOG(Core::Debug::Warning, L"Reached object limit of objects in the world");
             return;
         }
+
+        if (obj.GetPosition() == newPos)
+            return;
     
         const iVec3 area = iVec3::ToiVec3(obj.GetHalfSize() + 1);
         this->RemoveFromGrid(iVec3::ToiVec3(obj.GetPosition()), 
@@ -158,6 +161,9 @@ public:
             AB_LOG(Core::Debug::Warning, L"Reached object limit of objects in the world");
             return;
         }
+
+        if (m_StoredObjects[uId].GetRotation() == newRot)
+			return;
 
         m_StoredObjects[uId].SetRotation(newRot);
 
