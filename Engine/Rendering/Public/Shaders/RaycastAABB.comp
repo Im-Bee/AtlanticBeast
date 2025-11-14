@@ -16,10 +16,9 @@ struct CubeColored
 {
     Cube    Geometry;
     uint    Color;  
-    float   Roughness;  
     float   Reflection;  
+    float   Roughness;  
     uint    _Padding;
-    uint    _Padding2;
 };
 
 layout(local_size_x = 32, local_size_y = 8) in;
@@ -34,15 +33,20 @@ layout(std430, binding = 2) readonly buffer Cubes
 };
 layout(push_constant) uniform PushConstants 
 {
-    vec4    CameraPos;
-    ivec4   GridSize;
-    vec4    CameraLookDir;
-    vec4    CameraRight;
-    vec4    CameraUp;
-    float   fFov;
+    vec3    CameraPos;
+    uint    _Padding0;
+    ivec3   GridSize;
     uint    _Padding1;
-    uint    _Padding2;
+    vec3    CameraLookDir;
+    uint	_Padding2;
+    vec3    CameraRight;
     uint    _Padding3;
+    vec3    CameraUp;
+    uint    _Padding4;
+    float   fFov;
+    uint    _Padding5;
+    uint    _Padding6;
+    uint    _Padding7;
 };
 
 const vec4  baseSkyColor    = vec4(.4078, .4725, 1., 1.);
@@ -427,11 +431,6 @@ void main()
     ivec2 iPixelCoord = ivec2(gl_GlobalInvocationID.xy);
 
     ivec2 imgSize     = imageSize(outputImage);
-    vec3  camPos      = CameraPos.xyz;
-    vec3  camDir      = CameraLookDir.xyz;
-    vec3  camRight    = CameraRight.xyz;
-    vec3  camUp       = CameraUp.xyz;
-
 
     float halfFov       = fFov * 0.5;
     float scale         = tan(halfFov);
@@ -445,10 +444,10 @@ void main()
 
 
 
-    vec3 ro  = camPos;
-    vec3 rd  = normalize(camDir +
-                         uv.x * aspectRatio * scale * camRight +
-                         uv.y * scale * camUp);
+    vec3 ro  = CameraPos;
+    vec3 rd  = normalize(CameraLookDir +
+                         uv.x * aspectRatio * scale * CameraRight +
+                         uv.y * scale * CameraUp);
 
     vec4 finalColor = baseSkyColor;
 

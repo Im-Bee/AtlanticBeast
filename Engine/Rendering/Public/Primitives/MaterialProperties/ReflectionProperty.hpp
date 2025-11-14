@@ -8,7 +8,7 @@
 namespace Voxels
 {
 
-class ReflectionProperty : public IMaterialProperties
+class alignas(4) ReflectionProperty //: public IMaterialProperties
 {
 public:
 

@@ -8,7 +8,7 @@
 namespace Voxels
 {
 
-class RoughnessProperty : public IMaterialProperties
+class alignas(4) RoughnessProperty // : public IMaterialProperties
 {
 public:
 

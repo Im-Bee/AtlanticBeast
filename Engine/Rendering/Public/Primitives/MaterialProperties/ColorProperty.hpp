@@ -8,7 +8,7 @@
 namespace Voxels
 {
 
-class ColorProperty : public IMaterialProperties
+class alignas(4) ColorProperty // : public IMaterialProperties
 {
 public:
 

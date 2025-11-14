@@ -60,7 +60,7 @@ void Renderer::Update(const float)
 
     if (m_pVoxelGrid->ReuploadStatus() & EReupload::RequestStaging) 
     {
-        UploadDescriptor ud1 = m_pPipeline->GetUniformUploadDescriptor(m_StageVoxelBuffer, 
+         UploadDescriptor ud1 = m_pPipeline->GetUniformUploadDescriptor(m_StageVoxelBuffer, 
                                                                        VoxelPipeline::EShaderResource::VoxelGrid);
 
         m_pMemory->UploadOnStreamBuffer(m_pVoxelGrid->GetGrid().data(), 

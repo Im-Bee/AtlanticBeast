@@ -6,7 +6,7 @@
 namespace Voxels
 {
 
-class IMaterialProperties
+class alignas(4) IMaterialProperties
 {
 public:
 
