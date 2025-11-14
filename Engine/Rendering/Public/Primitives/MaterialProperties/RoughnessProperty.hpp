@@ -13,7 +13,7 @@ class RoughnessProperty : public IMaterialProperties
 public:
 
     RoughnessProperty() 
-        : m_fRoughness(0.12f)
+        : m_fRoughness(0.08f)
     { }
 
 public:
