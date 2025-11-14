@@ -52,11 +52,11 @@ int main()
         const float fBlock = fl.Block(dt.DeltaMs(), fDeltaMs);
 
 
-        // ::Core::Debug::Logger::Get()->Log(::Core::Debug::Info, 
-        //                                   L"Fps: %f Frame duration: %fms Blocked for: %fms",
-        //                                   1000.f / fDeltaMs,
-        //                                   fDeltaMs,
-        //                                   fBlock);
+        ::Core::Debug::Logger::Get()->Log(::Core::Debug::Info, 
+                                          L"Fps: %f Frame duration: %fms Blocked for: %fms",
+                                          1000.f / fDeltaMs,
+                                          fDeltaMs,
+                                          fBlock);
     }
 
     AB_LOG(Core::Debug::Info, L"App is closing...");

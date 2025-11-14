@@ -21,7 +21,7 @@ struct CubeColored
     uint    _Padding3;  
 };
 
-layout(local_size_x = 16, local_size_y = 16) in;
+layout(local_size_x = 32, local_size_y = 8) in;
 layout(binding = 0, rgba8) uniform image2D outputImage;
 layout(std430, binding = 1) readonly buffer Voxels 
 {
@@ -47,7 +47,7 @@ layout(push_constant) uniform PushConstants
 const vec4  baseSkyColor    = vec4(.4078, .4725, 1., 1.);
 const vec3  lightPos        = vec3(20.0, 24.0, 10.0);
 const vec3  lightColor      = vec3(1., 1., 1.);
-const float maxRenderDist   = 50.f;
+const float maxRenderDist   = 28.f;
 const int   maxSteps        = int(maxRenderDist * 2.6);
 
 #define LAST_UNKNOWN_AXIS -1
@@ -98,14 +98,13 @@ bool TestObjects(in const Voxel onVoxel,
         }
     }
 
+
     // Check if the hit was valid
     if (fDistance != INF) {
         hitCoords = ro + rd * fDistance;
         return true;
     } 
-    else {
-        return false;
-    }
+    return false;
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -126,11 +125,10 @@ bool MarchTheRay(in const vec3  ro,
     vec3 tMax;
     
     // Calc initial offset
-    for (int i = 0; i < 3; ++i) {
-        float offset = rd[i] > 0.0 ?
-                       1.0 - fract(ro[i]) : 
-                       fract(ro[i]);
-
+    float offset;
+    for (int i = 0; i < 3; ++i) 
+    {
+        offset = rd[i] > 0.0 ? 1.0 - fract(ro[i]) : fract(ro[i]);
         tMax[i] = tDelta[i] * offset;
     }
 
@@ -147,20 +145,13 @@ bool MarchTheRay(in const vec3  ro,
         int index = voxel.x + 
                     voxel.y * GridSize.x +
                     voxel.z * GridSize.x * GridSize.y;
+
+        uint testedVoxel = VoxelData[index].Type;
     
         // Check for hits
-        if (VoxelData[index].Type == uint(HIT_TYPE_VOXEL))
+        if (testedVoxel == uint(HIT_TYPE_VOXEL))
         {
-            if (lastStepAxis == LAST_X_AXIS) {
-                fDistance = tMax.x - tDelta.x;
-            }
-            else if (lastStepAxis == LAST_Y_AXIS) {
-                fDistance = tMax.y - tDelta.y;
-            }
-            else {
-                fDistance = tMax.z - tDelta.z;
-            }
-
+            fDistance            = tMax[lastStepAxis] - tDelta[lastStepAxis];
             normal               = vec3(0.);
             normal[lastStepAxis] = -float(step[lastStepAxis]);
 
@@ -170,7 +161,7 @@ bool MarchTheRay(in const vec3  ro,
 
             return true;
         } 
-        if (VoxelData[index].Type > HIT_TYPE_UNKNOWN &&
+        if (testedVoxel > HIT_TYPE_UNKNOWN &&
             TestObjects(VoxelData[index],
                         ro,
                         rd,
@@ -182,34 +173,32 @@ bool MarchTheRay(in const vec3  ro,
             hitType = HIT_TYPE_OBJECT;
             return true;
         }
-    
-        // Move the ray
-        if (tMax.x < tMax.y) 
-        {
-            if (tMax.x < tMax.z) {
-                voxel.x += step.x;
-                tMax.x  += tDelta.x;
-                lastStepAxis = LAST_X_AXIS;
-            } else {
-                voxel.z += step.z;
-                tMax.z  += tDelta.z;
-                lastStepAxis = LAST_Z_AXIS;
-            }
-        } 
-        else 
-        {
-            if (tMax.y < tMax.z) {
-                voxel.y += step.y;
-                tMax.y  += tDelta.y;
-                lastStepAxis = LAST_Y_AXIS;
-            } else {
-                voxel.z += step.z;
-                tMax.z  += tDelta.z;
-                lastStepAxis = LAST_Z_AXIS;
-            }
-        }
 
+
+        // Move the ray
+        bool stepX = (tMax.x < tMax.y) && (tMax.x < tMax.z);
+        bool stepY = (tMax.y < tMax.z);
+
+        if (stepX)
+        {
+            voxel.x += step.x;
+            tMax.x += tDelta.x;
+            lastStepAxis = LAST_X_AXIS;
+        }
+        else if (stepY)
+        {
+            voxel.y += step.y;
+            tMax.y += tDelta.y;
+            lastStepAxis = LAST_Y_AXIS;
+        }
+        else
+        {
+            voxel.z += step.z;
+            tMax.z += tDelta.z;
+            lastStepAxis = LAST_Z_AXIS;
+        }
     }
+ 
 
     return false;
 }
@@ -245,7 +234,7 @@ float SoftShadowRay(in const vec3   from,
                     in const int    maxDistance)
 {
     const float r = 4.;
-    const float samples = 16;
+    const float samples = 12;
 
     vec3    dir = normalize(to - from);
     vec3    dummyHit;
@@ -364,7 +353,7 @@ vec3 PhongSoftShadows(in const vec3     camPos,
 // --------------------------------------------------------------------------------------------------------------------
 vec3 Reflection(in vec3     from,
                 in vec3     to,
-                in const int    maxSteps,
+                in int      maxSteps,
                 in const uint   bounces,
                 in const vec3   baseColor,
                 in vec3     normal,
@@ -401,7 +390,7 @@ vec3 Reflection(in vec3     from,
                          hitType)) 
         {
             reflectedColor = mix(reflectedColor, baseSkyColor.xyz, fMaterialReflectPower);
-            break;
+            return reflectedColor;
         }
 
         from    = to;
@@ -411,22 +400,21 @@ vec3 Reflection(in vec3     from,
         if (hitType == HIT_TYPE_VOXEL) {
             hitBaseColor    = ExtractColorInt(VoxelData[index].Color);
             fLocalReflect   = 0.1;
+            fRoughness      = 0.0;
         }
-        else if (hitType == HIT_TYPE_OBJECT) {
-            hitBaseColor    = ExtractColorInt(CubeData[index].Color);
-            fLocalReflect   = CubeData[index].Reflection;
-            fRoughness      = CubeData[index].Roughness;
+        if (hitType == HIT_TYPE_OBJECT) {
+            CubeColored c = CubeData[index];
+            hitBaseColor    = ExtractColorInt(c.Color);
+            fLocalReflect   = c.Reflection;
+            fRoughness      = c.Roughness;
         } 
-        else {
-            hitBaseColor    = baseSkyColor;
-            fLocalReflect   = 0.;
-        }
         
         reflectedColor = mix(reflectedColor, 
                              PhongSoftShadows(CameraPos.xyz, hit, normal, int(maxSteps * 0.25)) * hitBaseColor.xyz,
                              fMaterialReflectPower);
 
         fMaterialReflectPower *= fLocalReflect * 2;
+        maxSteps = maxSteps / 2;
     }
 
     return reflectedColor;
@@ -437,11 +425,18 @@ void main()
 {
     ivec2 iPixelCoord = ivec2(gl_GlobalInvocationID.xy);
 
-    float halfFov       = fFov * 0.5;
-    float aspectRatio   = float(imageSize(outputImage).x) / float(imageSize(outputImage).y);
-    float scale         = tan(halfFov);
+    ivec2 imgSize     = imageSize(outputImage);
+    vec3  camPos      = CameraPos.xyz;
+    vec3  camDir      = CameraLookDir.xyz;
+    vec3  camRight    = CameraRight.xyz;
+    vec3  camUp       = CameraUp.xyz;
 
+
+    float halfFov       = fFov * 0.5;
+    float scale         = tan(halfFov);
+    float aspectRatio   = float(imgSize.x) / float(imgSize.y);
     vec2 uv = ((vec2(iPixelCoord) + vec2(0.5)) / vec2(imageSize(outputImage))) * 2. - 1.; 
+
     if (IsCrosshair(uv, aspectRatio)) {
         imageStore(outputImage, iPixelCoord, vec4(1., 1., 1., 1.));
         return;
@@ -449,10 +444,10 @@ void main()
 
 
 
-    vec3 ro  = CameraPos.xyz;
-    vec3 rd  = normalize(CameraLookDir.xyz +
-                         uv.x * aspectRatio * scale * CameraRight.xyz +
-                         uv.y * scale * CameraUp.xyz);
+    vec3 ro  = camPos;
+    vec3 rd  = normalize(camDir +
+                         uv.x * aspectRatio * scale * camRight +
+                         uv.y * scale * camUp);
 
     vec4 finalColor = baseSkyColor;
 

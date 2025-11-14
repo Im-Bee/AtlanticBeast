@@ -31,6 +31,14 @@ IF (MSVC)
 
     ADD_COMPILE_OPTIONS("/permissive-")
 
+ELSE()
+
+    IF (NOT CMAKE_BUILD_TYPE=="Debug")
+
+        ADD_COMPILE_OPTIONS("-O2")
+
+    ENDIF()
+
 ENDIF()
 
 SET(CMAKE_C_STANDARD 17)

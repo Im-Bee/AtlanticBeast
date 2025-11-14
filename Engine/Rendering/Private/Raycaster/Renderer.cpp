@@ -71,7 +71,7 @@ void Renderer::Update(const float)
                                                                        VoxelPipeline::EShaderResource::Cubes);
 
         m_pMemory->UploadOnStreamBuffer(m_pVoxelGrid->GetObjectsPtr(),
-                                        m_pVoxelGrid->GetObjectsSizeInBytes(),
+                                        m_pVoxelGrid->GetUsedObjectsSizeInBytes(),
                                         ud2);
     }
 
@@ -334,7 +334,7 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const shared_pt
                         1,
                         &copyRegion);
 
-        copyRegion.size = m_StageCubeBuffer->GetSizeInBytes();
+        copyRegion.size = m_pVoxelGrid->GetUsedObjectsSizeInBytes();
         vkCmdCopyBuffer(cmdBuffer, 
                         m_StageCubeBuffer->GetBufferHandle(), 
                         m_CubeBuffer->GetBufferHandle(), 
@@ -377,8 +377,8 @@ void Renderer::RecordVoxelesCommands(VkCommandBuffer& cmdBuffer, const shared_pt
                          2, bufferBarriers,
                          0, NULL);
 
-    const uint32_t groupCountX = (m_pWindowDesc->Width + 15) / 16;
-    const uint32_t groupCountY = (m_pWindowDesc->Height + 15) / 16;
+    const uint32_t groupCountX = (m_pWindowDesc->Width + 31) / 32;
+    const uint32_t groupCountY = (m_pWindowDesc->Height + 7) / 8;
     vkCmdDispatch(cmdBuffer, groupCountX, groupCountY, 1);
 }
 

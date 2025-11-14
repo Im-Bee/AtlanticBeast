@@ -14,7 +14,7 @@ class IWorldGrid : public MemoryUploadTracker
 {
 protected:
 
-    static constexpr size_t DefaultVoxelGridDim = 96;
+    static constexpr size_t DefaultVoxelGridDim = 64;
 
 public:
 
@@ -46,6 +46,8 @@ public:
     virtual const void* GetObjectsPtr() const = 0;
     
     virtual size_t GetObjectsSizeInBytes() const = 0;
+
+    virtual size_t GetUsedObjectsSizeInBytes() const = 0;
 
 public:
 
@@ -88,6 +90,9 @@ public:
     
     virtual size_t GetObjectsSizeInBytes() const override 
     { return m_StoredObjects.size() * sizeof(StoredObjectType); }
+    
+    virtual size_t GetUsedObjectsSizeInBytes() const override 
+    { return m_uObjectsCount * sizeof(StoredObjectType); }
 
     StoredObjectType& GetById(size_t uId) 
     {
