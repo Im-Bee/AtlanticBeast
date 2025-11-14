@@ -18,7 +18,6 @@ FpsLimiter::FpsLimiter(const float fTargetMs)
 float FpsLimiter::Block(const float fDeltaMs, const float fFetchMs)
 {
     using DurationMs = duration<float, milli>;
-    const float fCompensationFactor = 0.1f;
     
     m_fBalance += m_fTarget - fFetchMs;
     const float fTotalWait = m_fTarget - fDeltaMs + m_fBalance;

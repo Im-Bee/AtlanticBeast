@@ -2,9 +2,9 @@
 #define AB_CORE_H
 
 #include "CoreMinimal.h"
-#include "AbLimits.h"
 
 #ifdef __cplusplus
+
 #include "Exception.hpp"
 
 namespace Core::Debug

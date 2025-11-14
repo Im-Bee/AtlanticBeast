@@ -19,47 +19,49 @@ Exception::Exception(const char* szMessage,
     , m_pszFileName(szFileName)
     , m_uFileNameLen(uFileNameLen)
 {
+    // There is no message to copy
     if (!m_pszMessage) {
         return;
     }
 
-    char* szErrorMessage = new char[AB_LONG_STRING];
     char szLine[AB_SMALL_STRING] = { 0 };
     char szAtLine[] = "\nAt line: ";
     char szInFile[] = "\nIn file: ";
-    size_t uIndex = m_uMesLen;
-    size_t uOldIndex = uIndex;
+    size_t uFutureLen = m_uMesLen;
+    size_t uCurLen;
  
-    if (uIndex >= AB_LONG_STRING) {
-        delete[] szErrorMessage;
-        LogAndReturnMessage(m_pszMessage, uOldIndex);
-        m_uMesLen = uOldIndex;
+    // If length is bigger then the AB_LONG_STRING, there is nothing to do, return
+    if (m_uMesLen >= AB_LONG_STRING) {
+        LogAndReturnMessage(m_pszMessage, m_uMesLen);
         return;
     }
+
+    char* szErrorMessage = new char[AB_LONG_STRING];
+
     strcpy(szErrorMessage, m_pszMessage);
     m_pszMessage = szErrorMessage;
     
-    uOldIndex = uIndex;
-    uIndex += sprintf(szLine, "\nAt line: %d", static_cast<int>(m_Line));
-    if (uIndex >= AB_LONG_STRING || m_Line == InvalidLine) {
-        LogAndReturnMessage(szErrorMessage, uOldIndex);
-        m_uMesLen = uOldIndex;
+    uCurLen = uFutureLen;
+    uFutureLen += sprintf(szLine, "\nAt line: %d", static_cast<int>(m_Line));
+    if (uFutureLen >= AB_LONG_STRING || m_Line == InvalidLine) {
+        LogAndReturnMessage(szErrorMessage, uCurLen);
+        m_uMesLen = uCurLen;
         return;
     }
     strcat(szErrorMessage, szLine);
 
-    uOldIndex = uIndex;
-    uIndex += sizeof(szInFile) + m_uFileNameLen;
-    if (uIndex >= AB_LONG_STRING || !m_pszFileName) {
-        LogAndReturnMessage(szErrorMessage, uOldIndex);
-        m_uMesLen = uOldIndex;
+    uCurLen = uFutureLen;
+    uFutureLen += sizeof(szInFile) + m_uFileNameLen;
+    if (uFutureLen >= AB_LONG_STRING || !m_pszFileName) {
+        LogAndReturnMessage(szErrorMessage, uCurLen);
+        m_uMesLen = uCurLen;
         return;
     }
     strcat(szErrorMessage, szInFile);
     strcat(szErrorMessage, m_pszFileName);
 
-    LogAndReturnMessage(szErrorMessage, uIndex);
-    m_uMesLen = uIndex;
+    LogAndReturnMessage(szErrorMessage, uFutureLen);
+    m_uMesLen = uFutureLen;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -70,7 +72,7 @@ Exception::~Exception() noexcept
     }
 }
 
-// ---------------------------------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------------------------------
 Exception::Exception(const Exception& other) noexcept
     : m_pszMessage(nullptr) 
     , m_uMesLen(other.m_uMesLen)
@@ -79,8 +81,8 @@ Exception::Exception(const Exception& other) noexcept
     , m_uFileNameLen(other.m_uFileNameLen)
 {
     if (other.m_uMesLen != InvalidLine && other.m_uMesLen >= AB_LONG_STRING) {
-        m_pszMessage = other.m_pszMessage;
-        m_uMesLen = other.m_uMesLen;
+        this->m_pszMessage = other.m_pszMessage;
+        this->m_uMesLen = other.m_uMesLen;
         return;
     }
     
@@ -108,7 +110,7 @@ void Exception::LogAndReturnMessage(const char* pszMessage, size_t uMesLen) cons
     
     try {
         ::Core::Debug::Logger::Get()->Log(Debug::ESeverity::Error, wc);
-        ::Core::Debug::Logger::Get()->~Logger();
+        ::Core::Debug::Logger::Get()->Flush();
     }
     catch (...) 
     { }
