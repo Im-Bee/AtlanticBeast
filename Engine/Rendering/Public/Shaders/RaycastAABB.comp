@@ -420,7 +420,7 @@ vec3 Reflection(in vec3     from,
         else {
             hitBaseColor    = baseSkyColor;
             fLocalReflect   = 0.;
-            fRoughness      = 0.
+            fRoughness      = 0.;
         }
         
         reflectedColor = mix(reflectedColor, 
