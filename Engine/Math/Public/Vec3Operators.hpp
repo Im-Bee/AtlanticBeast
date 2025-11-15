@@ -102,5 +102,4 @@ inline iVec3 iVec3::operator*(const uint32_t vB) const
 }
 
 } //!Volxes
-
 #endif //!AB_VEC3_OPERATORS_H
