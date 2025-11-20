@@ -24,12 +24,18 @@ SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 IF (MSVC)
 
-    set(CMAKE_MSVC_RUNTIME_LIBRARY 
+    SET(CMAKE_MSVC_RUNTIME_LIBRARY 
         "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL" CACHE STRING "" FORCE)
 
-    add_compile_options("/GR-")
+    ADD_COMPILE_OPTIONS("/permissive-")
 
-    add_compile_options("/permissive-")
+ELSE()
+
+    IF (NOT CMAKE_BUILD_TYPE=="Debug")
+
+        ADD_COMPILE_OPTIONS("-O2")
+
+    ENDIF()
 
 ENDIF()
 

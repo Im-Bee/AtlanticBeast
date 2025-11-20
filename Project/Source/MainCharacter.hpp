@@ -18,7 +18,7 @@ public:
     explicit PaperCharacter(U&&... args)
         : m_g(nullptr)
         , Camera(::std::forward<U>(args)...)
-        , m_fSpeed(0.1f)
+        , m_fSpeed(m_fWalk)
     { }
 
 public:
@@ -96,13 +96,25 @@ public:
         this->AddPositon(dir * (fDelta * m_fSpeed));
     }
 
+    void ActivateSprint(const float) 
+    {
+        m_fSpeed = m_fSprint;
+    }
+
+    void ActivateWalk(const float) 
+    {
+        m_fSpeed = m_fWalk;
+    }
+
 private:
 
     ::std::shared_ptr<Game> m_g;
 
     uint32_t m_uColor;
 
-    const float m_fSpeed = -1.f;
+    static constexpr float m_fWalk = 0.1;
+    static constexpr float m_fSprint = 0.3;
+    float m_fSpeed = -1.f;
 
 };
 
@@ -137,6 +149,10 @@ public:
     AB_DECL_ACTION(PaperCharacter, Push, PushBlockMediumForce, 50.f);
 
     AB_DECL_ACTION(PaperCharacter, Push, PushBlockHighForce, 100.f);
+
+    AB_DECL_ACTION(PaperCharacter, ActivateSprint, Sprint);
+
+    AB_DECL_ACTION(PaperCharacter, ActivateWalk, Walk);
 
     AB_DECL_MOUSE_ACTION(PaperCharacter, MouseMove, Mouse);
 

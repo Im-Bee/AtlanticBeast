@@ -9,7 +9,7 @@ namespace Voxels
 /**
  * Holds positon of an object and rotation in radians.
  * */
-class WorldObject
+class alignas(16) WorldObject
 {
 public:
 

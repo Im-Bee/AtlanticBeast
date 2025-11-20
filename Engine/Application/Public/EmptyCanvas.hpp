@@ -33,12 +33,6 @@ public:
     explicit EmptyCanvas(U&& desc)
         : IBaseWindow<EmptyCanvas, GamePolicy>(::std::forward<U>(desc))
     { }
-    
-    ~EmptyCanvas() = default;
-
-    EmptyCanvas(EmptyCanvas&&) noexcept = default;
-
-    EmptyCanvas(const EmptyCanvas&) = delete;
 
 public:
 

@@ -17,14 +17,6 @@ class BEAST_API BasicWin32WindowPolicy : public IWindowPolicy<BasicWin32WindowPo
 {
 public:
 
-    BasicWin32WindowPolicy() = default;
-    ~BasicWin32WindowPolicy() = default;
-     
-    BasicWin32WindowPolicy(const BasicWin32WindowPolicy&) = default;
-    BasicWin32WindowPolicy(BasicWin32WindowPolicy&&) noexcept = default;
-
-public:
-
     uint32_t CreateImpl(WindowDesc* pWd);
     
     void ShowImpl(WindowDesc* pWd);

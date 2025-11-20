@@ -38,7 +38,7 @@ void MouseMap::PlayAction(const float fDelta, int32_t fX, int32_t fY)
 	for (const auto& bind : m_vMouseBinds) {
 		AB_ASSERT(bind.pThis);
 
-		bind.action(fDelta, bind.pThis, fX, fY);
+		bind.Action(fDelta, bind.pThis, fX, fY);
     }
 }
 

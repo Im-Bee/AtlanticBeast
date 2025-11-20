@@ -2,6 +2,7 @@
 #define AB_LOGGER_H
 
 #include "CoreMinimal.h"
+#include <condition_variable>
 
 namespace Core::Debug
 {
@@ -15,6 +16,17 @@ enum ESeverity
 
 class Logger
 {
+
+    using Clock             = ::std::chrono::system_clock;
+    using ClockTimePoint    = ::std::chrono::time_point<Clock>;
+
+    struct LogStruct
+    {
+        ClockTimePoint  TimeStamp;
+        ESeverity       Sev;
+        wchar_t*        pwszMessage;
+    };
+
     BEAST_API Logger();
 
     Logger(const Logger&) = delete;
@@ -40,16 +52,7 @@ public:
      */
     BEAST_API void Log(const ESeverity sev, const wchar_t wszFmt[], ...);
 
-private:
-
-    using Clock = ::std::chrono::system_clock;
-
-    struct LogStruct
-    {
-        ::std::chrono::time_point<Clock> TimeStamp;
-        ESeverity Sev;
-        wchar_t* Message;
-    };
+    BEAST_API void Flush();
 
 private:
 
@@ -69,8 +72,9 @@ private:
     ::std::string m_strTargetPath;
     ::std::string m_strLogName;
 
-    volatile ::std::atomic_bool m_aIsWriteThreadWorking;
+    ::std::atomic_bool m_aIsWriteThreadWorking;
     ::std::thread m_tWriteThreadHandle;
+    ::std::condition_variable m_FlushCondition;
 
 };
 

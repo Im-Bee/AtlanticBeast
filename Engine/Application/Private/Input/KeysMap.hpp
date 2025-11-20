@@ -12,36 +12,28 @@ class KeysMap : public IBindMap<KeysMap>
 
     static constexpr size_t AmountOfBindableKeys = AB_KEY_COUNT;
 
+    struct ActionReplayData
+    {
+        void* pThis;
+        AbAction action;
+    };
+
 public:
     
     KeysMap();
 
-    ~KeysMap() = default;
-
-    KeysMap(KeysMap&&) noexcept = default;
-
-    KeysMap(const KeysMap&) = default;
-
 public:
 
     void BindActionImpl(const AbInputBind& ib,
-                                  void* pThis,
-                                  AbAction a, 
-                                  AbMouseAction ma);
+                        void* pThis,
+                        AbAction a, 
+                        AbMouseAction ma);
 
     void UnbindActionImpl(const AbInputBind& ib, void* pThis);
 
 public:
 
     void PlayAction(const float fDelta, AbKeyId keyCode);
-
-private:
-
-    struct ActionReplayData
-    {
-        void* pThis;
-        AbAction action;
-    };
 
 private:
 

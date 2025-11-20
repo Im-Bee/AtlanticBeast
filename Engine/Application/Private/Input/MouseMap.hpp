@@ -8,15 +8,12 @@ namespace App
 
 class MouseMap : public IBindMap<MouseMap>
 {
-public:
-    
-    MouseMap() = default;
-    
-    ~MouseMap() = default;
 
-    MouseMap(MouseMap&&) noexcept = default;
-    
-    MouseMap(const MouseMap&) = default;
+    struct DataForActionReplay
+    {
+        void*           pThis;
+        AbMouseAction   Action;
+    };
 
 public:
 
@@ -30,14 +27,6 @@ public:
 public:
 
     void PlayAction(const float fDelta, int32_t fX, int32_t fY);
-
-private:
-
-    struct DataForActionReplay
-    {
-        void* pThis;
-        AbMouseAction action;
-    };
 
 private:
 

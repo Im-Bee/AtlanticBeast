@@ -36,6 +36,15 @@ constexpr float Vec3::operator[](size_t uIndex) const
 }
 
 // --------------------------------------------------------------------------------------------------------------------
+inline bool Vec3::operator==(const Vec3& vB) const
+{
+	const float fEpsilon = 0.0001f;
+    return (::std::fabs(this->x - vB.x) < fEpsilon &&
+            ::std::fabs(this->y - vB.y) < fEpsilon &&
+            ::std::fabs(this->z - vB.z) < fEpsilon) ? true : false;
+}
+
+// --------------------------------------------------------------------------------------------------------------------
 inline Vec3& Vec3::operator+=(const Vec3& vB)
 {
     return AddAssign(*this, vB);
@@ -93,5 +102,4 @@ inline iVec3 iVec3::operator*(const uint32_t vB) const
 }
 
 } //!Volxes
-
 #endif //!AB_VEC3_OPERATORS_H

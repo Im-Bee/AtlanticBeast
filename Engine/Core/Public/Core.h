@@ -2,9 +2,9 @@
 #define AB_CORE_H
 
 #include "CoreMinimal.h"
-#include "AbLimits.h"
 
 #ifdef __cplusplus
+
 #include "Exception.hpp"
 
 namespace Core::Debug
@@ -25,6 +25,13 @@ static const char szLogPostfix[] = "_AtlanticBeast.log";
 #else
 #   define AB_LOG(...) 
 #endif // !_DEBUG
+
+// Workaround for empty __VA_ARGS__
+#ifdef _WIN32
+#   define AB_VA_ARGS_(...) , __VA_ARGS__
+#else
+#   define AB_VA_ARGS_(...) __VA_OPT__(,) __VA_ARGS__
+#endif // _WIN32
 
 #endif // !__cplusplus
 #endif // !AB_CORE_H

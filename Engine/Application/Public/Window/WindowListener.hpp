@@ -2,6 +2,7 @@
 #define AB_WINDOW_LISTENER_H
 
 #include "Core.h"
+
 #include "Window/WindowDesc.hpp"
 
 namespace App
@@ -16,6 +17,28 @@ public:
 	{ }
 	
 	~WindowListener() = default;
+
+public:
+
+    WindowListener(const WindowListener& other) noexcept
+        : m_pWindowDesc(other.m_pWindowDesc)
+    { }
+
+    WindowListener& operator=(const WindowListener& other) noexcept
+    {
+        this->m_pWindowDesc = other.m_pWindowDesc; 
+        return *this;
+    }
+
+    WindowListener(WindowListener&& other) noexcept
+        : m_pWindowDesc(std::move(other.m_pWindowDesc))
+    { }
+
+    WindowListener& operator=(WindowListener&& other) noexcept
+    { 
+        this->m_pWindowDesc = std::move(other.m_pWindowDesc); 
+        return *this;
+    }
 
 public:
 

@@ -14,23 +14,27 @@ class BEAST_API Exception : public ::std::exception
 public:
 
     explicit Exception(const char*  szMessage       = nullptr,
-                                 size_t       uMesLen         = 0,
-                                 int32_t      uLine           = InvalidLine,
-                                 const char*  szFileName      = nullptr,
-                                 size_t       uFileNameLen    = 0) noexcept;
+                       size_t       uMesLen         = 0,
+                       int32_t      uLine           = InvalidLine,
+                       const char*  szFileName      = nullptr,
+                       size_t       uFileNameLen    = 0) noexcept;
 
     template<size_t uMesLen, size_t uFileNameLen>
-    explicit constexpr Exception(const char (&pszMessage)[uMesLen]          = 0, 
-                                 int32_t    uLine                           = 0,
-                                 const char (&pszFileName)[uFileNameLen]    = nullptr) noexcept
+    constexpr Exception(const char (&pszMessage)[uMesLen], 
+                        int32_t    uLine                        = 0,
+                        const char (&pszFileName)[uFileNameLen] = nullptr) noexcept
         : Exception(pszMessage, uMesLen, uLine, pszFileName, uFileNameLen)
     { }
 
     ~Exception() noexcept;
 
+public:
+
     Exception(const Exception&) noexcept;
+    Exception& operator=(const Exception&) noexcept = delete;
 
     Exception(Exception&&) noexcept = default;
+    Exception& operator=(Exception&&) noexcept = delete;
 
 public: 
 
@@ -51,5 +55,4 @@ private:
 };
 
 } // !Core
-
 #endif // !AB_EXCEPT_H

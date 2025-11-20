@@ -21,6 +21,12 @@ class BEAST_API AppStatus
 
     AppStatus();
 
+    AppStatus(const AppStatus&) noexcept = delete;
+    AppStatus& operator=(const AppStatus&) noexcept = delete;
+
+    AppStatus(AppStatus&&) noexcept = delete;
+    AppStatus& operator=(AppStatus&&) noexcept = delete;
+
     static EAppStatus m_AppCurrentStatus;
 
 public:

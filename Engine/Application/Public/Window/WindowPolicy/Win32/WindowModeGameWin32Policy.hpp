@@ -15,15 +15,6 @@ class BEAST_API WindowModeGameWin32WindowPolicy : public BasicWin32WindowPolicy
 {
 public:
 
-    WindowModeGameWin32WindowPolicy() = default;
-
-    ~WindowModeGameWin32WindowPolicy() = default;
-
-    WindowModeGameWin32WindowPolicy(const WindowModeGameWin32WindowPolicy&) = default;
-    WindowModeGameWin32WindowPolicy(WindowModeGameWin32WindowPolicy&&) noexcept = default;
-
-public:
-
     void OnPreWcex() override;
 
     void OnUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
