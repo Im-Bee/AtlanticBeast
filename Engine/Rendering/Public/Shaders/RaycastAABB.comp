@@ -138,22 +138,26 @@ bool MarchTheRay(in const vec3  ro,
     }
 
     int lastStepAxis = LAST_UNKNOWN_AXIS;
+    int index;
+    uint testedVoxel;
+    bool stepX;
+    bool stepY;
     for (int stepCount = 0; stepCount < maxSteps; ++stepCount)
     {
         if (voxel.x <= 0 || voxel.x >= GridSize.x ||
             voxel.y <= 0 || voxel.y >= GridSize.y ||
             voxel.z <= 0 || voxel.z >= GridSize.z)
         {
-            break;
+            return false;
         }
 
-        int index = voxel.x + 
-                    voxel.y * GridSize.x +
-                    voxel.z * GridSize.x * GridSize.y;
+        index = voxel.x + 
+                voxel.y * GridSize.x +
+                voxel.z * GridSize.x * GridSize.y;
 
-        uint testedVoxel = VoxelData[index].Type;
-    
         // Check for hits
+        testedVoxel = VoxelData[index].Type;
+    
         if (testedVoxel == uint(HIT_TYPE_VOXEL))
         {
             fDistance            = tMax[lastStepAxis] - tDelta[lastStepAxis];
@@ -182,8 +186,8 @@ bool MarchTheRay(in const vec3  ro,
 
 
         // Move the ray
-        bool stepX = (tMax.x < tMax.y) && (tMax.x < tMax.z);
-        bool stepY = (tMax.y < tMax.z);
+        stepX = (tMax.x < tMax.y) && (tMax.x < tMax.z);
+        stepY = (tMax.y < tMax.z);
 
         if (stepX)
         {
@@ -203,7 +207,6 @@ bool MarchTheRay(in const vec3  ro,
         tMax.z += tDelta.z;
         lastStepAxis = LAST_Z_AXIS;
     }
- 
 
     return false;
 }
@@ -473,12 +476,12 @@ void main()
 
         if (fDistance <= maxSteps) 
         {   
-            vec3 shaded = finalColor.xyz;
+            vec3 shaded;
 
             shaded = PhongSoftShadows(CameraPos.xyz, 
                                       hitPos,
                                       normal,
-                                      int(distance(hitPos, lightPos) * 1.5)) * shaded;
+                                      int(distance(hitPos, lightPos) * 1.5)) * finalColor.xyz;
 
             // finalColor = vec4(shaded, finalColor.w);
             finalColor = vec4(Reflection(ro, 

@@ -7,6 +7,7 @@
 #include "Synchronization/DeltaTime.hpp"
 #include "Synchronization/FpsLimiter.hpp"
 
+
 using namespace std;
 using namespace Core;
 using namespace App;
